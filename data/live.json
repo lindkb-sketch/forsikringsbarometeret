@@ -1,0 +1,58 @@
+{
+  "updated_at": "2026-10-20T10:38:06+00:00",
+  "companies": {
+    "Storebrand": {
+      "next_event": {
+        "period": "Q3 2026",
+        "date": "2026-10-21",
+        "source_url": "https://www.storebrand.com/welcome/investor-relations"
+      },
+      "locked_periods": [],
+      "calendar_source": "https://www.storebrand.com/welcome/investor-relations"
+    },
+    "Protector": {
+      "next_event": {
+        "period": "Q3 2026",
+        "date": "2026-10-22",
+        "source_url": "https://investor.protectorforsikring.no/all-events"
+      },
+      "locked_periods": [],
+      "calendar_source": "https://investor.protectorforsikring.no/all-events"
+    },
+    "Gjensidige": {
+      "next_event": {
+        "period": "Q3 2026",
+        "date": "2026-10-23",
+        "source_url": "https://www.gjensidige.com/investor-relations/Financial-calendar"
+      },
+      "locked_periods": [],
+      "calendar_source": "https://www.gjensidige.com/investor-relations/Financial-calendar"
+    },
+    "Sampo / If": {
+      "next_event": {
+        "period": "Q3 2026",
+        "date": "2026-11-04",
+        "source_url": "https://www.sampo.com/investors/"
+      },
+      "locked_periods": [],
+      "calendar_source": "https://www.sampo.com/investors/"
+    },
+    "Frende": {
+      "next_event": null,
+      "locked_periods": [],
+      "calendar_source": "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/"
+    },
+    "Tryg": {
+      "next_event": null,
+      "locked_periods": [
+        "Q3 2026"
+      ],
+      "calendar_source": "https://tryg.com/en/investor"
+    },
+    "Fremtind": {
+      "next_event": null,
+      "locked_periods": [],
+      "calendar_source": "https://www.fremtind.no/"
+    }
+  }
+}
