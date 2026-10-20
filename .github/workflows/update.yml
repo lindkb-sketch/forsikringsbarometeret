@@ -39,5 +39,3 @@ jobs:
           path: .
       - uses: actions/deploy-pages@v4
         id: deployment
-        environment:
-          name: github-pages
