@@ -1,0 +1,19 @@
+{
+  "source_policy": "official_quarterly_report_only",
+  "observations": [
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": null,
+      "unit": "NOK_million",
+      "source_url": "https://OFFISIELL-KVARTALSRAPPORT.pdf",
+      "source_page": null,
+      "source_type": "official_quarterly_report",
+      "status": "reported"
+    }
+  ]
+}

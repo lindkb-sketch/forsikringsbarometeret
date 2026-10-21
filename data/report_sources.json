@@ -1,0 +1,49 @@
+{
+  "sources": [
+    {
+      "company": "Storebrand",
+      "index_url": "https://www.storebrand.no/en/investor-relations/quarterly-reporting/storebrand-asa",
+      "document_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/4237d035-d763-4991-b204-bc1f67cf23ea%3Ad3110f016fb66573dd897fa09fdf013b05a792df/2026-q2-interim-report-storebrand-asa.pdf",
+      "year": 2026,
+      "quarter": 2,
+      "document_type": "official_quarterly_report",
+      "verification": "report PDF URL from official Storebrand quarterly reporting archive"
+    },
+    {
+      "company": "Tryg",
+      "index_url": "https://tryg.com/en/downloads-2026",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "Gjensidige",
+      "index_url": "https://www.gjensidige.com/investor-relations/reports-and-presentations",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "Fremtind",
+      "index_url": "https://www.fremtind.no/finansiell-informasjon",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "Frende",
+      "index_url": "https://www.frende.no/om-oss/finansiell-informasjon/frende-skadeforsikring/",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "Protector",
+      "index_url": "https://investor.protectorforsikring.no/financials",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "Sampo",
+      "index_url": "https://www.sampo.com/",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    }
+  ]
+}
