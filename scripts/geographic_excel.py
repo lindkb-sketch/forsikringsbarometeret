@@ -44,14 +44,23 @@ def parse(path,company,year,quarter,workbook_url,report_pdf_url):
     matches=[(name,cells) for name,cells in sheets.items() if re.search(r'geograph|geografi',name,re.I) and re.search(r'quarter|kvartal',name,re.I)]
     if len(matches)!=1:raise ValueError('Expected exactly one Geographical - Quarterly Outline sheet')
     name,cells=matches[0]
-    # Only use columns with an unambiguous year and quarter in their header; Norway must be a clearly bounded block.
-    quarter_pattern=re.compile(r'(?<!\w)(?:Q\s*0?'+str(quarter)+r'|0?'+str(quarter)+r'\s*Q|0?'+str(quarter)+r'\s*(?:quarter|kvartal))(?!\w)',re.I)
-    header_candidates=[(addr,v) for addr,v in cells.items() if isinstance(v,str) and str(year) in v and quarter_pattern.search(v)]
-    if not header_candidates:
-        year_rows={rownum(a) for a,v in cells.items() if isinstance(v,(str,int,float)) and str(year) in str(v)}
-        header_candidates=[(a,v) for a,v in cells.items() if isinstance(v,str) and quarter_pattern.search(v) and any(0<=rownum(a)-yr<=3 for yr in year_rows)]
-    if len(header_candidates)!=1:raise ValueError('Quarter/year header is missing or ambiguous; no automatic publication')
-    haddr,_=header_candidates[0];col=column(haddr);header_row=rownum(haddr)
+    # Match quarter and year in the SAME column. Official Tryg investor tables
+    # place Q3 on row 5 and 2025 on row 6, not in one cell.
+    quarter_pattern=re.compile(r'^(?:Q\s*0?'+str(quarter)+r'|0?'+str(quarter)+r'\s*Q|0?'+str(quarter)+r'\s*(?:quarter|kvartal))$',re.I)
+    headers=[]
+    for addr,value in cells.items():
+        if not isinstance(value,str) or not quarter_pattern.fullmatch(value.strip()):
+            continue
+        c=column(addr);r=rownum(addr)
+        # Require a numeric or textual exact year in the same column,
+        # adjacent to the quarter label (either row order).
+        year_matches=[yr for yr in range(max(1,r-2),r+3)
+                      if yr!=r and str(cells.get(f'{c}{yr}')).strip() in (str(year),str(float(year)))]
+        if len(year_matches)==1:
+            headers.append((addr,r))
+    if len(headers)!=1:
+        raise ValueError(f'Quarter/year header missing or ambiguous: {company} {year} Q{quarter}; candidates={headers}')
+    haddr,header_row=headers[0];col=column(haddr)
     norway_rows=sorted(rownum(a) for a,v in cells.items() if isinstance(v,str) and re.fullmatch(r'\s*(?:norway|norge|norwegian general insurance)\s*',v,re.I))
     if len(norway_rows)!=1:raise ValueError('Norway section missing or ambiguous')
     start=norway_rows[0]
@@ -70,6 +79,10 @@ def parse(path,company,year,quarter,workbook_url,report_pdf_url):
         if len(candidates)>1:raise ValueError(f'Ambiguous metric {metric}')
         if candidates:
             addr,val=candidates[0]
+            # Tryg workbook stores monetary cells in DKK while displaying DKKm.
+            # Normalize monetary amounts to DKKm; ratios are already percentages.
+            if company=='Tryg' and metric in ('insurance_revenue','insurance_service_result'):
+                if abs(val)>1_000_000: val=val/1_000_000
             observations.append({'company':company,'year':year,'quarter':quarter,'scope':'norway','period_type':'quarter','metric':metric,'value':val,'source_url':workbook_url,'source_document_url':report_pdf_url,'source_type':'official_investor_tables','source_sheet':name,'source_cell':addr,'status':'reported','source_scope':'norway'})
     if not observations:raise ValueError('No unambiguous Norway metrics; workbook requires manual adapter')
     return {'source_policy':'official_reports_and_geographic_workbooks','observations':observations}
