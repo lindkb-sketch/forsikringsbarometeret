@@ -6,6 +6,7 @@ permissions:
 jobs:
   storebrand-only:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -13,14 +14,24 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: python -m pip install -r requirements-reports.txt
+      - name: Preflight all required files and dependencies
+        run: python scripts/storebrand_preflight.py
       - name: Storebrand unit tests
         run: python -m unittest discover -s tests -p 'test_storebrand*.py' -v
-      - name: Find, download and validate both Storebrand Q3 2026 PDFs
-        run: python scripts/storebrand_automation_check.py
-      - name: Upload isolated test report
+      - name: Offline end-to-end test using original issuer PDFs
+        run: |
+          python scripts/storebrand_automation_check.py \
+            --group tests/fixtures/storebrand_asa_q3_2026.pdf \
+            --norway tests/fixtures/storebrand_forsikring_q3_2026.pdf \
+            --output data/storebrand_offline_test.json
+      - name: Live discovery, download and validation of both Q3 2026 PDFs
+        run: python scripts/storebrand_automation_check.py --output data/storebrand_automation_test.json
+      - name: Upload isolated test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: storebrand-isolated-test
-          path: data/storebrand_automation_test.json
+          path: |
+            data/storebrand_offline_test.json
+            data/storebrand_automation_test.json
           if-no-files-found: warn
