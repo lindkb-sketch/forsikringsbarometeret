@@ -1,0 +1,69 @@
+{
+  "all_seven_automatic": false,
+  "companies": [
+    {
+      "company": "Fremtind",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Gjensidige",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Tryg",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Sampo",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Frende",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Protector",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 0,
+      "group_quarter_observations": 0,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    },
+    {
+      "company": "Storebrand",
+      "official_archive_registered": true,
+      "direct_pdf_registered": 1,
+      "group_quarter_observations": 5,
+      "group_quarters_with_required_metrics": [],
+      "automatic_complete": false,
+      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+    }
+  ],
+  "definition": "Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication."
+}

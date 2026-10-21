@@ -1,0 +1,15 @@
+{
+  "workbooks": [
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "workbook_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "report_pdf_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "approved": true,
+      "source_index_url": "https://tryg.com/en/downloads-2026",
+      "approval_basis": "Official Tryg investor downloads Q2 2026; actual workbook cell mapping not independently verified"
+    }
+  ],
+  "instructions": "Add an exact official XLSX and companion quarterly PDF URL for each Tryg/Gjensidige quarter; never use guessed links."
+}

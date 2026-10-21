@@ -1,0 +1,27 @@
+{
+  "period": "Q3 2026",
+  "brief": [
+    {
+      "text": "Tryg (norway): combined ratio 76.1 % i Q3 2026.",
+      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+    },
+    {
+      "text": "Tryg (norway): forsikringsinntekter 2513 DKKm i Q3 2026.",
+      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+    },
+    {
+      "text": "Tryg (norway): forsikringsresultat 601 DKKm i Q3 2026.",
+      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+    }
+  ],
+  "implications": [
+    {
+      "text": "Tryg: combined ratio 76.1 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226",
+      "type": "rule_based_interpretation"
+    }
+  ],
+  "news": [],
+  "coverage": "partial",
+  "method": "verified financial feed and approved news only"
+}

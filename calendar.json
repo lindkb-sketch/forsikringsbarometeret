@@ -1,0 +1,62 @@
+{
+  "Storebrand": {
+    "calendar_url": "https://www.storebrand.com/welcome/investor-relations",
+    "events": [
+      {
+        "period": "Q3 2026",
+        "date": "2026-10-21"
+      },
+      {
+        "period": "Q4 2026",
+        "date": "2027-02-10"
+      }
+    ]
+  },
+  "Protector": {
+    "calendar_url": "https://investor.protectorforsikring.no/all-events",
+    "events": [
+      {
+        "period": "Q3 2026",
+        "date": "2026-10-22"
+      },
+      {
+        "period": "Q4 2026",
+        "date": "2027-01-28"
+      }
+    ]
+  },
+  "Gjensidige": {
+    "calendar_url": "https://www.gjensidige.com/investor-relations/Financial-calendar",
+    "events": [
+      {
+        "period": "Q3 2026",
+        "date": "2026-10-23"
+      },
+      {
+        "period": "Q4 2026",
+        "date": "2027-01-27"
+      }
+    ]
+  },
+  "Sampo / If": {
+    "calendar_url": "https://www.sampo.com/investors/",
+    "events": [
+      {
+        "period": "Q3 2026",
+        "date": "2026-11-04"
+      }
+    ]
+  },
+  "Frende": {
+    "calendar_url": "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/",
+    "events": []
+  },
+  "Tryg": {
+    "calendar_url": "https://tryg.com/en/investor",
+    "events": []
+  },
+  "Fremtind": {
+    "calendar_url": "https://www.fremtind.no/",
+    "events": []
+  }
+}

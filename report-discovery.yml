@@ -1,0 +1,24 @@
+name: Discover official quarterly reports
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * 1-5'
+permissions:
+  contents: read
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/discover_reports.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quarterly-report-candidates
+          path: data/report_candidates.json
+          if-no-files-found: ignore

@@ -1,0 +1,16 @@
+{
+  "Tryg": {
+    "Q3 2026": {
+      "locked_at": "2026-10-20",
+      "source_url": "https://tryg.com/en/downloads-2026",
+      "reviewed": true
+    }
+  },
+  "Fremtind": {
+    "Q3 2026": {
+      "locked_at": "2026-10-20",
+      "source_url": "",
+      "reviewed": true
+    }
+  }
+}

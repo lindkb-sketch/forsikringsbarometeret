@@ -1,0 +1,12 @@
+{
+  "policy": "official_quarterly_report_only",
+  "status": "manual_approval_required",
+  "sources": {
+    "Storebrand": {
+      "2026-Q2": {
+        "url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/4237d035-d763-4991-b204-bc1f67cf23ea%3Ad3110f016fb66573dd897fa09fdf013b05a792df/2026-q2-interim-report-storebrand-asa.pdf",
+        "type": "official_quarterly_report"
+      }
+    }
+  }
+}

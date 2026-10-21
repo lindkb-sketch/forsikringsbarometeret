@@ -1,0 +1,62 @@
+name: Kontroller og publiser finansdata og kalender
+on:
+  schedule:
+    - cron: '17 5,11,16,21 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: forsikringsbarometeret-publish
+  cancel-in-progress: false
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test dashboard and financial data
+        run: |
+          python -m unittest discover -s tests -v
+          python tests/check_dashboard.py
+          python scripts/audit_financials.py
+          python -m json.tool data/financial_audit.json > /dev/null
+      - name: Discover newly published official report files (diagnostic only)
+        run: python scripts/discover_reports.py || echo "::warning::One or more official report indexes unavailable; no unverified data imported"
+      - name: Generate honest seven-company import coverage
+        run: python scripts/report_coverage.py
+      - name: Fetch independent editorial media headlines
+        run: python scripts/ingest_media_news.py || echo "::warning::Media RSS unavailable; retaining last verified news feed"
+      - name: Fetch delayed public stock quotes (independent of financial import)
+        run: python scripts/update_stock_prices.py
+      - name: Integrated quarterly pipeline (fail closed)
+        run: python scripts/run_pipeline.py
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quarterly-pipeline-diagnostics
+          path: data/financial_audit.json
+      - name: Commit generated financial feed and calendar
+        run: |
+          if ! git diff --quiet -- data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json
+            git commit -m 'Update verified financial feed and report calendar'
+            git push
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - uses: actions/deploy-pages@v4
+        id: deployment

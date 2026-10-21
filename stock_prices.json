@@ -1,0 +1,16 @@
+{
+  "updated_at": "2026-10-20T13:40:58.651416+00:00",
+  "prices": {},
+  "unlisted": [
+    "Fremtind",
+    "Frende"
+  ],
+  "errors": {
+    "Gjensidige": "<urlopen error [Errno -3] Temporary failure in name resolution>",
+    "Protector": "<urlopen error [Errno -3] Temporary failure in name resolution>",
+    "Storebrand": "<urlopen error [Errno -3] Temporary failure in name resolution>",
+    "Tryg": "<urlopen error [Errno -3] Temporary failure in name resolution>",
+    "Sampo / If": "<urlopen error [Errno -3] Temporary failure in name resolution>"
+  },
+  "source": "Yahoo Finance public chart endpoint; best-effort delayed daily closing prices; stale records retain their trading_date"
+}
