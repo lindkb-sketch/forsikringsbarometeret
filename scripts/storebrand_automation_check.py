@@ -16,19 +16,19 @@ from pathlib import Path
 
 from audit_financials import ROOT
 from import_storebrand_reports import parse_group, parse_norway, integrate
-from storebrand_sources import discover
+from storebrand_sources import discover, official
 
 
 def download_pdf(url, destination):
     parsed = urllib.parse.urlparse(url)
-    if parsed.scheme != 'https' or parsed.hostname not in ('www.storebrand.no', 'storebrand.no', 'www.storebrand.com', 'storebrand.com'):
+    if not official(url):
         raise ValueError('Not an approved Storebrand HTTPS PDF host')
     if not parsed.path.lower().endswith('.pdf'):
         raise ValueError('Not a direct PDF URL')
     req = urllib.request.Request(url, headers={'User-Agent': 'Forsikringsbarometeret/1.0'})
     with urllib.request.urlopen(req, timeout=40) as response:
         final = urllib.parse.urlparse(response.geturl())
-        if final.scheme != 'https' or final.hostname not in ('www.storebrand.no', 'storebrand.no', 'www.storebrand.com', 'storebrand.com'):
+        if not official(response.geturl()):
             raise ValueError('PDF redirected to an unapproved host')
         blob = response.read(35_000_001)
     if not blob.startswith(b'%PDF-') or len(blob) > 35_000_000:
