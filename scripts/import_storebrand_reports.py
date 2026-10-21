@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Strict Storebrand Q3 2026 import, from issuer PDFs; no guesswork or scope mixing.
+
+Usage: python scripts/import_storebrand_reports.py --group path.pdf --norway path.pdf
+PDFs are verified by their document title and their named, column-headed tables.
+Source URLs point to official issuer archive pages unless --group-url/--norway-url
+provide direct official PDF links. PDF SHA-256 preserves exact file provenance.
+"""
+import argparse, hashlib, json, re, tempfile, os
+from pathlib import Path
+import pdfplumber
+from audit_financials import audit, ROOT
+
+GROUP_ARCHIVE='https://www.storebrand.no/en/investor-relations/quarterly-reporting/storebrand-asa/2026'
+NORWAY_ARCHIVE='https://www.storebrand.no/en/investor-relations/quarterly-reporting/storebrand-forsikring-as'
+DATA=ROOT/'data/financial_observations.json'
+# Only accept numeric tokens in known table columns. No prose-based extraction.
+NUM=re.compile(r'(?<!\S)-?(?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?:[.,]\d+)?%?(?!\S)')
+
+def number(s):
+    s=s.strip().replace('%','').replace(' ','')
+    if ',' in s and '.' in s: raise ValueError('Ambiguous numeric format: '+s)
+    if ',' in s:
+        # English group tables have comma thousands; Norwegian subsidiary decimal comma.
+        return float(s.replace(',','.'))
+    return float(s)
+
+def english(s):
+    return float(s.replace(',','').replace('%',''))
+
+def row(text,label,count,parser):
+    hits=[]
+    for line in text.splitlines():
+        m=re.fullmatch(r'\s*'+re.escape(label)+r'\s+(.+?)\s*',line,re.I)
+        if not m:continue
+        tokens=NUM.findall(m.group(1))
+        if len(tokens)==count: hits.append([parser(v) for v in tokens])
+    if len(hits)!=1: raise ValueError(f'Expected one {count}-column row for {label!r}; found {len(hits)}')
+    return hits[0]
+
+def pages(path,expected):
+    blob=Path(path).read_bytes()
+    if not blob.startswith(b'%PDF-') or len(blob)>35_000_000:raise ValueError('Invalid PDF')
+    with pdfplumber.open(path) as pdf:
+        texts=[p.extract_text() or '' for p in pdf.pages]
+    if expected not in texts[0] or '2026' not in texts[0]:raise ValueError('Wrong Storebrand entity or year')
+    return texts,hashlib.sha256(blob).hexdigest()
+
+def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity):
+    return dict(company='Storebrand',year=year,quarter=quarter,scope=scope,source_scope=scope,
+        period_type=period,metric=metric,value=value,unit='percent' if metric.endswith('ratio') or metric=='return_on_equity' or metric=='solvency_ratio' else 'MNOK',
+        status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',
+        source_sha256=sha,source_document_period='Q3 2026',source_entity=entity,source_definition=definition)
+
+def parse_group(path,url=GROUP_ARCHIVE):
+    texts,sha=pages(path,'Storebrand Group')
+    t=texts[7]
+    if not ('Insurance – Results' in t and '2026' in t and 'Q3 Q2 Q1' in t):raise ValueError('Group insurance table header changed')
+    metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
+             'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
+             'expense_ratio':('Cost ratio','Insurance segment cost ratio'),
+             'combined_ratio':('Combined ratio','Insurance segment combined ratio')}
+    result=[]
+    for metric,(label,definition) in metrics.items():
+        vals=row(t,label,8,english)
+        for q,v in ((3,vals[0]),(2,vals[1]),(1,vals[2])):
+            result.append(obs('group',2026,q,'quarter',metric,v,8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',2025,3,'quarter',metric,vals[4],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',2026,3,'ytd',metric,vals[5],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',2025,3,'ytd',metric,vals[6],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+    k=texts[4]
+    if 'Group - Key figures' not in k or '2026' not in k:raise ValueError('Group key figures heading changed')
+    for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
+        vals=row(k,label,8,english)
+        for q,v in ((3,vals[0]),(2,vals[1]),(1,vals[2])):
+            result.append(obs('group',2026,q,'quarter',metric,v,5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+        result.append(obs('group',2025,3,'quarter',metric,vals[4],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+        result.append(obs('group',2026,3,'ytd',metric,vals[5],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+        result.append(obs('group',2025,3,'ytd',metric,vals[6],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+    return result
+
+def parse_norway(path,url=NORWAY_ARCHIVE):
+    texts,sha=pages(path,'Storebrand Forsikring')
+    t=texts[3]
+    if 'Totalresultat' not in t or '3.kvartal' not in t or '01.01 - 30.09' not in t:raise ValueError('Norway income statement header changed')
+    result=[]
+    for metric,label,definition in [
+        ('insurance_revenue','Forsikringsinntekter','IFRS 17 forsikringsinntekter'),
+        ('insurance_service_result','Totalt forsikringsresultat','IFRS 17 totalt forsikringsresultat etter reassuranse')]:
+        vals=row(t,label,5,number)
+        for y,p,v in [(2026,'quarter',vals[0]),(2025,'quarter',vals[1]),(2026,'ytd',vals[2]),(2025,'ytd',vals[3])]:
+            result.append(obs('norway',y,3,p,metric,v,4,url,sha,definition,'Storebrand Forsikring AS'))
+    # Storebrand Forsikring AS does not report an expense ratio. Never infer it
+    # from the published claims ratio: definitions may differ.
+    costs=row(t,'Forsikringskostnader',5,number)
+    reinsurance=row(t,'Netto resultat fra reassuransekontrakter',5,number)
+    revenue=row(t,'Forsikringsinntekter',5,number)
+    insurance_result=row(t,'Totalt forsikringsresultat',5,number)
+    for year,period,col in ((2026,'quarter',0),(2025,'quarter',1),(2026,'ytd',2),(2025,'ytd',3)):
+        if revenue[col] <= 0: raise ValueError('Insurance revenue must be positive for combined ratio')
+        # Report expenses are negative; positive reinsurance result reduces net cost.
+        # CR = -(insurance expenses + net reinsurance result) / revenue * 100.
+        calculated=round(-(costs[col]+reinsurance[col])/revenue[col]*100, 4)
+        check=round((1-insurance_result[col]/revenue[col])*100, 4)
+        if abs(calculated-check)>0.03:
+            raise ValueError(f'Combined ratio does not reconcile with insurance result: {year} {period}')
+        r=obs('norway',year,3,period,'combined_ratio',calculated,4,url,sha,
+              'Calculated: -(insurance expenses + net reinsurance result) / insurance revenue * 100; IFRS 17',
+              'Storebrand Forsikring AS')
+        r['status']='calculated'
+        r['calculation']='-(Forsikringskostnader + Netto resultat fra reassuransekontrakter) / Forsikringsinntekter * 100'
+        r['calculation_inputs']={'insurance_expenses':costs[col], 'net_reinsurance_result':reinsurance[col], 'insurance_revenue':revenue[col]}
+        result.append(r)
+    # The report states the net claims ratio in prose (page 2); it does not
+    # provide a comparable expense ratio. Only the stated claims ratio is used.
+    prose=texts[1]
+    if not re.search(r'Netto skadeprosent inkludert reassuranse endte på 60 prosent.*?3\.\s*kvartal og 62 prosent.*?hittil i år',prose,re.I|re.S):
+        raise ValueError('Reported claims ratios changed or could not be verified')
+    for period,value in (('quarter',60.0),('ytd',62.0)):
+        result.append(obs('norway',2026,3,period,'loss_ratio',value,2,url,sha,
+                          'Netto skadeprosent inkludert reassuranse; as reported',
+                          'Storebrand Forsikring AS'))
+    # Solvency is an as-of-date balance-sheet ratio, not a quarterly flow.
+    t=texts[10]
+    if 'Solvenskapitalkrav og -margin' not in t:raise ValueError('Norway solvency table heading changed')
+    v=row(t,'Solvensmargin',2,number)[0]
+    result.append(obs('norway',2026,3,'quarter','solvency_ratio',v,11,url,sha,'Solvency II margin at 30 September 2026','Storebrand Forsikring AS'))
+    return result
+
+def integrate(existing, incoming):
+    result=json.loads(json.dumps(existing)); index={tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric')):i for i,r in enumerate(result['observations'])}
+    added=0; updated=0
+    for r in incoming:
+        key=tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
+        if key in index:
+            old=result['observations'][index[key]]
+            if old['value']!=r['value']:
+                # No replacement of an existing official figure without a verifiable newer source date.
+                raise ValueError('Conflicting Storebrand observation; manual source-version verification required: '+str(key))
+            # Same value: improve provenance only if original did not contain a source SHA.
+            if not old.get('source_sha256'):
+                result['observations'][index[key]]={**old,**r};updated+=1
+        else:
+            index[key]=len(result['observations']);result['observations'].append(r);added+=1
+    validation=audit(result)
+    if not validation['ok']:raise ValueError('Financial audit failed: '+str(validation['errors']))
+    return result,added,updated
+
+def run(group,norway,group_url=GROUP_ARCHIVE,norway_url=NORWAY_ARCHIVE,output=DATA):
+    if not (group_url.startswith('https://') and norway_url.startswith('https://')):raise ValueError('HTTPS provenance required')
+    incoming=parse_group(group,group_url)+parse_norway(norway,norway_url)
+    target=Path(output);existing=json.loads(target.read_text())
+    result,added,updated=integrate(existing,incoming)
+    fd,tmp=tempfile.mkstemp(dir=target.parent,prefix='.storebrand-',suffix='.json')
+    try:
+        with os.fdopen(fd,'w',encoding='utf-8') as f:json.dump(result,f,ensure_ascii=False,indent=2);f.write('\n')
+        os.replace(tmp,target)
+    finally:
+        if os.path.exists(tmp):os.unlink(tmp)
+    return {'parsed':len(incoming),'added':added,'updated_provenance':updated,'group':len(parse_group(group,group_url)),'norway':len(parse_norway(norway,norway_url))}
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--group',required=True);p.add_argument('--norway',required=True)
+    p.add_argument('--group-url',default=GROUP_ARCHIVE);p.add_argument('--norway-url',default=NORWAY_ARCHIVE)
+    p.add_argument('--output',default=str(DATA));a=p.parse_args()
+    print(json.dumps(run(a.group,a.norway,a.group_url,a.norway_url,a.output),ensure_ascii=False,indent=2))
