@@ -48,8 +48,16 @@ def audit(data):
         if metric=="combined_ratio":
             loss=seen.get((company,year,quarter,scope,period,"loss_ratio"))
             expense=seen.get((company,year,quarter,scope,period,"expense_ratio"))
-            if loss and expense and abs(r["value"]-loss["value"]-expense["value"])>0.25:
-                errors.append(f"{company} {year} Q{quarter} {scope} {period}: combined ratio mismatch")
+            if loss and expense:
+                # Storebrand Group insurance segment publishes rounded whole-percent
+                # ratios. Three independently rounded figures can differ by 1.5 pp.
+                # Other entities and more precise ratios keep the strict tolerance.
+                vals = (r["value"], loss["value"], expense["value"])
+                rounded_group = (company == "Storebrand" and scope == "group"
+                                 and all(type(v) in (int, float) and float(v).is_integer() for v in vals))
+                tolerance = 1.5 if rounded_group else 0.25
+                if abs(vals[0] - vals[1] - vals[2]) > tolerance + 1e-9:
+                    errors.append(f"{company} {year} Q{quarter} {scope} {period}: combined ratio mismatch")
         if metric=="insurance_revenue":
             prior=seen.get((company,year-1,quarter,scope,period,metric)) if type(year)==int else None
             if prior and prior["value"]>0:
