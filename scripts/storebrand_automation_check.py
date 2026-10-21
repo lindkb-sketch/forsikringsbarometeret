@@ -72,6 +72,11 @@ def test_pipeline(group=None, norway=None, group_url=None, norway_url=None, outp
         shutil.copyfile(ROOT/'data/financial_observations.json', target)
         incoming = parse_group(group, group_url) + parse_norway(norway, norway_url)
         baseline = json.loads(target.read_text())
+        # Isolated parser verification must not depend on whether GitHub's production
+        # dataset already contains Storebrand records (possibly from older reports).
+        # Production conflicts are NOT overwritten or silently accepted: this test
+        # only imports into a disposable copy without Storebrand observations.
+        baseline['observations'] = [r for r in baseline['observations'] if r.get('company') != 'Storebrand']
         merged, added, updated = integrate(baseline, incoming)
         repeated, second_added, second_updated = integrate(merged, incoming)
         first = {'parsed':len(incoming),'added':added,'updated_provenance':updated}
