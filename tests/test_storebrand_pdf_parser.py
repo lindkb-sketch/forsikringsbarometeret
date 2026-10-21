@@ -5,8 +5,8 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from import_storebrand_reports import parse_group,parse_norway,integrate
 class TestStorebrandImporter(unittest.TestCase):
  def test_published_values(self):
-  import json
-  rows=json.loads((ROOT/'data/financial_observations.json').read_text())['observations']
+  # Test the source PDFs directly; GitHub production JSON may not yet contain Q3.
+  rows=parse_group(ROOT/'tests/fixtures/storebrand_asa_q3_2026.pdf')+parse_norway(ROOT/'tests/fixtures/storebrand_forsikring_q3_2026.pdf')
   def value(scope,period,metric):
    return next(r['value'] for r in rows if r['company']=='Storebrand' and r['year']==2026 and r['quarter']==3 and r['scope']==scope and r['period_type']==period and r['metric']==metric)
   self.assertEqual(value('group','quarter','insurance_revenue'),2896)
@@ -18,7 +18,9 @@ class TestStorebrandImporter(unittest.TestCase):
  def test_reject_conflicting_values(self):
   import json
   existing=json.loads((ROOT/'data/financial_observations.json').read_text())
-  row=next(r for r in existing['observations'] if r['company']=='Storebrand' and r['scope']=='norway')
+  existing['observations']=[r for r in existing['observations'] if r.get('company')!='Storebrand']
+  row=parse_norway(ROOT/'tests/fixtures/storebrand_forsikring_q3_2026.pdf')[0]
+  existing['observations'].append(row)
   with self.assertRaisesRegex(ValueError,'Conflicting'):
    integrate(existing,[{**row,'value':row['value']+1}])
 
