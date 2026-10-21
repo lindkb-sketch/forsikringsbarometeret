@@ -1,0 +1,41 @@
+{
+  "source": "User-supplied image: Quarterly outline - Geography, Norwegian general insurance, DKkm",
+  "unit": "DKKm",
+  "quarters": {
+    "2025Q1": {
+      "insurance_revenue": 2059,
+      "insurance_service_result": 96,
+      "combined_ratio": 95.3
+    },
+    "2025Q2": {
+      "insurance_revenue": 2175,
+      "insurance_service_result": 389,
+      "combined_ratio": 82.1
+    },
+    "2025Q3": {
+      "insurance_revenue": 2222,
+      "insurance_service_result": 375,
+      "combined_ratio": 83.1
+    },
+    "2025Q4": {
+      "insurance_revenue": 2305,
+      "insurance_service_result": 297,
+      "combined_ratio": 87.1
+    },
+    "2026Q1": {
+      "insurance_revenue": 2310,
+      "insurance_service_result": 144,
+      "combined_ratio": 93.7
+    },
+    "2026Q2": {
+      "insurance_revenue": 2449,
+      "insurance_service_result": 556,
+      "combined_ratio": 77.3
+    },
+    "2026Q3": {
+      "insurance_revenue": 2513,
+      "insurance_service_result": 601,
+      "combined_ratio": 76.1
+    }
+  }
+}
