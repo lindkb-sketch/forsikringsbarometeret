@@ -47,13 +47,19 @@ def parse(path,company,year,quarter,workbook_url,report_pdf_url):
     # Match quarter and year in the SAME column. Official Tryg investor tables
     # place Q3 on row 5 and 2025 on row 6, not in one cell.
     quarter_pattern=re.compile(r'^(?:Q\s*0?'+str(quarter)+r'|0?'+str(quarter)+r'\s*Q|0?'+str(quarter)+r'\s*(?:quarter|kvartal))$',re.I)
+    combined_pattern=re.compile(r'^(?:Q\s*0?'+str(quarter)+r'|0?'+str(quarter)+r'\s*Q)\s*[-/ ]\s*'+str(year)+r'$',re.I)
     headers=[]
     for addr,value in cells.items():
-        if not isinstance(value,str) or not quarter_pattern.fullmatch(value.strip()):
+        if not isinstance(value,str):
+            continue
+        label=value.strip()
+        if combined_pattern.fullmatch(label):
+            headers.append((addr,rownum(addr)))
+            continue
+        if not quarter_pattern.fullmatch(label):
             continue
         c=column(addr);r=rownum(addr)
-        # Require a numeric or textual exact year in the same column,
-        # adjacent to the quarter label (either row order).
+        # Some issuer workbooks split quarter and year across adjacent rows.
         year_matches=[yr for yr in range(max(1,r-2),r+3)
                       if yr!=r and str(cells.get(f'{c}{yr}')).strip() in (str(year),str(float(year)))]
         if len(year_matches)==1:
