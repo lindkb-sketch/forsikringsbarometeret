@@ -18,14 +18,14 @@ class GjensidigePublisherTests(unittest.TestCase):
                          unit='percent' if 'ratio' in metric else 'MNOK',status='reported',
                          source_url=url,source_type='official_quarterly_report',source_page=2)
                     for metric,value in [('insurance_revenue',11004.1),('insurance_service_result',2288.1),
-                                         ('combined_ratio',79.2),('expense_ratio',11.7)]]
+                                         ('combined_ratio',79.2),('expense_ratio',11.7),('loss_ratio',67.5)]]
         with patch.object(g, 'discover_quarter', return_value='https://www.gjensidige.com/Q1-2026-report.pdf'), \
              patch.object(g, 'read_pdf', return_value=[(1,'Gjensidige Interim report 1st quarter 2026')]), \
              patch.object(g, 'parse_group_table', side_effect=fake_parse):
             merged, feed, summary = g.prepare(baseline,(1,),downloader=lambda _:b'%PDF-test')
-        self.assertEqual(summary['added'],4)
-        self.assertEqual(len(feed['observations']),4)
-        self.assertEqual(len(merged['observations']),4)
+        self.assertEqual(summary['added'],5)
+        self.assertEqual(len(feed['observations']),5)
+        self.assertEqual(len(merged['observations']),5)
     def test_reject_wrong_pdf_cover(self):
         with patch.object(g, 'discover_quarter', return_value='https://www.gjensidige.com/Q1-2026-report.pdf'), \
              patch.object(g, 'read_pdf', return_value=[(1,'Gjensidige Interim report Q4 2025')]):
