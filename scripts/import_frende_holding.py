@@ -86,7 +86,7 @@ def run():
     snapshot=json.loads(CANDIDATES.read_text())
     if not snapshot.get('complete'):raise ValueError('Issuer discovery incomplete')
     candidates=[r for r in snapshot.get('candidates',[]) if r.get('company')=='Frende'
-                and r.get('year',0)>=2025 and r.get('source_entity') in ('Frende Holding AS','Frende Holding')]
+                and r.get('year',0)>=2025 and r.get('source_format')=='publisher_html']
     existing=json.loads(DATA.read_text())
     seen={(r['year'],r['quarter'],r['period_type'],r['metric']) for r in existing['observations']
           if r['company']=='Frende' and r.get('scope')=='group'}
