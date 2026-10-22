@@ -79,6 +79,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',2025,3,'quarter',metric,vals[4],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
         result.append(obs('group',2026,3,'ytd',metric,vals[5],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
         result.append(obs('group',2025,3,'ytd',metric,vals[6],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+    for item in result:item['source_document_period']=f'Q{quarter} {year}'
     return result
 
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
@@ -130,6 +131,7 @@ def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     v=row(t,'Solvensmargin',2,number)[0]
     result.append(obs('norway',year,quarter,'quarter','solvency_ratio',v,11,url,sha,f'Solvency II margin at Q{quarter} {year} end','Storebrand Forsikring AS'))
     if quarter==4 and not any(r['metric']=='solvency_ratio' for r in result):raise ValueError('Missing Q4 solvency')
+    for item in result:item['source_document_period']=f'Q{quarter} {year}'
     return result
 
 
