@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Verify the actual public Pages deployment, not only generated local files."""
-import json, time, urllib.request
+import json, os, time, urllib.request
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -36,7 +36,8 @@ def load_public(name):
         return json.load(response)
 def check():
     local={n:json.loads((ROOT/'data'/n).read_text(encoding='utf-8')) for n in FILES}
-    for attempt in range(15):
+    attempts=int(os.environ.get('PAGES_VERIFY_ATTEMPTS','15'))
+    for attempt in range(attempts):
         try:
             public={n:load_public(n) for n in FILES}
             for n in FILES:
@@ -60,7 +61,7 @@ def check():
             print('Protector PDF-verified financial observations:',len(rows))
             return
         except Exception as exc:
-            print(f'Attempt {attempt+1}/15: {exc}',flush=True)
-            if attempt==14:raise
+            print(f'Attempt {attempt+1}/{attempts}: {exc}',flush=True)
+            if attempt==attempts-1:raise
             time.sleep(12)
 if __name__=='__main__':check()
