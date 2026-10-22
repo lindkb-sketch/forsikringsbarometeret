@@ -38,22 +38,23 @@ def row(text,label,count,parser):
     if len(hits)!=1: raise ValueError(f'Expected one {count}-column row for {label!r}; found {len(hits)}')
     return hits[0]
 
-def pages(path,expected):
+def pages(path,expected,year=2026):
     blob=Path(path).read_bytes()
     if not blob.startswith(b'%PDF-') or len(blob)>35_000_000:raise ValueError('Invalid PDF')
     with pdfplumber.open(path) as pdf:
         texts=[p.extract_text() or '' for p in pdf.pages]
-    if expected not in texts[0] or '2026' not in texts[0]:raise ValueError('Wrong Storebrand entity or year')
+    if expected not in texts[0] or str(year) not in texts[0]:raise ValueError('Wrong Storebrand entity or year')
     return texts,hashlib.sha256(blob).hexdigest()
 
-def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity):
+def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,document_year=2026,document_quarter=3):
     return dict(company='Storebrand',year=year,quarter=quarter,scope=scope,source_scope=scope,
         period_type=period,metric=metric,value=value,unit='percent' if metric.endswith('ratio') or metric=='return_on_equity' or metric=='solvency_ratio' else 'MNOK',
         status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',
-        source_sha256=sha,source_document_period='Q3 2026',source_entity=entity,source_definition=definition)
+        source_sha256=sha,source_document_period=f'Q{document_quarter} {document_year}',source_entity=entity,source_definition=definition)
 
-def parse_group(path,url=GROUP_ARCHIVE):
-    texts,sha=pages(path,'Storebrand Group')
+def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
+    texts,sha=pages(path,'Storebrand Group',year)
+    if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[7]
     if not ('Insurance – Results' in t and '2026' in t and 'Q3 Q2 Q1' in t):raise ValueError('Group insurance table header changed')
     metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
@@ -79,8 +80,9 @@ def parse_group(path,url=GROUP_ARCHIVE):
         result.append(obs('group',2025,3,'ytd',metric,vals[6],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
     return result
 
-def parse_norway(path,url=NORWAY_ARCHIVE):
-    texts,sha=pages(path,'Storebrand Forsikring')
+def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
+    texts,sha=pages(path,'Storebrand Forsikring',year)
+    if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
     if 'Totalresultat' not in t or '3.kvartal' not in t or '01.01 - 30.09' not in t:raise ValueError('Norway income statement header changed')
     result=[]
