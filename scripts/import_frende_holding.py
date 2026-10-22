@@ -134,6 +134,11 @@ def run():
                 if key not in seen:imported.append(row);seen.add(key)
         except Exception as exc:errors.append({'url':url,'reason':str(exc)})
     if not verified:raise ValueError('No verified Frende issuer tables: '+json.dumps(errors[:4]))
+    # The newest issuer-listed quarter must never be silently skipped if its
+    # layout changes. Older archives can have incompatible historical layouts.
+    latest=max((r['year'],r['quarter']) for r in candidates)
+    if list(latest) not in verified:
+        raise ValueError('Latest Frende Holding quarter could not be verified: '+str(latest)+'; '+json.dumps(errors[:5]))
     if imported:
         merged={**existing,'observations':existing['observations']+imported}
         check=audit(merged)
