@@ -14,7 +14,7 @@ from pathlib import Path
 
 from audit_financials import DATA, ROOT, audit
 from build_verified_feed import OUT, build
-from gjensidige_report_check import ARCHIVE, HOME, candidates, fetch
+from gjensidige_report_check import ARCHIVE, HOME, candidates, official_report_links, fetch
 from ingest_official_pdf import download, parse_highlights, read_pdf, merge
 import hashlib
 
@@ -26,7 +26,10 @@ def discover_quarter(quarter, year=2026, fetcher=fetch):
     failures = []
     for index in (ARCHIVE, HOME):
         try:
-            urls.update(candidates(fetcher(index), index, quarter, year))
+            page = fetcher(index)
+            urls.update(candidates(page, index, quarter, year))
+            if index == HOME:
+                urls.update(official_report_links(page, index, quarter, year))
         except Exception as exc:
             failures.append(f'{index}: {exc}')
     if len(failures) == 2:
