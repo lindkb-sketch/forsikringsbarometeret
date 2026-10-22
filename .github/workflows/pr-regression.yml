@@ -25,3 +25,20 @@ jobs:
         run: python scripts/audit_financials.py
       - name: Validate dashboard
         run: python tests/check_dashboard.py
+      - name: Live issuer discovery (no publication)
+        run: python scripts/discover_frende_fremtind.py
+      - name: Live Fremtind Holding PDF import and audit (no publication)
+        run: |
+          python scripts/import_fremtind_holding.py
+          python scripts/audit_financials.py
+      - name: Show verified Fremtind and Frende quarterly coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for company in ('Fremtind','Frende'):
+              for year in (2025,2026):
+                  periods=sorted({(r['quarter'],r['period_type']) for r in rows if r['company']==company and r['year']==year and r['metric']=='insurance_revenue'})
+                  print(f'{company} {year}: {periods}',flush=True)
+          PY
