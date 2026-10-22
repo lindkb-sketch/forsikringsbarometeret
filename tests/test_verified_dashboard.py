@@ -19,3 +19,17 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn('company-quick-link',s)
   self.assertIn('aria-label="Vis ${c}"',s)
   self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',s)
+
+ def test_verified_q3_values_reach_visible_comparison(self):
+  s=(ROOT/'index.html').read_text()
+  self.assertIn('id="verified-q3-dashboard-bridge"',s)
+  self.assertIn("const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost'",s)
+  self.assertIn("d[key]=fmt(r.value",s)
+  self.assertIn("show(current,true)",s)
+  self.assertIn("setInterval(syncVerified,300000)",s)
+ def test_calendar_is_present_on_dashboard(self):
+  s=(ROOT/'index.html').read_text()
+  self.assertIn("home=function(){const html=previous()",s)
+  self.assertIn("html+monCalendar()",s)
+  self.assertIn("data/live.json?ts=",s)
+  self.assertIn("mon-cal-countdown",s)
