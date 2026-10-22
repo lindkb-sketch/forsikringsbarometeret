@@ -72,6 +72,13 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
         totals={}
         cr_inputs={}
         for prefix,ws in sheets.items():
+            unit_header=str(ws.cell(3,1).value or '').lower()
+            if 'million' in unit_header:
+                monetary_divisor=1
+            elif unit_header.strip() in ('nok','norwegian kroner'):
+                monetary_divisor=1_000_000
+            else:
+                raise ValueError('Unrecognized source monetary unit in '+ws.title+': '+unit_header)
             header=str(ws.cell(3,col).value or '')
             expected=('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)
             if header.strip()!=expected:raise ValueError('Unexpected column heading: '+header+' != '+expected)
@@ -83,7 +90,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                 if len(rows.get(label,[]))!=1:raise ValueError('Ambiguous metric '+label+' in '+prefix)
                 cell=ws.cell(rows[label][0],col)
                 if type(cell.value) not in (int,float):raise ValueError('Non-numeric source cell '+cell.coordinate)
-                value=float(cell.value)*(100 if 'ratio' in metric else 1/1_000_000)
+                value=float(cell.value)*(100 if 'ratio' in metric else 1/monetary_divisor)
                 totals.setdefault(metric,[]).append((value,ws.title,cell.coordinate))
                 segments.append(dict(company='Gjensidige',year=year,quarter=quarter,
                     segment='PM Norge' if 'Private' in prefix else 'BM Norge',
@@ -102,7 +109,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                 cell=ws.cell(hits[0],col)
                 if type(cell.value) not in (int,float):
                     raise ValueError('Non-numeric '+kind+' at '+ws.title+'!'+cell.coordinate)
-                cr_inputs.setdefault(kind,[]).append((float(cell.value)/1_000_000,ws.title,cell.coordinate))
+                cr_inputs.setdefault(kind,[]).append((float(cell.value)/monetary_divisor,ws.title,cell.coordinate))
         for i in range(2):
             seg_revenue=totals['insurance_revenue'][i][0]
             if seg_revenue<=0:raise ValueError('Nonpositive segment revenue')
