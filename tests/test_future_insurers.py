@@ -16,7 +16,7 @@ class FutureTests(unittest.TestCase):
    'Combined ratio':[80.1,81.1,81.1,82.1],
    'Cost ratio':[11.7,12.0,11.8,12.1],
    'Loss ratio, net of reinsurance':[68.4,69.1,69.3,70.0]}
-  text='NOK millions\\n'+'\\n'.join(k+' '+' '.join(str(v) for v in vals) for k,vals in metrics.items())
+  text='NOK millions\n'+'\n'.join(k+' '+' '.join(str(v) for v in vals) for k,vals in metrics.items())
   return [(4,text)]
  def test_gjensidige_q3_and_q4_group_quarter_and_ytd(self):
   for q in (3,4):
