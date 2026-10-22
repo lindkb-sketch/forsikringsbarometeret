@@ -41,6 +41,7 @@ def candidates(company,markup):
    out.append(dict(company=company,document_url=url,status='requires_pdf_entity_and_period_verification',archive_url=base))
    continue
   out.append(dict(company=company,year=year,quarter=quarter,document_url=url,
+                  source_format=('publisher_html' if p.hostname=='frende.wrep.it' and not p.path.endswith('.pdf') else 'pdf'),
                   archive_url=base,status='requires_pdf_entity_and_period_verification'))
  return out
 def fetch(url):
