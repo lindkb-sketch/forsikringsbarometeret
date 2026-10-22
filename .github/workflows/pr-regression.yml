@@ -80,3 +80,31 @@ jobs:
                       if m:print('MATCH',term,clean[max(0,m.start()-120):m.end()+260])
               except Exception as exc:print('SECTION_ERROR',suffix,type(exc).__name__,str(exc))
           PY
+      - name: Inspect Frende KPI table row and column mapping
+        run: |
+          python - <<'PY'
+          import urllib.request
+          from html.parser import HTMLParser
+          class Tables(HTMLParser):
+              def __init__(self):super().__init__();self.depth=0;self.cell=None;self.row=[];self.rows=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='table':self.depth+=1
+                  if self.depth and tag=='tr':self.row=[]
+                  if self.depth and tag in ('th','td'):self.cell=[]
+              def handle_data(self,data):
+                  if self.cell is not None:self.cell.append(data)
+              def handle_endtag(self,tag):
+                  if self.depth and tag in ('th','td') and self.cell is not None:
+                      self.row.append(' '.join(' '.join(self.cell).split()));self.cell=None
+                  if self.depth and tag=='tr' and self.row:self.rows.append(self.row)
+                  if tag=='table':self.depth=max(0,self.depth-1)
+          for q in (1,2):
+              for sec in (6,7):
+                  url=f'https://frende.wrep.it/q{q}-2026-frende-holding-as/sec/{sec}'
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=20) as resp:raw=resp.read(500000).decode('utf-8','replace')
+                      t=Tables();t.feed(raw)
+                      print('REPORT',q,'SECTION',sec,'ROWS',len(t.rows))
+                      for row in t.rows[:28]:print('ROW',repr(row)[:450])
+                  except Exception as e:print('ERROR',q,sec,str(e))
+          PY
