@@ -23,9 +23,64 @@ class Anchors(html.parser.HTMLParser):
   if self.active is not None:self.active['label']+=data
  def handle_endtag(self,tag):
   if tag=='a' and self.active is not None:self.links.append(self.active);self.active=None
+
+class TableRows(html.parser.HTMLParser):
+ def __init__(self):
+  super().__init__();self.rows=[];self.row=None;self.cell=None;self.link=None
+ def handle_starttag(self,tag,attrs):
+  attrs=dict(attrs)
+  if tag=='tr':self.row=[]
+  elif tag in ('td','th') and self.row is not None:self.cell={'text':'','links':[]}
+  elif tag=='a' and self.cell is not None:self.link=attrs.get('href','')
+ def handle_data(self,data):
+  if self.cell is not None:self.cell['text']+=data
+ def handle_endtag(self,tag):
+  if tag=='a':self.link=None
+  elif tag in ('td','th') and self.cell is not None:
+   self.row.append(self.cell);self.cell=None
+  elif tag=='tr' and self.row is not None:
+   self.rows.append(self.row);self.row=None
+ def handle_startendtag(self,tag,attrs):pass
+
+# Retain links inside cells, including generic 'PDF' labels.
+def fremtind_rows(markup):
+ class Reader(html.parser.HTMLParser):
+  def __init__(self):super().__init__();self.rows=[];self.row=None;self.cell=None
+  def handle_starttag(self,tag,attrs):
+   if tag=='tr':self.row=[]
+   elif tag in ('td','th') and self.row is not None:self.cell={'text':'','links':[]}
+   elif tag=='a' and self.cell is not None:self.cell['links'].append(dict(attrs).get('href',''))
+  def handle_data(self,data):
+   if self.cell is not None:self.cell['text']+=data
+  def handle_endtag(self,tag):
+   if tag in ('td','th') and self.cell is not None:self.row.append(self.cell);self.cell=None
+   elif tag=='tr' and self.row is not None:self.rows.append(self.row);self.row=None
+ reader=Reader();reader.feed(markup)
+ output=[]
+ for row in reader.rows:
+  if not row:continue
+  title=' '.join(c['text'] for c in row[:2])
+  m=re.search(r'Fremtind Holding\\s+(20\\d{2})',title,re.I)
+  if not m:continue
+  year=int(m.group(1))
+  for quarter in range(1,5):
+   # Archive columns: entity, year, Q1, Q2, Q3, Q4, annual.
+   for offset in (2,):
+    pos=offset+quarter-1
+    if pos>=len(row):continue
+    for href in row[pos]['links']:
+     url=urllib.parse.urljoin(ARCHIVES['Fremtind'],href)
+     parsed=urllib.parse.urlparse(url)
+     if parsed.scheme=='https' and parsed.hostname in ALLOWED['Fremtind'] and parsed.path.lower().endswith('.pdf'):
+      output.append(dict(company='Fremtind',year=year,quarter=quarter,source_entity='Fremtind Holding',document_url=url,archive_url=ARCHIVES['Fremtind'],status='requires_pdf_entity_and_period_verification'))
+ return output
+
 def candidates(company,markup):
  parser=Anchors();parser.feed(markup)
  base=ARCHIVES[company];out=[]
+ if company=='Fremtind':
+  rows=fremtind_rows(markup)
+  if rows:return rows
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
