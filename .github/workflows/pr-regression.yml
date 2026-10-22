@@ -40,3 +40,21 @@ jobs:
                   periods=sorted({(r['quarter'],r['period_type']) for r in rows if r['company']==company and r['year']==year and r['metric']=='insurance_revenue'})
                   print(f'{company} {year}: {periods}',flush=True)
           PY
+      - name: Inspect Frende publisher structure (no financial publication)
+        run: |
+          python - <<'PY'
+          import urllib.request,re,html
+          from html.parser import HTMLParser
+          url='https://frende.wrep.it/q2-2026-frende-holding-as'
+          try:
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+              with urllib.request.urlopen(req,timeout=25) as response:
+                  content=response.read(800000).decode('utf-8','replace')
+                  print('FINAL_URL',response.geturl(),'HTML_BYTES',len(content))
+              for pattern in (r'<title[^>]*>(.*?)</title>',r'<iframe[^>]+>',r'<embed[^>]+>',r'<a[^>]+href=["\\\']([^"\\\']+)',r'.{0,120}(?:Forsikringsinntekter|forsikringsinntekter|Skadeprosent|combined ratio|pdf).{0,180}'):
+                  matches=re.findall(pattern,content,re.I|re.S)
+                  print('PATTERN',pattern,'MATCHES',len(matches))
+                  for match in matches[:12]:print('EXCERPT',html.unescape(str(match))[:350].replace('\\n',' '))
+          except Exception as exc:
+              print('FETCH_ERROR',type(exc).__name__,str(exc))
+          PY
