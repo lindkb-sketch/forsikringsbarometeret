@@ -66,14 +66,30 @@ def candidates(company,markup):
  if company=='Fremtind':
   rows=fremtind_rows(markup)
   if rows:return rows
-  # Official issuer archive is also rendered as non-table lists. Preserve
-  # explicitly verified Q1/Q2 2026 links while requiring PDF verification.
-  approved={
-   1:'https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf',
-   2:'https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf',
-  }
-  archive_links={urllib.parse.urljoin(base,l['href']) for l in parser.links}
-  return [dict(company='Fremtind',year=2026,quarter=q,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification') for q,url in approved.items() if url in archive_links]
+  # The live archive may render each company as a list rather than <tr>.
+  # Keep only links physically inside the Holding section, not every CDN PDF.
+  class Flatten(html.parser.HTMLParser):
+   def __init__(self):super().__init__();self.parts=[];self.urls=[]
+   def handle_starttag(self,tag,attrs):
+    if tag=='a':
+     href=dict(attrs).get('href','')
+     self.parts.append(' __REPORT_LINK_'+str(len(self.urls))+'__ ')
+     self.urls.append(urllib.parse.urljoin(base,href))
+   def handle_data(self,data):self.parts.append(data)
+  flat=Flatten();flat.feed(markup)
+  plain=' '.join(' '.join(flat.parts).split())
+  headings=list(re.finditer(r'(?:Fremtind Holding|Fremtind Forsikring|Fremtind Livsforsikring AS|APM - Fremtind Holding|APM - Fremtind Forsikring)\\s+(20\\d{2})',plain,re.I))
+  result=[]
+  for i,h in enumerate(headings):
+   if not re.match(r'Fremtind Holding\\s+',h.group(),re.I):continue
+   year=int(h.group(1))
+   section=plain[h.end():headings[i+1].start() if i+1<len(headings) else len(plain)]
+   for marker in re.findall(r'__REPORT_LINK_(\\d+)__',section):
+    url=flat.urls[int(marker)]
+    parsed=urllib.parse.urlparse(url)
+    if parsed.scheme=='https' and parsed.hostname in ALLOWED['Fremtind'] and parsed.path.lower().endswith('.pdf'):
+     result.append(dict(company='Fremtind',year=year,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification'))
+  return result
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
