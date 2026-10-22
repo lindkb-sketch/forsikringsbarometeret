@@ -132,19 +132,24 @@ def extract(blob, url):
         # the numeric column as the isolated quarter rather than YTD.
         # Q2-Q4 headline figures are cumulative (YTD), not isolated quarters.
         # Store them as YTD; derive standalone quarters only from adjacent YTDs.
-        if abs(rows["combined_ratio"][0] - rows["loss_ratio"][0] - rows["expense_ratio"][0]) > 0.25:
+        if abs(rows["combined_ratio"][0][0] - rows["loss_ratio"][0][0] - rows["expense_ratio"][0][0]) > 0.25:
             raise ValueError("Combined ratio reconciliation failed")
         digest = hashlib.sha256(blob).hexdigest()
+        # First numeric column is the reported standalone quarter, including Q2/Q3.
+        # Third numeric column is cumulative YTD for Q2/Q3.
+        selected = {metric: (values[0], unit, label) for metric, (values, unit, label) in rows.items()}
+        if q > 1:
+            selected.update({})
         return [{
             "company": "Fremtind", "year": year, "quarter": q,
-            "scope": "group", "period_type": "ytd" if q > 1 else "quarter",
+            "scope": "group", "period_type": "quarter",
             "metric": metric, "value": value, "unit": unit,
             "status": "reported", "source_type": "official_quarterly_report",
             "source_url": url, "source_page": page_index + 1,
             "source_entity": "Fremtind Holding konsern",
             "source_document_period": f"Q{q} {year}",
             "source_definition": label, "source_sha256": digest,
-        } for metric, (value, unit, label) in rows.items()]
+        } for metric, (value, unit, label) in selected.items()]
 
 def run():
     candidates = json.loads(CANDIDATES.read_text())
