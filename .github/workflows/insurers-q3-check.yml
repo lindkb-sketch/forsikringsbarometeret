@@ -1,0 +1,30 @@
+name: Verify Gjensidige Storebrand Protector Q3 and future-quarter readiness
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_q3_live_coverage.py'
+      - '.github/workflows/insurers-q3-check.yml'
+  schedule:
+    - cron: '17 8,14 * * *'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-reports.txt
+      - name: Test Storebrand Gjensidige Protector parser and reporting workflows
+        run: |
+          python -m unittest discover -s tests -p 'test_company_parsers.py' -v
+          python -m unittest discover -s tests -p 'test_storebrand_pdf_parser.py' -v
+          python -m unittest discover -s tests -p 'test_storebrand_automation.py' -v
+          python -m unittest discover -s tests -p 'test_gjensidige_publish.py' -v
+          python -m unittest discover -s tests -p 'test_protector_quarters.py' -v
+      - name: Verify official-source financial observations and live Q3 publication
+        run: python -m unittest discover -s tests -p 'test_q3_live_coverage.py' -v
