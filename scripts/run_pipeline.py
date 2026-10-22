@@ -12,6 +12,10 @@ def run(offline=False):
   if attempt.returncode:
    print('WARNING: Official geographical XLSX unavailable; no workbook values imported; existing audited records preserved.',flush=True)
  if not offline:
+  print('RUN discover_frende_fremtind.py (refresh issuer-linked report URLs)',flush=True)
+  discovery=subprocess.run([sys.executable,str(ROOT/'scripts'/'discover_frende_fremtind.py')],cwd=ROOT)
+  if discovery.returncode:
+   print('WARNING: Issuer discovery unavailable; importer uses last verified archive snapshot.',flush=True)
   print('RUN import_fremtind_holding.py (verified official issuer PDFs only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_fremtind_holding.py')],cwd=ROOT,check=True)
  for name in steps:
