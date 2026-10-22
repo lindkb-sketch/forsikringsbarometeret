@@ -120,7 +120,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                     label=re.sub(r'[¹²³⁴⁵⁶⁷⁸⁹⁰]+','',str(ws.cell(row,1).value or '')).strip()
                     if label in aliases:hits.append(row)
                 if len(hits)!=1:
-                    raise ValueError('Missing/ambiguous '+kind+' monetary row in '+ws.title)
+                    raise ValueError('Missing/ambiguous '+kind+' monetary row in '+ws.title+' Q'+str(quarter)+' '+period+'; labels='+repr([str(ws.cell(row,1).value) for row in range(header_row+1,min(section_end,header_row+27))]))
                 cell=ws.cell(hits[0],col)
                 if type(cell.value) not in (int,float):
                     raise ValueError('Non-numeric '+kind+' at '+ws.title+'!'+cell.coordinate)
