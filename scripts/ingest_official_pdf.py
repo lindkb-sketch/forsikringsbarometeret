@@ -30,7 +30,7 @@ def parse_highlights(pages,company,year,quarter,url,sha):
  for page_no,text in pages:
   if 'Group highlights' not in text and 'GROUP HIGHLIGHTS' not in text:continue
   # Only bounded heading sections. Do not confuse quarter with year-to-date.
-  for period,pattern in [('quarter',rf'(?im)^(?:{["First", "Second", "Third", "Fourth"][quarter-1]}|{quarter}(?:st|nd|rd|th)) quarter\s*
+  for period,pattern in [('quarter',rf'(?im)^(?:{["First", "Second", "Third", "Fourth"][quarter-1]}|{quarter}(?:st|nd|rd|th)) quarter\s*$'),('ytd',r'(?im)^Year-to-date\s*$')]:
    heading=re.search(pattern,text)
    if not heading:continue
    tail=text[heading.end():]
