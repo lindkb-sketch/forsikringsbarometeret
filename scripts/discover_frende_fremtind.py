@@ -59,8 +59,8 @@ def fremtind_rows(markup):
  output=[]
  for row in reader.rows:
   if not row:continue
-  title=' '.join(c['text'] for c in row[:2])
-  m=re.search(r'Fremtind Holding\\s+(20\\d{2})',title,re.I)
+  title=' '.join(c['text'] for c in row[:2]).replace('\\xa0',' ')
+  m=re.search(r'Fremtind Holding\s+(20\d{2})',title,re.I)
   if not m:continue
   year=int(m.group(1))
   for quarter in range(1,5):
@@ -81,6 +81,7 @@ def candidates(company,markup):
  if company=='Fremtind':
   rows=fremtind_rows(markup)
   if rows:return rows
+  raise ValueError('Fremtind archive table has no verifiable Holding PDF rows; refusing unscoped PDFs')
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
