@@ -30,6 +30,14 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   self.assertEqual([r['document_url'] for r in rows],['https://cdn.sanity.io/files/abc/holding.pdf'])
   self.assertEqual(rows[0]['year'],2026)
   self.assertNotIn('quarter',rows[0])
+ def test_mixed_table_and_new_holding_section(self):
+  html=('''<table><tr><td>Fremtind Holding 2026</td><td><a href="https://cdn.sanity.io/files/abc/q1.pdf">PDF</a></td></tr></table>'''
+        ' Fremtind Holding 2026 <a href="https://cdn.sanity.io/files/abc/q3.pdf">PDF</a>'
+        ' Fremtind Forsikring 2026 <a href="https://cdn.sanity.io/files/abc/not-holding.pdf">PDF</a>')
+  rows=candidates('Fremtind',html)
+  urls={r['document_url'] for r in rows}
+  self.assertEqual(urls,{'https://cdn.sanity.io/files/abc/q1.pdf','https://cdn.sanity.io/files/abc/q3.pdf'})
+  self.assertTrue(all(r['source_entity']=='Fremtind Holding' for r in rows))
  def test_partial_failure_never_marks_complete(self):
   def fetch(url):
    if 'frende.no' in url:raise OSError('offline')
