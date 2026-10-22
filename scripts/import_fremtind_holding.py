@@ -110,6 +110,11 @@ def extract(blob, url):
                     break
         if len(rows) != 5:
             raise ValueError("Insufficient unambiguous Holding metrics: " + repr(sorted(rows)))
+        # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
+        # these as standalone quarters until the table explicitly identifies
+        # the numeric column as the isolated quarter rather than YTD.
+        if q > 1:
+            raise ValueError("Quarter versus YTD column not independently verified; publication blocked")
         if abs(rows["combined_ratio"][0] - rows["loss_ratio"][0] - rows["expense_ratio"][0]) > 0.25:
             raise ValueError("Combined ratio reconciliation failed")
         digest = hashlib.sha256(blob).hexdigest()
