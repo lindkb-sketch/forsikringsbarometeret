@@ -28,4 +28,19 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   result=scan(fetch)
   self.assertFalse(result['complete'])
   self.assertFalse(result['publication_authorized'])
+class CoverageNeverEquatesDiscoveryWithImport(unittest.TestCase):
+ def test_discovered_reports_not_automatically_complete(self):
+  import json,tempfile
+  from report_coverage import build
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);(root/'data').mkdir()
+   (root/'data/financial_observations.json').write_text(json.dumps({'observations':[]}))
+   (root/'data/report_sources.json').write_text(json.dumps({'sources':[]}))
+   (root/'data/frende_fremtind_candidates.json').write_text(json.dumps({'complete':True,'candidates':[{'company':'Frende'},{'company':'Fremtind'}]}))
+   coverage=build(root)
+   self.assertFalse(coverage['all_seven_automatic'])
+   for company in ('Frende','Fremtind'):
+    row=next(x for x in coverage['companies'] if x['company']==company)
+    self.assertEqual(row['official_report_candidates'],1)
+    self.assertFalse(row['automatic_complete'])
 if __name__=='__main__':unittest.main()
