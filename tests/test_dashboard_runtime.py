@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class DashboardRuntimeTests(unittest.TestCase):
  def test_all_inline_scripts_parse(self):
   html=(ROOT/'index.html').read_text()
-  scripts=re.findall(r'<script\\b[^>]*>([\\s\\S]*?)</script>',html,flags=re.I)
+  scripts=re.findall(r'<script\b[^>]*>([\s\S]*?)</script>',html,flags=re.I)
   self.assertGreater(len(scripts),5)
   for i,script in enumerate(scripts):
    if not script.strip():continue
