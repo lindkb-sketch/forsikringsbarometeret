@@ -17,3 +17,6 @@ class Tests(unittest.TestCase):
         self.assertEqual(mod.build(config, locks)['companies']['Storebrand']['next_event']['period'], 'Q4 2026')
     def test_bad_date(self):
         with self.assertRaises(ValueError): mod.validate_events([{'period': 'Q4 2026', 'date': '2027-02-30'}])
+    def test_past_unlocked_q3_does_not_hide_future_q4(self):
+        config={'Storebrand':{'calendar_url':'https://example.com','events':[{'period':'Q3 2026','date':'2026-10-21'},{'period':'Q4 2026','date':'2027-02-10'}]}}
+        self.assertEqual(mod.build(config,{})['companies']['Storebrand']['next_event']['period'],'Q4 2026')
