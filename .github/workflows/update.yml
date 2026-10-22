@@ -90,6 +90,12 @@ jobs:
               sleep 5
             done
           fi
+      - name: Refresh deployment tree from published main
+        run: |
+          # The workflow may have started before newer UI commits. Deploy the
+          # actual latest main HTML and the exact JSON committed above.
+          git fetch origin main
+          git reset --hard origin/main
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
