@@ -10,3 +10,12 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn('id="verified-financial-panel"',s)
   self.assertIn("data/verified_financial_feed.json",s)
   self.assertIn("r.source_page",s)
+
+ def test_all_seven_are_visible_as_clickable_company_selectors(self):
+  s=(ROOT/'index.html').read_text()
+  self.assertIn('function companyQuickNav()',s)
+  self.assertIn("const names=['Fremtind',...companies]",s)
+  self.assertIn("'Protector','Storebrand'",s)
+  self.assertIn('company-quick-link',s)
+  self.assertIn('aria-label=\\"Vis ${c}\\"',s)
+  self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',s)
