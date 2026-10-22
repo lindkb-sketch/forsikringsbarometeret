@@ -90,15 +90,26 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                     period_type=period,metric=metric,value=round(value,6),
                     unit='percent' if 'ratio' in metric else 'MNOK',source_url=url,
                     source_sheet=ws.title,source_cell=cell.coordinate))
-            # Require separately identified signed monetary amounts for both segments.
+            # Compare each segment's reconstructed net CR with its standalone
+            # published combined ratio before aggregating Norway.
             for kind,aliases in CR_AMOUNT_LABELS.items():
-                hits=[(label,locations) for label,locations in rows.items() if label in aliases]
-                if len(hits)!=1 or len(hits[0][1])!=1:
+                hits=[]
+                for row in range(1,ws.max_row+1):
+                    label=re.sub(r'[¹²³⁴⁵⁶⁷⁸⁹⁰]+','',str(ws.cell(row,1).value or '')).strip()
+                    if label in aliases:hits.append(row)
+                if len(hits)!=1:
                     raise ValueError('Missing/ambiguous '+kind+' monetary row in '+ws.title)
-                cell=ws.cell(hits[0][1][0],col)
+                cell=ws.cell(hits[0],col)
                 if type(cell.value) not in (int,float):
                     raise ValueError('Non-numeric '+kind+' at '+ws.title+'!'+cell.coordinate)
                 cr_inputs.setdefault(kind,[]).append((float(cell.value)/1_000_000,ws.title,cell.coordinate))
+        for i in range(2):
+            seg_revenue=totals['insurance_revenue'][i][0]
+            if seg_revenue<=0:raise ValueError('Nonpositive segment revenue')
+            seg_cr=100*(-cr_inputs['insurance_costs'][i][0]-cr_inputs['reinsurance_net'][i][0])/seg_revenue
+            reported_cr=totals['combined_ratio'][i][0]
+            if abs(seg_cr-reported_cr)>0.15:
+                raise ValueError(f'Standalone PM/BM net CR mismatch in {totals["combined_ratio"][i][1]}: reconstructed={seg_cr:.4f}, reported={reported_cr:.4f}')
         revenue=sum(x[0] for x in totals['insurance_revenue'])
         service=sum(x[0] for x in totals['insurance_service_result'])
         if revenue <= 0:
