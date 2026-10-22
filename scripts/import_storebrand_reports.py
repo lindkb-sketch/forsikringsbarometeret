@@ -55,9 +55,9 @@ def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,do
 def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Group',year)
     if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
-    if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
+    if quarter not in (3,4) or year < 2026: raise ValueError('Unsupported report period')
     t=texts[7]
-    if not ('Insurance – Results' in t and '2026' in t and 'Q3 Q2 Q1' in t):raise ValueError('Group insurance table header changed')
+    if not ('Insurance – Results' in t and str(year) in t and re.search(r'Q'+str(quarter)+r'\\s+Q'+str(quarter-1)+r'\\s+Q'+str(quarter-2),t)):raise ValueError('Group insurance table header changed')
     metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
              'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
              'expense_ratio':('Cost ratio','Insurance segment cost ratio'),
@@ -65,10 +65,10 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     result=[]
     for metric,(label,definition) in metrics.items():
         vals=row(t,label,8,english)
-        for q,v in ((3,vals[0]),(2,vals[1]),(1,vals[2])):
-            result.append(obs('group',2026,q,'quarter',metric,v,8,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',2025,3,'quarter',metric,vals[4],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',2026,3,'ytd',metric,vals[5],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        for q,v in ((quarter,vals[0]),(quarter-1,vals[1]),(quarter-2,vals[2])):
+            result.append(obs('group',year,q,'quarter',metric,v,8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',year,quarter,'ytd',metric,vals[5],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
         result.append(obs('group',2025,3,'ytd',metric,vals[6],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
     k=texts[4]
     if 'Group - Key figures' not in k or '2026' not in k:raise ValueError('Group key figures heading changed')
@@ -86,29 +86,29 @@ def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
-    if 'Totalresultat' not in t or '3.kvartal' not in t or '01.01 - 30.09' not in t:raise ValueError('Norway income statement header changed')
+    if 'Totalresultat' not in t or not re.search(r'\\b'+str(quarter)+r'\\.\\s*kvartal',t,re.I) or not ('01.01 - '+('30.09' if quarter==3 else '31.12')) in t:raise ValueError('Norway income statement header changed')
     result=[]
     for metric,label,definition in [
         ('insurance_revenue','Forsikringsinntekter','IFRS 17 forsikringsinntekter'),
         ('insurance_service_result','Totalt forsikringsresultat','IFRS 17 totalt forsikringsresultat etter reassuranse')]:
         vals=row(t,label,5,number)
-        for y,p,v in [(2026,'quarter',vals[0]),(2025,'quarter',vals[1]),(2026,'ytd',vals[2]),(2025,'ytd',vals[3])]:
-            result.append(obs('norway',y,3,p,metric,v,4,url,sha,definition,'Storebrand Forsikring AS'))
+        for y,p,v in [(year,'quarter',vals[0]),(year-1,'quarter',vals[1]),(year,'ytd',vals[2]),(year-1,'ytd',vals[3])]:
+            result.append(obs('norway',y,quarter,p,metric,v,4,url,sha,definition,'Storebrand Forsikring AS'))
     # Storebrand Forsikring AS does not report an expense ratio. Never infer it
     # from the published claims ratio: definitions may differ.
     costs=row(t,'Forsikringskostnader',5,number)
     reinsurance=row(t,'Netto resultat fra reassuransekontrakter',5,number)
     revenue=row(t,'Forsikringsinntekter',5,number)
     insurance_result=row(t,'Totalt forsikringsresultat',5,number)
-    for year,period,col in ((2026,'quarter',0),(2025,'quarter',1),(2026,'ytd',2),(2025,'ytd',3)):
+    for obs_year,period,col in ((year,'quarter',0),(year-1,'quarter',1),(year,'ytd',2),(year-1,'ytd',3)):
         if revenue[col] <= 0: raise ValueError('Insurance revenue must be positive for combined ratio')
         # Report expenses are negative; positive reinsurance result reduces net cost.
         # CR = -(insurance expenses + net reinsurance result) / revenue * 100.
         calculated=round(-(costs[col]+reinsurance[col])/revenue[col]*100, 4)
         check=round((1-insurance_result[col]/revenue[col])*100, 4)
         if abs(calculated-check)>0.03:
-            raise ValueError(f'Combined ratio does not reconcile with insurance result: {year} {period}')
-        r=obs('norway',year,3,period,'combined_ratio',calculated,4,url,sha,
+            raise ValueError(f'Combined ratio does not reconcile with insurance result: {obs_year} {period}')
+        r=obs('norway',obs_year,quarter,period,'combined_ratio',calculated,4,url,sha,
               'Calculated: -(insurance expenses + net reinsurance result) / insurance revenue * 100; IFRS 17',
               'Storebrand Forsikring AS')
         r['status']='calculated'
@@ -120,15 +120,16 @@ def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     prose=texts[1]
     if not re.search(r'Netto skadeprosent inkludert reassuranse endte på 60 prosent.*?3\.\s*kvartal og 62 prosent.*?hittil i år',prose,re.I|re.S):
         raise ValueError('Reported claims ratios changed or could not be verified')
-    for period,value in (('quarter',60.0),('ytd',62.0)):
-        result.append(obs('norway',2026,3,period,'loss_ratio',value,2,url,sha,
+    for period,value in ((('quarter',60.0),('ytd',62.0)) if quarter==3 else ()):
+        result.append(obs('norway',year,quarter,period,'loss_ratio',value,2,url,sha,
                           'Netto skadeprosent inkludert reassuranse; as reported',
                           'Storebrand Forsikring AS'))
     # Solvency is an as-of-date balance-sheet ratio, not a quarterly flow.
     t=texts[10]
     if 'Solvenskapitalkrav og -margin' not in t:raise ValueError('Norway solvency table heading changed')
     v=row(t,'Solvensmargin',2,number)[0]
-    result.append(obs('norway',2026,3,'quarter','solvency_ratio',v,11,url,sha,'Solvency II margin at 30 September 2026','Storebrand Forsikring AS'))
+    result.append(obs('norway',year,quarter,'quarter','solvency_ratio',v,11,url,sha,f'Solvency II margin at Q{quarter} {year} end','Storebrand Forsikring AS'))
+    if quarter==4 and not any(r['metric']=='solvency_ratio' for r in result):raise ValueError('Missing Q4 solvency')
     return result
 
 
