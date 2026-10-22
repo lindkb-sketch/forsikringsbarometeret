@@ -65,14 +65,20 @@ def run(pairs=None):
         wb={'workbooks':[{'company':'Tryg','year':year,'quarter':quarter,
                           'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
                           'approved':True}]}
-        # Existing audited Norway observations may have different provenance metadata;
-        # preserve them only when the workbook independently confirms the same value.
-        try:
-            existing,_,_=prepare(wb,existing)
-        except ValueError as exc:
-            if 'Existing value conflicts with newly parsed workbook' not in str(exc):raise
-            print('TRYG_WORKBOOK_PROVENANCE_CONFLICT',year,quarter,str(exc),flush=True)
-            raise
+        # Re-import registered observations from the exact same issuer workbook;
+        # the live extraction replaces historical metadata only after full audit.
+        baseline=existing
+        existing={**existing,'observations':[r for r in existing['observations']
+                  if not (r['company']=='Tryg' and r['scope']=='norway' and
+                          r['year']==year and r['quarter']==quarter)]}
+        existing,_,_=prepare(wb,existing)
+        previous={(r['period_type'],r['metric']):r['value'] for r in baseline['observations']
+                  if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
+        imported={(r['period_type'],r['metric']):r['value'] for r in existing['observations']
+                  if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
+        for key,val in previous.items():
+            if key not in imported or abs(imported[key]-val)>0.001:
+                raise ValueError('Tryg Norway XLSX conflicts with previously audited figure: '+str((year,quarter,key,val,imported.get(key))))
         print('TRYG_VERIFIED',year,quarter,'group',len(group),'norway',
               len([r for r in existing['observations'] if r['company']=='Tryg'
                    and r['scope']=='norway' and r['year']==year and r['quarter']==quarter]))
