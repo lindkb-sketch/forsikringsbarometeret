@@ -7,6 +7,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/gjensidige-publish.yml'
+      - 'scripts/gjensidige_publish.py'
+      - 'scripts/gjensidige_report_check.py'
+      - 'scripts/ingest_official_pdf.py'
+      - 'tests/test_gjensidige*.py'
 permissions:
   contents: write
   pages: write
