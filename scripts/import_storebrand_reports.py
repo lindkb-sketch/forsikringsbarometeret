@@ -55,25 +55,30 @@ def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,do
 def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Group',year)
     if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
-    if quarter not in (3,4) or year < 2026: raise ValueError('Unsupported report period')
-    t=texts[7]
-    if not ('Insurance – Results' in t and str(year) in t and (('Q3 Q2 Q1' in t) if quarter==3 else re.search(r'Q4\s+Q3\s+Q2',t))):raise ValueError('Group insurance table header changed')
+    if quarter not in (3,4) or year < 2025: raise ValueError('Unsupported report period')
+    candidates=[(i,text) for i,text in enumerate(texts) if 'Insurance – Results' in text]
+    if len(candidates)!=1:raise ValueError('Expected exactly one Group insurance results table')
+    insurance_page,t=candidates[0]
+    if not (str(year) in t and (('Q3 Q2 Q1' in t) if quarter==3 else re.search(r'Q4\s+Q3\s+Q2\s+Q1',t))):raise ValueError('Group insurance table header changed')
+    column_count=8 if quarter==3 else 7
     metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
              'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
              'expense_ratio':('Cost ratio','Insurance segment cost ratio'),
              'combined_ratio':('Combined ratio','Insurance segment combined ratio')}
     result=[]
     for metric,(label,definition) in metrics.items():
-        vals=row(t,label,8,english)
+        vals=row(t,label,column_count,english)
         for q,v in ((quarter,vals[0]),(quarter-1,vals[1]),(quarter-2,vals[2])):
-            result.append(obs('group',year,q,'quarter',metric,v,8,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',year,quarter,'ytd',metric,vals[5],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+            result.append(obs('group',year,q,'quarter',metric,v,insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
         result.append(obs('group',2025,3,'ytd',metric,vals[6],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
-    k=texts[4]
-    if 'Group - Key figures' not in k or '2026' not in k:raise ValueError('Group key figures heading changed')
+    key_candidates=[(i,text) for i,text in enumerate(texts) if 'Group - Key figures' in text]
+    if len(key_candidates)!=1:raise ValueError('Expected exactly one Group key figures table')
+    key_page,k=key_candidates[0]
+    if str(year) not in k:raise ValueError('Group key figures heading changed')
     for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
-        vals=row(k,label,8,english)
+        vals=row(k,label,column_count,english)
         for q,v in ((3,vals[0]),(2,vals[1]),(1,vals[2])):
             result.append(obs('group',2026,q,'quarter',metric,v,5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
         result.append(obs('group',2025,3,'quarter',metric,vals[4],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
