@@ -32,7 +32,7 @@ def read_pdf(url):
     if parsed.scheme != "https" or parsed.hostname != "cdn.sanity.io" or not parsed.path.lower().endswith(".pdf"):
         raise ValueError("PDF not on approved official archive CDN")
     req = urllib.request.Request(url, headers={"User-Agent": "Forsikringsbarometeret/1.0"})
-    with urllib.request.urlopen(req, timeout=35) as response:
+    with urllib.request.urlopen(req, timeout=12) as response:
         if urllib.parse.urlparse(response.geturl()).hostname != "cdn.sanity.io":
             raise ValueError("PDF redirected outside trusted CDN")
         blob = response.read(20_000_001)
@@ -140,7 +140,7 @@ def run():
     imported = []
     errors = []
     # Limit external downloads; only issuer-linked PDFs, never synthetic values.
-    for url in links[:18]:
+    for url in links[:12]:
         try:
             rows = extract(read_pdf(url), url)
             key = (rows[0]["year"], rows[0]["quarter"])
