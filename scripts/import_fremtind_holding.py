@@ -93,7 +93,7 @@ def extract(blob, url):
                     if len(best) == 1 or best[0][0] < best[1][0]:
                         rows[metric] = (best[0][1][0], unit, label)
         if len(rows) != 5:
-            raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)))
+            raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
         # these as standalone quarters until the table explicitly identifies
         # the numeric column as the isolated quarter rather than YTD.
@@ -134,7 +134,7 @@ def run():
                 continue
             imported.extend(r for r in rows if (r["year"], r["quarter"], r["period_type"], r["metric"]) not in existing_keys)
         except Exception as exc:
-            errors.append({"url": url, "reason": str(exc)[:200]})
+            errors.append({"url": url, "reason": str(exc)[:1500]})
     # Q1 YTD equals Q1 standalone, by definition.
     allrows = existing["observations"] + imported
     for r in list(allrows):
