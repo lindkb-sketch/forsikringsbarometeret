@@ -45,3 +45,12 @@ class DashboardRuntimeTests(unittest.TestCase):
    self.assertTrue(q3,company)
   self.assertIn("let period='Q3'",html)
   self.assertIn("if(period==='Q3'){const d=",html)
+
+ def test_q3_revenue_previous_year_profitability_and_brief_are_wired(self):
+  html=(ROOT/'index.html').read_text()
+  for expected in ("d['revenue'+suffix]=fmt(r.value)","d[key+suffix]=fmt(r.value","profitabilityVerified[c]['Q3 2026']=[loss.value,cost.value,ratio.value]","Forsikringsinntekter · Q3","Q3 2025: ikke verifisert","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
+   self.assertIn(expected,html)
+  import json
+  feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
+  for company in ('Protector','Storebrand'):
+   self.assertTrue(any(r['company']==company and r['year']==2026 and r['quarter']==3 and r['metric']=='insurance_revenue' and r['scope']=='group' for r in feed['observations']))
