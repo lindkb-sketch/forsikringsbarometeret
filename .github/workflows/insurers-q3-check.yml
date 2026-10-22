@@ -6,6 +6,8 @@ on:
     paths:
       - 'tests/test_q3_live_coverage.py'
       - 'tests/test_future_insurers.py'
+      - 'tests/test_storebrand_real_q4.py'
+      - 'scripts/import_storebrand_reports.py'
       - '.github/workflows/insurers-q3-check.yml'
   schedule:
     - cron: '17 8,14 * * *'
@@ -29,5 +31,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_protector_quarters.py' -v
       - name: Test future Gjensidige Q3 Q4 and Protector Q4 next-year contracts
         run: python -m unittest discover -s tests -p 'test_future_insurers.py' -v
+      - name: Test real official Storebrand ASA Q4 2025 PDF and golden figures
+        run: python -m unittest discover -s tests -p 'test_storebrand_real_q4.py' -v
       - name: Verify official-source financial observations and live Q3 publication
         run: python -m unittest discover -s tests -p 'test_q3_live_coverage.py' -v
