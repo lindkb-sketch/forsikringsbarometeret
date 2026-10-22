@@ -17,5 +17,5 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn("const names=['Fremtind',...companies]",s)
   self.assertIn("'Protector','Storebrand'",s)
   self.assertIn('company-quick-link',s)
-  self.assertIn('aria-label=\\"Vis ${c}\\"',s)
+  self.assertIn('aria-label="Vis ${c}"',s)
   self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',s)
