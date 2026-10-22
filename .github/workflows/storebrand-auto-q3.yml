@@ -146,7 +146,7 @@ jobs:
                       assert response.status == 200
                       actual = json.load(response)
                   got = {key(r): r['value'] for r in actual['observations']
-                         if r['company'] == 'Storebrand' and r['year'] == 2026 and r['quarter'] == 3}
+                         if r['company'] == 'Storebrand' and r['year'] == 2026}
                   if got == wanted:
                       print('PUBLISHED STOREBRAND 2026 VERIFIED:', len(wanted), 'observations match live GitHub Pages')
                       break
