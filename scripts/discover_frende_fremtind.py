@@ -63,14 +63,10 @@ def candidates(company,markup):
  if company=='Fremtind':
   rows=fremtind_rows(markup)
   if rows:return rows
-  # Official issuer archive is also rendered as non-table lists. Preserve
-  # explicitly verified Q1/Q2 2026 links while requiring PDF verification.
-  approved={
-   1:'https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf',
-   2:'https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf',
-  }
+  # Candidate links come only from the official issuer archive.
+  # Never infer quarter/entity from link order; validate inside each PDF.
   archive_links={urllib.parse.urljoin(base,l['href']) for l in parser.links}
-  return [dict(company='Fremtind',year=2026,quarter=q,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification') for q,url in approved.items() if url in archive_links]
+  return [dict(company='Fremtind',source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification') for url in sorted(archive_links) if urllib.parse.urlparse(url).scheme=='https' and urllib.parse.urlparse(url).hostname=='cdn.sanity.io' and urllib.parse.urlparse(url).path.lower().endswith('.pdf')]
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
