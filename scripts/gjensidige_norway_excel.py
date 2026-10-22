@@ -39,7 +39,7 @@ def locate_xlsx(page,quarter,base=INDEX):
     raw=unescape(page.decode('utf-8','replace'))
     # Dynamic issuer pages sometimes have no anchor in static HTML: refuse to guess.
     candidates=[]
-    for match in re.finditer(r'<a\\b[^>]*href=[\\"\\\']([^\\"\\\']+\\.xlsx(?:\\?[^\\"\\\']*)?)[\\"\\\'][^>]*>',raw,re.I):
+    for match in re.finditer(r'<a\b[^>]*href=[\"\\']([^\"\\']+\.xlsx(?:\?[^\"\\']*)?)[\"\\'][^>]*>',raw,re.I):
         url=urllib.parse.urljoin(base,match.group(1))
         if urllib.parse.urlsplit(url).scheme!='https':continue
         context=raw[max(0,match.start()-1500):match.end()+300].lower()
@@ -47,7 +47,7 @@ def locate_xlsx(page,quarter,base=INDEX):
             candidates.append(url)
     candidates=list(dict.fromkeys(candidates))
     # A link's proximity alone cannot identify Q1 vs Q2. Require quarter in URL.
-    exact=[u for u in candidates if re.search(r'(?i)(?:q|quarter)[_\\s%-]*'+str(quarter)+r'(?!\\d)',urllib.parse.unquote(u))]
+    exact=[u for u in candidates if re.search(r'(?i)(?:q|quarter)[_\s%-]*'+str(quarter)+r'(?!\d)',urllib.parse.unquote(u))]
     if len(exact)!=1:raise ValueError(f'Cannot uniquely verify Q{quarter} 2026 key-figures XLSX URL: {exact}')
     return exact[0]
 
@@ -110,5 +110,5 @@ if __name__=='__main__':
             old[keys(r)]=r
         data['observations']=list(old.values())
     if not audit(data)['ok']:raise ValueError('Audit failed')
-    DATA.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\\n')
+    DATA.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
     publish()
