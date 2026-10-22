@@ -51,6 +51,18 @@ class FutureTests(unittest.TestCase):
    opener.return_value=Doc()
    with self.assertRaisesRegex(ValueError,'target reporting quarter'):
     p.parse_pdf(b'%PDF-synthetic',2026,4)
+ def test_storebrand_q4_group_mock_report(self):
+  from import_storebrand_reports import parse_group
+  from unittest.mock import patch
+  metrics={'Insurance premiums f.o.a.':2896,'Claims ratio':69,'Cost ratio':18,'Combined ratio':87,'Cash return on equity, annualised (%)':14.4,'Solvency II ratio (%)':200}
+  def line(k,v):return k+' '+' '.join(str(v+i) for i in range(8))
+  pages=['Storebrand Group Q4 2026']+['']*7
+  pages[7]='Insurance – Results 2026 Q4 Q3 Q2\\n'+'\\n'.join(line(k,v) for k,v in list(metrics.items())[:4])
+  pages[4]='Group - Key figures 2026\\n'+'\\n'.join(line(k,v) for k,v in list(metrics.items())[4:])
+  with patch('import_storebrand_reports.pages',return_value=(pages,'testsha')):
+   rows=parse_group('fake.pdf',year=2026,quarter=4)
+  self.assertTrue(any(r['quarter']==4 and r['year']==2026 and r['metric']=='combined_ratio' for r in rows))
+  self.assertEqual(next(r['value'] for r in rows if r['year']==2026 and r['quarter']==4 and r['metric']=='combined_ratio' and r['period_type']=='quarter'),87)
  def test_storebrand_future_period_not_silently_mislabelled(self):
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_asa_q3_2026.pdf'
   with self.assertRaisesRegex(ValueError,'header changed'):
