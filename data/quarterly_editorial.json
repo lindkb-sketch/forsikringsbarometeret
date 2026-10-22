@@ -2,6 +2,50 @@
   "period": "Q3 2026",
   "brief": [
     {
+      "text": "Protector (group): combined ratio 82.7 % i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Protector (group): forsikringsinntekter 3864 MNOK i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Protector (group): forsikringsresultat 670 MNOK i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Protector (norway): combined ratio 67.1 % i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Protector (norway): forsikringsinntekter 798 MNOK i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Protector (norway): forsikringsresultat 263 MNOK i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+    },
+    {
+      "text": "Storebrand (group): combined ratio 87 % i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+    },
+    {
+      "text": "Storebrand (group): forsikringsinntekter 2896 MNOK i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+    },
+    {
+      "text": "Storebrand (norway): combined ratio 79.791 % i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+    },
+    {
+      "text": "Storebrand (norway): forsikringsinntekter 1550.3 MNOK i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+    },
+    {
+      "text": "Storebrand (norway): forsikringsresultat 313.3 MNOK i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+    },
+    {
       "text": "Tryg (norway): combined ratio 76.1 % i Q3 2026.",
       "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
     },
@@ -15,6 +59,26 @@
     }
   ],
   "implications": [
+    {
+      "text": "Protector: combined ratio 82.7 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Protector: combined ratio 67.1 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Storebrand: combined ratio 87 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Storebrand: combined ratio 79.791 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf",
+      "type": "rule_based_interpretation"
+    },
     {
       "text": "Tryg: combined ratio 76.1 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
       "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226",
