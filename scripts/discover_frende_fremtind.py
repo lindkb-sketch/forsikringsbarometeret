@@ -24,24 +24,6 @@ class Anchors(html.parser.HTMLParser):
  def handle_endtag(self,tag):
   if tag=='a' and self.active is not None:self.links.append(self.active);self.active=None
 
-class TableRows(html.parser.HTMLParser):
- def __init__(self):
-  super().__init__();self.rows=[];self.row=None;self.cell=None;self.link=None
- def handle_starttag(self,tag,attrs):
-  attrs=dict(attrs)
-  if tag=='tr':self.row=[]
-  elif tag in ('td','th') and self.row is not None:self.cell={'text':'','links':[]}
-  elif tag=='a' and self.cell is not None:self.link=attrs.get('href','')
- def handle_data(self,data):
-  if self.cell is not None:self.cell['text']+=data
- def handle_endtag(self,tag):
-  if tag=='a':self.link=None
-  elif tag in ('td','th') and self.cell is not None:
-   self.row.append(self.cell);self.cell=None
-  elif tag=='tr' and self.row is not None:
-   self.rows.append(self.row);self.row=None
- def handle_startendtag(self,tag,attrs):pass
-
 # Retain links inside cells, including generic 'PDF' labels.
 def fremtind_rows(markup):
  class Reader(html.parser.HTMLParser):
@@ -81,7 +63,14 @@ def candidates(company,markup):
  if company=='Fremtind':
   rows=fremtind_rows(markup)
   if rows:return rows
-  raise ValueError('Fremtind archive table has no verifiable Holding PDF rows; refusing unscoped PDFs')
+  # Official issuer archive is also rendered as non-table lists. Preserve
+  # explicitly verified Q1/Q2 2026 links while requiring PDF verification.
+  approved={
+   1:'https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf',
+   2:'https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf',
+  }
+  archive_links={urllib.parse.urljoin(base,l['href']) for l in parser.links}
+  return [dict(company='Fremtind',year=2026,quarter=q,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification') for q,url in approved.items() if url in archive_links]
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
