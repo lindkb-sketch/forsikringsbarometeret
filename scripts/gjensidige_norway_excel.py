@@ -19,10 +19,10 @@ LABELS={'insurance_revenue':'Insurance revenue','insurance_service_result':'Insu
 # Monetary inputs for CR: insurance service expenses and net reinsurance
 # result are signed amounts in the source financial statement.
 CR_AMOUNT_LABELS={
- 'insurance_costs':('Insurance service expenses','Insurance service expense'),
- 'reinsurance_net':('Net expenses from reinsurance contracts held',
-                    'Net income or expenses from reinsurance contracts held',
-                    'Net result from reinsurance contracts held')}
+ 'claims':('Incurred claims and changes in past and future service',),
+ 'expenses':('Other incurred insurance service expenses',),
+ 'reinsurance_premiums':('Reinsurance premiums',),
+ 'reinsurance_recoveries':('Amounts recovered from reinsurance',)}
 class Links(HTMLParser):
     def __init__(self): super().__init__();self.links=[];self.href=None;self.label=''
     def handle_starttag(self,tag,attrs):
@@ -106,7 +106,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
         for i in range(2):
             seg_revenue=totals['insurance_revenue'][i][0]
             if seg_revenue<=0:raise ValueError('Nonpositive segment revenue')
-            seg_cr=100*(-cr_inputs['insurance_costs'][i][0]-cr_inputs['reinsurance_net'][i][0])/seg_revenue
+            seg_cr=100*(-cr_inputs['claims'][i][0]-cr_inputs['expenses'][i][0]-cr_inputs['reinsurance_premiums'][i][0]-cr_inputs['reinsurance_recoveries'][i][0])/seg_revenue
             reported_cr=totals['combined_ratio'][i][0]
             if abs(seg_cr-reported_cr)>0.15:
                 raise ValueError(f'Standalone PM/BM net CR mismatch in {totals["combined_ratio"][i][1]}: reconstructed={seg_cr:.4f}, reported={reported_cr:.4f}')
@@ -116,24 +116,27 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
             raise ValueError('Norway insurance revenue must be positive')
         # Signed expense and reinsurance rows: costs are negative in the
         # statement. The reinsurance net result is added with its source sign.
-        costs=sum(x[0] for x in cr_inputs['insurance_costs'])
-        reinsurance=sum(x[0] for x in cr_inputs['reinsurance_net'])
-        if costs > 0:
-            raise ValueError('Unexpected positive insurance expenses; check source signs')
-        combined=100*(-costs-reinsurance)/revenue
+        claims=sum(x[0] for x in cr_inputs['claims'])
+        costs=sum(x[0] for x in cr_inputs['expenses'])
+        reinsurance=sum(x[0] for x in cr_inputs['reinsurance_premiums']+cr_inputs['reinsurance_recoveries'])
+        if claims > 0 or costs > 0:
+            raise ValueError('Unexpected positive claims or expenses; check source signs')
+        net_loss=100*(-claims-reinsurance)/revenue
+        expense_ratio=100*(-costs)/revenue
+        combined=net_loss+expense_ratio
         if not 0 <= combined <= 200:
             raise ValueError('Norway combined ratio outside reasonable range')
-        loss_expense={'combined_ratio':combined}
+        loss_expense={'loss_ratio':net_loss,'expense_ratio':expense_ratio,'combined_ratio':combined}
         for metric,value in [('insurance_revenue',revenue),('insurance_service_result',service)]+list(loss_expense.items()):
             output.append(dict(company='Gjensidige',year=year,quarter=quarter,scope='norway',source_scope='norway',
                 period_type=period,metric=metric,value=round(value,6),unit='percent' if 'ratio' in metric else 'MNOK',
                 status='reported' if metric in ('insurance_revenue','insurance_service_result') else 'calculated',
-                calculation=('100 * (-(PM signed insurance expenses + BM signed insurance expenses) - (PM signed net reinsurance result + BM signed net reinsurance result)) / (PM revenue + BM revenue)' if metric=='combined_ratio' else None),
+                calculation=('Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue' if 'ratio' in metric else None),
                 source_url=url,source_type='official_investor_tables',source_document_url=PDFS[quarter],
-                source_sheet=' + '.join(x[1] for x in (cr_inputs['insurance_costs']+cr_inputs['reinsurance_net']+totals['insurance_revenue'] if metric=='combined_ratio' else totals[metric])),
+                source_sheet=' + '.join(x[1] for x in (sum(cr_inputs.values(),[])+totals['insurance_revenue'] if 'ratio' in metric else totals[metric])),
                 source_cell=' + '.join(x[2] for x in (cr_inputs['insurance_costs']+cr_inputs['reinsurance_net']+totals['insurance_revenue'] if metric=='combined_ratio' else totals[metric])),
                 source_sha256=hashlib.sha256(blob).hexdigest(),
-                source_section='PM Norway + BM Norway; summed monetary amounts; combined ratio from summed signed expenses, reinsurance and revenue'))
+                source_section='PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs'))
     return (output,segments) if include_segments else output
 
 if __name__=='__main__':
