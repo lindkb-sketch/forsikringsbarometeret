@@ -70,7 +70,7 @@ jobs:
         run: python scripts/verify_tryg_end_to_end.py
       - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
         continue-on-error: true
-        run: python scripts/verify_public_pages.py
+        run: PAGES_VERIFY_ATTEMPTS=1 python scripts/verify_public_pages.py
       - name: Inspect official Tryg 2026 PDF and Excel archive links
         run: |
           python - <<'PY'
