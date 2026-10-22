@@ -75,9 +75,33 @@ def extract(blob, url):
                 if not line.startswith(label + " "):
                     continue
                 rest = line[len(label):].strip()
-                match = re.fullmatch(rf"({amount})\s+({amount})\s+({amount})", rest)
-                if match:
-                    rows[metric] = (number(match.group(1)), unit, label)
+                # Greedy grouping can merge adjacent columns: "1 256 843 4 520"
+                # must be 1256 | 843 | 4520, not 1256843 | 4 | 520.
+                matches = []
+                for first in re.finditer(amount, rest):
+                    if first.start() != 0:
+                        continue
+                    for second in re.finditer(amount, rest[first.end():]):
+                        if second.start() == 0:
+                            continue
+                        start3 = first.end() + second.end()
+                        third = re.fullmatch(r"\\s+" + amount, rest[start3:])
+                        if not third:
+                            continue
+                        values = (first.group(), second.group(), third.group().strip())
+                        try:
+                            nums = tuple(number(v) for v in values)
+                        except ValueError:
+                            continue
+                        # The report has three comparable columns. Penalize
+                        # implausible merged million-unit figures.
+                        lengths = [len(str(int(abs(n)))) for n in nums]
+                        score = max(lengths) - min(lengths)
+                        matches.append((score, nums))
+                if matches:
+                    best = sorted(matches, key=lambda x: x[0])
+                    if len(best) == 1 or best[0][0] < best[1][0]:
+                        rows[metric] = (best[0][1][0], unit, label)
         if len(rows) != 5:
             raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)))
         # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
