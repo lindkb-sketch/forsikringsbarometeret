@@ -69,29 +69,62 @@ def extract(blob, url):
         # Report figures have grouped thousands (e.g. 6 205).
         # Extract exactly three numeric columns, not whitespace tokens.
         rows = {}
-        amount = r"-?(?:\d{1,3}(?:[ \u00a0]\d{3})+|\d+)(?:,\d+)?\s*%?"
+        # Extract the beginning of each labelled row, ignoring PDF text that
+        # pdfplumber may append from the following label on the same line.
+        # Q1 has three columns; Q2-Q4 summary tables have five:
+        # quarter, comparative quarter, YTD, comparative YTD, prior FY.
+        columns = 3 if q == 1 else 5
+        amount = r"-?(?:\\d{1,3}(?:[ \\u00a0]\\d{3})+|\\d+)(?:,\\d+)?\\s*%?"
         for line in text.splitlines():
             for label, (metric, unit) in FIELDS.items():
                 if not line.startswith(label + " "):
                     continue
                 rest = line[len(label):].strip()
-                # Greedy grouping can merge adjacent columns: "1 256 843 4 520"
-                # must be 1256 | 843 | 4520, not 1256843 | 4 | 520.
-                tokens = rest.replace("\u00a0", " ").split()
+                # Stop at a following textual label; revenue's growth
+                # explanation is frequently merged into the same PDF line.
+                rest = re.split(r"(?<=\\d)\\s+(?=[A-Za-zÆØÅæøå])", rest, maxsplit=1)[0]
+                tokens = rest.replace("\\u00a0", " ").split()
+                # A percentage sign is part of the preceding numeric field.
+                normalized = []
+                for token in tokens:
+                    if token == "%" and normalized:
+                        normalized[-1] += "%"
+                    else:
+                        normalized.append(token)
+                tokens = normalized
+                def partitions(parts, count):
+                    if count == 1:
+                        yield [parts]
+                        return
+                    for cut in range(1, len(parts)-count+2):
+                        for tail in partitions(parts[cut:], count-1):
+                            yield [parts[:cut]] + tail
                 matches = []
-                for i in range(1, len(tokens)-1):
-                    for j in range(i+1, len(tokens)):
-                        values = [" ".join(tokens[:i]), " ".join(tokens[i:j]), " ".join(tokens[j:])]
-                        if not all(re.fullmatch(amount, v) for v in values):
-                            continue
-                        nums = tuple(number(v) for v in values)
-                        lengths = [len(str(int(abs(n)))) for n in nums]
-                        score = max(lengths) - min(lengths)
-                        matches.append((score, nums))
+                for groups in partitions(tokens, columns):
+                    values = [" ".join(group) for group in groups]
+                    if not all(re.fullmatch(amount, v) for v in values):
+                        continue
+                    nums = tuple(number(v) for v in values)
+                    # Prefer standard thousands-grouping; reject implausibly
+                    # large monetary values introduced by column merging.
+                    if metric in ("insurance_revenue", "insurance_service_result") and any(abs(v)>100000 for v in nums):
+                        continue
+                    score = sum(len(group)-1 for group in groups if len(group)>1)
+                    matches.append((score, nums))
                 if matches:
-                    best = sorted(matches, key=lambda x: x[0])
-                    if len(best) == 1 or best[0][0] < best[1][0]:
-                        rows[metric] = (best[0][1][0], unit, label)
+                    # The first and third columns have known semantics, but
+                    # ambiguity is never resolved by guessing a financial value.
+                    distinct = {v for _,v in matches}
+                    if len(distinct) == 1:
+                        rows[metric] = (next(iter(distinct)), unit, label)
+                    else:
+                        # Monetary thousands separators are meaningful: use
+                        # the grouping with the fewest merged token pairs
+                        # only if it uniquely identifies the full row.
+                        best_score = min(score for score,_ in matches)
+                        best = {nums for score,nums in matches if score==best_score}
+                        if len(best)==1:
+                            rows[metric] = (next(iter(best)), unit, label)
         if len(rows) != 5:
             raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
