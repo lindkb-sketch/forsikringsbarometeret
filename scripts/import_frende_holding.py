@@ -50,14 +50,14 @@ def extract(section_html,url,year,quarter):
     ytd_col=None
     if quarter>1:
         label=f'Pr Q{quarter} {year}'
-        if label not in header:raise ValueError('Missing YTD column')
-        ytd_col=header.index(label)
+        if label in header:ytd_col=header.index(label)
+        elif quarter!=4:raise ValueError('Missing YTD column')
     records={row[0]:row for row in t.rows[1:] if row}
     if not all(label in records for label in FIELDS):raise ValueError('Missing required KPI rows')
     if 'Resultat før skatt' not in records:raise ValueError('Missing income KPI')
     digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
     results=[]
-    for period,col in [('quarter',1)]+([('ytd',ytd_col)] if ytd_col else [('ytd',1)]):
+    for period,col in [('quarter',1)]+([('ytd',ytd_col)] if ytd_col else ([('ytd',1)] if quarter==1 else [])):
         values={metric:number(records[label][col],True) for label,metric in FIELDS.items()}
         if abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.25:
             raise ValueError('Combined ratio does not reconcile')
