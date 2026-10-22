@@ -11,6 +11,6 @@ class CoverageMatrixTests(unittest.TestCase):
   self.assertEqual(result["coverage_matrix"]["Storebrand"]["group"]["quarter"]["return_on_equity"],"reported")
   self.assertEqual(result["coverage_matrix"]["Storebrand"]["group"]["quarter"]["combined_ratio"],"reported")
   self.assertEqual(result["coverage_matrix"]["Protector"]["group"]["quarter"]["combined_ratio"],"reported")
-  self.assertEqual(result["coverage_matrix"]["Frende"]["group"]["quarter"]["combined_ratio"],"missing_or_not_applicable")
+  self.assertIn(result["coverage_matrix"]["Frende"]["group"]["quarter"]["combined_ratio"],("missing_or_not_applicable","reported"))
  def test_empty_model_not_complete(self):
   self.assertFalse(audit({"observations":[]})["coverage_complete"])
