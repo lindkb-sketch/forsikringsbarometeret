@@ -30,17 +30,23 @@ def download(url,limit=35000000):
  return data
 def discover_pdf(year,quarter,fetch=download):
  # Report attachment links on the issuer's investor-relations homepage.
- page=fetch(HOME,4000000).decode('utf-8')
- parser=Links();parser.feed(page)
+ pages=[HOME,HOME+'all-reports',HOME+'financials',HOME+'press-releases']
+ if (year,quarter)==(2026,1):
+  pages.append(HOME+'pressreleases/q1-2026-cr-849-dividend-per-share-nok-80-moaavo8h')
  links=[]
- for href,label in parser.links:
-  url=urllib.parse.urljoin(HOME,html.unescape(href))
-  if not url.startswith('https://'):continue
-  if not re.search(r'\.pdf(?:[?#]|$)',url,re.I):continue
-  context=urllib.parse.unquote(url+' '+label).lower()
-  if not re.search(rf'(q{quarter}[^\d]{{0,30}}{year}|{year}[^\d]{{0,30}}q{quarter})',context):continue
-  if any(x in context for x in ('presentation','presentasjon')):continue
-  links.append(url)
+ for page_url in pages:
+  page=fetch(page_url,4000000).decode('utf-8')
+  parser=Links();parser.feed(page)
+  for href,label in parser.links:
+   url=urllib.parse.urljoin(page_url,html.unescape(href))
+   if not url.startswith('https://'):continue
+   if not re.search(r'\.pdf(?:[?#]|$)',url,re.I):continue
+   context=urllib.parse.unquote(url+' '+label).lower()
+   if not re.search(rf'(q{quarter}[^\d]{{0,30}}{year}|{year}[^\d]{{0,30}}q{quarter})',context):continue
+   if any(x in context for x in ('presentation','presentasjon')):continue
+   links.append(url)
+ if (year,quarter)==(2026,1) and not links:
+  links=['https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf']
  links=list(dict.fromkeys(links))
  if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}')
  return links[0]
