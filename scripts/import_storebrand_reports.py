@@ -204,6 +204,25 @@ def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
     result.append(obs('norway',year,quarter,'quarter','solvency_ratio',margin,sp+1,url,sha,'Solvency II margin at quarter end','Storebrand Forsikring AS',year,quarter))
     return result
 
+def parse_norway_annual_q4(annual_path,q3_path,annual_url, q3_url,year=2025):
+    """Q4 subsidiary flow = audited annual total minus official Q3 YTD.
+
+    Only reconciled insurance revenue and insurance service result are derived.
+    Never subtract ratios, balance-sheet solvency or claims ratios.
+    """
+    if year<2025:raise ValueError('Unsupported annual period')
+    if not (annual_url.startswith('https://') and q3_url.startswith('https://')):
+        raise ValueError('Official HTTPS report provenance required')
+    annual,sha=pages(annual_path,'Storebrand Forsikring',year)
+    q3,sha3=pages(q3_path,'Storebrand Forsikring',year)
+    if not any('Årsrapport' in p or 'årsrapport' in p.lower() for p in annual[:3]):
+        raise ValueError('Q4 subsidiary requires annual report, not quarterly PDF')
+    if not any(re.search(r'3\\.\\s*kvartal',p,re.I) for p in q3[:4]):
+        raise ValueError('Q3 comparator report period not verified')
+    # The annual report and Q3 report have different presentation layouts.
+    # Do not infer figures unless both totals can be uniquely located and reconciled.
+    raise ValueError('Annual/Q3 table mapping requires independently verified issuer figures; Q4 publication blocked')
+
 def integrate(existing, incoming):
     result=json.loads(json.dumps(existing)); index={tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric')):i for i,r in enumerate(result['observations'])}
     added=0; updated=0
