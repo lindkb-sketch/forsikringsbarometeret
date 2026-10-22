@@ -13,6 +13,8 @@ import openpyxl
 INDEX='https://www.gjensidige.com/investor-relations/reports-and-presentations'
 PDFS={1:'https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf',
       2:'https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf'}
+APPROVED_XLSX={(2026,1):'https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx',
+               (2026,2):'https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx'}
 SHEETS=('General Insurance Private Norway','General Insurance Commercial Norway')
 LABELS={'insurance_revenue':'Insurance revenue','insurance_service_result':'Insurance service result',
         'loss_ratio':'Loss ratio, net of reinsurance','expense_ratio':'Cost ratio',
@@ -161,7 +163,7 @@ if __name__=='__main__':
             if (year,q)>(today.year,(today.month-1)//3+1):
                 continue
             try:
-                url=locate_xlsx(page,q,year=year)
+                url=APPROVED_XLSX.get((year,q)) or locate_xlsx(page,q,year=year)
             except ValueError:
                 if (year,q)==(today.year,(today.month-1)//3+1):
                     print(f'Gjensidige Norway Q{q} {year}: awaiting official XLSX')
