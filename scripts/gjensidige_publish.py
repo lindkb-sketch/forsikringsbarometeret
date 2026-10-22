@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import tempfile
+from datetime import date
 from pathlib import Path
 
 from audit_financials import DATA, ROOT, audit
@@ -167,7 +168,19 @@ def main():
     p.add_argument('--feed', type=Path, default=OUT)
     args = p.parse_args()
     existing = json.loads(args.data.read_text(encoding='utf-8'))
-    merged, feed, summary = prepare(existing, (1, 2, 3))
+    today = date.today()
+    # Inspect every elapsed quarter from 2026 onward. The current quarter is
+    # included so newly released reports are picked up on the next scheduled run.
+    periods = [(year, quarter) for year in range(2026, today.year + 1)
+               for quarter in range(1, 5)
+               if (year, quarter) <= (today.year, (today.month - 1) // 3 + 1)]
+    merged, feed, summary = existing, build(existing), {'added': 0, 'parsed': 0, 'reports': {}}
+    for year in sorted({year for year, _ in periods}):
+        quarters = [quarter for y, quarter in periods if y == year]
+        merged, feed, batch = prepare(merged, quarters, year=year)
+        summary['added'] += batch['added']
+        summary['parsed'] += batch['parsed']
+        summary['reports'].update({f'{year}-{key}': url for key, url in batch['reports'].items()})
     if not args.dry_run and summary['added']:
         write_json(args.data, merged)
         write_json(args.feed, feed)
