@@ -29,7 +29,9 @@ def build(config, locks):
     for name, entry in config.items():
         events = sorted(entry['events'], key=lambda x: x['date'])
         validate_events(events)
-        # Prefer the next upcoming issuer-published date. An old, unlocked Q3\n        # event must not hide a known Q4 publication date after Q3 passes.\n        today = dt.date.today().isoformat()\n        upcoming = [e for e in events if e['date'] >= today and not is_locked(locks, name, e['period'])]\n        next_event = upcoming[0] if upcoming else None
+        # Prefer upcoming issuer-published dates over past unlocked events.
+        today = dt.date.today().isoformat()\n        upcoming = [e for e in events if e['date'] >= today and not is_locked(locks, name, e['period'])]
+        next_event = upcoming[0] if upcoming else None
         result['companies'][name] = {
             'next_event': {**next_event, 'source_url': entry['calendar_url']} if next_event else None,
             'locked_periods': sorted(p for p in locks.get(name, {}) if is_locked(locks, name, p)),
