@@ -55,7 +55,6 @@ def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,do
 def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Group',year)
     if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
-    if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[7]
     if not ('Insurance – Results' in t and '2026' in t and 'Q3 Q2 Q1' in t):raise ValueError('Group insurance table header changed')
@@ -84,6 +83,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
 
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Forsikring',year)
+    if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
     if 'Totalresultat' not in t or '3.kvartal' not in t or '01.01 - 30.09' not in t:raise ValueError('Norway income statement header changed')
