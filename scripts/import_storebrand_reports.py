@@ -54,6 +54,8 @@ def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,do
 
 def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Group',year)
+    if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
+    if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[7]
     if not ('Insurance – Results' in t and '2026' in t and 'Q3 Q2 Q1' in t):raise ValueError('Group insurance table header changed')
@@ -127,6 +129,67 @@ def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     if 'Solvenskapitalkrav og -margin' not in t:raise ValueError('Norway solvency table heading changed')
     v=row(t,'Solvensmargin',2,number)[0]
     result.append(obs('norway',2026,3,'quarter','solvency_ratio',v,11,url,sha,'Solvency II margin at 30 September 2026','Storebrand Forsikring AS'))
+    return result
+
+
+def _unique_table(texts, marker):
+    hits=[(i,t) for i,t in enumerate(texts) if marker in t]
+    if len(hits)!=1: raise ValueError('Expected one Storebrand table: '+marker+'; found '+str(len(hits)))
+    return hits[0]
+
+def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
+    if year!=2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand group period')
+    texts,sha=pages(path,'Storebrand Group',year)
+    page,t=_unique_table(texts,'Insurance – Results')
+    section=t.split('Insurance – Results',1)[1].split('Financial performance',1)[0]
+    if not re.search(r'\\bQ'+str(quarter)+r'\\b',section): raise ValueError('Group period header mismatch')
+    count=6 if quarter==1 else 8
+    metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
+             'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
+             'expense_ratio':('Cost ratio','Insurance segment cost ratio'),
+             'combined_ratio':('Combined ratio','Insurance segment combined ratio')}
+    result=[]
+    for metric,(label,definition) in metrics.items():
+        vals=row(section,label,count,english)
+        result.append(obs('group',year,quarter,'quarter',metric,vals[0],page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+    keypage,keytext=_unique_table(texts,'Group - Key figures')
+    keysection=keytext.split('Group - Key figures',1)[1].split('Financial metrics',1)[0]
+    for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
+        vals=row(keysection,label,count,english)
+        result.append(obs('group',year,quarter,'quarter',metric,vals[0],keypage+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+    return result
+
+def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
+    if year!=2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand Norway period')
+    texts,sha=pages(path,'Storebrand Forsikring',year)
+    page,t=_unique_table(texts,'Totalresultat')
+    if not re.search(r'0[1-9]\\.0[1-9]\\s*-\\s*(?:31\\.03|30\\.06)',t) and not ('31.03' if quarter==1 else '30.06') in t:
+        raise ValueError('Norway statement period header mismatch')
+    count=3 if quarter==1 else 5
+    vals={label:row(t,label,count,number) for label in ('Forsikringsinntekter','Totalt forsikringsresultat','Forsikringskostnader','Netto resultat fra reassuransekontrakter')}
+    revenue=vals['Forsikringsinntekter'][0];result_value=vals['Totalt forsikringsresultat'][0]
+    costs=vals['Forsikringskostnader'][0];reinsurance=vals['Netto resultat fra reassuransekontrakter'][0]
+    if revenue<=0:raise ValueError('Invalid Storebrand Norway revenue')
+    combined=round(-(costs+reinsurance)/revenue*100,4)
+    if abs(combined-(1-result_value/revenue)*100)>0.03:raise ValueError('Storebrand Norway combined ratio reconciliation failed')
+    result=[]
+    for metric,value,definition in [
+        ('insurance_revenue',revenue,'IFRS 17 forsikringsinntekter'),
+        ('insurance_service_result',result_value,'IFRS 17 totalt forsikringsresultat etter reassuranse'),
+        ('combined_ratio',combined,'Calculated from IFRS 17 insurance costs and net reinsurance')]:
+        r=obs('norway',year,quarter,'quarter',metric,value,page+1,url,sha,definition,'Storebrand Forsikring AS',year,quarter)
+        if metric=='combined_ratio':
+            r.update(status='calculated',calculation='-(Forsikringskostnader + Netto resultat fra reassuransekontrakter) / Forsikringsinntekter * 100',
+                     calculation_inputs={'insurance_expenses':costs,'net_reinsurance_result':reinsurance,'insurance_revenue':revenue})
+        result.append(r)
+    prose=texts[1]
+    claim=re.search(r'Netto skadeprosent\\s+inkludert reassuranse endte på\\s+(\\d+)\\s+prosent',prose,re.I)
+    if not claim:raise ValueError('Storebrand Norway claims ratio not reported')
+    result.append(obs('norway',year,quarter,'quarter','loss_ratio',float(claim.group(1)),2,url,sha,'Netto skadeprosent inkludert reassuranse; as reported','Storebrand Forsikring AS',year,quarter))
+    solvency=[(i,t) for i,t in enumerate(texts) if 'Solvenskapitalkrav og -margin' in t]
+    if len(solvency)!=1:raise ValueError('Storebrand Norway solvency table missing')
+    sp,st=solvency[0];margin=row(st,'Solvensmargin',2,number)[0]
+    result.append(obs('norway',year,quarter,'quarter','solvency_ratio',margin,sp+1,url,sha,'Solvency II margin at quarter end','Storebrand Forsikring AS',year,quarter))
     return result
 
 def integrate(existing, incoming):
