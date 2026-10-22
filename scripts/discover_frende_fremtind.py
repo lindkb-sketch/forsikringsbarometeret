@@ -31,7 +31,11 @@ def candidates(company,markup):
   p=urllib.parse.urlparse(url)
   if p.scheme!='https' or p.hostname not in ALLOWED[company]:continue
   if company=='Frende':
-   m=re.search(r'([1-4])\\.\\s*kvartal\\s+Frende Holding AS\\s+(20\\d{2})',link['label'],re.I)\n   if not m:\n    filename=urllib.parse.unquote(p.path).replace('_',' ')\n    m2=re.search(r'Frende\\s+Holding(?:\\s+AS)?\\s+Kvartalsrapport\\s+Q([1-4])\\s+(20\\d{2})',filename,re.I)\n    if m2:m=m2
+   m=re.search(r'([1-4])\\.\\s*kvartal\\s+Frende Holding AS\\s+(20\\d{2})',link['label'],re.I) 
+   if not m:
+    filename=urllib.parse.unquote(p.path).replace('_',' ')
+    m2=re.search(r'Frende\\s+Holding(?:\\s+AS)?\\s+Kvartalsrapport\\s+Q([1-4])\\s+(20\\d{2})',filename,re.I)
+    if m2:m=m2
    if not m:continue
    year=int(m.group(2));quarter=int(m.group(1))
   else:
