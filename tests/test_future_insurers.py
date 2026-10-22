@@ -73,6 +73,6 @@ class FutureTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'header changed'):
    parse_group(fixture,year=2026,quarter=4)
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_forsikring_q3_2026.pdf'
-  with self.assertRaisesRegex(ValueError,'New report layout'):
+  with self.assertRaisesRegex(ValueError,'annual report'):
    parse_norway(fixture,year=2026,quarter=4)
 if __name__=='__main__':unittest.main()
