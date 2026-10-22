@@ -119,6 +119,42 @@
       "document_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q2/sustainability-factbook-q2-2026.pdf",
       "status": "candidate_requires_quarterly_report_verification",
       "link_text": "Sustainability Factbookdownload"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Interim report Q1-Q3 2026 -TRYG A_S.pdf"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Interim report Q2 and H1 2026 - TRYG A_S.pdf"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Q1 Interim Report 2026 - TRYG A_S_7jvxgee5.pdf"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Tryg Group - Q3 2026 - Investor tables.xlsx"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Tryg Group - Q2 2026 - Investor tables.xlsx"
+    },
+    {
+      "company": "Tryg",
+      "document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Tryg Group - Q1 2026 - Investor tables_5oropr2k.xlsx"
     }
   ],
   "errors": [],
