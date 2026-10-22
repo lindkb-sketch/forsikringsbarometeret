@@ -1,0 +1,67 @@
+name: Storebrand Q3 verified publication
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * *'
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: forsikringsbarometeret-publish
+  cancel-in-progress: false
+jobs:
+  storebrand-q3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install report dependencies
+        run: python -m pip install -r requirements-reports.txt
+      - name: Verify required Storebrand files
+        run: python scripts/storebrand_preflight.py
+      - name: Run isolated Storebrand tests
+        run: python -m unittest discover -s tests -p 'test_storebrand*.py' -v
+      - name: Check original PDFs offline
+        run: |
+          python scripts/storebrand_automation_check.py --group tests/fixtures/storebrand_asa_q3_2026.pdf --norway tests/fixtures/storebrand_forsikring_q3_2026.pdf --output data/storebrand_offline_test.json
+      - name: Validate existing financial observations
+        run: python scripts/audit_financials.py
+      - name: Download and validate both official Storebrand Q3 reports
+        run: python scripts/storebrand_publish_q3.py
+      - name: Audit imported observations and feed
+        run: |
+          python scripts/audit_financials.py
+          python -m json.tool data/financial_observations.json > /dev/null
+          python -m json.tool data/verified_financial_feed.json > /dev/null
+      - name: Commit only audited observations and feed
+        run: |
+          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add data/financial_observations.json data/verified_financial_feed.json
+            git commit -m 'Publish verified Storebrand Q3 2026 observations'
+            git push origin HEAD:main
+          else
+            echo 'No changes in verified Storebrand observations.'
+          fi
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
