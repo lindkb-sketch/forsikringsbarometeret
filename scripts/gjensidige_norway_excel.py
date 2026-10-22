@@ -141,7 +141,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                 calculation=('Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue' if 'ratio' in metric else None),
                 source_url=url,source_type='official_investor_tables',source_document_url=PDFS[quarter],
                 source_sheet=' + '.join(x[1] for x in (sum(cr_inputs.values(),[])+totals['insurance_revenue'] if 'ratio' in metric else totals[metric])),
-                source_cell=' + '.join(x[2] for x in (cr_inputs['insurance_costs']+cr_inputs['reinsurance_net']+totals['insurance_revenue'] if metric=='combined_ratio' else totals[metric])),
+                source_cell=' + '.join(x[2] for x in (sum(cr_inputs.values(),[])+totals['insurance_revenue'] if 'ratio' in metric else totals[metric])),
                 source_sha256=hashlib.sha256(blob).hexdigest(),
                 source_section='PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs'))
     return (output,segments) if include_segments else output
