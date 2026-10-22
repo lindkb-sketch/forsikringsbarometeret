@@ -43,14 +43,14 @@ jobs:
           python -m unittest discover -s tests -p 'test_discover_reports.py' -v
       - name: Discover Frende Holding and Fremtind Holding official report candidates
         run: python scripts/discover_frende_fremtind.py || echo "::warning::Issuer archives unavailable; no unverified data imported"
-      - name: Generate honest seven-company import coverage
-        run: python scripts/report_coverage.py
       - name: Fetch independent editorial media headlines
         run: python scripts/ingest_media_news.py || echo "::warning::Media RSS unavailable; retaining last verified news feed"
       - name: Fetch delayed public stock quotes (independent of financial import)
         run: python scripts/update_stock_prices.py
       - name: Integrated quarterly pipeline (fail closed)
         run: python scripts/run_pipeline.py
+      - name: Generate coverage after validated quarterly imports
+        run: python scripts/report_coverage.py
       - name: Upload diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@v4
