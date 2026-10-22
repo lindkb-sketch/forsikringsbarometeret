@@ -36,9 +36,9 @@ def discover_pdf(year,quarter,fetch=download):
  for href,label in parser.links:
   url=urllib.parse.urljoin(HOME,html.unescape(href))
   if not url.startswith('https://'):continue
-  if not re.search(r'\\.pdf(?:[?#]|$)',url,re.I):continue
+  if not re.search(r'\.pdf(?:[?#]|$)',url,re.I):continue
   context=urllib.parse.unquote(url+' '+label).lower()
-  if not re.search(rf'(q{quarter}[^\\d]{{0,30}}{year}|{year}[^\\d]{{0,30}}q{quarter})',context):continue
+  if not re.search(rf'(q{quarter}[^\d]{{0,30}}{year}|{year}[^\d]{{0,30}}q{quarter})',context):continue
   if any(x in context for x in ('presentation','presentasjon')):continue
   links.append(url)
  links=list(dict.fromkeys(links))
@@ -50,7 +50,7 @@ def parse_pdf(blob,year,quarter):
  with pdfplumber.open(io.BytesIO(blob)) as pdf:
   if len(pdf.pages)>200:raise ValueError('PDF too long')
   pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
- if not any(re.search(rf'Q{quarter}\\s*(?:and\\s*Q1.Q{quarter}\\s*)?{year}|{year}\\s*Q{quarter}',text,re.I) for _,text in pages):
+ if not any(re.search(rf'Q{quarter}\s*(?:and\s*Q1.Q{quarter}\s*)?{year}|{year}\s*Q{quarter}',text,re.I) for _,text in pages):
   raise ValueError('Report does not identify target reporting quarter')
  return pages
 def provenance(pages,scope,metric,value):
@@ -60,7 +60,7 @@ def provenance(pages,scope,metric,value):
  formatted={f'{value:g}',f'{value:,.1f}',f'{value:.1f}',f'{value:,.0f}'}
  for page,text in pages:
   norm=' '.join(text.lower().split())
-  if needle in norm and any(re.search(r'(?<![\\d.])'+re.escape(v)+r'(?![\\d.])',norm) for v in formatted):
+  if needle in norm and any(re.search(r'(?<![\d.])'+re.escape(v)+r'(?![\d.])',norm) for v in formatted):
    return page
  raise ValueError(f'PDF cannot independently substantiate {scope} {metric} {value}')
 def run():
