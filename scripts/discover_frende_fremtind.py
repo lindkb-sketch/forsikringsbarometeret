@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 ARCHIVES={
- 'Frende':'https://www.frende.no/om-oss/finansiell-informasjon/frende-skadeforsikring/',
+ 'Frende':'https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/',
  'Fremtind':'https://www.fremtind.no/finansiell-informasjon'
 }
 ALLOWED={'Frende':{'www.frende.no','frende.no','frende.wrep.it'},
@@ -31,7 +31,7 @@ def candidates(company,markup):
   p=urllib.parse.urlparse(url)
   if p.scheme!='https' or p.hostname not in ALLOWED[company]:continue
   if company=='Frende':
-   m=re.search(r'([1-4])\\.\\s*kvartal\\s+Frende Skadeforsikring AS\\s+(20\\d{2})',link['label'],re.I)
+   m=re.search(r'([1-4])\\.\\s*kvartal\\s+Frende Holding AS\\s+(20\\d{2})',link['label'],re.I)
    if not m:continue
    year=int(m.group(2));quarter=int(m.group(1))
   else:
