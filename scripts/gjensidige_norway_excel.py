@@ -75,13 +75,16 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
         totals={}
         cr_inputs={}
         for prefix,ws in sheets.items():
-            header_row=next((r for r in range(1,8) if str(ws.cell(r,col).value or '').strip()==('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)),None)
+            section_row=next((r for r in range(1,ws.max_row+1) if str(ws.cell(r,1).value or '').strip()==prefix),None)
+            if section_row is None:raise ValueError('Norway segment section not found: '+prefix)
+            header_row=next((r for r in range(section_row+1,min(ws.max_row+1,section_row+7)) if str(ws.cell(r,col).value or '').strip()==('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)),None)
+            section_end=next((r for r in range(header_row+1,ws.max_row+1) if isinstance(ws.cell(r,1).value,str) and str(ws.cell(r,1).value).strip().startswith('General Insurance ') and all(ws.cell(r,k).value is None for k in (2,3,4))),ws.max_row+1) if header_row else ws.max_row+1
             if header_row is None:raise ValueError('Quarter heading not found in '+ws.title)
             unit_header=str(ws.cell(header_row,1).value or '').lower()
             if 'million' in unit_header:
                 # The issuer's workbook can label the table NOK millions while
                 # storing underlying NOK amounts; inspect numeric magnitude.
-                revenue_cells=[ws.cell(row,col).value for row in range(header_row+1,min(ws.max_row+1,header_row+12)) if str(ws.cell(row,1).value or '').strip()=='Insurance revenue']
+                revenue_cells=[ws.cell(row,col).value for row in range(header_row+1,min(section_end,header_row+12)) if str(ws.cell(row,1).value or '').strip()=='Insurance revenue']
                 if len(revenue_cells)!=1 or type(revenue_cells[0]) not in (int,float):raise ValueError('Cannot determine Norway revenue units')
                 monetary_divisor=1_000_000 if revenue_cells[0]>100_000_000 else 1
             elif unit_header.strip() in ('nok','norwegian kroner'):
@@ -92,7 +95,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
             expected=('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)
             if header.strip()!=expected:raise ValueError('Unexpected column heading: '+header+' != '+expected)
             rows={}
-            for row in range(1,ws.max_row+1):
+            for row in range(header_row+1,section_end):
                 label=re.sub(r'[¹²³⁴⁵⁶⁷⁸⁹⁰]+','',str(ws.cell(row,1).value or '')).strip()
                 if label in LABELS.values():rows.setdefault(label,[]).append(row)
             for metric,label in LABELS.items():
