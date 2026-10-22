@@ -11,6 +11,9 @@ def run(offline=False):
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'publish_geographic_workbooks.py')],cwd=ROOT)
   if attempt.returncode:
    print('WARNING: Official geographical XLSX unavailable; no workbook values imported; existing audited records preserved.',flush=True)
+ if not offline:
+  print('RUN import_fremtind_holding.py (verified official issuer PDFs only)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_fremtind_holding.py')],cwd=ROOT,check=True)
  for name in steps:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
