@@ -10,6 +10,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from datetime import date
 from storebrand_automation_check import choose_reports, download_pdf
 from storebrand_sources import discover
 from import_storebrand_reports import parse_group, parse_norway, integrate
@@ -50,11 +51,15 @@ def main(argv=None):
     parser.add_argument('--group', type=Path, help='Offline validation PDF')
     parser.add_argument('--norway', type=Path, help='Offline validation PDF')
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--year',type=int,default=2026)
+    parser.add_argument('--quarter',type=int,default=3)
     parser.add_argument('--data', type=Path, default=DATA)
     parser.add_argument('--feed', type=Path, default=FEED)
     args = parser.parse_args(argv)
     if (args.group is None) != (args.norway is None):
         parser.error('Supply both offline PDFs or neither')
+    if args.quarter not in range(1,5) or args.year < 2026 or (args.year,args.quarter)>(date.today().year,(date.today().month-1)//3+1):
+        raise ValueError('Invalid or future Storebrand reporting period')
     baseline = json.loads(args.data.read_text(encoding='utf-8'))
     # Do not allow a Storebrand import to bypass a pre-existing broken dataset.
     before = audit(baseline)
@@ -67,12 +72,14 @@ def main(argv=None):
             group_url = 'https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026'
             norway_url = 'https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as'
         else:
-            selected = choose_reports(discover()['reports'], 2026, 3)
+            selected = choose_reports(discover(year=args.year)['reports'], args.year, args.quarter)
             group_url = selected['group']['document_url']
             norway_url = selected['norway']['document_url']
             group, norway = work/'group.pdf', work/'norway.pdf'
             download_pdf(group_url, group)
             download_pdf(norway_url, norway)
+        if (args.year,args.quarter)!=(2026,3):
+            raise ValueError('No validated importer for Storebrand '+str(args.year)+' Q'+str(args.quarter)+'; publication blocked')
         merged, feed, added, updated = prepare(group, norway, group_url, norway_url, baseline)
         # Re-running must not introduce new observations or duplicates.
         repeated, second_added, _ = integrate(merged, parse_group(group, group_url) + parse_norway(norway, norway_url))
