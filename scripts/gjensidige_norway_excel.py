@@ -5,6 +5,7 @@ Source is the issuer's own reports index. Never infer geography from group figur
 Values are stored in the workbook as NOK (not NOK millions) and ratios as fractions.
 """
 import hashlib,io,json,re,urllib.parse,urllib.request
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 import openpyxl
@@ -40,7 +41,7 @@ def get(url):
     if len(blob)>20_000_000:raise ValueError('Source too large')
     return blob
 
-def locate_xlsx(page,quarter,base=INDEX):
+def locate_xlsx(page,quarter,base=INDEX,year=2026):
     """Only direct workbook links anchored in the Qn 2026 key-figures row."""
     from html import unescape
     raw=unescape(page.decode('utf-8','replace'))
@@ -50,12 +51,12 @@ def locate_xlsx(page,quarter,base=INDEX):
         url=urllib.parse.urljoin(base,match.group(1))
         if urllib.parse.urlsplit(url).scheme!='https':continue
         context=raw[max(0,match.start()-1500):match.end()+300].lower()
-        if re.search(r'key figures|nøkkeltall',context) and re.search(r'2026',context):
+        if re.search(r'key figures|nøkkeltall',context) and re.search(r'\b'+str(year)+r'\b',context):
             candidates.append(url)
     candidates=list(dict.fromkeys(candidates))
     # A link's proximity alone cannot identify Q1 vs Q2. Require quarter in URL.
     exact=[u for u in candidates if re.search(r'(?i)(?:q|quarter)[_\s%-]*'+str(quarter)+r'(?!\d)',urllib.parse.unquote(u))]
-    if len(exact)!=1:raise ValueError(f'Cannot uniquely verify Q{quarter} 2026 key-figures XLSX URL: {exact}')
+    if len(exact)!=1:raise ValueError(f'Cannot uniquely verify Q{quarter} {year} key-figures XLSX URL: {exact}')
     return exact[0]
 
 def parse(blob,url,quarter,year=2026,include_segments=False):
@@ -139,7 +140,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                 period_type=period,metric=metric,value=round(value,6),unit='percent' if 'ratio' in metric else 'MNOK',
                 status='reported' if metric in ('insurance_revenue','insurance_service_result') else 'calculated',
                 calculation=('Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue' if 'ratio' in metric else None),
-                source_url=url,source_type='official_investor_tables',source_document_url=PDFS[quarter],
+                source_url=url,source_type='official_investor_tables',source_document_url=PDFS.get(quarter) if year==2026 else None,
                 source_sheet=' + '.join(x[1] for x in (sum(cr_inputs.values(),[])+totals['insurance_revenue'] if 'ratio' in metric else totals[metric])),
                 source_cell=' + '.join(x[2] for x in (sum(cr_inputs.values(),[])+totals['insurance_revenue'] if 'ratio' in metric else totals[metric])),
                 source_sha256=hashlib.sha256(blob).hexdigest(),
@@ -152,16 +153,28 @@ if __name__=='__main__':
     page=get(INDEX)
     data=json.loads(DATA.read_text())
     all_segments=[]
-    for q in (1,2):
-        url=locate_xlsx(page,q)
-        rows,segment_rows=parse(get(url),url,q,include_segments=True)
-        all_segments.extend(segment_rows)
-        keys=lambda r:tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
-        old={keys(r):r for r in data['observations']}
-        for r in rows:
-            if keys(r) in old and abs(old[keys(r)]['value']-r['value'])>0.001:raise ValueError('Conflicting Norway observation')
-            old[keys(r)]=r
-        data['observations']=list(old.values())
+    today=date.today()
+    keys=lambda r:tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
+    old={keys(r):r for r in data['observations']}
+    for year in range(2026,today.year+1):
+        for q in range(1,5):
+            if (year,q)>(today.year,(today.month-1)//3+1):
+                continue
+            try:
+                url=locate_xlsx(page,q,year=year)
+            except ValueError:
+                if (year,q)==(today.year,(today.month-1)//3+1):
+                    print(f'Gjensidige Norway Q{q} {year}: awaiting official XLSX')
+                    continue
+                raise
+            rows,segment_rows=parse(get(url),url,q,year=year,include_segments=True)
+            all_segments.extend(segment_rows)
+            for row in rows:
+                key=keys(row)
+                if key in old and abs(old[key]['value']-row['value'])>0.001:
+                    raise ValueError('Conflicting Norway observation')
+                old[key]=row
+    data['observations']=list(old.values())
     if not audit(data)['ok']:raise ValueError('Audit failed')
     DATA.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
     publish()
