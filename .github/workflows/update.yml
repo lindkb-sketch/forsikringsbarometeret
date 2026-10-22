@@ -68,7 +68,7 @@ jobs:
             git commit -m 'Update verified financial feed and report calendar'
             # A newer workflow may have published overlapping generated files.
             # Abort a conflicted rebase before retrying from the latest main.
-            for attempt in 1 3; do
+            for attempt in 1 2 3; do
               if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
               git rebase --abort || true
               sleep 5
