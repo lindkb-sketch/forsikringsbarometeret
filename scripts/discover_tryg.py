@@ -16,7 +16,7 @@ class Links(HTMLParser):
         if self.a:self.a[1].append(data)
     def handle_endtag(self,tag):
         if tag=='a' and self.a:
-            self.links.append((self.a[0],' '.join(' '.join(self.a[1]).split()));self.a=None
+            self.links.append((self.a[0],' '.join(' '.join(self.a[1]).split())));self.a=None
 
 def parse(markup,year):
     p=Links();p.feed(markup)
