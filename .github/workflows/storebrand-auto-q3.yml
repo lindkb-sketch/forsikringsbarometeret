@@ -125,8 +125,8 @@ jobs:
           def key(r):
               return tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
           wanted = {key(r): r['value'] for r in expected['observations']
-                    if r['company'] == 'Storebrand' and r['year'] == 2026 and r['quarter'] == 3}
-          assert wanted, 'No Storebrand Q3 values in generated feed'
+                    if r['company'] == 'Storebrand' and r['year'] == 2026}
+          assert wanted and all(any(k[2]==q and k[3]==scope for k in wanted) for q in (1,2,3) for scope in ('group','norway')), 'Missing Storebrand Q1/Q2/Q3 group or Norway feed values'
           for attempt in range(12):
               try:
                   req = urllib.request.Request(url + '?verification=' + str(int(time.time())),
@@ -137,7 +137,7 @@ jobs:
                   got = {key(r): r['value'] for r in actual['observations']
                          if r['company'] == 'Storebrand' and r['year'] == 2026 and r['quarter'] == 3}
                   if got == wanted:
-                      print('PUBLISHED STOREBRAND Q3 VERIFIED:', len(wanted), 'observations match live GitHub Pages')
+                      print('PUBLISHED STOREBRAND 2026 VERIFIED:', len(wanted), 'observations match live GitHub Pages')
                       break
                   print('Published feed not yet synchronized:', len(got), 'of', len(wanted))
               except Exception as e:
