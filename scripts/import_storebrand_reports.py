@@ -57,7 +57,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
     if quarter not in (3,4) or year < 2026: raise ValueError('Unsupported report period')
     t=texts[7]
-    if not ('Insurance – Results' in t and str(year) in t and (('Q3 Q2 Q1' in t) if quarter==3 else re.search(r'Q4\\s+Q3\\s+Q2',t))):raise ValueError('Group insurance table header changed')
+    if not ('Insurance – Results' in t and str(year) in t and (('Q3 Q2 Q1' in t) if quarter==3 else re.search(r'Q4\s+Q3\s+Q2',t))):raise ValueError('Group insurance table header changed')
     metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
              'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
              'expense_ratio':('Cost ratio','Insurance segment cost ratio'),
@@ -86,7 +86,7 @@ def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
-    if 'Totalresultat' not in t or not ((('3.kvartal' in t) if quarter==3 else re.search(r'4\\.\\s*kvartal',t,re.I))) or not ('01.01 - '+('30.09' if quarter==3 else '31.12')) in t:raise ValueError('Norway income statement header changed')
+    if 'Totalresultat' not in t or not ((('3.kvartal' in t) if quarter==3 else re.search(r'4\.\s*kvartal',t,re.I))) or not ('01.01 - '+('30.09' if quarter==3 else '31.12')) in t:raise ValueError('Norway income statement header changed')
     result=[]
     for metric,label,definition in [
         ('insurance_revenue','Forsikringsinntekter','IFRS 17 forsikringsinntekter'),
