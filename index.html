@@ -1646,4 +1646,45 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  }catch(e){status.textContent='Kildekontrollerte data kunne ikke lastes.';}
 })();
 </script>
-<section id="automated-editorial" style="max-width:1200px;margin:28px auto;padding:20px;border:1px solid #b9c7d4;border-radius:12px"><h2>Kildekontrollert kvartalsbrief</h2><p id="ed-status">Henter verifiserte data …</p><div id="ed-brief"></div><h3>Strategiske kontrollpunkter</h3><div id="ed-implications"></div><h3>Bekreftede nyheter</h3><div id="ed-news"></div></section><script>(async()=>{const status=document.getElementById('ed-status');try{const r=await fetch('data/quarterly_editorial.json',{cache:'no-store'});if(!r.ok)throw Error('Mangler analysefil');const d=await r.json();status.textContent=(d.period||'Ukjent periode')+' · '+(d.coverage==='complete'?'Full dekning':'Ufullstendig dekning; kun verifiserte data vises');for(const [id,items,format] of [['ed-brief',d.brief,x=>x.text],['ed-implications',d.implications,x=>x.text],['ed-news',d.news,x=>x.headline+' ('+x.published_at+')']]){const el=document.getElementById(id);el.replaceChildren();if(!items.length){el.textContent='Ingen kildeverifiserte oppføringer.';continue;}for(const x of items){const paragraph=document.createElement('p');paragraph.textContent=format(x)+' ';const link=document.createElement('a');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Kilde ↗';paragraph.append(link);el.append(paragraph);}}}catch(e){status.textContent='Automatisk analyse ikke tilgjengelig: '+e.message;}})();</script></body></html>
+<section id="automated-editorial" style="max-width:1200px;margin:28px auto;padding:20px;border:1px solid #b9c7d4;border-radius:12px"><h2>Kildekontrollert kvartalsbrief</h2><p id="ed-status">Henter verifiserte data …</p><div id="ed-brief"></div><h3>Strategiske kontrollpunkter</h3><div id="ed-implications"></div><h3>Bekreftede nyheter</h3><div id="ed-news"></div></section><script>(async()=>{const status=document.getElementById('ed-status');try{const r=await fetch('data/quarterly_editorial.json',{cache:'no-store'});if(!r.ok)throw Error('Mangler analysefil');const d=await r.json();status.textContent=(d.period||'Ukjent periode')+' · '+(d.coverage==='complete'?'Full dekning':'Ufullstendig dekning; kun verifiserte data vises');for(const [id,items,format] of [['ed-brief',d.brief,x=>x.text],['ed-implications',d.implications,x=>x.text],['ed-news',d.news,x=>x.headline+' ('+x.published_at+')']]){const el=document.getElementById(id);el.replaceChildren();if(!items.length){el.textContent='Ingen kildeverifiserte oppføringer.';continue;}for(const x of items){const paragraph=document.createElement('p');paragraph.textContent=format(x)+' ';const link=document.createElement('a');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Kilde ↗';paragraph.append(link);el.append(paragraph);}}}catch(e){status.textContent='Automatisk analyse ikke tilgjengelig: '+e.message;}})();</script><script id="verified-q3-dashboard-bridge">
+/* Render audited quarterly observations in the actual comparison table, not only in the appendix. */
+(()=>{
+ const fmt=(v,pct=false)=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:pct?1:0,minimumFractionDigits:pct?1:0}).format(v)+(pct?' %':'');
+ const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',insurance_service_result:'result',return_on_equity:'return',solvency_ratio:'solvency'};
+ async function syncVerified(){
+  try{
+   const response=await fetch('data/verified_financial_feed.json?ts='+Date.now(),{cache:'no-store'});
+   if(!response.ok)throw Error('Finansfeed HTTP '+response.status);
+   const feed=await response.json();
+   if(feed.source_policy!=='official_quarterly_report_only')throw Error('Kildepolicy ikke verifisert');
+   const rows=(feed.observations||[]).filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.year===2026&&r.quarter===3&&r.status==='reported');
+   for(const r of rows){
+    if(!Number.isFinite(r.value))continue;
+    const key=metricKeys[r.metric];if(!key)continue;
+    const d=MON_Q3[r.company]||(MON_Q3[r.company]={});
+    d[key]=fmt(r.value,['cr','loss','cost','return','solvency'].includes(key));
+    if(r.source_url)d.source=r.source_url;
+   }
+   const revenue=(company,year)=>feed.observations.find(r=>r.company===company&&r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue'&&r.year===year&&r.quarter===3&&r.status==='reported');
+   for(const c of ['Fremtind',...companies]){
+    const now=revenue(c,2026),prior=revenue(c,2025);
+    if(now&&prior&&prior.value>0&&Number.isFinite(now.value)&&Number.isFinite(prior.value)){
+     (MON_Q3[c]||(MON_Q3[c]={})).growth=fmt((now.value/prior.value-1)*100,true);
+    }
+   }
+   if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
+  }catch(e){console.warn('Verifiserte kvartalstall kunne ikke oppdateres',e);}
+ }
+ function calendarAlways(){
+  if(typeof home!=='function'||typeof monCalendar!=='function')return;
+  const previous=home;
+  home=function(){const html=previous();return html.includes('class="mon-calendar"')?html:html+monCalendar();};
+  if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
+ }
+ // The live calendar is installed by an earlier script; its data is refreshed independently.
+ calendarAlways();
+ syncVerified();
+ setInterval(syncVerified,300000);
+})();
+</script>
+</body></html>
