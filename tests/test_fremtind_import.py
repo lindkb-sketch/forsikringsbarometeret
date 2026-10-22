@@ -22,11 +22,11 @@ class FremtindImporterTests(unittest.TestCase):
         class PDF:
             def __init__(self, q):
                 self.pages=[Page(f"Kvartalsrapport Q{q} 2026 Fremtind Holding"),Page("Innhold"),Page(
-                    f"Resultatutvikling og nøkkeltall\\nMNOK Q{q} 2026 Q{q} 2025 FY2025\\n"
-                    "Inntekter fra forsikringstjenester 6 205 5 769 23 510\\n"
-                    "Resultat fra forsikringstjenester 1 256 843 4 520\\n"
-                    "Skadeprosent, netto etter gjenforsikring (%) 58,5 % 63,9 % 58,8 %\\n"
-                    "Kostnadsprosent (%) 21,2 % 21,5 % 21,9 %\\n"
+                    f"Resultatutvikling og nøkkeltall\nMNOK Q{q} 2026 Q{q} 2025 FY2025\n"
+                    "Inntekter fra forsikringstjenester 6 205 5 769 23 510\n"
+                    "Resultat fra forsikringstjenester 1 256 843 4 520\n"
+                    "Skadeprosent, netto etter gjenforsikring (%) 58,5 % 63,9 % 58,8 %\n"
+                    "Kostnadsprosent (%) 21,2 % 21,5 % 21,9 %\n"
                     "Combined ratio, netto etter gjenforsikring (%) 79,8 % 85,4 % 80,8 %"),Page("Notes")]
             def __enter__(self): return self
             def __exit__(self,*args): return False
