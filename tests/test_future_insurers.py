@@ -53,7 +53,7 @@ class FutureTests(unittest.TestCase):
     p.parse_pdf(b'%PDF-synthetic',2026,4)
  def test_storebrand_future_period_not_silently_mislabelled(self):
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_asa_q3_2026.pdf'
-  with self.assertRaisesRegex(ValueError,'New report layout'):
+  with self.assertRaisesRegex(ValueError,'header changed'):
    parse_group(fixture,year=2026,quarter=4)
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_forsikring_q3_2026.pdf'
   with self.assertRaisesRegex(ValueError,'New report layout'):
