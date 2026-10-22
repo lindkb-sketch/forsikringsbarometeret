@@ -33,6 +33,14 @@ jobs:
           python -m json.tool data/financial_audit.json > /dev/null
       - name: Discover newly published official report files (diagnostic only)
         run: python scripts/discover_reports.py || echo "::warning::One or more official report indexes unavailable; no unverified data imported"
+      - name: Check all seven companies future-quarter regression suite
+        run: |
+          python -m unittest discover -s tests -p 'test_future_insurers.py' -v
+          python -m unittest discover -s tests -p 'test_sampo_future.py' -v
+          python -m unittest discover -s tests -p 'test_protector_quarters.py' -v
+          python -m unittest discover -s tests -p 'test_frende_fremtind_discovery.py' -v
+          python -m unittest discover -s tests -p 'test_gjensidige_report_check.py' -v
+          python -m unittest discover -s tests -p 'test_discover_reports.py' -v
       - name: Discover Frende Holding and Fremtind Holding official report candidates
         run: python scripts/discover_frende_fremtind.py || echo "::warning::Issuer archives unavailable; no unverified data imported"
       - name: Generate honest seven-company import coverage
