@@ -43,7 +43,7 @@ def extract(markup):
             positions = [i for i,v in enumerate(window) if v == label]
             if not positions: raise ValueError(f"Missing {scope} {label}")
             values = window[positions[0]+1:positions[0]+6]
-            if len(values) != 5 or any(not re.fullmatch(r"-?\\d+(?:[.,]\\d+)?%?|\\(-?\\d+(?:[.,]\\d+)?\\)", v) for v in values):
+            if len(values) != 5 or any(not re.fullmatch(r"-?\d+(?:[.,]\d+)?%?|\(-?\d+(?:[.,]\d+)?\)", v) for v in values):
                 raise ValueError(f"Invalid values for {scope} {label}: {values}")
             for q, value in zip((3,2,1), values[:3]):
                 numeric = float(value.strip("()%").replace(",","."))
