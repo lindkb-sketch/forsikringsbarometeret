@@ -77,24 +77,14 @@ def extract(blob, url):
                 rest = line[len(label):].strip()
                 # Greedy grouping can merge adjacent columns: "1 256 843 4 520"
                 # must be 1256 | 843 | 4520, not 1256843 | 4 | 520.
+                tokens = rest.replace("\u00a0", " ").split()
                 matches = []
-                for first in re.finditer(amount, rest):
-                    if first.start() != 0:
-                        continue
-                    for second in re.finditer(amount, rest[first.end():]):
-                        if second.start() == 0:
+                for i in range(1, len(tokens)-1):
+                    for j in range(i+1, len(tokens)):
+                        values = [" ".join(tokens[:i]), " ".join(tokens[i:j]), " ".join(tokens[j:])]
+                        if not all(re.fullmatch(amount, v) for v in values):
                             continue
-                        start3 = first.end() + second.end()
-                        third = re.fullmatch(r"\\s+" + amount, rest[start3:])
-                        if not third:
-                            continue
-                        values = (first.group(), second.group(), third.group().strip())
-                        try:
-                            nums = tuple(number(v) for v in values)
-                        except ValueError:
-                            continue
-                        # The report has three comparable columns. Penalize
-                        # implausible merged million-unit figures.
+                        nums = tuple(number(v) for v in values)
                         lengths = [len(str(int(abs(n)))) for n in nums]
                         score = max(lengths) - min(lengths)
                         matches.append((score, nums))
