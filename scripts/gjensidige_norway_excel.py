@@ -67,7 +67,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
     sheets={}
     for prefix in SHEETS:
         matches=[s for s in wb.sheetnames if s.casefold().startswith(prefix[:25].casefold())]
-        if len(matches)!=1:raise ValueError('Missing or ambiguous Norway worksheet: '+prefix)
+        if len(matches)!=1:raise ValueError('Missing or ambiguous Norway worksheet: '+prefix+'; sheetnames='+repr(wb.sheetnames))
         sheets[prefix]=wb[matches[0]]
     output=[]
     segments=[]
