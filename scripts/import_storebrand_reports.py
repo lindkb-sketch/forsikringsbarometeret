@@ -94,6 +94,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Forsikring',year)
     if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
+    if quarter==4:raise ValueError('Storebrand Forsikring AS Q4 requires annual report minus Q3 YTD; use parse_norway_annual_q4')
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
     if 'Totalresultat' not in t or not ((('3.kvartal' in t) if quarter==3 else re.search(r'4\.\s*kvartal',t,re.I))) or not ('01.01 - '+('30.09' if quarter==3 else '31.12')) in t:raise ValueError('Norway income statement header changed')
