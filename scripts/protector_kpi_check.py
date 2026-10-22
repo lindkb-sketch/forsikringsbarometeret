@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Fail-closed independent Protector issuer KPI verification (no publication)."""
+import hashlib, html, json, re, urllib.request
+from html.parser import HTMLParser
+
+URL = "https://investor.protectorforsikring.no/data"
+PERIODS = {"Q1 26": 1, "Q2 26": 2, "Q3 26": 3}
+METRICS = {
+    "Insurance revenue": "insurance_revenue",
+    "Insurance service result": "insurance_service_result",
+    "Loss ratio": "loss_ratio",
+    "Cost ratio": "expense_ratio",
+    "Combined ratio": "combined_ratio",
+}
+class Text(HTMLParser):
+    def __init__(self):
+        super().__init__(); self.parts = []
+    def handle_data(self, data):
+        value = html.unescape(data).strip()
+        if value: self.parts.append(value)
+
+def extract(markup):
+    parser = Text(); parser.feed(markup)
+    tokens = parser.parts
+    result = {}
+    for scope, title in (("group", "Protector"), ("norway", "Norway")):
+        # Locate a period header with the five quarter columns, then read KPI rows.
+        candidates = []
+        for i in range(len(tokens)-5):
+            if tokens[i:i+3] != ["Q3 26", "Q2 26", "Q1 26"]: continue
+            window = tokens[i:i+130]
+            if not all(metric in window for metric in METRICS): continue
+            candidates.append((i, window))
+        # Scope is established by the closest preceding geographical heading.
+        qualified = []
+        for i, window in candidates:
+            previous = [t for t in tokens[max(0,i-140):i] if t in ("Protector", "Norway", "Sweden", "United Kingdom", "Denmark", "France")]
+            if previous and previous[-1] == title: qualified.append(window)
+        if len(qualified) != 1:
+            raise ValueError(f"Ambiguous {scope} KPI table: {len(qualified)} matches")
+        window = qualified[0]
+        for label, metric in METRICS.items():
+            positions = [i for i,v in enumerate(window) if v == label]
+            if len(positions) != 1: raise ValueError(f"Ambiguous {scope} {label}")
+            values = window[positions[0]+1:positions[0]+6]
+            if len(values) != 5 or any(not re.fullmatch(r"-?\\d+(?:[.,]\\d+)?%?|\\(-?\\d+(?:[.,]\\d+)?\\)", v) for v in values):
+                raise ValueError(f"Invalid values for {scope} {label}: {values}")
+            for q, value in zip((3,2,1), values[:3]):
+                numeric = float(value.strip("()%").replace(",","."))
+                if value.startswith("("): numeric = -numeric
+                result[(scope,q,metric)] = numeric
+    if len(result) != 30: raise ValueError(f"Expected 30 KPI values, found {len(result)}")
+    return result
+
+def main():
+    request=urllib.request.Request(URL,headers={"User-Agent":"Forsikringsbarometeret/1.0"})
+    with urllib.request.urlopen(request,timeout=35) as response:
+        if response.status != 200 or response.geturl().split("/")[2] != "investor.protectorforsikring.no":
+            raise ValueError("Untrusted issuer response")
+        blob=response.read(4_000_001)
+    if len(blob)>4_000_000: raise ValueError("Issuer page too large")
+    result=extract(blob.decode("utf-8"))
+    print(json.dumps({"source":URL,"sha256":hashlib.sha256(blob).hexdigest(),"year":2026,"values":[{"scope":s,"quarter":q,"metric":m,"value":v} for (s,q,m),v in sorted(result.items())]},indent=2))
+if __name__=="__main__": main()
