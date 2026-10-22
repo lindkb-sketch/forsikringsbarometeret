@@ -14,7 +14,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: forsikringsbarometeret-publish
+  group: storebrand-verified-publication
   cancel-in-progress: false
 jobs:
   storebrand-q3:
