@@ -24,6 +24,10 @@ class FrendeTests(unittest.TestCase):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2026</th><th>2. kv 2025</th><th>30.06.26</th></tr><tr><td>Sum driftsinntekter</td><td>935 132</td><td>823 863</td><td>2 758 452</td></tr></table>'
         rows=extract_revenue(markup,'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',2026,2)
         self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',935.132),('ytd',2758.452)])
+    def test_2025_income_ytd_date_range(self):
+        markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2025</th><th>2. kv 2024</th><th>01.01-30.06.25</th></tr><tr><td>Sum driftsinntekter</td><td>823 863</td><td>656 381</td><td>1 700 000</td></tr></table>'
+        rows=extract_revenue(markup,'https://frende.wrep.it/q2-2025-frende-holding-as/sec/7',2025,2)
+        self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',823.863),('ytd',1700.0)])
     def test_future_q3_publisher_layout(self):
         q2=table(2)
         q3=q2.replace('Q2 2026','Q3 2026').replace('Pr Q2 2026','Pr Q3 2026').replace('Q2 2025','Q3 2025').replace('Pr Q2 2025','Pr Q3 2025')
