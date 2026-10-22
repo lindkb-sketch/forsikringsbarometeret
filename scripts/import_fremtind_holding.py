@@ -171,6 +171,8 @@ def run():
                    "inputs": [previous["source_url"], current["source_url"]]}
         imported.append(derived)
         index[(year, quarter, "quarter", metric)] = derived
+    if not imported and not any(r.get("company") == "Fremtind" for r in existing["observations"]):
+        raise ValueError("Fremtind: no validated official PDF observations; sample failures: " + json.dumps(errors[:5]))
     if imported:
         merged = {**existing, "observations": existing["observations"] + imported}
         check = audit(merged)
