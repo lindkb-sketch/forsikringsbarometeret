@@ -46,6 +46,51 @@ def discover_quarter(quarter, year=2026, fetcher=fetch):
         raise ValueError(f'Ambiguous Gjensidige Q{quarter} PDF candidates: {sorted(urls)}')
     return next(iter(urls)) if urls else None
 
+def parse_group_table(pages, year, quarter, url, sha):
+    """Read Group highlights' numerical table, not the two-column narrative.
+
+    On the official Gjensidige PDFs the group table is on printed page 3
+    (PDF page 4), with current-quarter values in the first numeric column
+    and YTD in the third for Q2 onward.
+    """
+    labels = {
+        'insurance_revenue': 'Insurance revenue from general insurance',
+        'insurance_service_result': 'Insurance service result general insurance',
+        'combined_ratio': 'Combined ratio',
+        'expense_ratio': 'Cost ratio',
+        'loss_ratio': 'Loss ratio, net of reinsurance',
+    }
+    table_pages = [(p, text) for p, text in pages if
+                   'Insurance service result general insurance' in text and
+                   'Insurance revenue from general insurance' in text and
+                   'NOK millions' in text]
+    if len(table_pages) != 1:
+        raise ValueError('Cannot uniquely locate Gjensidige group highlights table')
+    page, text = table_pages[0]
+    lines = text.splitlines()
+    result = []
+    for metric, label in labels.items():
+        matching = [line for line in lines if
+                    re.match(r'^\s*' + re.escape(label) + r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰]+)?\s+', line, re.I)]
+        if len(matching) != 1:
+            if metric == 'loss_ratio':
+                continue
+            raise ValueError(f'Ambiguous Gjensidige group table metric: {metric}')
+        remainder = matching[0][len(label):]
+        remainder = re.sub(r'^[¹²³⁴⁵⁶⁷⁸⁹⁰\s]+', '', remainder)
+        values = re.findall(r'(?<![A-Za-z0-9])[-]?\d[\d,]*\.\d+(?!\d)', remainder)
+        if len(values) < (3 if quarter > 1 else 1):
+            raise ValueError(f'Insufficient group table columns for {metric}')
+        for period, index in [('quarter', 0)] + ([('ytd', 2)] if quarter > 1 else []):
+            result.append(dict(company='Gjensidige', year=year, quarter=quarter,
+                scope='group', source_scope='group', period_type=period, metric=metric,
+                value=float(values[index].replace(',', '')),
+                unit='percent' if 'ratio' in metric else 'MNOK', status='reported',
+                source_url=url, source_type='official_quarterly_report',
+                source_page=page, source_sha256=sha,
+                source_section='Group highlights / Alternative performance measures'))
+    return result
+
 def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
     if not audit(existing)['ok']:
         raise ValueError('Baseline financial observations failed audit')
@@ -67,7 +112,7 @@ def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
             not (f'{name} quarter' in opening or re.search(rf'\b{quarter}(?:st|nd|rd|th) quarter\b', opening))):
             raise ValueError(f'PDF cover does not identify Gjensidige Q{quarter} {year}')
         sha = hashlib.sha256(blob).hexdigest()
-        rows = parse_highlights(pages, 'Gjensidige', year, quarter, url, sha)
+        rows = parse_group_table(pages, year, quarter, url, sha)
         found = {r['metric'] for r in rows if r['period_type'] == 'quarter'}
         if not REQUIRED <= found:
             raise ValueError(f'Gjensidige Q{quarter} {year} missing verified quarterly metrics: {sorted(REQUIRED-found)}')
