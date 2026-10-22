@@ -54,18 +54,25 @@ def extract(section_html,url,year,quarter):
         elif quarter==4 and str(year) in header:ytd_col=header.index(str(year))
         elif quarter!=4:raise ValueError('Missing YTD column')
     records={row[0]:row for row in t.rows[1:] if row}
-    if not all(label in records for label in FIELDS):raise ValueError('Missing required KPI rows')
+    missing=[label for label in FIELDS if label not in records]
+    if missing and not (quarter==4 and missing==['Kostnads %']):
+        raise ValueError('Missing required KPI rows: '+repr(missing))
     if 'Resultat før skatt' not in records:raise ValueError('Missing income KPI')
     digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
     results=[]
     for period,col in [('quarter',1)]+([('ytd',ytd_col)] if ytd_col else ([('ytd',1)] if quarter==1 else [])):
-        values={metric:number(records[label][col],True) for label,metric in FIELDS.items()}
+        values={metric:number(records[label][col],True) for label,metric in FIELDS.items() if label in records}
+        calculated_expense='expense_ratio' not in values
+        if calculated_expense:
+            values['expense_ratio']=round(values['combined_ratio']-values['loss_ratio'],3)
         if abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.25:
             raise ValueError('Combined ratio does not reconcile')
         for label,metric in FIELDS.items():
             results.append({'company':'Frende','year':year,'quarter':quarter,'scope':'group',
                 'period_type':period,'metric':metric,'value':values[metric],'unit':'percent',
-                'status':'reported','source_type':'official_quarterly_report','source_url':url,
+                'status':'calculated' if calculated_expense and metric=='expense_ratio' else 'reported',
+                **({'calculation':'combined_ratio - loss_ratio'} if calculated_expense and metric=='expense_ratio' else {}),
+                'source_type':'official_quarterly_report','source_url':url,
                 'source_page':6,'source_entity':'Frende Holding AS konsern',
                 'source_document_period':f'Q{quarter} {year}','source_definition':label,
                 'source_sha256':digest})
