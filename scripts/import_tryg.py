@@ -38,7 +38,7 @@ def parse_group(blob,year,quarter,url):
         if not re.search(r'\b'+str(year)+r'\b',lines[1]):raise ValueError('Year mismatch')
         out=[]
         for metric,label in FIELDS.items():
-            pattern=r'^'+label+r'(?:a\))?\s+'+r'\s+'.join('('+NUMBER+')' for _ in range(column_count))+r'\s*$'
+            pattern=r'^'+label+r'(?:\\*|a\\))?\\s+'+r'\s+'.join('('+NUMBER+')' for _ in range(column_count))+r'\s*$'
             found=[re.match(pattern,line.strip(),re.I) for line in lines]
             matches=[m for m in found if m]
             if len(matches)!=1:
