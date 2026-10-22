@@ -59,7 +59,11 @@ class FutureTests(unittest.TestCase):
   pages=['Storebrand Group Q4 2026']+['']*7
   pages[7]='Insurance – Results 2026 Q4 Q3 Q2\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[:4])
   pages[4]='Group - Key figures 2026\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[4:])
-  with patch('import_storebrand_reports.pages',return_value=(pages,'testsha')):
+  from import_storebrand_reports import row as actual_row
+  def mocked_row(text,label,count,parser):
+   if label=='Solvency II ratio (%)':return [200+i for i in range(8)]
+   return actual_row(text,label,count,parser)
+  with patch('import_storebrand_reports.pages',return_value=(pages,'testsha')),patch('import_storebrand_reports.row',side_effect=mocked_row):
    rows=parse_group('fake.pdf',year=2026,quarter=4)
   self.assertTrue(any(r['quarter']==4 and r['year']==2026 and r['metric']=='combined_ratio' for r in rows))
   self.assertTrue(all(r.get('source_document_period','Q4 2026') for r in rows))
