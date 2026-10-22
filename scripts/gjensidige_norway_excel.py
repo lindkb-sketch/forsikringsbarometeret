@@ -84,21 +84,27 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                     source_sheet=ws.title,source_cell=cell.coordinate))
         revenue=sum(x[0] for x in totals['insurance_revenue'])
         service=sum(x[0] for x in totals['insurance_service_result'])
-        loss_expense={}
-        for metric in ('loss_ratio','expense_ratio','combined_ratio'):
-            loss_expense[metric]=sum(totals['insurance_revenue'][i][0]*totals[metric][i][0] for i in range(2))/revenue
-        if abs(loss_expense['combined_ratio']-loss_expense['loss_ratio']-loss_expense['expense_ratio'])>0.02:
-            raise ValueError('Norway combined ratio mismatch')
+        if revenue <= 0:
+            raise ValueError('Norway insurance revenue must be positive')
+        # Calculate the total from summed monetary rows, never by averaging
+        # segment percentages. Combined ratio follows the insurance-service
+        # result identity used in the financial tables.
+        combined=100*(revenue-service)/revenue
+        if not 0 <= combined <= 200:
+            raise ValueError('Norway combined ratio outside reasonable range')
+        # The workbook percentage rows alone do not establish the monetary
+        # claims and expense components. Do not manufacture Norway loss/cost.
+        loss_expense={'combined_ratio':combined}
         for metric,value in [('insurance_revenue',revenue),('insurance_service_result',service)]+list(loss_expense.items()):
             output.append(dict(company='Gjensidige',year=year,quarter=quarter,scope='norway',source_scope='norway',
                 period_type=period,metric=metric,value=round(value,6),unit='percent' if 'ratio' in metric else 'MNOK',
                 status='reported' if metric in ('insurance_revenue','insurance_service_result') else 'calculated',
-                calculation=('Revenue-weighted Private Norway + Commercial Norway ratio' if 'ratio' in metric else None),
+                calculation=('100 * (PM revenue + BM revenue - PM service result - BM service result) / (PM revenue + BM revenue)' if metric=='combined_ratio' else None),
                 source_url=url,source_type='official_investor_tables',source_document_url=PDFS[quarter],
                 source_sheet=' + '.join(x[1] for x in totals[metric]),
                 source_cell=' + '.join(x[2] for x in totals[metric]),
                 source_sha256=hashlib.sha256(blob).hexdigest(),
-                source_section='Private Norway + Commercial Norway; NOK -> MNOK; ratios revenue weighted'))
+                source_section='PM Norway + BM Norway; summed monetary amounts; combined ratio from revenue and service result'))
     return (output,segments) if include_segments else output
 
 if __name__=='__main__':
