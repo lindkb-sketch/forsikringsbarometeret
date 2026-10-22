@@ -163,7 +163,7 @@ def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
     if year!=2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand Norway period')
     texts,sha=pages(path,'Storebrand Forsikring',year)
     page,t=_unique_table(texts,'Totalresultat')
-    if not re.search(r'0[1-9]\\.0[1-9]\\s*-\\s*(?:31\\.03|30\\.06)',t) and not ('31.03' if quarter==1 else '30.06') in t:
+    if not re.search(r'0[1-9]\.0[1-9]\s*-\s*(?:31\.03|30\.06)',t) and not ('31.03' if quarter==1 else '30.06') in t:
         raise ValueError('Norway statement period header mismatch')
     count=3 if quarter==1 else 5
     vals={label:row(t,label,count,number) for label in ('Forsikringsinntekter','Totalt forsikringsresultat','Forsikringskostnader','Netto resultat fra reassuransekontrakter')}
@@ -183,7 +183,7 @@ def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
                      calculation_inputs={'insurance_expenses':costs,'net_reinsurance_result':reinsurance,'insurance_revenue':revenue})
         result.append(r)
     prose=texts[1]
-    claim=re.search(r'Netto skadeprosent\\s+inkludert reassuranse endte på\\s+(\\d+)\\s+prosent',prose,re.I)
+    claim=re.search(r'Netto skadeprosent\s+inkludert reassuranse endte på\s+(\d+)\s+prosent',prose,re.I)
     if not claim:raise ValueError('Storebrand Norway claims ratio not reported')
     result.append(obs('norway',year,quarter,'quarter','loss_ratio',float(claim.group(1)),2,url,sha,'Netto skadeprosent inkludert reassuranse; as reported','Storebrand Forsikring AS',year,quarter))
     solvency=[(i,t) for i,t in enumerate(texts) if 'Solvenskapitalkrav og -margin' in t]
