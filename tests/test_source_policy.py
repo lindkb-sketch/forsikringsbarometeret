@@ -18,4 +18,9 @@ class SourcePolicyTest(unittest.TestCase):
     source_section='Quarterly outline - Geography / Norwegian general insurance',source_document_period='Q3 2026')
   self.assertFalse(validate_source_policy([row]))
   self.assertTrue(validate_source_policy([{**row,'source_section':'Group summary'}]))
+class StorebrandNorwayQ4Policy(unittest.TestCase):
+ def test_global_audit_rejects_storebrand_norway_q4(self):
+  from audit_financials import audit
+  row=dict(company='Storebrand',year=2026,quarter=4,scope='norway',period_type='quarter',metric='insurance_revenue',value=100,source_url='https://storebrand.no/report.pdf',source_type='official_quarterly_report',source_page=1)
+  self.assertTrue(any('Q4 must remain blank' in e for e in audit({'observations':[row]})['errors']))
 if __name__=='__main__':unittest.main()
