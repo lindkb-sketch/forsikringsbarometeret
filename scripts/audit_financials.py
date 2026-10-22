@@ -17,6 +17,8 @@ def audit(data):
         for field in ("company","year","quarter","scope","period_type","metric","value","source_url","source_type"):
             if r.get(field) is None or r.get(field)=="": errors.append(f"{label}: missing {field}")
         if r.get("company") not in COMPANIES:errors.append(f"{label}: unknown company")
+        if r.get('company')=='Storebrand' and r.get('scope')=='norway' and r.get('quarter')==4:
+            errors.append(f'{label}: Storebrand Forsikring AS has no standalone Q4 report; Q4 must remain blank')
         if r.get("metric") not in METRICS:errors.append(f"{label}: unknown metric")
         if r.get("source_type")=="official_investor_tables":
             if r.get("company") not in ("Tryg","Gjensidige") or r.get("scope")!="norway":
