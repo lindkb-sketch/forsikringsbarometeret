@@ -8,8 +8,8 @@ class NorwaySegments(unittest.TestCase):
     def test_private_and_commercial_sum_and_weighted_ratios(self):
         wb=openpyxl.Workbook();wb.remove(wb.active)
         for name,revenue,result,loss,cost in [
-            ('General Insurance Private Norwa',4_000_000_000,1_000_000_000,.6,.1),
-            ('General Insurance Commercial No',6_000_000_000,2_000_000_000,.5,.15)]:
+            ('General Insurance Private Norwa',4000,1000,.6,.1),
+            ('General Insurance Commercial No',6000,2000,.5,.15)]:
             ws=wb.create_sheet(name)
             ws['A3']='NOK millions';ws['B3']='Q2 2026';ws['D3']='YTD 2026'
             for row,label,value in [(5,'Insurance revenue',revenue),(11,'Insurance service result',result),
