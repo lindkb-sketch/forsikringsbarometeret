@@ -31,17 +31,17 @@ def candidates(company,markup):
   p=urllib.parse.urlparse(url)
   if p.scheme!='https' or p.hostname not in ALLOWED[company]:continue
   if company=='Frende':
-   m=re.search(r'([1-4])\\.\\s*kvartal\\s+Frende Holding AS\\s+(20\\d{2})',link['label'],re.I) 
+   m=re.search(r'([1-4])\.\s*kvartal\s+Frende Holding AS\s+(20\d{2})',link['label'],re.I) 
    if not m:
     filename=urllib.parse.unquote(p.path).replace('_',' ')
-    m2=re.search(r'Frende\\s+Holding(?:\\s+AS)?\\s+Kvartalsrapport\\s+Q([1-4])\\s+(20\\d{2})',filename,re.I)
+    m2=re.search(r'Frende\s+Holding(?:\s+AS)?\s+Kvartalsrapport\s+Q([1-4])\s+(20\d{2})',filename,re.I)
     if m2:m=m2
    if not m:continue
    year=int(m.group(2));quarter=int(m.group(1))
   else:
    # Fremtind's archive uses generic 'PDF' link labels. Do not
    # guess the year, entity or quarter from link order.
-   if not re.search(r'\\.pdf(?:$|\\?)',url,re.I):continue
+   if not re.search(r'\.pdf(?:$|\?)',url,re.I):continue
    out.append(dict(company=company,document_url=url,status='requires_pdf_entity_and_period_verification',archive_url=base))
    continue
   out.append(dict(company=company,year=year,quarter=quarter,document_url=url,
