@@ -8,6 +8,7 @@ on:
     paths:
       - '.github/workflows/gjensidige-publish.yml'
       - 'scripts/gjensidige_publish.py'
+      - 'scripts/gjensidige_norway_excel.py'
       - 'scripts/gjensidige_report_check.py'
       - 'scripts/ingest_official_pdf.py'
       - 'tests/test_gjensidige*.py'
@@ -35,18 +36,6 @@ jobs:
           python-version: '3.12'
       - name: Install report dependencies
         run: python -m pip install -r requirements-reports.txt
-      - name: Discover official Gjensidige Norway workbook sources
-        continue-on-error: true
-        run: |
-          python - <<'PY'
-          import re,urllib.request,html
-          url='https://www.gjensidige.com/investor-relations/reports-and-presentations'
-          req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
-          with urllib.request.urlopen(req,timeout=25) as f: page=f.read(4000000).decode('utf-8','replace')
-          matches=re.findall(r'(?:href|src)=["\\']([^"\\']+)["\\']',page,re.I)
-          print('Official IR page bytes:',len(page),'xlsx links:',[html.unescape(x) for x in matches if '.xls' in x.lower()][:40])
-          print('Excel context:',[page[max(0,m.start()-200):m.end()+250] for m in list(re.finditer('Excel|xlsx|key figures|nøkkeltall',page,re.I))[:5]])
-          PY
       - name: Compile all Python sources before running tests
         run: python -m compileall -q scripts tests
       - name: Test Gjensidige extraction and publisher
@@ -55,6 +44,8 @@ jobs:
         run: python scripts/audit_financials.py
       - name: Import only validated official Gjensidige quarterly PDFs
         run: python scripts/gjensidige_publish.py
+      - name: Validate Norway Excel extraction against PM and BM standalone ratios
+        run: python scripts/gjensidige_norway_excel.py
       - name: Audit and validate publication files
         run: |
           python scripts/audit_financials.py
@@ -62,10 +53,10 @@ jobs:
           python -m json.tool data/verified_financial_feed.json > /dev/null
       - name: Commit verified Gjensidige observations
         run: |
-          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json; then
+          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json data/gjensidige_norway_segments.json; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/financial_observations.json data/verified_financial_feed.json
+            git add data/financial_observations.json data/verified_financial_feed.json data/gjensidige_norway_segments.json
             git commit -m 'Publish verified Gjensidige quarterly observations'
             git push origin HEAD:main
           fi
