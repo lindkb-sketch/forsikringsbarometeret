@@ -29,6 +29,10 @@ jobs:
         run: |
           python scripts/import_fremtind_holding.py
           python scripts/audit_financials.py
+      - name: Live Frende Holding publisher import and audit (no publication)
+        run: |
+          python scripts/import_frende_holding.py
+          python scripts/audit_financials.py
       - name: Show verified Fremtind and Frende quarterly coverage
         run: |
           python - <<'PY'
