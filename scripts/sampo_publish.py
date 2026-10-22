@@ -30,7 +30,7 @@ def discover(year,quarter):
    for href in parser.links:
     url=urllib.parse.urljoin(index,href)
     label=urllib.parse.unquote(url).lower()
-    if not re.search(r'\\.pdf(?:$|[?#])',label):continue
+    if not re.search(r'\.pdf(?:$|[?#])',label):continue
     if not re.search(rf'(q{quarter}[^0-9]{{0,20}}{year}|{year}[^0-9]{{0,20}}q{quarter}|interim.statement.q{quarter}.{year}|half.year.financial.report.{year})',label):continue
     if 'presentation' in label:continue
     urls.add(url)
