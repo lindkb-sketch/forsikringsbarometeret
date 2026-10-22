@@ -31,6 +31,7 @@ def parse_group(blob,year,quarter,url):
                 candidates.append((page_no,lines[i+1:i+55]))
         if len(candidates)!=1:raise ValueError('Tryg group income overview missing or ambiguous')
         page_no,lines=candidates[0]
+        print('TRYG_INCOME_OVERVIEW',year,quarter,'page',page_no,'rows',repr(lines[:36]),flush=True)
         if not re.search(r'Q\s*'+str(quarter)+r'\b',lines[0],re.I):raise ValueError('Quarter mismatch')
         if not re.search(r'\b'+str(year)+r'\b',lines[1]):raise ValueError('Year mismatch')
         out=[]
