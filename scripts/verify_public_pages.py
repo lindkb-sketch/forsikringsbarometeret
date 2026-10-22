@@ -47,6 +47,22 @@ def check():
             if html!=local_html:raise ValueError('Published dashboard HTML differs from deployed artifact')
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
+            for marker in ('id="verified-q3-dashboard-bridge"',
+                           'id="live-editorial-market-updates"',
+                           'id="live-report-calendar"',
+                           'data/verified_financial_feed.json?ts=',
+                           'quarterly_editorial.json',
+                           'official_news.json',
+                           'stock_prices.json',
+                           'mon-cal-countdown'):
+                if marker not in html:raise ValueError('Public dashboard missing live component: '+marker)
+            for company in ('Protector','Storebrand'):
+                q3={r['metric'] for r in feed['observations']
+                    if r.get('company')==company and r.get('year')==2026
+                    and r.get('quarter')==3 and r.get('scope')=='group'
+                    and r.get('period_type')=='quarter' and r.get('status')=='reported'}
+                missing={'combined_ratio','loss_ratio','expense_ratio'}-q3
+                if missing:raise ValueError(company+' Q3 missing dashboard KPIs: '+str(missing))
             rows=[r for r in feed['observations'] if r.get('company')=='Protector']
             if not rows:print('WARNING: Protector has no PDF-verified published financial observations')
             stock=public['stock_prices.json']['prices'].get('Protector')
