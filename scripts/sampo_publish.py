@@ -29,7 +29,6 @@ def parse(blob,url,year,quarter):
    if segment=='Sampo Group':
     if 'Insurance revenue (incl. brokerage), net' not in text or 'Nordic underlying development' not in text:continue
     block=text.split('Nordic underlying development')[0]
-   else:continue
    else:
     match=re.search(r'(?m)^'+re.escape(segment)+r'\\s*$',text)
     if not match:continue
