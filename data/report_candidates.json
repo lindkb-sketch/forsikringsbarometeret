@@ -1,0 +1,90 @@
+{
+  "candidates": [
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/307/Frende_Skadeforsikring_AS_Kvartalsrapport_Q3_2024.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "3. kvartal Frende Skadeforsikring AS 2024"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/302/Frende_Skadeforsikring_AS_Kvartalsrapport_Q2_2024.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2. kvartal Frende Skadeforsikring AS 2024"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/292/Frende_Skadeforsikring_AS_Kvartalsrapport_Q1_2024.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "1. kvartal Frende Skadeforsikring AS 2024"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/277/Kvartalsrapport_Frende_Skadeforsikring_AS_3._kvartal_2023.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "3. kvartal Frende Skadeforsikring AS 2023"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/270/Kvartalsrapport_Frende_Skadeforsikring_AS_Q2_2023.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2. kvartal Frende Skadeforsikring AS 2023"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/259/Kvartalsrapport_Frende_Skadeforsikring_AS_-_1._kvartal_2023.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "1. kvartal Frende Skadeforsikring AS 2023"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/242/3_2022_Kvartalsrapport_Frende_Skadeforsikring_AS_3L9AwcG.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "3. kvartal Frende Skadeforsikring AS 2022"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/232/2_2022_Kvartalsrapport_Frende_Skadeforsikring_AS.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2. kvartal Frende Skadeforsikring AS 2022"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/137/Kvartalsrapport_Frende_Skadeforsikring_2._kvartal_2020.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2. kvartal Frende Skadeforsikring AS 2020"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/82/Frende_Skadeforsikring_kvartalsrapport_3._kvartal_2017.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "3. kvartal Frende Skadeforsikring AS 2017"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/78/Frende_Skadeforsikring_kvartalsrapport_2._kvartal_2017.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2. kvartal Frende Skadeforsikring AS 2017"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/72/Frende_Skadeforsikring_kvartalsrapport_1._kvartal_2017.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "1. kvartal Frende Skadeforsikring AS 2017"
+    },
+    {
+      "company": "Sampo",
+      "document_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q2/half-year-financial-report-2026.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Half-Year Financial Report 2026download"
+    },
+    {
+      "company": "Sampo",
+      "document_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q2/sustainability-factbook-q2-2026.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Sustainability Factbookdownload"
+    }
+  ],
+  "errors": [],
+  "complete": true
+}

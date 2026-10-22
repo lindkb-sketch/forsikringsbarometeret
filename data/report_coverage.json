@@ -14,8 +14,11 @@
       "company": "Gjensidige",
       "official_archive_registered": true,
       "direct_pdf_registered": 0,
-      "group_quarter_observations": 0,
-      "group_quarters_with_required_metrics": [],
+      "group_quarter_observations": 10,
+      "group_quarters_with_required_metrics": [
+        "2026-Q1",
+        "2026-Q2"
+      ],
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -32,8 +35,11 @@
       "company": "Sampo",
       "official_archive_registered": true,
       "direct_pdf_registered": 0,
-      "group_quarter_observations": 0,
-      "group_quarters_with_required_metrics": [],
+      "group_quarter_observations": 10,
+      "group_quarters_with_required_metrics": [
+        "2026-Q1",
+        "2026-Q2"
+      ],
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -50,8 +56,12 @@
       "company": "Protector",
       "official_archive_registered": true,
       "direct_pdf_registered": 0,
-      "group_quarter_observations": 0,
-      "group_quarters_with_required_metrics": [],
+      "group_quarter_observations": 15,
+      "group_quarters_with_required_metrics": [
+        "2026-Q1",
+        "2026-Q2",
+        "2026-Q3"
+      ],
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -59,7 +69,7 @@
       "company": "Storebrand",
       "official_archive_registered": true,
       "direct_pdf_registered": 1,
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 26,
       "group_quarters_with_required_metrics": [],
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"

@@ -452,46 +452,6 @@
       "company": "Gjensidige",
       "scope": "norway",
       "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "quarter",
       "metric": "return_on_equity",
       "year": 2026,
       "quarter": 2
@@ -501,46 +461,6 @@
       "scope": "norway",
       "period_type": "quarter",
       "metric": "solvency_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "expense_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -564,46 +484,6 @@
       "company": "Gjensidige",
       "scope": "group",
       "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "quarter",
       "metric": "return_on_equity",
       "year": 2026,
       "quarter": 2
@@ -620,46 +500,6 @@
       "company": "Gjensidige",
       "scope": "group",
       "period_type": "ytd",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "expense_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Gjensidige",
-      "scope": "group",
-      "period_type": "ytd",
       "metric": "return_on_equity",
       "year": 2026,
       "quarter": 2
@@ -669,46 +509,6 @@
       "scope": "group",
       "period_type": "ytd",
       "metric": "solvency_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -781,46 +581,6 @@
       "scope": "norway",
       "period_type": "ytd",
       "metric": "solvency_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Protector",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -1012,46 +772,6 @@
       "company": "Sampo",
       "scope": "group",
       "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Sampo",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Sampo",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Sampo",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Sampo",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Sampo",
-      "scope": "group",
-      "period_type": "quarter",
       "metric": "return_on_equity",
       "year": 2026,
       "quarter": 2
@@ -1124,38 +844,6 @@
       "company": "Storebrand",
       "scope": "norway",
       "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "norway",
-      "period_type": "quarter",
       "metric": "expense_ratio",
       "year": 2026,
       "quarter": 2
@@ -1165,14 +853,6 @@
       "scope": "norway",
       "period_type": "quarter",
       "metric": "return_on_equity",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "solvency_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -1236,47 +916,7 @@
       "company": "Storebrand",
       "scope": "group",
       "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
-      "period_type": "quarter",
       "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "solvency_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -1507,7 +1147,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 64,
+  "observation_count": 212,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1628,15 +1268,72 @@
         "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
       ],
       "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 17.01010101010101,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 17.352941176470594,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 22.757146250692827,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 24.545995410374832,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
     }
   ],
   "errors": [],
   "warnings": [
     "Fremtind: no observations in unified model",
-    "Frende: no observations in unified model",
-    "Gjensidige: no observations in unified model",
-    "Protector: no observations in unified model",
-    "Sampo: no observations in unified model"
+    "Frende: no observations in unified model"
   ],
   "coverage_complete": false,
   "coverage_matrix": {
@@ -1727,40 +1424,40 @@
     "Gjensidige": {
       "norway": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         },
         "ytd": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         }
       },
       "group": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         },
         "ytd": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         }
@@ -1769,11 +1466,11 @@
     "Protector": {
       "norway": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         },
@@ -1789,11 +1486,11 @@
       },
       "group": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         },
@@ -1831,11 +1528,11 @@
       },
       "group": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
           "solvency_ratio": "missing_or_not_applicable"
         },
@@ -1853,13 +1550,13 @@
     "Storebrand": {
       "norway": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
-          "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
+          "insurance_service_result": "reported",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
           "expense_ratio": "missing_or_not_applicable",
           "return_on_equity": "missing_or_not_applicable",
-          "solvency_ratio": "missing_or_not_applicable"
+          "solvency_ratio": "reported"
         },
         "ytd": {
           "insurance_revenue": "missing_or_not_applicable",
@@ -1873,13 +1570,13 @@
       },
       "group": {
         "quarter": {
-          "insurance_revenue": "missing_or_not_applicable",
+          "insurance_revenue": "reported",
           "insurance_service_result": "missing_or_not_applicable",
-          "combined_ratio": "missing_or_not_applicable",
-          "loss_ratio": "missing_or_not_applicable",
-          "expense_ratio": "missing_or_not_applicable",
+          "combined_ratio": "reported",
+          "loss_ratio": "reported",
+          "expense_ratio": "reported",
           "return_on_equity": "reported",
-          "solvency_ratio": "missing_or_not_applicable"
+          "solvency_ratio": "reported"
         },
         "ytd": {
           "insurance_revenue": "missing_or_not_applicable",
