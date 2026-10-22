@@ -1,0 +1,123 @@
+name: Pull request regression tests
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-reports.txt
+      - name: Compile importers and discovery
+        run: python -m compileall -q scripts tests
+      - name: Run full unit regression suite
+        run: python -m unittest discover -s tests -v
+      - name: Audit committed financial observations
+        run: python scripts/audit_financials.py
+      - name: Validate dashboard
+        run: python tests/check_dashboard.py
+      - name: Live issuer discovery (no publication)
+        run: python scripts/discover_frende_fremtind.py
+      - name: Live Fremtind Holding PDF import and audit (no publication)
+        run: |
+          python scripts/import_fremtind_holding.py
+          python scripts/audit_financials.py
+      - name: Live Frende Holding publisher import and audit (no publication)
+        run: |
+          python scripts/import_frende_holding.py
+          python scripts/audit_financials.py
+      - name: Show verified Fremtind and Frende quarterly coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for company in ('Fremtind','Frende'):
+              for year in (2025,2026):
+                  periods=sorted({(r['quarter'],r['period_type']) for r in rows if r['company']==company and r['year']==year and r['metric']=='insurance_revenue'})
+                  print(f'{company} {year}: {periods}',flush=True)
+          PY
+      - name: Build verified feed and coverage after both live imports
+        run: |
+          python scripts/build_verified_feed.py
+          python scripts/verify_feed_coverage.py
+          python scripts/report_coverage.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for company,periods in {'Frende':{(2025,1),(2025,2),(2025,3),(2025,4),(2026,1),(2026,2)},'Fremtind':{(2026,1),(2026,2),(2026,3)}}.items():
+              present={(r['year'],r['quarter']) for r in rows if r['company']==company and r.get('scope')=='group'}
+              missing=periods-present
+              if missing:raise AssertionError(f'{company}: missing verified quarters {missing}')
+              print(company,'verified',sorted(periods))
+          PY
+      - name: Discover live official Tryg paired reports
+        run: python scripts/discover_tryg.py
+      - name: Live Tryg PDF group and Norway Excel end-to-end import
+        run: |
+          python scripts/import_tryg.py
+          python scripts/audit_financials.py
+          python scripts/verify_feed_coverage.py
+      - name: Audit Tryg group PDF and Norway Excel automation readiness
+        run: python scripts/verify_tryg_end_to_end.py
+      - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
+        continue-on-error: true
+        run: PAGES_VERIFY_ATTEMPTS=1 python scripts/verify_public_pages.py
+      - name: Inspect official Tryg 2026 PDF and Excel archive links
+        run: |
+          python - <<'PY'
+          import urllib.request,re
+          from html.parser import HTMLParser
+          class Links(HTMLParser):
+              def __init__(self):super().__init__();self.a=None;self.links=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='a':self.a=[dict(attrs).get('href',''),[]]
+              def handle_data(self,data):
+                  if self.a:self.a[1].append(data)
+              def handle_endtag(self,tag):
+                  if tag=='a' and self.a:self.links.append((self.a[0],' '.join(self.a[1]).strip()));self.a=None
+          req=urllib.request.Request('https://tryg.com/en/downloads-2026',headers={'User-Agent':'Mozilla/5.0'})
+          with urllib.request.urlopen(req,timeout=30) as r:markup=r.read(1500000).decode('utf-8','replace')
+          parser=Links();parser.feed(markup)
+          print('LINK_COUNT',len(parser.links))
+          for url,label in parser.links:
+              if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and ('.pdf' in url.lower() or '.xlsx' in url.lower()):
+                  print('TRYG_LINK',repr(label[:110]),repr(url[:320]))
+          PY
+      - name: Inspect official Tryg PDF group and Norway workbook schemas
+        run: |
+          python - <<'PY'
+          import json,sys,urllib.request,io,re
+          import pdfplumber
+          sys.path.insert(0,'scripts')
+          from geographic_excel import load_sheets
+          from pathlib import Path
+          pairs=json.loads(Path('data/tryg_candidates.json').read_text())['pairs']
+          for pair in pairs:
+              if pair['year']!=2026 or pair['quarter']!=3:continue
+              print('TRYG_Q3_PDF',pair['report_pdf_url'])
+              print('TRYG_Q3_XLSX',pair['workbook_url'])
+              with urllib.request.urlopen(pair['report_pdf_url'],timeout=40) as r:blob=r.read(35000000)
+              with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                  for i,page in enumerate(pdf.pages[:15]):
+                      lines=(page.extract_text() or '').splitlines()
+                      matches=[(n,line) for n,line in enumerate(lines) if re.search('insurance revenue|insurance service result|combined ratio|claims ratio|expense ratio',line,re.I)]
+                      if matches:
+                          print('PDF_PAGE',i+1,'HEAD',lines[:4])
+                          for n,line in matches[:12]:print('PDF_ROW',n,repr(line[:210]))
+              with urllib.request.urlopen(pair['workbook_url'],timeout=40) as r:blob=r.read(25000000)
+              p=Path('/tmp/tryg_q3_2026.xlsx');p.write_bytes(blob)
+              sheets=load_sheets(p)
+              print('XLSX_SHEETS',list(sheets))
+              for name,cells in sheets.items():
+                  if re.search('geograph',name,re.I):
+                      print('XLSX_GEO',name,'FIRST',list(cells.items())[:30])
+          PY

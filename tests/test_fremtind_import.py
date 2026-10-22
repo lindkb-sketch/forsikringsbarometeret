@@ -23,27 +23,27 @@ class FremtindImporterTests(unittest.TestCase):
             def __init__(self, q, table):
                 self.pages = [Page(f"Kvartalsrapport Q{q} 2026 Fremtind Holding"),
                               Page("Innhold"),
-                              Page(f"Resultatutvikling og nøkkeltall\\nMNOK Q{q} 2026\\n" + table),
+                              Page(f"Resultatutvikling og nøkkeltall\nMNOK Q{q} 2026\n" + table),
                               Page("Noter")]
             def __enter__(self): return self
             def __exit__(self, *args): return False
         tables = {
             1: (
-                "Inntekter fra forsikringstjenester 6 205 5 769 23 510 Vekst i inntekter\\n"
-                "Resultat fra forsikringstjenester 1 256 843 4 520\\n"
-                "Skadeprosent, netto etter gjenforsikring (%) 58,5 % 63,9 % 58,8 %\\n"
-                "Kostnadsprosent (%) 21,2 % 21,5 % 21,9 %\\n"
+                "Inntekter fra forsikringstjenester 6 205 5 769 23 510 Vekst i inntekter\n"
+                "Resultat fra forsikringstjenester 1 256 843 4 520\n"
+                "Skadeprosent, netto etter gjenforsikring (%) 58,5 % 63,9 % 58,8 %\n"
+                "Kostnadsprosent (%) 21,2 % 21,5 % 21,9 %\n"
                 "Combined ratio, netto etter gjenforsikring (%) 79,8 % 85,4 % 80,8 %"),
             2: (
-                "Inntekter fra forsikringstjenester 5 863 5 560 12 068 11 328 23 510 Vekst\\n"
-                "Resultat fra forsikringstjenester 1 321 856 2 576 1 699 4 520\\n"
-                "Skadeprosent, netto etter gjenforsikring (%) 54,4 % 61,6 % 56,5 % 62,7 % 58,8 %\\n"
-                "Kostnadsprosent (%) 23,1 % 23,0 % 22,1 % 22,3 % 21,9 %\\n"
+                "Inntekter fra forsikringstjenester 5 863 5 560 12 068 11 328 23 510 Vekst\n"
+                "Resultat fra forsikringstjenester 1 321 856 2 576 1 699 4 520\n"
+                "Skadeprosent, netto etter gjenforsikring (%) 54,4 % 61,6 % 56,5 % 62,7 % 58,8 %\n"
+                "Kostnadsprosent (%) 23,1 % 23,0 % 22,1 % 22,3 % 21,9 %\n"
                 "Combined ratio, netto etter gjenforsikring (%) 77,5 % 84,6 % 78,7 % 85,0 % 80,8 %"),
             3: (
-                "Inntekter fra forsikringstjenester 6 305 6 047 18 373 17 376 23 510 sammenlignet\\n"
-                "Netto resultat fra gjenforsikringskontrakter -46 -56 -227 -177 81 Skadeprosent, netto etter gjenforsikring (%) 52,5 % 55,2 % 55,1 % 60,1 % 58,8 %\\n"
-                "Resultat fra forsikringstjenester 1 704 1 411 4 280 3 111 4 520 Kostnadsprosent (%) 20,5 % 21,4 % 21,6 % 22,0 % 21,9 %\\n"
+                "Inntekter fra forsikringstjenester 6 305 6 047 18 373 17 376 23 510 sammenlignet\n"
+                "Netto resultat fra gjenforsikringskontrakter -46 -56 -227 -177 81 Skadeprosent, netto etter gjenforsikring (%) 52,5 % 55,2 % 55,1 % 60,1 % 58,8 %\n"
+                "Resultat fra forsikringstjenester 1 704 1 411 4 280 3 111 4 520 Kostnadsprosent (%) 20,5 % 21,4 % 21,6 % 22,0 % 21,9 %\n"
                 "Combined ratio, netto etter gjenforsikring (%) 73,0 % 76,7 % 76,7 % 82,1 % 80,8 %"),
         }
         expected = {1: (6205, None), 2: (5863, 12068), 3: (6305, 18373)}

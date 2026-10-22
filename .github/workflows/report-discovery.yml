@@ -18,6 +18,11 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - run: python scripts/discover_reports.py
       - run: python scripts/discover_frende_fremtind.py
+      - name: Import and audit official Holding reports (no publication)
+        run: |
+          python scripts/import_fremtind_holding.py
+          python scripts/import_frende_holding.py
+          python scripts/audit_financials.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -25,4 +30,6 @@ jobs:
           path: |
             data/report_candidates.json
             data/frende_fremtind_candidates.json
+            data/financial_observations.json
+            data/financial_audit.json
           if-no-files-found: ignore

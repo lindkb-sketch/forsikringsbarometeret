@@ -65,7 +65,9 @@ def candidates(company,markup):
  base=ARCHIVES[company];out=[]
  if company=='Fremtind':
   rows=fremtind_rows(markup)
-  if rows:return rows
+  # Combine table cells and issuer-scoped list sections. A mixed archive can
+  # publish a new quarter as a list while retaining older quarters in a table.
+  # Returning early on any table match would silently miss that new quarter.
   # The live archive may render each company as a list rather than <tr>.
   # Keep only links physically inside the Holding section, not every CDN PDF.
   class Flatten(html.parser.HTMLParser):
@@ -89,7 +91,12 @@ def candidates(company,markup):
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme=='https' and parsed.hostname in ALLOWED['Fremtind'] and parsed.path.lower().endswith('.pdf'):
      result.append(dict(company='Fremtind',year=year,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification'))
-  return result
+  combined = rows + result
+  seen=set(); unique=[]
+  for row in combined:
+   if row['document_url'] not in seen:
+    unique.append(row);seen.add(row['document_url'])
+  return unique
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
