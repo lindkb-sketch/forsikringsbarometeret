@@ -134,7 +134,7 @@ def run():
     if not candidates.get("complete"):
         raise ValueError("Issuer discovery incomplete")
     links = list(dict.fromkeys(c["document_url"] for c in candidates["candidates"]
-                    if c.get("company") == "Fremtind" and c["document_url"].lower().endswith(".pdf")))
+                    if c.get("company") == "Fremtind" and c.get("source_entity") == "Fremtind Holding" and c["document_url"].lower().endswith(".pdf")))
     existing = json.loads(DATA.read_text())
     seen = {(r["year"], r["quarter"]) for r in existing["observations"] if r["company"] == "Fremtind"}
     imported = []
