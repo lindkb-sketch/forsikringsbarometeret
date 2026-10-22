@@ -1,6 +1,10 @@
 name: Storebrand Q3 verified publication
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/storebrand-auto-q3.yml'
   schedule:
     - cron: '23 7 * * *'
 permissions:
