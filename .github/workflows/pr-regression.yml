@@ -2,8 +2,6 @@ name: Pull request regression tests
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [fix/frende-fremtind-unified-import-20261022]
   workflow_dispatch:
 permissions:
   contents: read
