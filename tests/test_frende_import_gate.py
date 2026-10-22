@@ -1,7 +1,7 @@
 import unittest,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from import_frende_holding import extract,number,read
+from import_frende_holding import extract,extract_revenue,number,read
 
 def table(q):
     if q==1:
@@ -20,6 +20,10 @@ class FrendeTests(unittest.TestCase):
             self.assertEqual(index['quarter','combined_ratio'],quarter)
             self.assertEqual(index['ytd','combined_ratio'],ytd)
             self.assertEqual(len(rows),6)
+    def test_income_statement_q2_quarter_and_ytd(self):
+        markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2026</th><th>2. kv 2025</th><th>30.06.26</th></tr><tr><td>Sum driftsinntekter</td><td>935 132</td><td>823 863</td><td>2 758 452</td></tr></table>'
+        rows=extract_revenue(markup,'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',2026,2)
+        self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',935.132),('ytd',2758.452)])
     def test_reject_wrong_period(self):
         with self.assertRaisesRegex(ValueError,'header'):
             extract(table(2),'https://frende.wrep.it/q2-2026-frende-holding-as/sec/6',2026,3)
