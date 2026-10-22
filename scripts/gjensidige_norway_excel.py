@@ -51,7 +51,7 @@ def locate_xlsx(page,quarter,base=INDEX):
     if len(exact)!=1:raise ValueError(f'Cannot uniquely verify Q{quarter} 2026 key-figures XLSX URL: {exact}')
     return exact[0]
 
-def parse(blob,url,quarter,year=2026):
+def parse(blob,url,quarter,year=2026,include_segments=False):
     if not blob.startswith(b'PK'):raise ValueError('Not an XLSX archive')
     wb=openpyxl.load_workbook(io.BytesIO(blob),read_only=True,data_only=True)
     sheets={}
@@ -60,6 +60,7 @@ def parse(blob,url,quarter,year=2026):
         if len(matches)!=1:raise ValueError('Missing or ambiguous Norway worksheet: '+prefix)
         sheets[prefix]=wb[matches[0]]
     output=[]
+    segments=[]
     for period,col in [('quarter',2)]+([('ytd',4)] if quarter>1 else []):
         totals={}
         for prefix,ws in sheets.items():
@@ -76,6 +77,11 @@ def parse(blob,url,quarter,year=2026):
                 if type(cell.value) not in (int,float):raise ValueError('Non-numeric source cell '+cell.coordinate)
                 value=float(cell.value)*(100 if 'ratio' in metric else 1/1_000_000)
                 totals.setdefault(metric,[]).append((value,ws.title,cell.coordinate))
+                segments.append(dict(company='Gjensidige',year=year,quarter=quarter,
+                    segment='PM Norge' if 'Private' in prefix else 'BM Norge',
+                    period_type=period,metric=metric,value=round(value,6),
+                    unit='percent' if 'ratio' in metric else 'MNOK',source_url=url,
+                    source_sheet=ws.title,source_cell=cell.coordinate))
         revenue=sum(x[0] for x in totals['insurance_revenue'])
         service=sum(x[0] for x in totals['insurance_service_result'])
         loss_expense={}
@@ -93,16 +99,18 @@ def parse(blob,url,quarter,year=2026):
                 source_cell=' + '.join(x[2] for x in totals[metric]),
                 source_sha256=hashlib.sha256(blob).hexdigest(),
                 source_section='Private Norway + Commercial Norway; NOK -> MNOK; ratios revenue weighted'))
-    return output
+    return (output,segments) if include_segments else output
 
 if __name__=='__main__':
     from audit_financials import DATA,audit
     from build_verified_feed import publish
     page=get(INDEX)
     data=json.loads(DATA.read_text())
+    all_segments=[]
     for q in (1,2):
         url=locate_xlsx(page,q)
-        rows=parse(get(url),url,q)
+        rows,segment_rows=parse(get(url),url,q,include_segments=True)
+        all_segments.extend(segment_rows)
         keys=lambda r:tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
         old={keys(r):r for r in data['observations']}
         for r in rows:
@@ -112,3 +120,4 @@ if __name__=='__main__':
     if not audit(data)['ok']:raise ValueError('Audit failed')
     DATA.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
     publish()
+    (DATA.parent/'gjensidige_norway_segments.json').write_text(json.dumps({'observations':all_segments},ensure_ascii=False,indent=2)+'\n')
