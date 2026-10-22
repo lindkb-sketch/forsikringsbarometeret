@@ -51,6 +51,7 @@ def extract(section_html,url,year,quarter):
     if quarter>1:
         label=f'Pr Q{quarter} {year}'
         if label in header:ytd_col=header.index(label)
+        elif quarter==4 and str(year) in header:ytd_col=header.index(str(year))
         elif quarter!=4:raise ValueError('Missing YTD column')
     records={row[0]:row for row in t.rows[1:] if row}
     if not all(label in records for label in FIELDS):raise ValueError('Missing required KPI rows')
@@ -83,7 +84,9 @@ def extract_revenue(section_html,url,year,quarter):
     if quarter==1:values.append(('ytd',1))
     else:
         period={2:f'30.06.{str(year)[2:]}',3:f'30.09.{str(year)[2:]}',4:f'31.12.{str(year)[2:]}'}[quarter]
-        if period in header:values.append(('ytd',header.index(period)))
+        variants=(period,f'01.01-{period}')
+        match=next((header.index(v) for v in variants if v in header),None)
+        if match is not None:values.append(('ytd',match))
         elif quarter!=4:raise ValueError('Missing income YTD header')
     digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
     result=[]
