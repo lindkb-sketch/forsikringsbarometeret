@@ -75,14 +75,20 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
         totals={}
         cr_inputs={}
         for prefix,ws in sheets.items():
-            unit_header=str(ws.cell(3,1).value or '').lower()
+            header_row=next((r for r in range(1,8) if str(ws.cell(r,col).value or '').strip()==('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)),None)
+            if header_row is None:raise ValueError('Quarter heading not found in '+ws.title)
+            unit_header=str(ws.cell(header_row,1).value or '').lower()
             if 'million' in unit_header:
-                monetary_divisor=1
+                # The issuer's workbook can label the table NOK millions while
+                # storing underlying NOK amounts; inspect numeric magnitude.
+                revenue_cells=[ws.cell(row,col).value for row in range(header_row+1,min(ws.max_row+1,header_row+12)) if str(ws.cell(row,1).value or '').strip()=='Insurance revenue']
+                if len(revenue_cells)!=1 or type(revenue_cells[0]) not in (int,float):raise ValueError('Cannot determine Norway revenue units')
+                monetary_divisor=1_000_000 if revenue_cells[0]>100_000_000 else 1
             elif unit_header.strip() in ('nok','norwegian kroner'):
                 monetary_divisor=1_000_000
             else:
                 raise ValueError('Unrecognized source monetary unit in '+ws.title+': '+unit_header+'; header preview='+repr([[ws.cell(row,col).value for col in range(1,5)] for row in range(1,7)]))
-            header=str(ws.cell(3,col).value or '')
+            header=str(ws.cell(header_row,col).value or '')
             expected=('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)
             if header.strip()!=expected:raise ValueError('Unexpected column heading: '+header+' != '+expected)
             rows={}
@@ -90,7 +96,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
                 label=re.sub(r'[¹²³⁴⁵⁶⁷⁸⁹⁰]+','',str(ws.cell(row,1).value or '')).strip()
                 if label in LABELS.values():rows.setdefault(label,[]).append(row)
             for metric,label in LABELS.items():
-                if len(rows.get(label,[]))!=1:raise ValueError('Ambiguous metric '+label+' in '+prefix)
+                if len(rows.get(label,[]))!=1:raise ValueError('Ambiguous metric '+label+' in '+prefix+'; available labels='+repr([str(ws.cell(row,1).value) for row in range(1,min(ws.max_row+1,40))]))
                 cell=ws.cell(rows[label][0],col)
                 if type(cell.value) not in (int,float):raise ValueError('Non-numeric source cell '+cell.coordinate)
                 value=float(cell.value)*(100 if 'ratio' in metric else 1/monetary_divisor)
