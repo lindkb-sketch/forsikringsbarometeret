@@ -116,7 +116,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
             # published combined ratio before aggregating Norway.
             for kind,aliases in CR_AMOUNT_LABELS.items():
                 hits=[]
-                for row in range(1,ws.max_row+1):
+                for row in range(header_row+1,section_end):
                     label=re.sub(r'[¹²³⁴⁵⁶⁷⁸⁹⁰]+','',str(ws.cell(row,1).value or '')).strip()
                     if label in aliases:hits.append(row)
                 if len(hits)!=1:
