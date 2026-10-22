@@ -8,6 +8,10 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   rows=candidates('Frende',html)
   self.assertEqual([(r['year'],r['quarter']) for r in rows],[(2026,3)])
   self.assertEqual(rows[0]['status'],'requires_pdf_entity_and_period_verification')
+ def test_frende_official_filename(self):
+  html='<a href="https://www.frende.no/documents/306/Frende_Holding_AS_Kvartalsrapport_Q3_2024.pdf">PDF</a>'
+  rows=candidates('Frende',html)
+  self.assertEqual([(r['year'],r['quarter']) for r in rows],[(2024,3)])
  def test_reject_unapproved_host_and_nonquarter(self):
   html='<a href="https://evil.example/q3.pdf">3. kvartal Frende Holding AS 2026</a><a href="/annual.pdf">Årsrapport Frende Holding AS 2026</a>'
   self.assertEqual(candidates('Frende',html),[])
