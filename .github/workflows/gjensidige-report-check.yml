@@ -1,0 +1,33 @@
+name: Gjensidige report readiness
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 6,9,15 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/gjensidige_report_check.py'
+      - 'tests/test_gjensidige_report_check.py'
+      - '.github/workflows/gjensidige-report-check.yml'
+permissions:
+  contents: read
+jobs:
+  check-official-reports:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test report-source security and matching
+        run: python -m unittest discover -s tests -p 'test_gjensidige_report_check.py' -v
+      - name: Inspect Gjensidige official Q3 2026 report availability
+        run: python scripts/gjensidige_report_check.py --year 2026 --quarter 3 | tee gjensidige-readiness.json
+      - name: Save diagnostic for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gjensidige-report-readiness
+          path: gjensidige-readiness.json
+          if-no-files-found: warn
