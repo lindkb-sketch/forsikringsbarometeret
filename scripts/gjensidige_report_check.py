@@ -45,6 +45,27 @@ def candidates(page, base=ARCHIVE, quarter=3, year=2026):
                 results.append(url)
     return sorted(set(results))
 
+def official_report_links(page, base, quarter, year):
+    """Accept report download links explicitly labelled by Gjensidige's own IR page.
+
+    Gjensidige uses mb.cision.com for report PDFs; links may not end in .pdf.
+    This function only trusts the issuer's own page as the link provenance.
+    """
+    parser = Anchors()
+    parser.feed(page)
+    found = []
+    for label, href in parser.items:
+        url = urllib.parse.urljoin(base, href)
+        host = urllib.parse.urlsplit(url).hostname
+        label = ' '.join(label.lower().split())
+        if (host in ALLOWED | {'mb.cision.com'} and
+            str(year) in label and
+            re.search(r'\\bq\\s*' + str(quarter) + r'\\b', label) and
+            re.search(r'interim report|quarterly report|kvartalsrapport', label) and
+            not re.search(r'presentation|presentasjon', label)):
+            found.append(url)
+    return sorted(set(found))
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "Forsikringsbarometeret/1.0"})
     with urllib.request.urlopen(req, timeout=30) as response:
