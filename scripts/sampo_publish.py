@@ -11,7 +11,7 @@ SOURCES={
  (2026,2):'https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969',
 }
 SEGMENTS=('Private Nordic','Nordic Commercial')
-LABELS={'insurance_revenue':r'Insurance revenue, net','insurance_service_result':r'Underwriting result','loss_ratio':r'Risk ratio,?\\s*%','expense_ratio':r'Cost ratio,?\\s*%','combined_ratio':r'Combined ratio,?\\s*%'}
+LABELS={'insurance_revenue':r'Insurance revenue, net','insurance_service_result':r'Underwriting result','loss_ratio':r'Risk ratio,?\s*%','expense_ratio':r'Cost ratio,?\s*%','combined_ratio':r'Combined ratio,?\s*%'}
 KEYS=('company','year','quarter','scope','period_type','metric','segment')
 def number(text):
  return float(text.replace(',','').replace('−','-'))
@@ -27,18 +27,18 @@ def parse(blob,url,year,quarter):
   candidates=[]
   for page,text in pages:
    # Segment's own table begins at the segment heading, never use a group figure as segment figure.
-   pattern=r'(?m)^'+re.escape(segment)+r'\\s*$'
+   pattern=r'(?m)^'+re.escape(segment)+r'\s*$'
    for m in re.finditer(pattern,text):
     block=text[m.end():]
-    end=re.search(r'(?m)^(?:Private Nordic|Private UK|Nordic Commercial|Nordic Industrial|Net financial result|Premium development|Underwriting performance|Financial position|Segments)\\s*$',block)
+    end=re.search(r'(?m)^(?:Private Nordic|Private UK|Nordic Commercial|Nordic Industrial|Net financial result|Premium development|Underwriting performance|Financial position|Segments)\s*$',block)
     if end:block=block[:end.start()]
     if 'Insurance revenue, net' in block and 'Combined ratio' in block:candidates.append((page,block))
   if not candidates:raise ValueError(f'Missing segment financial table: {segment}')
   page,block=candidates[0]
   for metric,label in LABELS.items():
-   lines=[line for line in block.splitlines() if re.match(r'^\\s*'+label+r'\\s+',line,re.I)]
+   lines=[line for line in block.splitlines() if re.match(r'^\s*'+label+r'\s+',line,re.I)]
    if len(lines)!=1:raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
-   vals=re.findall(r'(?<!\\w)-?\\d[\\d,]*(?:\\.\\d+)?(?!\\w)',lines[0][len(re.match(r'^\\s*'+label,lines[0],re.I).group()):])
+   vals=re.findall(r'(?<!\w)-?\d[\d,]*(?:\.\d+)?(?!\w)',lines[0][len(re.match(r'^\s*'+label,lines[0],re.I).group()):])
    if len(vals)<(4 if quarter>1 else 2):raise ValueError(f'Insufficient columns: {segment} {metric}')
    for period,index in [('quarter',0)]+([('ytd',2)] if quarter>1 else []):
     observations.append(dict(company='Sampo',year=year,quarter=quarter,scope='group' if segment=='Sampo Group' else 'reported_segment',segment=None if segment=='Sampo Group' else segment,source_scope='group' if segment=='Sampo Group' else 'reported_segment',period_type=period,metric=metric,value=number(vals[index]),unit='percent' if metric.endswith('ratio') else 'EURm',status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',source_sha256=sha,source_definition='Sampo financial report; '+segment+' reported table'))
