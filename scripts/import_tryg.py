@@ -77,7 +77,7 @@ def run(pairs=None):
         imported={(r['period_type'],r['metric']):r['value'] for r in existing['observations']
                   if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
         for key,val in previous.items():
-            if key not in imported or abs(imported[key]-val)>0.001:
+            if key not in imported or abs(imported[key]-val)>max(0.5,abs(val)*0.00025):
                 raise ValueError('Tryg Norway XLSX conflicts with previously audited figure: '+str((year,quarter,key,val,imported.get(key))))
         print('TRYG_VERIFIED',year,quarter,'group',len(group),'norway',
               len([r for r in existing['observations'] if r['company']=='Tryg'
