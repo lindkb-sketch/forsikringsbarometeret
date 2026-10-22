@@ -58,3 +58,25 @@ jobs:
           except Exception as exc:
               print('FETCH_ERROR',type(exc).__name__,str(exc))
           PY
+      - name: Inspect Frende publisher embedded financial table structure
+        run: |
+          python - <<'PY'
+          import urllib.request,re,html
+          from html.parser import HTMLParser
+          root='https://frende.wrep.it/q2-2026-frende-holding-as'
+          class Text(HTMLParser):
+              def __init__(self):super().__init__();self.parts=[]
+              def handle_data(self,s):self.parts.append(s)
+          for suffix in ('/sec/2','/sec/3','/sec/4','/sec/5','/sec/6','/sec/7','/sec/8','/sec/9'):
+              url=root+suffix
+              try:
+                  req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+                  with urllib.request.urlopen(req,timeout=20) as resp:markup=resp.read(900000).decode('utf-8','replace')
+                  parser=Text();parser.feed(markup)
+                  clean=' '.join(' '.join(parser.parts).split())
+                  print('SECTION',suffix,'LENGTH',len(clean),'TABLES',len(re.findall(r'<table',markup,re.I)),'TEXT',clean[:550])
+                  for term in ('forsikringsinntekter','forsikringsresultat','skadeprosent','kostnadsprosent','combined ratio','premieinntekter'):
+                      m=re.search(term,clean,re.I)
+                      if m:print('MATCH',term,clean[max(0,m.start()-120):m.end()+260])
+              except Exception as exc:print('SECTION_ERROR',suffix,type(exc).__name__,str(exc))
+          PY
