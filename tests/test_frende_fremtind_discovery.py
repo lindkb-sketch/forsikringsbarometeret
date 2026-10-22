@@ -20,6 +20,16 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   rows=candidates('Fremtind',html)
   self.assertEqual(len(rows),1)
   self.assertNotIn('quarter',rows[0])
+ def test_fremtind_rejects_other_entity_section(self):
+  html='Fremtind Forsikring 2026 <a href="https://cdn.sanity.io/files/abc/other.pdf">PDF</a>'
+  self.assertEqual(candidates('Fremtind',html),[])
+ def test_fremtind_scopes_multiple_issuer_sections(self):
+  html=('Fremtind Holding 2026 <a href="https://cdn.sanity.io/files/abc/holding.pdf">PDF</a>'
+        ' Fremtind Forsikring 2026 <a href="https://cdn.sanity.io/files/abc/other.pdf">PDF</a>')
+  rows=candidates('Fremtind',html)
+  self.assertEqual([r['document_url'] for r in rows],['https://cdn.sanity.io/files/abc/holding.pdf'])
+  self.assertEqual(rows[0]['year'],2026)
+  self.assertNotIn('quarter',rows[0])
  def test_partial_failure_never_marks_complete(self):
   def fetch(url):
    if 'frende.no' in url:raise OSError('offline')
