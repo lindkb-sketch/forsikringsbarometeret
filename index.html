@@ -1687,4 +1687,32 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  setInterval(syncVerified,300000);
 })();
 </script>
+<script id="live-editorial-market-updates">
+/* Published editorial and news are rendered in the main dashboard and refreshed. */
+(()=>{
+ let editorial=null,news=null,stocks=null;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
+ const safeUrl=v=>/^https:\/\//.test(v||'')?esc(v):'#';
+ const items=(list,max=6)=>Array.isArray(list)?list.slice(0,max):[];
+ function panel(){
+  if(!editorial&&!news&&!stocks)return '';
+  const brief=items(editorial?.brief,4).map(x=>'<li>'+esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>').join('');
+  const moves=items(editorial?.implications,5).map(x=>'<li>'+esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>').join('');
+  const headlines=items((news?.items||[]).filter(x=>x.approved),6).map(x=>'<li><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">'+esc(x.headline)+'</a> · '+esc(x.publisher)+' · '+esc((x.published_at||'').slice(0,10))+'</li>').join('');
+  const quotes=Object.entries(stocks?.prices||{}).map(([c,x])=>'<li>'+esc(c)+': '+esc(x.close)+' '+esc(x.currency)+' ('+esc(x.trading_date)+', forsinket sluttkurs)</li>').join('');
+  return '<section class="live-market-updates" aria-label="Løpende markedsoppdateringer" style="background:white;border:1px solid #d9e2e9;border-radius:12px;padding:18px;margin:16px 0"><h2 style="margin:0 0 8px">Løpende oppdateringer fra publiserte kilder</h2><p style="font-size:12px;color:#526579">Oppdateres når nye kildekontrollerte filer publiseres. Aksjekurser er forsinkede sluttkurser, ikke sanntidskurser.</p>'+
+  (brief?'<h3>Kvartalsbrief</h3><ul>'+brief+'</ul>':'')+(moves?'<h3>Strategiske forhold og resultatutvikling</h3><ul>'+moves+'</ul>':'')+(headlines?'<h3>Siste nyheter</h3><ul>'+headlines+'</ul>':'')+(quotes?'<h3>Aksjekurser</h3><ul>'+quotes+'</ul>':'')+'</section>';
+ }
+ const oldHome=home;
+ home=function(){return oldHome()+panel();};
+ async function refresh(){
+  const get=async file=>{const r=await fetch('data/'+file+'?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return r.json();};
+  const results=await Promise.allSettled([get('quarterly_editorial.json'),get('official_news.json'),get('stock_prices.json')]);
+  let changed=false;
+  for(let i=0;i<results.length;i++)if(results[i].status==='fulfilled'){if(i===0)editorial=results[i].value;if(i===1)news=results[i].value;if(i===2)stocks=results[i].value;changed=true;}
+  if(changed&&typeof show==='function'&&typeof current!=='undefined')show(current,true);
+ }
+ refresh();setInterval(refresh,300000);
+})();
+</script>
 </body></html>
