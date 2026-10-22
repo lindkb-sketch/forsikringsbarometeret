@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Isolated future-quarter contract tests: never publish simulated figures."""
+import sys,unittest
+from pathlib import Path
+from unittest.mock import patch
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+import gjensidige_publish as g
+import protector_publish as p
+from protector_kpi_check import extract,METRICS
+from import_storebrand_reports import parse_group,parse_norway
+class FutureTests(unittest.TestCase):
+ def table(self,q,year):
+  metrics={
+   'Insurance revenue from general insurance':[11000.1,10800.1,32000.1,31000.1],
+   'Insurance service result general insurance':[2200.1,2100.1,6300.1,6200.1],
+   'Combined ratio':[80.1,81.1,81.1,82.1],
+   'Cost ratio':[11.7,12.0,11.8,12.1],
+   'Loss ratio, net of reinsurance':[68.4,69.1,69.3,70.0]}
+  text='NOK millions\\n'+'\\n'.join(k+' '+' '.join(str(v) for v in vals) for k,vals in metrics.items())
+  return [(4,text)]
+ def test_gjensidige_q3_and_q4_group_quarter_and_ytd(self):
+  for q in (3,4):
+   rows=g.parse_group_table(self.table(q,2026),2026,q,'https://example.com/report.pdf','testhash')
+   self.assertEqual(len(rows),10)
+   self.assertEqual({r['period_type'] for r in rows},{'quarter','ytd'})
+   self.assertEqual({r['metric'] for r in rows if r['period_type']=='quarter'},set(g.REQUIRED)|{'loss_ratio'})
+   self.assertTrue(all(r['quarter']==q and r['year']==2026 for r in rows))
+ def test_gjensidige_q4_cover_and_isolated_prepare(self):
+  from unittest.mock import patch
+  baseline={'observations':[]}
+  with patch.object(g,'audit',return_value={'ok':True}),patch.object(g,'discover_quarter',return_value='https://example.com/report.pdf'),patch.object(g,'read_pdf',return_value=[(1,'Gjensidige fourth quarter 2026')]+self.table(4,2026)):
+   merged,feed,summary=g.prepare(baseline,(4,),year=2026,downloader=lambda _:b'%PDF-fake')
+  self.assertEqual(summary['added'],10)
+  self.assertEqual(len(feed['observations']),10)
+  self.assertEqual(len(merged['observations']),10)
+ def test_protector_q4_and_next_year_kpis(self):
+  def table(title):
+   periods=['Q1 27','Q4 26','Q3 26','Q2 26','Q1 26']
+   return '<div>'+title+'</div><div>'+''.join('<span>'+v+'</span>' for v in periods)+'</div>'+''.join('<div>'+label+'</div>'+''.join('<span>'+str(100+i if metric in ('insurance_revenue','insurance_service_result') else 70+i)+'</span>' for i in range(5)) for label,metric in METRICS.items())
+  values=extract(table('Protector')+table('Norway'))
+  self.assertIn(('group',2026,4,'insurance_revenue'),values)
+  self.assertIn(('norway',2027,1,'combined_ratio'),values)
+ def test_protector_wrong_pdf_period_rejected(self):
+  with patch('pdfplumber.open') as opener:
+   class P:
+    def extract_text(self):return 'Protector Q3 2026 only'
+   class Doc:
+    pages=[P()]
+    def __enter__(self):return self
+    def __exit__(self,*args):pass
+   opener.return_value=Doc()
+   with self.assertRaisesRegex(ValueError,'target reporting quarter'):
+    p.parse_pdf(b'%PDF-synthetic',2026,4)
+ def test_storebrand_future_period_not_silently_mislabelled(self):
+  fixture=Path(__file__).resolve().parent/'fixtures/storebrand_asa_q3_2026.pdf'
+  with self.assertRaisesRegex(ValueError,'New report layout'):
+   parse_group(fixture,year=2026,quarter=4)
+  fixture=Path(__file__).resolve().parent/'fixtures/storebrand_forsikring_q3_2026.pdf'
+  with self.assertRaisesRegex(ValueError,'New report layout'):
+   parse_norway(fixture,year=2026,quarter=4)
+if __name__=='__main__':unittest.main()
