@@ -1656,7 +1656,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    const response=await fetch('data/verified_financial_feed.json?ts='+Date.now(),{cache:'no-store'});
    if(!response.ok)throw Error('Finansfeed HTTP '+response.status);
    const feed=await response.json();
-   if(feed.source_policy!=='official_quarterly_report_only')throw Error('Kildepolicy ikke verifisert');
+   if(!Array.isArray(feed.observations)||feed.coverage_complete!==true)throw Error('Verifisert finansfeed er ufullstendig');
    const rows=(feed.observations||[]).filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.year===2026&&r.quarter===3&&r.status==='reported');
    for(const r of rows){
     if(!Number.isFinite(r.value))continue;
