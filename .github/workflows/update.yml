@@ -73,7 +73,9 @@ jobs:
             for attempt in 1 2 3; do
               git fetch origin main
               git reset --soft origin/main
-              git add -- data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json
+              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json; do
+                if [ -f "$file" ]; then git add -- "$file"; fi
+              done
               if git diff --cached --quiet; then
                 echo 'Validated artifacts already current'
                 break
