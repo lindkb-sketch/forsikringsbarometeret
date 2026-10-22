@@ -61,6 +61,11 @@ jobs:
           PY
       - name: Discover live official Tryg paired reports
         run: python scripts/discover_tryg.py
+      - name: Live Tryg PDF group and Norway Excel end-to-end import
+        run: |
+          python scripts/import_tryg.py
+          python scripts/audit_financials.py
+          python scripts/verify_feed_coverage.py
       - name: Audit Tryg group PDF and Norway Excel automation readiness
         run: python scripts/verify_tryg_end_to_end.py
       - name: Inspect official Tryg 2026 PDF and Excel archive links
