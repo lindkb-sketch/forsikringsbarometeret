@@ -16,7 +16,7 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   html='<a href="https://evil.example/q3.pdf">3. kvartal Frende Holding AS 2026</a><a href="/annual.pdf">Årsrapport Frende Holding AS 2026</a>'
   self.assertEqual(candidates('Frende',html),[])
  def test_fremtind_cdn_cannot_claim_period(self):
-  html='<a href="https://cdn.sanity.io/files/abc/report.pdf">PDF</a><a href="https://evil.example/report.pdf">PDF</a>'
+  html='Fremtind Holding 2026 <a href="https://cdn.sanity.io/files/abc/report.pdf">PDF</a><a href="https://evil.example/report.pdf">PDF</a>'
   rows=candidates('Fremtind',html)
   self.assertEqual(len(rows),1)
   self.assertNotIn('quarter',rows[0])
