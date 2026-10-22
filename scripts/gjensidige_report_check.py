@@ -60,7 +60,7 @@ def official_report_links(page, base, quarter, year):
         label = ' '.join(label.lower().split())
         if (host in ALLOWED | {'mb.cision.com'} and
             str(year) in label and
-            re.search(r'\\bq\\s*' + str(quarter) + r'\\b', label) and
+            re.search(r'\bq\s*' + str(quarter) + r'\b', label) and
             re.search(r'interim report|quarterly report|kvartalsrapport', label) and
             not re.search(r'presentation|presentasjon', label)):
             found.append(url)
