@@ -68,22 +68,26 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     result=[]
     for metric,(label,definition) in metrics.items():
         vals=row(t,label,column_count,english)
-        for q,v in ((quarter,vals[0]),(quarter-1,vals[1]),(quarter-2,vals[2])):
-            result.append(obs('group',year,q,'quarter',metric,v,insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment'))
-        result.append(obs('group',2025,3,'ytd',metric,vals[6],8,url,sha,definition,'Storebrand ASA / Insurance segment'))
+        quarter_values=([(quarter,vals[0]),(quarter-1,vals[1]),(quarter-2,vals[2])]
+                        if quarter==3 else [(4,vals[0]),(3,vals[1]),(2,vals[2]),(1,vals[3])])
+        for q,v in quarter_values:
+            result.append(obs('group',year,q,'quarter',metric,v,insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+        result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+        result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
     key_candidates=[(i,text) for i,text in enumerate(texts) if 'Group - Key figures' in text]
     if len(key_candidates)!=1:raise ValueError('Expected exactly one Group key figures table')
     key_page,k=key_candidates[0]
     if str(year) not in k:raise ValueError('Group key figures heading changed')
     for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
         vals=row(k,label,column_count,english)
-        for q,v in ((3,vals[0]),(2,vals[1]),(1,vals[2])):
-            result.append(obs('group',2026,q,'quarter',metric,v,5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
-        result.append(obs('group',2025,3,'quarter',metric,vals[4],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
-        result.append(obs('group',2026,3,'ytd',metric,vals[5],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
-        result.append(obs('group',2025,3,'ytd',metric,vals[6],5,url,sha,'Group key figures; '+label,'Storebrand ASA'))
+        quarter_values=([(quarter,vals[0]),(quarter-1,vals[1]),(quarter-2,vals[2])]
+                        if quarter==3 else [(4,vals[0]),(3,vals[1]),(2,vals[2]),(1,vals[3])])
+        for q,v in quarter_values:
+            result.append(obs('group',year,q,'quarter',metric,v,key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+        result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+        result.append(obs('group',year,quarter,'ytd',metric,vals[5],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+        result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
     for item in result:item['source_document_period']=f'Q{quarter} {year}'
     return result
 
