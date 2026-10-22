@@ -1,10 +1,10 @@
 {
-  "updated_at": "2026-10-20T10:38:06+00:00",
+  "updated_at": "2026-10-22T20:20:58+00:00",
   "companies": {
     "Storebrand": {
       "next_event": {
-        "period": "Q3 2026",
-        "date": "2026-10-21",
+        "period": "Q4 2026",
+        "date": "2027-02-10",
         "source_url": "https://www.storebrand.com/welcome/investor-relations"
       },
       "locked_periods": [],
