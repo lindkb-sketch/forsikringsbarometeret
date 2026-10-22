@@ -1,6 +1,8 @@
 name: Test Storebrand separately
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * *'
 permissions:
   contents: read
 jobs:
