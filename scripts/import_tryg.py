@@ -31,7 +31,9 @@ def parse_group(blob,year,quarter,url):
                 candidates.append((page_no,lines[i+1:i+55]))
         if len(candidates)!=1:raise ValueError('Tryg group income overview missing or ambiguous')
         page_no,lines=candidates[0]
-        print('TRYG_INCOME_OVERVIEW',year,quarter,'page',page_no,'rows',repr(lines[:36]),flush=True)
+        # Q1 has 3 columns (current/prior/year); Q2-Q4 have 5 (quarter and YTD).
+        column_count=5 if re.search(r'Q1-Q[234]|H1|Q1-Q3',lines[0],re.I) else 3
+        if quarter>1 and column_count!=5:raise ValueError('Tryg YTD columns missing')
         if not re.search(r'Q\s*'+str(quarter)+r'\b',lines[0],re.I):raise ValueError('Quarter mismatch')
         if not re.search(r'\b'+str(year)+r'\b',lines[1]):raise ValueError('Year mismatch')
         out=[]
@@ -41,7 +43,7 @@ def parse_group(blob,year,quarter,url):
             matches=[m for m in found if m]
             if len(matches)!=1:raise ValueError('Tryg group metric missing or ambiguous: '+metric)
             for period,col in [('quarter',1),('ytd',3)]:
-                val=float(matches[0].group(col).replace(',',''))
+                val=float(matches[0].group(1 if period=='quarter' else (3 if column_count==5 else 1)).replace(',',''))
                 out.append(dict(company='Tryg',year=year,quarter=quarter,scope='group',
                                 source_scope='group',period_type=period,metric=metric,value=val,
                                 unit='percent' if metric.endswith('ratio') else 'MDKK',
