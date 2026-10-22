@@ -1691,6 +1691,25 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  }
  function calendarAlways(){
   if(typeof home!=='function'||typeof monCalendar!=='function')return;
+  // The comparison's revenue column is sourced from the same audited quarterly feed.
+  const oldTable=table;
+  table=function(){
+   const html=oldTable();
+   if(typeof MON_QUARTER==='undefined'||MON_QUARTER!=='Q3'||period==='H3')return html;
+   const doc=document.createElement('div');doc.innerHTML=html;
+   const head=doc.querySelector('thead tr');if(!head)return html;
+   const th=document.createElement('th');th.textContent='Forsikringsinntekter · Q3';head.insertBefore(th,head.children[1]);
+   for(const tr of doc.querySelectorAll('tbody tr')){
+    const raw=(tr.cells[0]?.textContent||'').trim();
+    const c=raw==='Frende Holding'?'Frende':raw;
+    const d=MON_Q3[c]||{};
+    const td=document.createElement('td');
+    const unit=d.revenueUnit||'';
+    td.innerHTML=d.revenue?'<strong>'+d.revenue+'</strong> <small>'+unit+'</small>'+(d.revenuePrev?'<div class="muted">Q3 2025: '+d.revenuePrev+'</div>':'<div class="muted">Q3 2025: ikke verifisert</div>'):'<span class="muted">Ikke rapportert</span>';
+    tr.insertBefore(td,tr.cells[1]);
+   }
+   return doc.innerHTML;
+  };
   const previous=home;
   home=function(){const html=previous();return html.includes('class="mon-calendar"')?html:html+monCalendar();};
   if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
