@@ -1657,21 +1657,35 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    if(!response.ok)throw Error('Finansfeed HTTP '+response.status);
    const feed=await response.json();
    if(!Array.isArray(feed.observations)||!feed.observations.length)throw Error('Verifisert finansfeed mangler observasjoner');
-   const rows=(feed.observations||[]).filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.year===2026&&r.quarter===3&&r.status==='reported');
-   for(const r of rows){
-    if(!Number.isFinite(r.value))continue;
-    const key=metricKeys[r.metric];if(!key)continue;
+   const valid=feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&Number.isFinite(r.value));
+   const rows=valid.filter(r=>r.year===2026&&r.quarter===3);
+   const previous=valid.filter(r=>r.year===2025&&r.quarter===3);
+   for(const r of [...previous,...rows]){
     const d=MON_Q3[r.company]||(MON_Q3[r.company]={});
-    d[key]=fmt(r.value,['cr','loss','cost','return','solvency'].includes(key));
-    if(r.source_url)d.source=r.source_url;
+    const suffix=r.year===2025?'Prev':'';
+    if(r.metric==='insurance_revenue'){d['revenue'+suffix]=fmt(r.value);d['revenueUnit'+suffix]=r.unit||'';}
+    const key=metricKeys[r.metric];
+    if(key)d[key+suffix]=fmt(r.value,['cr','loss','cost','return','solvency'].includes(key));
+    if(r.year===2026&&r.source_url)d.source=r.source_url;
    }
-   const revenue=(company,year)=>feed.observations.find(r=>r.company===company&&r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue'&&r.year===year&&r.quarter===3&&r.status==='reported');
    for(const c of ['Fremtind',...companies]){
-    const now=revenue(c,2026),prior=revenue(c,2025);
-    if(now&&prior&&prior.value>0&&Number.isFinite(now.value)&&Number.isFinite(prior.value)){
-     (MON_Q3[c]||(MON_Q3[c]={})).growth=fmt((now.value/prior.value-1)*100,true);
+    const d=MON_Q3[c];if(!d)continue;
+    const now=rows.find(r=>r.company===c&&r.metric==='insurance_revenue');
+    const prior=previous.find(r=>r.company===c&&r.metric==='insurance_revenue');
+    if(now&&prior&&prior.value>0&&now.unit===prior.unit)d.growth=fmt((now.value/prior.value-1)*100,true);
+    const ratio=rows.find(r=>r.company===c&&r.metric==='combined_ratio');
+    const loss=rows.find(r=>r.company===c&&r.metric==='loss_ratio');
+    const cost=rows.find(r=>r.company===c&&r.metric==='expense_ratio');
+    if(ratio&&loss&&cost){
+     profitabilityVerified[c]||(profitabilityVerified[c]={});
+     profitabilityVerified[c]['Q3 2026']=[loss.value,cost.value,ratio.value];
     }
+    const roe=rows.find(r=>r.company===c&&r.metric==='return_on_equity');
+    if(roe){profitabilityReturns[c]||(profitabilityReturns[c]={});profitabilityReturns[c]['Q3 2026']={label:'Rapportert egenkapitalavkastning',value:roe.value};}
    }
+   // The main profitability plot and CR podium both consume profitabilityVerified.
+   // Prior-year values remain unavailable unless explicitly reported in the feed.
+   if(typeof profitabilityQuarters!=='undefined'&&!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
    if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
   }catch(e){console.warn('Verifiserte kvartalstall kunne ikke oppdateres',e);}
  }
@@ -1704,7 +1718,14 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   (brief?'<h3>Kvartalsbrief</h3><ul>'+brief+'</ul>':'')+(moves?'<h3>Strategiske forhold og resultatutvikling</h3><ul>'+moves+'</ul>':'')+(headlines?'<h3>Siste nyheter</h3><ul>'+headlines+'</ul>':'')+(quotes?'<h3>Aksjekurser</h3><ul>'+quotes+'</ul>':'')+'</section>';
  }
  const oldHome=home;
- home=function(){return oldHome()+panel();};
+ home=function(){
+  let html=oldHome();
+  if(editorial&&typeof MON_QUARTER!=='undefined'&&MON_QUARTER==='Q3'){
+   const summary=items(editorial.brief,8).map(x=>esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a>').join('<span style="display:block;margin-top:6px"></span>');
+   if(summary)html=html.replace(/<section class="quarter-comment"[^>]*>[\s\S]*?<\/section>/,'<section class="quarter-comment" aria-label="Kvartalsbrief Q3 2026"><div class="quarter-comment-head"><span class="quarter-comment-label">KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT</span></div><p>'+summary+'</p></section>');
+  }
+  return html+panel();
+ };
  async function refresh(){
   const get=async file=>{const r=await fetch('data/'+file+'?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return r.json();};
   const results=await Promise.allSettled([get('quarterly_editorial.json'),get('official_news.json'),get('stock_prices.json')]);
