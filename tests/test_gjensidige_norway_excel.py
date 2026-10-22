@@ -20,9 +20,9 @@ class NorwaySegments(unittest.TestCase):
         quarter={r['metric']:r['value'] for r in aggregate if r['period_type']=='quarter'}
         self.assertAlmostEqual(quarter['insurance_revenue'],10000)
         self.assertAlmostEqual(quarter['insurance_service_result'],3000)
-        self.assertAlmostEqual(quarter['loss_ratio'],54)
-        self.assertAlmostEqual(quarter['expense_ratio'],13)
-        self.assertAlmostEqual(quarter['combined_ratio'],67)
+        self.assertNotIn('loss_ratio',quarter)
+        self.assertNotIn('expense_ratio',quarter)
+        self.assertAlmostEqual(quarter['combined_ratio'],70)
         self.assertEqual({r['segment'] for r in segments},{'PM Norge','BM Norge'})
         self.assertEqual(len(segments),20)
 
