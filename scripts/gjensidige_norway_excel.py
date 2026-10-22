@@ -75,7 +75,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
         totals={}
         cr_inputs={}
         for prefix,ws in sheets.items():
-            section_row=next((r for r in range(1,ws.max_row+1) if str(ws.cell(r,1).value or '').strip()==prefix),None)
+            section_row=next((r for r in range(1,ws.max_row+1) if str(ws.cell(r,1).value or '').strip().casefold().startswith(prefix[:25].casefold()) and 'norwa' in str(ws.cell(r,1).value or '').casefold()),None)
             if section_row is None:raise ValueError('Norway segment section not found: '+prefix+'; workbook '+str(year)+' Q'+str(quarter)+'; sections='+repr([str(ws.cell(row,1).value) for row in range(1,min(ws.max_row+1,120)) if isinstance(ws.cell(row,1).value,str) and str(ws.cell(row,1).value).startswith('General Insurance')]))
             header_row=next((r for r in range(section_row+1,min(ws.max_row+1,section_row+7)) if str(ws.cell(r,col).value or '').strip()==('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)),None)
             section_end=next((r for r in range(header_row+1,ws.max_row+1) if isinstance(ws.cell(r,1).value,str) and str(ws.cell(r,1).value).strip().startswith('General Insurance ') and all(ws.cell(r,k).value is None for k in (2,3,4))),ws.max_row+1) if header_row else ws.max_row+1
