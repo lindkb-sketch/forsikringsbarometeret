@@ -38,8 +38,8 @@ def extract(markup):
         for i, window, parsed_periods in candidates:
             previous = [t for t in tokens[max(0,i-140):i] if t in ("Protector", "Norway", "Sweden", "United Kingdom", "Denmark", "France")]
             if previous and previous[-1] == title: qualified.append((window, parsed_periods))
-        if len(qualified) != 1:
-            raise ValueError(f"Ambiguous {scope} KPI table: {len(qualified)} matches")
+        if not qualified:
+            raise ValueError(f"Missing {scope} KPI table")
         window, parsed_periods = qualified[0]
         for label, metric in METRICS.items():
             positions = [i for i,v in enumerate(window) if v == label]
