@@ -41,13 +41,16 @@ def fremtind_rows(markup):
  output=[]
  for row in reader.rows:
   if not row:continue
-  title=' '.join(c['text'] for c in row[:2]).replace('\\xa0',' ')
+  title=' '.join(c['text'] for c in row[:2]).replace('\u00a0',' ')
   m=re.search(r'Fremtind Holding\s+(20\d{2})',title,re.I)
   if not m:continue
   year=int(m.group(1))
   for quarter in range(1,5):
-   # Archive columns: entity, year, Q1, Q2, Q3, Q4, annual.
-   for offset in (2,):
+   # Both archive layouts occur: one combined entity/year cell or two cells.
+   # Locate the year-bearing cell to avoid shifting Q1 into Q2.
+   year_cell=next((i for i,c in enumerate(row[:2]) if str(year) in c['text']),None)
+   if year_cell is None:continue
+   for offset in (year_cell+1,):
     pos=offset+quarter-1
     if pos>=len(row):continue
     for href in row[pos]['links']:
