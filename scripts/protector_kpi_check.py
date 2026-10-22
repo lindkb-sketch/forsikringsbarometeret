@@ -8,7 +8,7 @@ PERIODS = {"Q1 26": 1, "Q2 26": 2, "Q3 26": 3}
 METRICS = {
     "Insurance revenue": "insurance_revenue",
     "Insurance service result": "insurance_service_result",
-    "Loss ratio": "loss_ratio",
+    "Loss ratio, net of reinsurance": "loss_ratio",
     "Cost ratio": "expense_ratio",
     "Combined ratio": "combined_ratio",
 }
@@ -28,7 +28,7 @@ def extract(markup):
         candidates = []
         for i in range(len(tokens)-5):
             if tokens[i:i+3] != ["Q3 26", "Q2 26", "Q1 26"]: continue
-            window = tokens[i:i+130]
+            window = tokens[i:i+105]
             if not all(metric in window for metric in METRICS): continue
             candidates.append((i, window))
         # Scope is established by the closest preceding geographical heading.
