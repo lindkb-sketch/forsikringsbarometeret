@@ -7,6 +7,7 @@ The newest quarter is optional until the issuer actually releases its PDF.
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -52,7 +53,7 @@ def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
         opening = ' '.join(text for _, text in pages[:2]).lower()
         name = ['first', 'second', 'third', 'fourth'][quarter-1]
         if ('gjensidige' not in opening or str(year) not in opening or
-            not (f'{name} quarter' in opening or f'{quarter}(?:st|nd|rd|th)' in opening)):
+            not (f'{name} quarter' in opening or re.search(rf'\\b{quarter}(?:st|nd|rd|th) quarter\\b', opening))):
             raise ValueError(f'PDF cover does not identify Gjensidige Q{quarter} {year}')
         sha = hashlib.sha256(blob).hexdigest()
         rows = parse_highlights(pages, 'Gjensidige', year, quarter, url, sha)
