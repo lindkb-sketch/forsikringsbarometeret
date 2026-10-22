@@ -163,6 +163,15 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     },
     {
+      "id": "5c58567922d270c6b6da",
+      "headline": "Correction: Fremtind Holding Group - Results for the Third Quarter and the Nine Months Ended 30 September 2026",
+      "publisher": "Finansavisen",
+      "published_at": "2026-10-19T12:39:43+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMiowJBVV95cUxNU1c1b2JtSTl0ZDdRNkx2LTVHQUctMUk5VndkSWxfWEcwWUVIenU3cjVtcU44cDZMUUxCZG9oTUhWMGY4bEExaUc3RXFXWHExd3p0VlVMQ0pkOERIalR4UGdSUHFEXzJIV3MxUTA0bGVKSHFQeGJPSnU1ZlRRMTAtMkNFSTN4YlFtTU5ZRG1WLVRQUndDZTlYaWszUjNsb2NnU1l3THM2d1NkZWxnbVB1blN0VF8tSDMwLTdMU29oMXpOeWNqTGJHUEc1VjZhcm5XYTJyaWZ4THFJaW9aZ003Y3dMT1lYeXlrS0NxQU13blZMd0Nnb2R1ajZPSnJVbFFieFNwRU1vUl8yalBDVDBQSlpZWVpFUmZmcEJtTlFSblJUcEE?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "9c9f9a462f44cd9ca241",
       "headline": "FREMTIND HOLDING: RESULTAT FØR SKATT 1.810M I 3.KV (1.621)",
       "publisher": "Finansavisen",
@@ -202,8 +211,8 @@
       "id": "c7ac4cc52f23aacc675b",
       "headline": "STOREBRAND ASA: Registration of share capital increase",
       "publisher": "Finansavisen",
-      "published_at": "2026-10-19T12:14:05+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNWXZWclJkeHNWLVNvS1VUcU00cUMyN2hMdHFJeEhienEwbkhOQlkyRE9HVE1lMldzemZwaDJZcFNVTmFrWm5HOGx5Vnl2TGlCdU94b3lkZkg4bjk5Qi1Bcnp2ZF9iRzVqaG85STRUY244NVY1X0FkQ0JfeTZvbko2NXMtNVI0Q3loV0VDZXZRM2VmTnRhRTJOOHZEYlJ1ZVZxQTJiUzBlMDcyNHRBcElDbFBMUzY1UDFqb0xYN3JLczdldGhzRzlmRkdHd1FmN0drWTNNLVR6WFFSRUE?oc=5",
+      "published_at": "2026-10-19T12:13:56+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNaGVTZ0x0dmY1UU1LRTVhaC15ZmZQN3JDakZMaE1ULWtaZTNjQk5ULVhTblpQNlctZ0tSdDloQU5pZURwODRvbVA1ZURZNWI5OUxDeWVhWVdqakdxNU4xUVpDSWU5dmdkZzdSdXVhM2Z2akZaN005Q1VvZkM3cGJIY1dTdU9CMnBDekZpTVVhdTRUZ2U3TjEyeWR6bGdfTGNYRDFUYXd6Unl1NVY1WVNKQTNTVXd3R0V1aUl1RmluMi1nVTFzLS05aUxYTkRpdE9ZMnlObzZETjRqdm8?oc=5",
       "approved": true,
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     },
@@ -253,20 +262,20 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     },
     {
-      "id": "663badbb81abbadc3ff2",
-      "headline": "STOREBRAND ASA: Status share buyback program",
+      "id": "b8c8f9b90dabc99820cb",
+      "headline": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
       "publisher": "Finansavisen",
       "published_at": "2026-10-12T07:00:00+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZnFPRG1ZbXVXdUttaF9kX3NuSHVSN1FFUWl5UmVYb3p5LWRZek9TX002Umh5MDloTkdYcmhpMVl3NC1JSm1CZUJtUDBaNHQ4OTMxbU45R3o4SGUxT29NSnhRWVpzQWZxMW9SNVM5ZEs3a3JNSl9jNTJJVUJyTGFaRkNEQTB0M0lIck5EdmdyTXYzbGFwVUt2MUYyUW82YmY2NS1CR01ka2JHWk1UQVhGblNqeFlTMVlMUEE4dWtsSFBSTmsyQXdhRWNCb2x0Zw?oc=5",
+      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPek1LV09Ram5HSVY1OXJNLUdlaGRrd3BUYzl1OE5DelBHQWlCRW9COGpCS2NyRmRPVmVVNHdXZmJIMzlkS0JlMFpaNVhiMUh4SXg3OXo0d3BxTklZenctLTVSSHd6YzNQamJpYW0tOEg4ei00NkMwNGZPdE9oYU14UnBTemliRWZvb0xmRDZjYllZbjBWdDZIc0tCYmt5YUNieVBQbnlFU1NQTjlaYUk5eEZxVldZb0dkY05ESDNjWHBKRFpJQ0YtVERENkFwemVvaFlPRA?oc=5",
       "approved": true,
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     },
     {
-      "id": "b8c8f9b90dabc99820cb",
-      "headline": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
+      "id": "663badbb81abbadc3ff2",
+      "headline": "STOREBRAND ASA: Status share buyback program",
       "publisher": "Finansavisen",
-      "published_at": "2026-10-12T06:30:14+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQY0cyWktPVEc4cG5zWlpxMlBDM0JXY1RzYjRwY1FFajl5MVhKQ2Z0eElXazZRamlMY1hDY0JfakhrUEhkbHFGWmFoRWxoSTFmY1pFLVhLV3pYSVN6NlJzUjJLbmtaclU3WGJvZWM1X0pnT3FxWVh6R1FKYXRyV0hLRnBFOHFZN3E0emtiNUR0RXJUeXJaMGs5VVFzbEJKVWVvQ2lXNGpZY0oyYk10RHlwWUZ2aUdyNXBlTnlXb0JuMzRZQWI0X19rQkNHeTNSQURLYWJPZg?oc=5",
+      "published_at": "2026-10-12T06:30:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZnFPRG1ZbXVXdUttaF9kX3NuSHVSN1FFUWl5UmVYb3p5LWRZek9TX002Umh5MDloTkdYcmhpMVl3NC1JSm1CZUJtUDBaNHQ4OTMxbU45R3o4SGUxT29NSnhRWVpzQWZxMW9SNVM5ZEs3a3JNSl9jNTJJVUJyTGFaRkNEQTB0M0lIck5EdmdyTXYzbGFwVUt2MUYyUW82YmY2NS1CR01ka2JHWk1UQVhGblNqeFlTMVlMUEE4dWtsSFBSTmsyQXdhRWNCb2x0Zw?oc=5",
       "approved": true,
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     },
