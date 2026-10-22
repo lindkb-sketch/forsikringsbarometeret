@@ -65,7 +65,14 @@ def run(pairs=None):
         wb={'workbooks':[{'company':'Tryg','year':year,'quarter':quarter,
                           'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
                           'approved':True}]}
-        existing,_,_=prepare(wb,existing)
+        # Existing audited Norway observations may have different provenance metadata;
+        # preserve them only when the workbook independently confirms the same value.
+        try:
+            existing,_,_=prepare(wb,existing)
+        except ValueError as exc:
+            if 'Existing value conflicts with newly parsed workbook' not in str(exc):raise
+            print('TRYG_WORKBOOK_PROVENANCE_CONFLICT',year,quarter,str(exc),flush=True)
+            raise
         print('TRYG_VERIFIED',year,quarter,'group',len(group),'norway',
               len([r for r in existing['observations'] if r['company']=='Tryg'
                    and r['scope']=='norway' and r['year']==year and r['quarter']==quarter]))
