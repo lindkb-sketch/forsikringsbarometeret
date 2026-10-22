@@ -55,8 +55,8 @@ def parse(blob,url,year,quarter):
    if not match:raise ValueError(f'Unexpected label {segment} {metric}')
    vals=re.findall(r'-?\d[\d,]*(?:\.\d+)?',lines[0][match.end():])
    if not vals:raise ValueError(f'Missing numeric value: {segment} {metric}')
-   # For Q2+, use the first YTD column, derive quarter only from verified prior YTD.
-   period='quarter' if quarter==1 else 'ytd'
+   # The first numeric column is the current quarter, including Q2 and Q3.
+   period='quarter'
    observations.append(dict(company='Sampo',year=year,quarter=quarter,scope='group' if segment=='Sampo Group' else 'reported_segment',segment=None if segment=='Sampo Group' else segment,source_scope='group' if segment=='Sampo Group' else 'reported_segment',period_type=period,metric=metric,value=number(vals[0]),unit='percent' if metric.endswith('ratio') else 'EURm',status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',source_sha256=sha,source_definition='Sampo interim statement; '+segment+' reported financial table'))
  return observations
 def run():
