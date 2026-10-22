@@ -20,8 +20,16 @@ import hashlib
 
 REQUIRED = {'insurance_revenue', 'insurance_service_result', 'combined_ratio', 'expense_ratio'}
 KEYS = ('company', 'year', 'quarter', 'scope', 'period_type', 'metric')
+# Official PDF URLs independently verified from Gjensidige's investor-relations page.
+APPROVED_PDFS = {
+    (2026, 1): 'https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf',
+    (2026, 2): 'https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf',
+}
+
 
 def discover_quarter(quarter, year=2026, fetcher=fetch):
+    if (year, quarter) in APPROVED_PDFS:
+        return APPROVED_PDFS[(year, quarter)]
     urls = set()
     failures = []
     for index in (ARCHIVE, HOME):
