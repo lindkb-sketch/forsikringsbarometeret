@@ -48,7 +48,9 @@ def parse(blob,url,year,quarter):
      if len(detail)!=1:raise ValueError(f'Missing segment ratio table: {segment}')
      page,block=detail[0]
      lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(label)+r',?\\s*%\\s+[-\\d]',line,re.I)]
-    if len(lines)!=1:raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
+    if len(lines)!=1:
+     print('PDF TABLE DIAGNOSTIC',year,quarter,segment,metric,'page',page,repr(block[:2500]),file=sys.stderr)
+     raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
    match=re.match(r'^'+re.escape(match_label)+r'.{0,40}?(?:EURm|%)?\\s+',lines[0],re.I)
    if not match:raise ValueError(f'Unexpected label {segment} {metric}')
    vals=re.findall(r'-?\\d[\\d,]*(?:\\.\\d+)?',lines[0][match.end():])
