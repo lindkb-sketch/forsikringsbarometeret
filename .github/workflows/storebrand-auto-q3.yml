@@ -14,7 +14,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: storebrand-verified-publication
+  group: forsikringsbarometeret-publish
   cancel-in-progress: false
 jobs:
   storebrand-q3:
@@ -107,6 +107,10 @@ jobs:
           else
             echo 'No changes in verified Storebrand observations.'
           fi
+      - name: Refresh latest committed feed before Pages deployment
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
