@@ -2,7 +2,7 @@
 """Fetch registered official geographical XLSX, validate, merge, publish feed.
 Strict atomic behavior: if any workbook fails, neither observations nor feed change.
 """
-import argparse,json,os,tempfile,urllib.request
+import argparse,hashlib,json,os,tempfile,urllib.request
 from pathlib import Path
 from audit_financials import audit,DATA,ROOT
 from geographic_excel import parse
@@ -32,6 +32,7 @@ def prepare(registry,existing,fetcher=download):
             p=Path(d)/'report.xlsx';p.write_bytes(content)
             batch=parse(p,spec['company'],spec['year'],spec['quarter'],spec['workbook_url'],spec['report_pdf_url'])['observations']
         for r in batch:
+            r['source_sha256']=hashlib.sha256(content).hexdigest()
             k=key(r)
             if k in existing_keys:
                 old=existing_keys[k]
