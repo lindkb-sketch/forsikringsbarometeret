@@ -15,6 +15,9 @@ def build(root=ROOT):
     observations=json.loads((root/'data/financial_observations.json').read_text())['observations']
     registry=json.loads((root/'data/report_sources.json').read_text())['sources']
     result=[]
+    candidate_path=root/'data/frende_fremtind_candidates.json'
+    candidate_data=json.loads(candidate_path.read_text()) if candidate_path.exists() else {'candidates':[],'complete':False}
+    candidate_rows=candidate_data.get('candidates',[]) if candidate_data.get('complete') else []
     for company in COMPANIES:
         sources=[s for s in registry if s['company']==company]
         group=[r for r in observations if r.get('company')==company and r.get('scope')=='group' and r.get('period_type')=='quarter']
@@ -23,6 +26,8 @@ def build(root=ROOT):
         complete=[p for p,metrics in byperiod.items() if set(REQUIRED)<=metrics]
         result.append({'company':company,'official_archive_registered':any(s.get('index_url') for s in sources),
           'direct_pdf_registered':sum(bool(s.get('document_url')) for s in sources),
+          'official_report_candidates':sum(c.get('company')==company for c in candidate_rows),
+          'candidate_discovery_verified':bool(candidate_data.get('complete')) if company in ('Frende','Fremtind') else False,
           'group_quarter_observations':len(group),'group_quarters_with_required_metrics':sorted(complete),
           'automatic_complete':False,
           'reason':'End-to-end automatic discovery, source parsing and publication not yet verified for this issuer'})
