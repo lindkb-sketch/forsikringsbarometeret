@@ -25,3 +25,6 @@ Disse er kontrollberegninger, **ikke publiseringsbekreftelse**. Originalfilens d
 
 ## Definisjon av Norge og separate segmenter
 Norge totalt = **PM Norge (General Insurance Private Norway)** + **BM Norge (General Insurance Commercial Norway)**. Forsikringsinntekter og forsikringsresultat summeres; combined ratio, skadeprosent og kostnadsprosent beregnes som inntektsvektede forholdstall. Ingen konsernverdier blandes inn. Importøren leser PM/BM direkte fra egne Excel-ark og produserer også `data/gjensidige_norway_segments.json` med hvert segments kildeark og kildecelle. Segmentfilen produseres bare når importøren kjøres; den er foreløpig ikke bekreftet publisert.
+
+## Oppdatert kontrollprosedyre 22.10.2026
+Importen er nå koblet til GitHub Actions. Den skal rekonstruere netto combined ratio separat for PM og BM fra signerte forsikringskostnader og reassuranseresultat og sammenligne mot hvert segments publiserte combined ratio (toleranse 0,15 prosentpoeng). Bare når begge kontroller består beregnes Norge totalt fra summerte beløp. `openpyxl` er lagt til avhengighetene. Netto skadeprosent Norge er fortsatt ikke implementert fordi underliggende skadekostnadsrader ennå ikke er identifisert og validert. Kjøring og live-publisering må bekreftes i Actions-loggen; kode alene er ikke godkjenning.
