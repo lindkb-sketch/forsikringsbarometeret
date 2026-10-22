@@ -39,7 +39,7 @@ def locate_xlsx(page,quarter,base=INDEX):
     raw=unescape(page.decode('utf-8','replace'))
     # Dynamic issuer pages sometimes have no anchor in static HTML: refuse to guess.
     candidates=[]
-    for match in re.finditer(r"href=[\\\"']([^\\\"']+\\.xlsx(?:\\?[^\\\"']*)?)[\\\"']",raw,re.I):
+    for match in re.finditer('href="([^"]+[.]xlsx)"',raw,re.I):
         url=urllib.parse.urljoin(base,match.group(1))
         if urllib.parse.urlsplit(url).scheme!='https':continue
         context=raw[max(0,match.start()-1500):match.end()+300].lower()
