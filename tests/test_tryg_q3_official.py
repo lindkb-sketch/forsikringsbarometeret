@@ -19,18 +19,12 @@ class OfficialTrygTests(unittest.TestCase):
   else:self.assertFalse(any(r['company']=='Tryg' and r['year']==2025 and r['quarter']==3 and r['scope']=='norway' and r['period_type']=='ytd' for r in self.rows))
  def test_provenance(self):
   for r in self.rows:
-   if r['company']=='Tryg':
-    self.assertTrue(r.get('source_url','').startswith('https://'))
-    if r.get('source_type')=='official_investor_tables' or r.get('source_sha256'):
-     self.assertRegex(r.get('source_sha256',''),r'^[0-9a-f]{64}
-    if r.get('source_type')=='official_quarterly_report':
-     self.assertIsInstance(r.get('source_page'),int)
-     self.assertGreater(r['source_page'],0)
-    elif r.get('source_type')=='official_investor_tables':
-     self.assertTrue(r.get('source_sheet') or r.get('source_section'))
-)
-    if r.get('source_type')=='official_quarterly_report':
-     self.assertIsInstance(r.get('source_page'),int)
-     self.assertGreater(r['source_page'],0)
-    elif r.get('source_type')=='official_geographic_workbook':
-     self.assertTrue(r.get('source_sheet') or r.get('source_section'))
+   if r['company']!='Tryg':continue
+   self.assertTrue(r.get('source_url','').startswith('https://'))
+   if r.get('source_sha256'):
+    self.assertRegex(r['source_sha256'],r'^[0-9a-f]{64}$')
+   if r.get('source_type')=='official_quarterly_report':
+    self.assertIsInstance(r.get('source_page'),int)
+    self.assertGreater(r['source_page'],0)
+   elif r.get('source_type')=='official_investor_tables':
+    self.assertTrue(r.get('source_sheet') or r.get('source_section'))
