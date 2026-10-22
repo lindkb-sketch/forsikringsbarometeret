@@ -31,11 +31,15 @@ def download(url,limit=35000000):
 def discover_pdf(year,quarter,fetch=download):
  # Report attachment links on the issuer's investor-relations homepage.
  pages=[HOME,HOME+'all-reports',HOME+'financials',HOME+'press-releases']
- if (year,quarter)==(2026,3):
-  pages.append(HOME+'pressreleases/q3-2026-cr-827-earnings-per-share-nok-102-dividend-nok-500-per-share')
  if (year,quarter)==(2026,1):
   pages.append(HOME+'pressreleases/q1-2026-cr-849-dividend-per-share-nok-80-moaavo8h')
  links=[]
+ index=fetch(HOME+'press-releases',4000000).decode('utf-8')
+ index_links=Links();index_links.feed(index)
+ for href,label in index_links.links:
+  if re.search(rf'q{quarter}\\s*{year}|{year}\\s*[-–:]?\\s*q{quarter}',label,re.I):
+   detail=urllib.parse.urljoin(HOME,href)
+   if detail.startswith(HOME):pages.append(detail)
  for page_url in pages:
   page=fetch(page_url,4000000).decode('utf-8')
   parser=Links();parser.feed(page)
