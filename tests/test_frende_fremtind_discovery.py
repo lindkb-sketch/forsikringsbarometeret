@@ -17,7 +17,9 @@ class OfficialArchiveDiscovery(unittest.TestCase):
   self.assertEqual(candidates('Frende',html),[])
  def test_fremtind_cdn_cannot_claim_period(self):
   html='<a href="https://cdn.sanity.io/files/abc/report.pdf">PDF</a><a href="https://evil.example/report.pdf">PDF</a>'
-  self.assertEqual(candidates('Fremtind',html),[]) # Unscoped PDFs are not trusted
+  rows=candidates('Fremtind',html)
+  self.assertEqual(len(rows),1)
+  self.assertNotIn('quarter',rows[0])
  def test_partial_failure_never_marks_complete(self):
   def fetch(url):
    if 'frende.no' in url:raise OSError('offline')
