@@ -22,3 +22,6 @@ Disse er kontrollberegninger, **ikke publiseringsbekreftelse**. Originalfilens d
 - Norge: Skript `scripts/gjensidige_norway_excel.py` er lagt til med streng cellekontroll og kildekrav.
 - Norge-importen er **ikke koblet til aktiv arbeidsflyt og ikke live-verifisert**. Det er ikke dokumentert at offisiell rapportside eksponerer direkte Excel-URL i statisk HTML.
 - Ingen Norge-observasjoner skal publiseres før direkte offisiell XLSX-lenke, korrekt kvartal, riktige ark, revisjon av beregninger og vellykket Actions-kjøring er kontrollert.
+
+## Definisjon av Norge og separate segmenter
+Norge totalt = **PM Norge (General Insurance Private Norway)** + **BM Norge (General Insurance Commercial Norway)**. Forsikringsinntekter og forsikringsresultat summeres; combined ratio, skadeprosent og kostnadsprosent beregnes som inntektsvektede forholdstall. Ingen konsernverdier blandes inn. Importøren leser PM/BM direkte fra egne Excel-ark og produserer også `data/gjensidige_norway_segments.json` med hvert segments kildeark og kildecelle. Segmentfilen produseres bare når importøren kjøres; den er foreløpig ikke bekreftet publisert.
