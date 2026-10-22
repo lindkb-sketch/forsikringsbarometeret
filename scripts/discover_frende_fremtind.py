@@ -92,7 +92,11 @@ def candidates(company,markup):
     if parsed.scheme=='https' and parsed.hostname in ALLOWED['Fremtind'] and parsed.path.lower().endswith('.pdf'):
      result.append(dict(company='Fremtind',year=year,source_entity='Fremtind Holding',document_url=url,archive_url=base,status='requires_pdf_entity_and_period_verification'))
   combined = rows + result
-  return list({r['document_url']: r for r in reversed(combined)}.values())
+  seen=set(); unique=[]
+  for row in combined:
+   if row['document_url'] not in seen:
+    unique.append(row);seen.add(row['document_url'])
+  return unique
  for link in parser.links:
   url=urllib.parse.urljoin(base,link['href'])
   p=urllib.parse.urlparse(url)
