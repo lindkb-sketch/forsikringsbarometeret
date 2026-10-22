@@ -111,6 +111,13 @@ jobs:
         run: |
           git fetch origin main
           git reset --hard origin/main
+          python - <<'PY'
+          import json
+          p=json.load(open('data/verified_financial_feed.json'))
+          found={(r['quarter'],r['scope']) for r in p['observations'] if r['company']=='Storebrand' and r['year']==2026}
+          assert all((q,s) in found for q in (1,2,3) for s in ('group','norway')),found
+          print('Storebrand all quarters present in Pages artifact:',len(found))
+          PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
