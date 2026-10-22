@@ -20,28 +20,42 @@ def parse(blob,url,year,quarter):
  sha=hashlib.sha256(blob).hexdigest()
  with pdfplumber.open(io.BytesIO(blob)) as pdf:
   pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
- alltext=' '.join(t for _,t in pages[:6])
- if str(year) not in alltext:raise ValueError('Incorrect report year')
+ if str(year) not in ' '.join(t for _,t in pages[:5]):raise ValueError('Incorrect report year')
  observations=[]
+ labels={'insurance_revenue':'Insurance revenue, net','insurance_service_result':'Underwriting result','loss_ratio':'Risk ratio','expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
  for segment in ('Sampo Group',)+SEGMENTS:
   candidates=[]
   for page,text in pages:
-   # Segment's own table begins at the segment heading, never use a group figure as segment figure.
-   pattern=r'(?m)^'+re.escape(segment)+r'\s*$'
-   for m in re.finditer(pattern,text):
-    block=text[m.end():]
-    end=re.search(r'(?m)^(?:Private Nordic|Private UK|Nordic Commercial|Nordic Industrial|Net financial result|Premium development|Underwriting performance|Financial position|Segments)\s*$',block)
+   if segment=='Sampo Group':
+    match=re.search(r'(?m)^Financial overview\\s*$',text)
+    if match: block=text[match.end():].split('Nordic underlying development')[0]
+    else:continue
+   else:
+    match=re.search(r'(?m)^'+re.escape(segment)+r'\\s*$',text)
+    if not match:continue
+    block=text[match.end():]
+    end=re.search(r'(?m)^(?:Private UK|Nordic Commercial|Nordic Industrial|Premium development|Underwriting performance)\\s*$',block)
     if end:block=block[:end.start()]
-    if 'Insurance revenue, net' in block and 'Combined ratio' in block:candidates.append((page,block))
-  if not candidates:raise ValueError(f'Missing segment financial table: {segment}')
+   if 'Underwriting result' in block and 'Combined ratio' in block:candidates.append((page,block))
+  if not candidates:raise ValueError(f'Missing financial table: {segment}')
   page,block=candidates[0]
-  for metric,label in LABELS.items():
-   lines=[line for line in block.splitlines() if re.match(r'^\s*'+label+r'\s+',line,re.I)]
-   if len(lines)!=1:raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
-   vals=re.findall(r'(?<!\w)-?\d[\d,]*(?:\.\d+)?(?!\w)',lines[0][len(re.match(r'^\s*'+label,lines[0],re.I).group()):])
-   if len(vals)<(4 if quarter>1 else 2):raise ValueError(f'Insufficient columns: {segment} {metric}')
-   for period,index in [('quarter',0)]+([('ytd',2)] if quarter>1 else []):
-    observations.append(dict(company='Sampo',year=year,quarter=quarter,scope='group' if segment=='Sampo Group' else 'reported_segment',segment=None if segment=='Sampo Group' else segment,source_scope='group' if segment=='Sampo Group' else 'reported_segment',period_type=period,metric=metric,value=number(vals[index]),unit='percent' if metric.endswith('ratio') else 'EURm',status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',source_sha256=sha,source_definition='Sampo financial report; '+segment+' reported table'))
+  for metric,label in labels.items():
+   lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(label)+r'\\s+(?:EURm\\s+|%\\s+)?[-\\d]',line,re.I)]
+   if len(lines)!=1:
+    if segment!='Sampo Group' and metric in ('loss_ratio','expense_ratio'):
+     # Ratios are in the dedicated segment detail, not the overview.
+     detail=[(p,t) for p,t in pages if re.search(r'(?m)^'+re.escape(segment)+r'\\s*$',t) and 'Key ratios' in t]
+     if len(detail)!=1:raise ValueError(f'Missing segment ratio table: {segment}')
+     page,block=detail[0]
+     lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(label)+r',?\\s*%\\s+[-\\d]',line,re.I)]
+    if len(lines)!=1:raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
+   match=re.match(r'^'+re.escape(label)+r',?\\s*(?:EURm|%)?\\s+',lines[0],re.I)
+   if not match:raise ValueError(f'Unexpected label {segment} {metric}')
+   vals=re.findall(r'-?\\d[\\d,]*(?:\\.\\d+)?',lines[0][match.end():])
+   if not vals:raise ValueError(f'Missing numeric value: {segment} {metric}')
+   # For Q2+, use the first YTD column, derive quarter only from verified prior YTD.
+   period='quarter' if quarter==1 else 'ytd'
+   observations.append(dict(company='Sampo',year=year,quarter=quarter,scope='group' if segment=='Sampo Group' else 'reported_segment',segment=None if segment=='Sampo Group' else segment,source_scope='group' if segment=='Sampo Group' else 'reported_segment',period_type=period,metric=metric,value=number(vals[0]),unit='percent' if metric.endswith('ratio') else 'EURm',status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',source_sha256=sha,source_definition='Sampo interim statement; '+segment+' reported financial table'))
  return observations
 def run():
  baseline=json.loads(DATA.read_text())
