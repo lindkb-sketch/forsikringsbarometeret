@@ -28,7 +28,7 @@ def parse(markup,year):
         name=urllib.parse.unquote(u.path.split('/')[-1])
         match=re.search(r'(?i)\bQ([1-4])\b',label+' '+name)
         if not match:continue
-        quarter=int(match.group(1))
+        quarter=int(match)
         if not re.search(str(year),label+' '+name):continue
         kind=None
         if name.lower().endswith('.xlsx') and re.search('investor.?tables|investor.?table',label+' '+name,re.I):kind='workbook_url'
