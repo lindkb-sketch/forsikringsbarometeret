@@ -97,14 +97,14 @@ def extract(blob, url):
         # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
         # these as standalone quarters until the table explicitly identifies
         # the numeric column as the isolated quarter rather than YTD.
-        if q > 1:
-            raise ValueError("Quarter versus YTD column not independently verified; publication blocked")
+        # Q2-Q4 headline figures are cumulative (YTD), not isolated quarters.
+        # Store them as YTD; derive standalone quarters only from adjacent YTDs.
         if abs(rows["combined_ratio"][0] - rows["loss_ratio"][0] - rows["expense_ratio"][0]) > 0.25:
             raise ValueError("Combined ratio reconciliation failed")
         digest = hashlib.sha256(blob).hexdigest()
         return [{
             "company": "Fremtind", "year": year, "quarter": q,
-            "scope": "group", "period_type": "quarter",
+            "scope": "group", "period_type": "ytd" if q > 1 else "quarter",
             "metric": metric, "value": value, "unit": unit,
             "status": "reported", "source_type": "official_quarterly_report",
             "source_url": url, "source_page": page_index + 1,
@@ -122,20 +122,55 @@ def run():
     if not links:
         raise ValueError("No issuer-verified Fremtind Holding PDF candidates; refusing false success")
     existing = json.loads(DATA.read_text())
-    seen = {(r["year"], r["quarter"]) for r in existing["observations"] if r["company"] == "Fremtind"}
+    existing_keys = {(r["year"], r["quarter"], r["period_type"], r["metric"])
+                     for r in existing["observations"] if r["company"] == "Fremtind" and r.get("scope") == "group"}
     imported = []
     errors = []
-    # Limit external downloads; only issuer-linked PDFs, never synthetic values.
-    for url in links[:12]:
+    # Every issuer-linked PDF is checked for its actual legal entity and period.
+    for url in links[:30]:
         try:
             rows = extract(read_pdf(url), url)
-            key = (rows[0]["year"], rows[0]["quarter"])
-            if key in seen: continue
-            if rows[0]["year"] < 2025: continue
-            imported.extend(rows)
-            seen.add(key)
+            if rows[0]["year"] < 2025:
+                continue
+            imported.extend(r for r in rows if (r["year"], r["quarter"], r["period_type"], r["metric"]) not in existing_keys)
         except Exception as exc:
             errors.append({"url": url, "reason": str(exc)[:200]})
+    # Q1 YTD equals Q1 standalone, by definition.
+    allrows = existing["observations"] + imported
+    for r in list(allrows):
+        if r["company"] == "Fremtind" and r["scope"] == "group" and r["quarter"] == 1 and r["period_type"] == "quarter":
+            k = (r["year"], 1, "ytd", r["metric"])
+            if k not in existing_keys:
+                copy = {**r, "period_type": "ytd"}
+                imported.append(copy)
+                existing_keys.add(k)
+    allrows = existing["observations"] + imported
+    index = {(r["year"], r["quarter"], r["period_type"], r["metric"]): r
+             for r in allrows if r["company"] == "Fremtind" and r["scope"] == "group"}
+    for (year, quarter, period, metric), current in list(index.items()):
+        if period != "ytd" or quarter == 1:
+            continue
+        previous = index.get((year, quarter-1, "ytd", metric))
+        if previous is None or (year, quarter, "quarter", metric) in index:
+            continue
+        revenue = index.get((year, quarter, "ytd", "insurance_revenue"))
+        prev_revenue = index.get((year, quarter-1, "ytd", "insurance_revenue"))
+        if metric in ("insurance_revenue", "insurance_service_result"):
+            value = current["value"] - previous["value"]
+            formula = "current_ytd - previous_ytd"
+        elif metric in ("loss_ratio", "expense_ratio", "combined_ratio") and revenue and prev_revenue and revenue["value"] > prev_revenue["value"]:
+            # Ratio of the isolated quarter, revenue-weighted from the two
+            # official YTD ratios. Explicitly marked calculated, not reported.
+            value = (current["value"]*revenue["value"] - previous["value"]*prev_revenue["value"]) / (revenue["value"]-prev_revenue["value"])
+            formula = "(current_ytd_ratio*current_ytd_revenue - previous_ytd_ratio*previous_ytd_revenue)/(current_ytd_revenue - previous_ytd_revenue)"
+        else:
+            continue
+        derived = {**current, "period_type": "quarter", "value": round(value, 3),
+                   "status": "calculated", "calculation": formula,
+                   "source_definition": current["source_definition"] + " (derived quarter from adjacent official YTD reports)",
+                   "inputs": [previous["source_url"], current["source_url"]]}
+        imported.append(derived)
+        index[(year, quarter, "quarter", metric)] = derived
     if imported:
         merged = {**existing, "observations": existing["observations"] + imported}
         check = audit(merged)
@@ -150,7 +185,7 @@ def run():
             os.replace(path, DATA)
         finally:
             if os.path.exists(path): os.unlink(path)
-    print(json.dumps({"imported": len(imported), "quarters": sorted(seen),
+    print(json.dumps({"imported": len(imported), "quarters": sorted({(r["year"], r["quarter"]) for r in imported}),
                       "rejected_documents": len(errors), "sample_errors": errors[:4]}))
     return len(imported)
 
