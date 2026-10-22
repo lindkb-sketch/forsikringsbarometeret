@@ -25,7 +25,7 @@ FIELDS = {
     "Kostnadsprosent (%)": ("expense_ratio", "percent"),
     "Combined ratio, netto etter gjenforsikring (%)": ("combined_ratio", "percent"),
 }
-NUM = re.compile(r"^-?\\d+(?:[ .,]\\d+)*\\s*%?$")
+NUM = re.compile(r"^-?\d+(?:[ .,]\d+)*\s*%?$")
 
 def read_pdf(url):
     parsed = urllib.parse.urlparse(url)
@@ -41,8 +41,8 @@ def read_pdf(url):
     return blob
 
 def number(text):
-    value = text.strip().replace("\\u00a0", " ").replace("%", "").replace(" ", "").replace(",", ".")
-    if not re.fullmatch(r"-?\\d+(?:\\.\\d+)?", value):
+    value = text.strip().replace("\u00a0", " ").replace("%", "").replace(" ", "").replace(",", ".")
+    if not re.fullmatch(r"-?\d+(?:\.\d+)?", value):
         raise ValueError("Invalid financial number: " + text)
     return float(value)
 
@@ -52,7 +52,7 @@ def extract(blob, url):
             raise ValueError("Report too short")
         pages = [p.extract_text() or "" for p in pdf.pages[:4]]
         heading = " ".join(pages[:2])
-        periods = set(re.findall(r"Kvartalsrapport\\s+Q([1-4])\\s+(20\\d{2})", heading, re.I))
+        periods = set(re.findall(r"Kvartalsrapport\s+Q([1-4])\s+(20\d{2})", heading, re.I))
         if len(periods) != 1 or "Fremtind Holding" not in heading:
             raise ValueError("Holding entity or report quarter not verified")
         q, year = next(iter(periods))
@@ -60,7 +60,7 @@ def extract(blob, url):
         # Require a labeled key-figures table and a header with the correct quarter.
         target = None
         for i, text in enumerate(pages):
-            if "Resultatutvikling og nøkkeltall" in text and re.search(rf"Q{q}\\s+{year}", text):
+            if "Resultatutvikling og nøkkeltall" in text and re.search(rf"Q{q}\s+{year}", text):
                 target = (i, text)
                 break
         if target is None:
@@ -74,7 +74,7 @@ def extract(blob, url):
                 rest = line[len(label):].strip()
                 # pdfplumber generally separates numeric columns by >=2 spaces;
                 # otherwise reject rather than guessing thousands grouping.
-                cols = re.split(r"\\s{2,}", rest)
+                cols = re.split(r"\s{2,}", rest)
                 if len(cols) < 3:
                     # Q1/Q2 issuer tables commonly use single spaces throughout.
                     # Infer columns only if each is unambiguous in the PDF word geometry.
@@ -105,7 +105,7 @@ def extract(blob, url):
                     values = [v["text"] for v in same if v["x0"] >= first_x]
                     if not values: continue
                     # Only accept a first value that is a single numeric token.
-                    if re.fullmatch(r"-?\\d+(?:[.,]\\d+)?", values[0]):
+                    if re.fullmatch(r"-?\d+(?:[.,]\d+)?", values[0]):
                         rows[metric] = (number(values[0]), unit, label)
                     break
         if len(rows) != 5:
@@ -155,7 +155,7 @@ def run():
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:
                 json.dump(merged, f, ensure_ascii=False, indent=2)
-                f.write("\\n")
+                f.write("\n")
             os.replace(path, DATA)
         finally:
             if os.path.exists(path): os.unlink(path)
