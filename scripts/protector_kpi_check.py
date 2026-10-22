@@ -41,7 +41,7 @@ def extract(markup):
         window = qualified[0]
         for label, metric in METRICS.items():
             positions = [i for i,v in enumerate(window) if v == label]
-            if len(positions) != 1: raise ValueError(f"Ambiguous {scope} {label}")
+            if not positions: raise ValueError(f"Missing {scope} {label}")
             values = window[positions[0]+1:positions[0]+6]
             if len(values) != 5 or any(not re.fullmatch(r"-?\\d+(?:[.,]\\d+)?%?|\\(-?\\d+(?:[.,]\\d+)?\\)", v) for v in values):
                 raise ValueError(f"Invalid values for {scope} {label}: {values}")
