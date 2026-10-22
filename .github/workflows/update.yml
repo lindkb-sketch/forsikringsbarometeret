@@ -62,3 +62,5 @@ jobs:
           path: .
       - uses: actions/deploy-pages@v4
         id: deployment
+      - name: Verify actual public finance, news, stock and editorial JSON
+        run: python scripts/verify_public_pages.py
