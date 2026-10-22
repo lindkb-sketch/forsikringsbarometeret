@@ -27,7 +27,7 @@ def parse(blob,url,year,quarter):
   candidates=[]
   for page,text in pages:
    if segment=='Sampo Group':
-    if 'Insurance revenue (incl. brokerage), net' not in text or 'Nordic underlying development' not in text:continue
+    if 'Insurance revenue' not in text or 'Nordic underlying development' not in text:continue
     block=text.split('Nordic underlying development')[0]
    else:
     match=re.search(r'(?m)^'+re.escape(segment)+r'\\s*$',text)
@@ -39,8 +39,8 @@ def parse(blob,url,year,quarter):
   if not candidates:raise ValueError(f'Missing financial table: {segment}')
   page,block=candidates[0]
   for metric,label in labels.items():
-   match_label='Insurance revenue (incl. brokerage), net' if segment=='Sampo Group' and metric=='insurance_revenue' else label
-   lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(match_label)+r'\\s+(?:EURm\\s+|%\\s+)?[-\\d]',line,re.I)]
+   match_label='Insurance revenue' if segment=='Sampo Group' and metric=='insurance_revenue' else label
+   lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(match_label)+r'.{0,40}?(?:EURm\\s+|%\\s+)[-\\d]',line,re.I)]
    if len(lines)!=1:
     if segment!='Sampo Group' and metric in ('loss_ratio','expense_ratio'):
      # Ratios are in the dedicated segment detail, not the overview.
@@ -49,7 +49,7 @@ def parse(blob,url,year,quarter):
      page,block=detail[0]
      lines=[line.strip() for line in block.splitlines() if re.match(r'^\\s*'+re.escape(label)+r',?\\s*%\\s+[-\\d]',line,re.I)]
     if len(lines)!=1:raise ValueError(f'Ambiguous {segment} {metric}: {len(lines)}')
-   match=re.match(r'^'+re.escape(match_label)+r',?\\s*(?:EURm|%)?\\s+',lines[0],re.I)
+   match=re.match(r'^'+re.escape(match_label)+r'.{0,40}?(?:EURm|%)?\\s+',lines[0],re.I)
    if not match:raise ValueError(f'Unexpected label {segment} {metric}')
    vals=re.findall(r'-?\\d[\\d,]*(?:\\.\\d+)?',lines[0][match.end():])
    if not vals:raise ValueError(f'Missing numeric value: {segment} {metric}')
