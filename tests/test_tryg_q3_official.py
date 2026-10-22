@@ -20,6 +20,10 @@ class OfficialTrygTests(unittest.TestCase):
  def test_provenance(self):
   for r in self.rows:
    if r['company']=='Tryg':
-    self.assertIsInstance(r['source_page'],int)
-    self.assertGreater(r['source_page'],0)
     self.assertTrue(r.get('source_url','').startswith('https://'))
+    self.assertTrue(r.get('source_sha256'), 'Missing issuer document SHA-256')
+    if r.get('source_type')=='official_quarterly_report':
+     self.assertIsInstance(r.get('source_page'),int)
+     self.assertGreater(r['source_page'],0)
+    elif r.get('source_type')=='official_geographic_workbook':
+     self.assertTrue(r.get('source_sheet') or r.get('source_section'))
