@@ -31,3 +31,17 @@ class DashboardRuntimeTests(unittest.TestCase):
   for company in ('Protector','Storebrand'):
    metrics={r['metric'] for r in data['observations'] if r['company']==company and r['year']==2026 and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter'}
    self.assertTrue({'combined_ratio','loss_ratio','expense_ratio'}.issubset(metrics),company)
+
+ def test_live_q3_bridge_accepts_actual_feed_schema(self):
+  import json
+  html=(ROOT/'index.html').read_text()
+  feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
+  self.assertNotIn("feed.source_policy",html)
+  self.assertIn("Array.isArray(feed.observations)",html)
+  self.assertGreater(len(feed['observations']),0)
+  self.assertNotIn("source_policy",feed)
+  for company in ('Protector','Storebrand'):
+   q3=[r for r in feed['observations'] if r['company']==company and r['year']==2026 and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter' and r['status']=='reported']
+   self.assertTrue(q3,company)
+  self.assertIn("let period='Q3'",html)
+  self.assertIn("if(period==='Q3'){const d=",html)
