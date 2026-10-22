@@ -12,7 +12,7 @@ class GjensidigePublisherTests(unittest.TestCase):
                 g.prepare({'observations': []}, (1,))
     def test_unrelated_company_remains_unchanged(self):
         baseline = {'observations': []}
-        def fake_parse(pages, company, year, quarter, url, sha):
+        def fake_parse(pages, year, quarter, url, sha):
             return [dict(company='Gjensidige',year=year,quarter=quarter,scope='group',
                          source_scope='group',period_type='quarter',metric=metric,value=value,
                          unit='percent' if 'ratio' in metric else 'MNOK',status='reported',
