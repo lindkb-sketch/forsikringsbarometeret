@@ -44,17 +44,17 @@ jobs:
                   periods=sorted({(r['quarter'],r['period_type']) for r in rows if r['company']==company and r['year']==year and r['metric']=='insurance_revenue'})
                   print(f'{company} {year}: {periods}',flush=True)
           PY
-      - name: Diagnose remaining 2025 Frende format variants
+      - name: Build verified feed and coverage after both live imports
         run: |
+          python scripts/build_verified_feed.py
+          python scripts/report_coverage.py
           python - <<'PY'
-          import sys,re
-          sys.path.insert(0,'scripts')
-          from import_frende_holding import read,TableReader
-          for q in (4,):
-              root=f'https://frende.wrep.it/q{q}-2025-frende-holding-as'
-              for sec in (6,):
-                  try:
-                      html=read(root,sec);p=TableReader();p.feed(html)
-                      print('FORMAT',q,sec,'ALL_ROWS',[r[:6] for r in p.rows[:32]])
-                  except Exception as exc:print('FORMAT_ERROR',q,sec,repr(exc))
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for company,periods in {'Frende':{(2025,1),(2025,2),(2025,3),(2025,4),(2026,1),(2026,2)},'Fremtind':{(2026,1),(2026,2),(2026,3)}}.items():
+              present={(r['year'],r['quarter']) for r in rows if r['company']==company and r.get('scope')=='group'}
+              missing=periods-present
+              if missing:raise AssertionError(f'{company}: missing verified quarters {missing}')
+              print(company,'verified',sorted(periods))
           PY
