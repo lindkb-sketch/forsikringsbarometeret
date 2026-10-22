@@ -62,6 +62,8 @@ def parse(blob,url,year,quarter):
 def run():
  baseline=json.loads(DATA.read_text())
  if not audit(baseline)['ok']:raise ValueError('Baseline failed audit')
+ # Remove only the importer-created Q2 records mislabelled YTD in the initial release.
+ baseline['observations']=[r for r in baseline['observations'] if not (r.get('company')=='Sampo' and r.get('year')==2026 and r.get('quarter')==2 and r.get('period_type')=='ytd' and r.get('source_definition','').startswith('Sampo interim statement;'))]
  index={tuple(r.get(k) for k in KEYS):r for r in baseline['observations']}
  added=0
  for (year,q),url in SOURCES.items():
