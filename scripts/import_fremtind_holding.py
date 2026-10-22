@@ -119,7 +119,7 @@ def run():
         raise ValueError("Issuer discovery incomplete")
     links = list(dict.fromkeys(c["document_url"] for c in candidates["candidates"]
                     if c.get("company") == "Fremtind" and c.get("source_entity") == "Fremtind Holding" and c["document_url"].lower().endswith(".pdf")))
-    existing = json.loads(DATA.read_text())
+    if not links:\n        raise ValueError("No issuer-verified Fremtind Holding PDF candidates; refusing false success")\n    existing = json.loads(DATA.read_text())
     seen = {(r["year"], r["quarter"]) for r in existing["observations"] if r["company"] == "Fremtind"}
     imported = []
     errors = []
