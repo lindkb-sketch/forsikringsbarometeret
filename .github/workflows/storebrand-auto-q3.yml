@@ -87,7 +87,10 @@ jobs:
       - name: Validate existing financial observations
         run: python scripts/audit_financials.py
       - name: Download and validate both official Storebrand Q3 reports
-        run: python scripts/storebrand_publish_q3.py
+        run: |
+          python scripts/storebrand_publish_q3.py --year 2026 --quarter 1
+          python scripts/storebrand_publish_q3.py --year 2026 --quarter 2
+          python scripts/storebrand_publish_q3.py --year 2026 --quarter 3
       - name: Audit imported observations and feed
         run: |
           python scripts/audit_financials.py
