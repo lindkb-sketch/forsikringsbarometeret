@@ -4,7 +4,7 @@ import hashlib, html, json, re, urllib.request
 from html.parser import HTMLParser
 
 URL = "https://investor.protectorforsikring.no/data"
-PERIOD_RE = re.compile(r"^Q([1-4]) (\\d{2})$")
+PERIOD_RE = re.compile(r"^Q([1-4]) (\d{2})$")
 METRICS = {
     "Insurance revenue": "insurance_revenue",
     "Insurance service result": "insurance_service_result",
