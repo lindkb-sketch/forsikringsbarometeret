@@ -20,6 +20,16 @@ import hashlib
 
 REQUIRED = {'insurance_revenue', 'insurance_service_result', 'combined_ratio', 'expense_ratio'}
 KEYS = ('company', 'year', 'quarter', 'scope', 'period_type', 'metric')
+
+# Reference figures checked against official Q1/Q2 2026 Group highlights tables.
+# A mismatch must stop publication, not silently change financial history.
+REFERENCE_QUARTER = {
+    (2026, 1): {'insurance_revenue': 11004.1, 'insurance_service_result': 2288.1,
+                'combined_ratio': 79.2, 'expense_ratio': 11.7, 'loss_ratio': 67.5},
+    (2026, 2): {'insurance_revenue': 11257.8, 'insurance_service_result': 2375.0,
+                'combined_ratio': 78.9, 'expense_ratio': 11.7, 'loss_ratio': 67.2},
+}
+
 # Official PDF URLs independently verified from Gjensidige's investor-relations page.
 APPROVED_PDFS = {
     (2026, 1): 'https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf',
@@ -113,6 +123,12 @@ def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
             raise ValueError(f'PDF cover does not identify Gjensidige Q{quarter} {year}')
         sha = hashlib.sha256(blob).hexdigest()
         rows = parse_group_table(pages, year, quarter, url, sha)
+        reference = REFERENCE_QUARTER.get((year, quarter))
+        if reference:
+            actual = {r['metric']: r['value'] for r in rows if r['period_type'] == 'quarter'}
+            for metric, expected in reference.items():
+                if metric not in actual or abs(actual[metric] - expected) > 0.051:
+                    raise ValueError(f'Official Gjensidige Q{quarter} reference mismatch: {metric}')
         found = {r['metric'] for r in rows if r['period_type'] == 'quarter'}
         if not REQUIRED <= found:
             raise ValueError(f'Gjensidige Q{quarter} {year} missing verified quarterly metrics: {sorted(REQUIRED-found)}')
