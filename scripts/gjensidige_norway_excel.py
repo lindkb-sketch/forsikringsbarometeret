@@ -66,7 +66,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
     wb=openpyxl.load_workbook(io.BytesIO(blob),read_only=True,data_only=True)
     sheets={}
     for prefix in SHEETS:
-        matches=[s for s in wb.sheetnames if s.startswith(prefix[:29])]
+        matches=[s for s in wb.sheetnames if s.casefold().startswith(prefix[:25].casefold())]
         if len(matches)!=1:raise ValueError('Missing or ambiguous Norway worksheet: '+prefix)
         sheets[prefix]=wb[matches[0]]
     output=[]
