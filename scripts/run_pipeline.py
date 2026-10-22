@@ -18,6 +18,8 @@ def run(offline=False):
    print('WARNING: Issuer discovery unavailable; importer uses last verified archive snapshot.',flush=True)
   print('RUN import_fremtind_holding.py (verified official issuer PDFs only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_fremtind_holding.py')],cwd=ROOT,check=True)
+  print('RUN import_frende_holding.py (verified official issuer publisher tables only)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_frende_holding.py')],cwd=ROOT,check=True)
  for name in steps:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
