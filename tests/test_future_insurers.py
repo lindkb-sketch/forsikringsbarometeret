@@ -73,6 +73,10 @@ class FutureTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'header changed'):
    parse_group(fixture,year=2026,quarter=4)
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_forsikring_q3_2026.pdf'
-  with self.assertRaisesRegex(ValueError,'annual report'):
+  with self.assertRaisesRegex(ValueError,'must remain blank'):
    parse_norway(fixture,year=2026,quarter=4)
+ def test_storebrand_norway_annual_does_not_fill_q4(self):
+  from import_storebrand_reports import parse_norway_annual_q4
+  with self.assertRaisesRegex(ValueError,'must remain blank'):
+   parse_norway_annual_q4('annual.pdf','q3.pdf','https://example.com/annual','https://example.com/q3',2026)
 if __name__=='__main__':unittest.main()
