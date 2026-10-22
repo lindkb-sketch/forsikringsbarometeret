@@ -179,8 +179,8 @@ if __name__=='__main__':
             try:
                 url=APPROVED_XLSX.get((year,q)) or locate_xlsx(page,q,year=year)
             except ValueError:
-                if (year,q)==(today.year,(today.month-1)//3+1):
-                    print(f'Gjensidige Norway Q{q} {year}: awaiting official XLSX')
+                if (year,q) not in APPROVED_XLSX:
+                    print(f'Gjensidige Norway Q{q} {year}: no uniquely verified official XLSX; publication deferred')
                     continue
                 raise
             rows,segment_rows=parse(get(url),url,q,year=year,include_segments=True)
