@@ -81,7 +81,7 @@ def parse(blob,url,quarter,year=2026,include_segments=False):
             elif unit_header.strip() in ('nok','norwegian kroner'):
                 monetary_divisor=1_000_000
             else:
-                raise ValueError('Unrecognized source monetary unit in '+ws.title+': '+unit_header)
+                raise ValueError('Unrecognized source monetary unit in '+ws.title+': '+unit_header+'; header preview='+repr([[ws.cell(row,col).value for col in range(1,5)] for row in range(1,7)]))
             header=str(ws.cell(3,col).value or '')
             expected=('Q'+str(quarter) if period=='quarter' else 'YTD')+' '+str(year)
             if header.strip()!=expected:raise ValueError('Unexpected column heading: '+header+' != '+expected)
