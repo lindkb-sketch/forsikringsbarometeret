@@ -84,3 +84,32 @@ jobs:
               if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and ('.pdf' in url.lower() or '.xlsx' in url.lower()):
                   print('TRYG_LINK',repr(label[:110]),repr(url[:320]))
           PY
+      - name: Inspect official Tryg PDF group and Norway workbook schemas
+        run: |
+          python - <<'PY'
+          import json,sys,urllib.request,io,re
+          import pdfplumber
+          sys.path.insert(0,'scripts')
+          from geographic_excel import load_sheets
+          from pathlib import Path
+          pairs=json.loads(Path('data/tryg_candidates.json').read_text())['pairs']
+          for pair in pairs:
+              if pair['year']!=2026 or pair['quarter']!=3:continue
+              print('TRYG_Q3_PDF',pair['report_pdf_url'])
+              print('TRYG_Q3_XLSX',pair['workbook_url'])
+              with urllib.request.urlopen(pair['report_pdf_url'],timeout=40) as r:blob=r.read(35000000)
+              with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                  for i,page in enumerate(pdf.pages[:15]):
+                      lines=(page.extract_text() or '').splitlines()
+                      matches=[(n,line) for n,line in enumerate(lines) if re.search('insurance revenue|insurance service result|combined ratio|claims ratio|expense ratio',line,re.I)]
+                      if matches:
+                          print('PDF_PAGE',i+1,'HEAD',lines[:4])
+                          for n,line in matches[:12]:print('PDF_ROW',n,repr(line[:210]))
+              with urllib.request.urlopen(pair['workbook_url'],timeout=40) as r:blob=r.read(25000000)
+              p=Path('/tmp/tryg_q3_2026.xlsx');p.write_bytes(blob)
+              sheets=load_sheets(p)
+              print('XLSX_SHEETS',list(sheets))
+              for name,cells in sheets.items():
+                  if re.search('geograph',name,re.I):
+                      print('XLSX_GEO',name,'FIRST',list(cells.items())[:30])
+          PY
