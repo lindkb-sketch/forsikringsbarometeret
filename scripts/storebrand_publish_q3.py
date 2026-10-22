@@ -21,10 +21,10 @@ DATA = ROOT / 'data/financial_observations.json'
 FEED = ROOT / 'data/verified_financial_feed.json'
 
 
-def prepare(group_path, norway_path, group_url, norway_url, baseline):
-    incoming = parse_group(group_path, group_url) + parse_norway(norway_path, norway_url)
-    if len(incoming) != 51:
-        raise ValueError(f'Unexpected Q3 observation count: {len(incoming)}')
+def prepare(group_path, norway_path, group_url, norway_url, baseline,year=2026,quarter=3):
+    incoming = parse_group(group_path, group_url,year,quarter) + parse_norway(norway_path, norway_url,year,quarter)
+    if len(incoming) != (51 if quarter==3 else 11):
+        raise ValueError(f'Unexpected observation count: {len(incoming)}')
     for r in incoming:
         if r['company'] != 'Storebrand' or r['quarter'] not in (1, 2, 3) or r['year'] not in (2025, 2026):
             raise ValueError('Unexpected entity/period in Storebrand importer')
@@ -78,14 +78,14 @@ def main(argv=None):
             group, norway = work/'group.pdf', work/'norway.pdf'
             download_pdf(group_url, group)
             download_pdf(norway_url, norway)
-        if (args.year,args.quarter)!=(2026,3):
+        if args.year!=2026 or args.quarter not in (1,2,3):
             raise ValueError('No validated importer for Storebrand '+str(args.year)+' Q'+str(args.quarter)+'; publication blocked')
-        merged, feed, added, updated = prepare(group, norway, group_url, norway_url, baseline)
+        merged, feed, added, updated = prepare(group, norway, group_url, norway_url, baseline,args.year,args.quarter)
         # Re-running must not introduce new observations or duplicates.
-        repeated, second_added, _ = integrate(merged, parse_group(group, group_url) + parse_norway(norway, norway_url))
+        repeated, second_added, _ = integrate(merged, parse_group(group, group_url,args.year,args.quarter) + parse_norway(norway, norway_url,args.year,args.quarter))
         if second_added or repeated != merged:
             raise ValueError('Non-idempotent Storebrand import')
-        report = {'status': 'passed', 'quarter': 'Q3 2026 ONLY', 'parsed': 51,
+        report = {'status': 'passed', 'quarter': f'Q{args.quarter} {args.year}', 'parsed': (51 if args.quarter==3 else 11),
                   'added': added, 'updated_provenance': updated,
                   'dry_run': args.dry_run, 'group_url': group_url, 'norway_url': norway_url}
         if not args.dry_run and (added or updated):
