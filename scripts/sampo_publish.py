@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Strict Sampo group + two Nordic segments, quarter and YTD from issuer PDFs."""
-import hashlib,io,json,re,sys,urllib.request
+import hashlib,io,json,re,sys,urllib.request,urllib.parse
+from html.parser import HTMLParser
 from pathlib import Path
 import pdfplumber
 from audit_financials import DATA,audit
@@ -10,6 +11,32 @@ SOURCES={
  (2026,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf',
  (2026,2):'https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969',
 }
+class PDFLinks(HTMLParser):
+ def __init__(self):super().__init__();self.links=[]
+ def handle_starttag(self,tag,attrs):
+  if tag=='a':
+   href=dict(attrs).get('href','')
+   if href:self.links.append(href)
+def discover(year,quarter):
+ # Use the issuer's live report archive. Ambiguity blocks publication.
+ indexes=['https://www.sampo.com/investors/financial-information/quarterly-reporting/',
+          f'https://www.sampo.com/investors/financial-information/quarterly-reporting/{year}/']
+ urls=set()
+ for index in indexes:
+  try:
+   with urllib.request.urlopen(urllib.request.Request(index,headers={'User-Agent':'Mozilla/5.0'}),timeout=20) as response:
+    markup=response.read(4_000_000).decode('utf-8')
+   parser=PDFLinks();parser.feed(markup)
+   for href in parser.links:
+    url=urllib.parse.urljoin(index,href)
+    label=urllib.parse.unquote(url).lower()
+    if not re.search(r'\\.pdf(?:$|[?#])',label):continue
+    if not re.search(rf'(q{quarter}[^0-9]{{0,20}}{year}|{year}[^0-9]{{0,20}}q{quarter}|interim.statement.q{quarter}.{year}|half.year.financial.report.{year})',label):continue
+    if 'presentation' in label:continue
+    urls.add(url)
+  except Exception:continue
+ if len(urls)>1:raise ValueError(f'Ambiguous Sampo official PDF Q{quarter}/{year}: {sorted(urls)}')
+ return next(iter(urls)) if urls else None
 SEGMENTS=('Private Nordic','Nordic Commercial')
 LABELS={'insurance_revenue':r'Insurance revenue, net','insurance_service_result':r'Underwriting result','loss_ratio':r'Risk ratio,?\s*%','expense_ratio':r'Cost ratio,?\s*%','combined_ratio':r'Combined ratio,?\s*%'}
 KEYS=('company','year','quarter','scope','period_type','metric','segment')
@@ -66,7 +93,16 @@ def run():
  baseline['observations']=[r for r in baseline['observations'] if not (r.get('company')=='Sampo' and r.get('year')==2026 and r.get('quarter')==2 and r.get('period_type')=='ytd' and r.get('source_definition','').startswith('Sampo interim statement;'))]
  index={tuple(r.get(k) for k in KEYS):r for r in baseline['observations']}
  added=0
- for (year,q),url in SOURCES.items():
+ from datetime import date
+ today=date.today()
+ targets=dict(SOURCES)
+ for year in range(2026,today.year+1):
+  for q in range(1,5):
+   if (year,q) in targets:continue
+   if (year,q)>(today.year,(today.month-1)//3+1):continue
+   found=discover(year,q)
+   if found:targets[(year,q)]=found
+ for (year,q),url in sorted(targets.items()):
   req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
   with urllib.request.urlopen(req,timeout=45) as response:blob=response.read(30_000_001)
   if len(blob)>30_000_000:raise ValueError('PDF too large')
