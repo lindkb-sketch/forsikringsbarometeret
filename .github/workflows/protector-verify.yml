@@ -1,0 +1,20 @@
+name: Protector official KPI verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/protector_kpi_check.py
+      - .github/workflows/protector-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify official group and Norway KPI values
+        run: python scripts/protector_kpi_check.py
