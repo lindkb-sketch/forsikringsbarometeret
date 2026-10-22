@@ -4,8 +4,13 @@ import argparse,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def run(offline=False):
- steps=[] if offline else ['ingest_official_pdf.py','publish_geographic_workbooks.py']
+ steps=[] if offline else ['ingest_official_pdf.py']
  steps+=['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','build_editorial.py','update.py']
+ if not offline:
+  print('RUN publish_geographic_workbooks.py (optional external workbook; preserve audited baseline on unavailable source)',flush=True)
+  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'publish_geographic_workbooks.py')],cwd=ROOT)
+  if attempt.returncode:
+   print('WARNING: Official geographical XLSX unavailable; no workbook values imported; existing audited records preserved.',flush=True)
  for name in steps:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
