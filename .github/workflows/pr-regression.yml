@@ -47,6 +47,7 @@ jobs:
       - name: Build verified feed and coverage after both live imports
         run: |
           python scripts/build_verified_feed.py
+          python scripts/verify_feed_coverage.py
           python scripts/report_coverage.py
           python - <<'PY'
           import json
