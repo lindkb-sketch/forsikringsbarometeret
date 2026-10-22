@@ -142,7 +142,7 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     texts,sha=pages(path,'Storebrand Group',year)
     page,t=_unique_table(texts,'Insurance – Results')
     section=t.split('Insurance – Results',1)[1].split('Financial performance',1)[0]
-    if not re.search(r'\\bQ'+str(quarter)+r'\\b',section): raise ValueError('Group period header mismatch: '+repr(section[:900]))
+    if not re.search(r'\bQ'+str(quarter)+r'\b',section): raise ValueError('Group period header mismatch: '+repr(section[:900]))
     count=6 if quarter==1 else 8
     metrics={'insurance_revenue':('Insurance premiums f.o.a.','APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'),
              'loss_ratio':('Claims ratio','Insurance segment claims ratio'),
