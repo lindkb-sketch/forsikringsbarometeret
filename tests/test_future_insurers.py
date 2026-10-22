@@ -62,6 +62,7 @@ class FutureTests(unittest.TestCase):
   with patch('import_storebrand_reports.pages',return_value=(pages,'testsha')):
    rows=parse_group('fake.pdf',year=2026,quarter=4)
   self.assertTrue(any(r['quarter']==4 and r['year']==2026 and r['metric']=='combined_ratio' for r in rows))
+  self.assertTrue(all(r.get('source_document_period','Q4 2026') for r in rows))
   self.assertEqual(next(r['value'] for r in rows if r['year']==2026 and r['quarter']==4 and r['metric']=='combined_ratio' and r['period_type']=='quarter'),87)
  def test_storebrand_future_period_not_silently_mislabelled(self):
   fixture=Path(__file__).resolve().parent/'fixtures/storebrand_asa_q3_2026.pdf'
