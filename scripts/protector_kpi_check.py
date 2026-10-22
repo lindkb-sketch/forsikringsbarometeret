@@ -4,7 +4,7 @@ import hashlib, html, json, re, urllib.request
 from html.parser import HTMLParser
 
 URL = "https://investor.protectorforsikring.no/data"
-PERIODS = {"Q1 26": 1, "Q2 26": 2, "Q3 26": 3}
+PERIOD_RE = re.compile(r"^Q([1-4]) (\\d{2})$")
 METRICS = {
     "Insurance revenue": "insurance_revenue",
     "Insurance service result": "insurance_service_result",
@@ -27,28 +27,30 @@ def extract(markup):
         # Locate a period header with the five quarter columns, then read KPI rows.
         candidates = []
         for i in range(len(tokens)-5):
-            if tokens[i:i+3] != ["Q3 26", "Q2 26", "Q1 26"]: continue
+            if not all(PERIOD_RE.fullmatch(t) for t in tokens[i:i+3]): continue
+            parsed_periods = [(2000+int(PERIOD_RE.fullmatch(t).group(2)), int(PERIOD_RE.fullmatch(t).group(1))) for t in tokens[i:i+3]]
+            if len(set(parsed_periods)) != 3: continue
             window = tokens[i:i+105]
             if not all(metric in window for metric in METRICS): continue
-            candidates.append((i, window))
+            candidates.append((i, window, parsed_periods))
         # Scope is established by the closest preceding geographical heading.
         qualified = []
-        for i, window in candidates:
+        for i, window, parsed_periods in candidates:
             previous = [t for t in tokens[max(0,i-140):i] if t in ("Protector", "Norway", "Sweden", "United Kingdom", "Denmark", "France")]
-            if previous and previous[-1] == title: qualified.append(window)
+            if previous and previous[-1] == title: qualified.append((window, parsed_periods))
         if len(qualified) != 1:
             raise ValueError(f"Ambiguous {scope} KPI table: {len(qualified)} matches")
-        window = qualified[0]
+        window, parsed_periods = qualified[0]
         for label, metric in METRICS.items():
             positions = [i for i,v in enumerate(window) if v == label]
             if not positions: raise ValueError(f"Missing {scope} {label}")
             values = window[positions[0]+1:positions[0]+6]
             if len(values) != 5 or any(not re.fullmatch(r"-?\d+(?:[.,]\d+)?%?|\(-?\d+(?:[.,]\d+)?\)", v) for v in values):
                 raise ValueError(f"Invalid values for {scope} {label}: {values}")
-            for q, value in zip((3,2,1), values[:3]):
+            for (year, q), value in zip(parsed_periods, values[:3]):
                 numeric = float(value.strip("()%").replace(",","."))
                 if value.startswith("("): numeric = -numeric
-                result[(scope,q,metric)] = numeric
+                result[(scope,year,q,metric)] = numeric
     if len(result) != 30: raise ValueError(f"Expected 30 KPI values, found {len(result)}")
     return result
 
@@ -60,5 +62,5 @@ def main():
         blob=response.read(4_000_001)
     if len(blob)>4_000_000: raise ValueError("Issuer page too large")
     result=extract(blob.decode("utf-8"))
-    print(json.dumps({"source":URL,"sha256":hashlib.sha256(blob).hexdigest(),"year":2026,"values":[{"scope":s,"quarter":q,"metric":m,"value":v} for (s,q,m),v in sorted(result.items())]},indent=2))
+    print(json.dumps({"source":URL,"sha256":hashlib.sha256(blob).hexdigest(),"values":[{"scope":s,"year":y,"quarter":q,"metric":m,"value":v} for (s,y,q,m),v in sorted(result.items())]},indent=2))
 if __name__=="__main__": main()
