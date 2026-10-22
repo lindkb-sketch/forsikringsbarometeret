@@ -2,6 +2,18 @@
   "period": "Q3 2026",
   "brief": [
     {
+      "text": "Fremtind (group): combined ratio 73 % i Q3 2026.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+    },
+    {
+      "text": "Fremtind (group): forsikringsinntekter 6305 NOKm i Q3 2026.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+    },
+    {
+      "text": "Fremtind (group): forsikringsresultat 1704 NOKm i Q3 2026.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+    },
+    {
       "text": "Protector (group): combined ratio 82.7 % i Q3 2026.",
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
     },
@@ -46,19 +58,36 @@
       "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
     },
     {
-      "text": "Tryg (norway): combined ratio 76.1 % i Q3 2026.",
-      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+      "text": "Tryg (group): combined ratio 76.8 % i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
     },
     {
-      "text": "Tryg (norway): forsikringsinntekter 2513 DKKm i Q3 2026.",
-      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+      "text": "Tryg (group): forsikringsinntekter 10591 MDKK i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
     },
     {
-      "text": "Tryg (norway): forsikringsresultat 601 DKKm i Q3 2026.",
-      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+      "text": "Tryg (group): forsikringsresultat 2454 MDKK i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+    },
+    {
+      "text": "Tryg (norway): combined ratio 76.0604 % i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
+    },
+    {
+      "text": "Tryg (norway): forsikringsinntekter 2512.55  i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
+    },
+    {
+      "text": "Tryg (norway): forsikringsresultat 601.494  i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
     }
   ],
   "implications": [
+    {
+      "text": "Fremtind: combined ratio 73 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "type": "rule_based_interpretation"
+    },
     {
       "text": "Protector: combined ratio 82.7 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
@@ -80,8 +109,13 @@
       "type": "rule_based_interpretation"
     },
     {
-      "text": "Tryg: combined ratio 76.1 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
-      "source_url": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226",
+      "text": "Tryg: combined ratio 76.8 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Tryg: combined ratio 76.0604 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
       "type": "rule_based_interpretation"
     }
   ],
@@ -268,8 +302,8 @@
     },
     {
       "headline": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
-      "published_at": "2026-10-12T06:30:14+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQY0cyWktPVEc4cG5zWlpxMlBDM0JXY1RzYjRwY1FFajl5MVhKQ2Z0eElXazZRamlMY1hDY0JfakhrUEhkbHFGWmFoRWxoSTFmY1pFLVhLV3pYSVN6NlJzUjJLbmtaclU3WGJvZWM1X0pnT3FxWVh6R1FKYXRyV0hLRnBFOHFZN3E0emtiNUR0RXJUeXJaMGs5VVFzbEJKVWVvQ2lXNGpZY0oyYk10RHlwWUZ2aUdyNXBlTnlXb0JuMzRZQWI0X19rQkNHeTNSQURLYWJPZg?oc=5",
+      "published_at": "2026-10-12T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPek1LV09Ram5HSVY1OXJNLUdlaGRrd3BUYzl1OE5DelBHQWlCRW9COGpCS2NyRmRPVmVVNHdXZmJIMzlkS0JlMFpaNVhiMUh4SXg3OXo0d3BxTklZenctLTVSSHd6YzNQamJpYW0tOEg4ei00NkMwNGZPdE9oYU14UnBTemliRWZvb0xmRDZjYllZbjBWdDZIc0tCYmt5YUNieVBQbnlFU1NQTjlaYUk5eEZxVldZb0dkY05ESDNjWHBKRFpJQ0YtVERENkFwemVvaFlPRA?oc=5",
       "publisher": "Finansavisen"
     },
     {

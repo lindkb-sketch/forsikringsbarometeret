@@ -417,7 +417,6 @@
     {
       "company": "Fremtind",
       "year": 2026,
-      "quarter": 1,
       "source_entity": "Fremtind Holding",
       "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
       "archive_url": "https://www.fremtind.no/finansiell-informasjon",
@@ -426,9 +425,80 @@
     {
       "company": "Fremtind",
       "year": 2026,
-      "quarter": 2,
       "source_entity": "Fremtind Holding",
       "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/ae42802db70857ac030a2e1dd542ba9f20806781.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/f9447d9a5eb5122f3122eeae85b402d239dfad0b.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2024,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/11388c16b419893a0049de0960a09a1851235aa8.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2024,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/ab9ea0426e3c8a27b867a9234413bab132962080.pdf",
+      "archive_url": "https://www.fremtind.no/finansiell-informasjon",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2024,
+      "source_entity": "Fremtind Holding",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/30447f2c4381bb42da5d88d3724303fa35eb4705.pdf",
       "archive_url": "https://www.fremtind.no/finansiell-informasjon",
       "status": "requires_pdf_entity_and_period_verification"
     }
