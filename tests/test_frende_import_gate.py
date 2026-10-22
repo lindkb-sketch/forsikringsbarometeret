@@ -24,6 +24,11 @@ class FrendeTests(unittest.TestCase):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2026</th><th>2. kv 2025</th><th>30.06.26</th></tr><tr><td>Sum driftsinntekter</td><td>935 132</td><td>823 863</td><td>2 758 452</td></tr></table>'
         rows=extract_revenue(markup,'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',2026,2)
         self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',935.132),('ytd',2758.452)])
+    def test_q4_omitted_expense_is_explicitly_calculated(self):
+        markup='<h1>Nøkkeltall konsern</h1><table><tr><td>Tall i 1000</td><td>Q4 2025</td><td>Q4 2024</td><td>2025</td></tr><tr><td>Resultat før skatt</td><td>206 975</td><td>117 695</td><td>785 288</td></tr><tr><td>Skadeprosent f.e.r</td><td>62,8 %</td><td>67,6 %</td><td>67,2 %</td></tr><tr><td>Combined ratio</td><td>90,8 %</td><td>90,7 %</td><td>90,7 %</td></tr></table>'
+        rows=extract(markup,'https://frende.wrep.it/q4-2025-frende-holding-as/sec/6',2025,4)
+        expense=[r for r in rows if r['metric']=='expense_ratio']
+        self.assertEqual([(r['period_type'],r['value'],r['status']) for r in expense],[('quarter',28.0,'calculated'),('ytd',23.5,'calculated')])
     def test_2025_income_ytd_date_range(self):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2025</th><th>2. kv 2024</th><th>01.01-30.06.25</th></tr><tr><td>Sum driftsinntekter</td><td>823 863</td><td>656 381</td><td>1 700 000</td></tr></table>'
         rows=extract_revenue(markup,'https://frende.wrep.it/q2-2025-frende-holding-as/sec/7',2025,2)
