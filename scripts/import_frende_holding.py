@@ -75,7 +75,30 @@ def extract_revenue(section_html,url,year,quarter):
     t=TableReader();t.feed(section_html)
     if not t.rows or t.rows[0][0]!='Resultatregnskap':raise ValueError('Invalid income statement header')
     header=t.rows[0]
-    if not re.match(rf'^{quarter}\\. kv {year}
+    if header[1]!=f'{quarter}. kv {year}':raise ValueError('Wrong income statement quarter')
+    rows={r[0]:r for r in t.rows[1:] if r}
+    label='Sum driftsinntekter'
+    if label not in rows:raise ValueError('Missing group operating revenue')
+    values=[('quarter',1)]
+    if quarter==1:values.append(('ytd',1))
+    else:
+        period={2:f'30.06.{str(year)[2:]}',3:f'30.09.{str(year)[2:]}',4:f'31.12.{str(year)[2:]}'}[quarter]
+        if period in header:values.append(('ytd',header.index(period)))
+        elif quarter!=4:raise ValueError('Missing income YTD header')
+    digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
+    result=[]
+    for period,col in values:
+        amount=number(rows[label][col])/1000
+        result.append({'company':'Frende','year':year,'quarter':quarter,'scope':'group',
+            'period_type':period,'metric':'insurance_revenue','value':round(amount,3),'unit':'NOKm',
+            'status':'reported','source_type':'official_quarterly_report','source_url':url,
+            'source_page':7,'source_entity':'Frende Holding AS konsern',
+            'source_document_period':f'Q{quarter} {year}',
+            'source_definition':'Sum driftsinntekter (group operating revenue, not insurance-only revenue)',
+            'source_sha256':digest})
+    return result
+
+def read(url,section=6):
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme!='https' or parsed.hostname!='frende.wrep.it' or not re.fullmatch(r'/q[1-4]-20\d{2}-frende-holding-as',parsed.path):
         raise ValueError('Untrusted Frende publisher URL')
