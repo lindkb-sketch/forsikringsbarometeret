@@ -66,50 +66,20 @@ def extract(blob, url):
         if target is None:
             raise ValueError("Missing expected Holding key figures table")
         page_index, text = target
+        # Report figures have grouped thousands (e.g. 6 205).
+        # Extract exactly three numeric columns, not whitespace tokens.
         rows = {}
+        amount = r"-?(?:\d{1,3}(?:[ \u00a0]\d{3})+|\d+)(?:,\d+)?\s*%?"
         for line in text.splitlines():
             for label, (metric, unit) in FIELDS.items():
                 if not line.startswith(label + " "):
                     continue
                 rest = line[len(label):].strip()
-                # pdfplumber generally separates numeric columns by >=2 spaces;
-                # otherwise reject rather than guessing thousands grouping.
-                cols = re.split(r"\s{2,}", rest)
-                if len(cols) < 3:
-                    # Q1/Q2 issuer tables commonly use single spaces throughout.
-                    # Infer columns only if each is unambiguous in the PDF word geometry.
-                    continue
-                if not all(NUM.fullmatch(c.strip()) for c in cols[:3]):
-                    continue
-                rows[metric] = (number(cols[0]), unit, label)
-        if len(rows) < 5:
-            # Coordinate-aware extraction, using first numeric column aligned
-            # with the first Q-year header, avoids ambiguous grouped thousands.
-            page = pdf.pages[page_index]
-            words = page.extract_words(x_tolerance=2, y_tolerance=3)
-            headers = [w for w in words if w["text"] == str(year)]
-            qheads = [w for w in words if w["text"] == f"Q{q}"]
-            if not headers or not qheads:
-                raise ValueError("No coordinate-verifiable quarter header")
-            first_x = min(w["x0"] for w in qheads if any(abs(w["top"]-h["top"]) < 4 and h["x0"] > w["x0"] for h in headers))
-            # First numeric column is to the right of the row label and its
-            # x-position is determined by the table header.
-            for label, (metric, unit) in FIELDS.items():
-                if metric in rows: continue
-                lines = [w for w in words if w["text"] == label.split()[0]]
-                for w in lines:
-                    top = w["top"]
-                    same = sorted((v for v in words if abs(v["top"]-top)<3), key=lambda z:z["x0"])
-                    labeltext = " ".join(v["text"] for v in same if v["x0"] < first_x)
-                    if label not in labeltext: continue
-                    values = [v["text"] for v in same if v["x0"] >= first_x]
-                    if not values: continue
-                    # Only accept a first value that is a single numeric token.
-                    if re.fullmatch(r"-?\d+(?:[.,]\d+)?", values[0]):
-                        rows[metric] = (number(values[0]), unit, label)
-                    break
+                match = re.fullmatch(rf"({amount})\s+({amount})\s+({amount})", rest)
+                if match:
+                    rows[metric] = (number(match.group(1)), unit, label)
         if len(rows) != 5:
-            raise ValueError("Insufficient unambiguous Holding metrics: " + repr(sorted(rows)))
+            raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)))
         # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
         # these as standalone quarters until the table explicitly identifies
         # the numeric column as the isolated quarter rather than YTD.
