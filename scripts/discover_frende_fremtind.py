@@ -78,13 +78,13 @@ def candidates(company,markup):
    def handle_data(self,data):self.parts.append(data)
   flat=Flatten();flat.feed(markup)
   plain=' '.join(' '.join(flat.parts).split())
-  headings=list(re.finditer(r'(?:Fremtind Holding|Fremtind Forsikring|Fremtind Livsforsikring AS|APM - Fremtind Holding|APM - Fremtind Forsikring)\\s+(20\\d{2})',plain,re.I))
+  headings=list(re.finditer(r'(?:Fremtind Holding|Fremtind Forsikring|Fremtind Livsforsikring AS|APM - Fremtind Holding|APM - Fremtind Forsikring)\s+(20\d{2})',plain,re.I))
   result=[]
   for i,h in enumerate(headings):
-   if not re.match(r'Fremtind Holding\\s+',h.group(),re.I):continue
+   if not re.match(r'Fremtind Holding\s+',h.group(),re.I):continue
    year=int(h.group(1))
    section=plain[h.end():headings[i+1].start() if i+1<len(headings) else len(plain)]
-   for marker in re.findall(r'__REPORT_LINK_(\\d+)__',section):
+   for marker in re.findall(r'__REPORT_LINK_(\d+)__',section):
     url=flat.urls[int(marker)]
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme=='https' and parsed.hostname in ALLOWED['Fremtind'] and parsed.path.lower().endswith('.pdf'):
