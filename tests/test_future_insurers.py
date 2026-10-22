@@ -55,13 +55,13 @@ class FutureTests(unittest.TestCase):
   from import_storebrand_reports import parse_group
   from unittest.mock import patch
   metrics={'Insurance premiums f.o.a.':2896,'Claims ratio':69,'Cost ratio':18,'Combined ratio':87,'Cash return on equity, annualised (%)':14.4,'Solvency II ratio (%)':200}
-  def line(k,v):return k+' '+' '.join(str(v+i) for i in range(8))
+  def line(k,v):return k+' '+' '.join(str(v+i) for i in range(7))
   pages=['Storebrand Group Q4 2026']+['']*7
   pages[7]='Insurance – Results 2026 Q4 Q3 Q2\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[:4])
   pages[4]='Group - Key figures 2026\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[4:])
   from import_storebrand_reports import row as actual_row
   def mocked_row(text,label,count,parser):
-   if label=='Solvency II ratio (%)':return [200+i for i in range(8)]
+   if label=='Solvency II ratio (%)':return [200+i for i in range(7)]
    return actual_row(text,label,count,parser)
   with patch('import_storebrand_reports.pages',return_value=(pages,'testsha')),patch('import_storebrand_reports.row',side_effect=mocked_row):
    rows=parse_group('fake.pdf',year=2026,quarter=4)
