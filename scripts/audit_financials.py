@@ -38,16 +38,18 @@ def audit(data):
         if r.get("status","reported") not in ("reported","calculated","provisional"):errors.append(f"{label}: invalid status")
         if r.get("scope")=="norway" and r.get("source_scope")=="group":errors.append(f"{label}: group value mislabeled Norway")
         if r.get("scope") not in ("norway","group","reported_segment"):errors.append(f"{label}: unknown scope")
+        if r.get("company")=="Sampo" and r.get("scope")=="reported_segment" and r.get("segment") not in ("Private Nordic","Nordic Commercial"):
+            errors.append(f"{label}: unrecognized Sampo segment")
         if r.get("period_type") not in ("quarter","ytd"):errors.append(f"{label}: unknown period type")
         if type(r.get("value")) not in (int,float) or not math.isfinite(r["value"]):errors.append(f"{label}: nonfinite value")
-        key=tuple(r.get(k) for k in ("company","year","quarter","scope","period_type","metric"))
+        key=tuple(r.get(k) for k in ("company","year","quarter","scope","period_type","metric"))+(r.get("segment") if r.get("scope")=="reported_segment" else None,)
         if key in seen:errors.append(f"{label}: duplicate {key}")
         seen[key]=r
     for key,r in seen.items():
-        company,year,quarter,scope,period,metric=key
+        company,year,quarter,scope,period,metric,segment=key
         if metric=="combined_ratio":
-            loss=seen.get((company,year,quarter,scope,period,"loss_ratio"))
-            expense=seen.get((company,year,quarter,scope,period,"expense_ratio"))
+            loss=seen.get((company,year,quarter,scope,period,"loss_ratio",segment))
+            expense=seen.get((company,year,quarter,scope,period,"expense_ratio",segment))
             if loss and expense:
                 # Storebrand Group insurance segment publishes rounded whole-percent
                 # ratios. Three independently rounded figures can differ by 1.5 pp.
@@ -59,10 +61,10 @@ def audit(data):
                 if abs(vals[0] - vals[1] - vals[2]) > tolerance + 1e-9:
                     errors.append(f"{company} {year} Q{quarter} {scope} {period}: combined ratio mismatch")
         if metric=="insurance_revenue":
-            prior=seen.get((company,year-1,quarter,scope,period,metric)) if type(year)==int else None
+            prior=seen.get((company,year-1,quarter,scope,period,metric,segment)) if type(year)==int else None
             if prior and prior["value"]>0:
                 value=(r["value"]/prior["value"]-1)*100
-                reported=seen.get((company,year,quarter,scope,period,"insurance_revenue_growth"))
+                reported=seen.get((company,year,quarter,scope,period,"insurance_revenue_growth",segment))
                 if reported and abs(reported["value"]-value)>0.15:
                     warnings.append(f"{company} {year} Q{quarter} {scope} {period}: reported growth differs from computed growth")
                 calculated.append({"company":company,"year":year,"quarter":quarter,"scope":scope,"period_type":period,"metric":"insurance_revenue_growth","value":value,"calculation":"(current/prior-1)*100","inputs":[r["source_url"],prior["source_url"]],"status":"calculated_from_quarterly_reports"})
