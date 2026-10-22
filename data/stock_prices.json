@@ -1,9 +1,9 @@
 {
-  "updated_at": "2026-10-22T12:54:17.480979+00:00",
+  "updated_at": "2026-10-22T12:57:03.388668+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
-      "close": 272.2,
+      "close": 271.8,
       "currency": "NOK",
       "trading_date": "2026-10-22",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/GJF.OL?interval=1d&range=10d",
@@ -27,7 +27,7 @@
     },
     "Tryg": {
       "symbol": "TRYG.CO",
-      "close": 155.9,
+      "close": 155.8,
       "currency": "DKK",
       "trading_date": "2026-10-22",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/TRYG.CO?interval=1d&range=10d",
@@ -35,7 +35,7 @@
     },
     "Sampo / If": {
       "symbol": "SAMPO.HE",
-      "close": 9.19,
+      "close": 9.188,
       "currency": "EUR",
       "trading_date": "2026-10-22",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SAMPO.HE?interval=1d&range=10d",
