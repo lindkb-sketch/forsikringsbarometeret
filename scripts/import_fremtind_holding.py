@@ -128,14 +128,14 @@ def run():
     candidates = json.loads(CANDIDATES.read_text())
     if not candidates.get("complete"):
         raise ValueError("Issuer discovery incomplete")
-    links = sorted({c["document_url"] for c in candidates["candidates"]
-                    if c.get("company") == "Fremtind" and c["document_url"].lower().endswith(".pdf")})
+    links = list(dict.fromkeys(c["document_url"] for c in candidates["candidates"]
+                    if c.get("company") == "Fremtind" and c["document_url"].lower().endswith(".pdf")))
     existing = json.loads(DATA.read_text())
     seen = {(r["year"], r["quarter"]) for r in existing["observations"] if r["company"] == "Fremtind"}
     imported = []
     errors = []
     # Limit external downloads; only issuer-linked PDFs, never synthetic values.
-    for url in links[:100]:
+    for url in links[:18]:
         try:
             rows = extract(read_pdf(url), url)
             key = (rows[0]["year"], rows[0]["quarter"])
