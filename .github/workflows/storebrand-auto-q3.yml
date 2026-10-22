@@ -69,3 +69,33 @@ jobs:
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published Storebrand Q3 feed on public GitHub Pages
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request
+          url = 'https://lindkb-sketch.github.io/forsikringsbarometeret/data/verified_financial_feed.json'
+          expected = json.load(open('data/verified_financial_feed.json', encoding='utf-8'))
+          def key(r):
+              return tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
+          wanted = {key(r): r['value'] for r in expected['observations']
+                    if r['company'] == 'Storebrand' and r['year'] == 2026 and r['quarter'] == 3}
+          assert wanted, 'No Storebrand Q3 values in generated feed'
+          for attempt in range(12):
+              try:
+                  req = urllib.request.Request(url + '?verification=' + str(int(time.time())),
+                                               headers={'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(req, timeout=20) as response:
+                      assert response.status == 200
+                      actual = json.load(response)
+                  got = {key(r): r['value'] for r in actual['observations']
+                         if r['company'] == 'Storebrand' and r['year'] == 2026 and r['quarter'] == 3}
+                  if got == wanted:
+                      print('PUBLISHED STOREBRAND Q3 VERIFIED:', len(wanted), 'observations match live GitHub Pages')
+                      break
+                  print('Published feed not yet synchronized:', len(got), 'of', len(wanted))
+              except Exception as e:
+                  print('Published feed not yet accessible:', repr(e))
+              if attempt == 11:
+                  raise SystemExit('GitHub Pages publication could not be verified')
+              time.sleep(10)
+          PY
