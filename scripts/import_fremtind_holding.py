@@ -66,90 +66,55 @@ def extract(blob, url):
         if target is None:
             raise ValueError("Missing expected Holding key figures table")
         page_index, text = target
-        # Report figures have grouped thousands (e.g. 6 205).
-        # Extract exactly three numeric columns, not whitespace tokens.
-        rows = {}
-        # Extract the beginning of each labelled row, ignoring PDF text that
-        # pdfplumber may append from the following label on the same line.
-        # Q1 has three columns; Q2-Q4 summary tables have five:
-        # quarter, comparative quarter, YTD, comparative YTD, prior FY.
         columns = 3 if q == 1 else 5
-        amount = r"-?(?:\\d{1,3}(?:[ \\u00a0]\\d{3})+|\\d+)(?:,\\d+)?\\s*%?"
+        rows = {}
+        amount = re.compile(r"-?(?:\d{1,3}(?: \d{3})+|\d+)(?:,\d+)?%?")
         for line in text.splitlines():
             for label, (metric, unit) in FIELDS.items():
-                if not line.startswith(label + " "):
+                at = line.find(label)
+                if at < 0 or (at > 0 and line[at-1].isalnum()):
                     continue
-                rest = line[len(label):].strip()
-                # Stop at a following textual label; revenue's growth
-                # explanation is frequently merged into the same PDF line.
-                rest = re.split(r"(?<=\\d)\\s+(?=[A-Za-zÆØÅæøå])", rest, maxsplit=1)[0]
-                tokens = rest.replace("\\u00a0", " ").split()
-                # A percentage sign is part of the preceding numeric field.
-                normalized = []
-                for token in tokens:
-                    if token == "%" and normalized:
-                        normalized[-1] += "%"
-                    else:
-                        normalized.append(token)
-                tokens = normalized
-                def partitions(parts, count):
-                    if count == 1:
-                        yield [parts]
+                rest = line[at + len(label):].strip()
+                rest = re.split(r"(?<=\d)\s+(?=[A-Za-zÆØÅæøå])", rest, maxsplit=1)[0]
+                tokens = rest.replace("\u00a0", " ").replace(" %", "%").split()
+                def partitions(start, values):
+                    if len(values) == columns:
+                        if start == len(tokens):
+                            yield tuple(values)
                         return
-                    for cut in range(1, len(parts)-count+2):
-                        for tail in partitions(parts[cut:], count-1):
-                            yield [parts[:cut]] + tail
-                matches = []
-                for groups in partitions(tokens, columns):
-                    values = [" ".join(group) for group in groups]
-                    if not all(re.fullmatch(amount, v) for v in values):
-                        continue
-                    nums = tuple(number(v) for v in values)
-                    # Prefer standard thousands-grouping; reject implausibly
-                    # large monetary values introduced by column merging.
-                    if metric in ("insurance_revenue", "insurance_service_result") and any(abs(v)>100000 for v in nums):
-                        continue
-                    score = sum(len(group)-1 for group in groups if len(group)>1)
-                    matches.append((score, nums))
-                if matches:
-                    # The first and third columns have known semantics, but
-                    # ambiguity is never resolved by guessing a financial value.
-                    distinct = {v for _,v in matches}
-                    if len(distinct) == 1:
-                        rows[metric] = (next(iter(distinct)), unit, label)
-                    else:
-                        # Monetary thousands separators are meaningful: use
-                        # the grouping with the fewest merged token pairs
-                        # only if it uniquely identifies the full row.
-                        best_score = min(score for score,_ in matches)
-                        best = {nums for score,nums in matches if score==best_score}
-                        if len(best)==1:
-                            rows[metric] = (next(iter(best)), unit, label)
-        if len(rows) != 5:
-            raise ValueError("Unambiguous three-column key figures not found: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
-        # A Q2/Q3/Q4 summary can show cumulative YTD values. Do not label
-        # these as standalone quarters until the table explicitly identifies
-        # the numeric column as the isolated quarter rather than YTD.
-        # Q2-Q4 headline figures are cumulative (YTD), not isolated quarters.
-        # Store them as YTD; derive standalone quarters only from adjacent YTDs.
-        if abs(rows["combined_ratio"][0][0] - rows["loss_ratio"][0][0] - rows["expense_ratio"][0][0]) > 0.25:
-            raise ValueError("Combined ratio reconciliation failed")
+                    for stop in range(start + 1, len(tokens) + 1):
+                        candidate = " ".join(tokens[start:stop])
+                        if not amount.fullmatch(candidate):
+                            continue
+                        value = number(candidate)
+                        if metric in ("insurance_revenue", "insurance_service_result") and abs(value) > 100000:
+                            continue
+                        yield from partitions(stop, values + [value])
+                matches = set(partitions(0, []))
+                if len(matches) == 1:
+                    rows[metric] = (next(iter(matches)), unit, label)
+                elif len(matches) > 1:
+                    raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
+        if len(rows) != len(FIELDS):
+            raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
+        for column in ([0] if q == 1 else [0, 2]):
+            if abs(rows["combined_ratio"][0][column] - rows["loss_ratio"][0][column] - rows["expense_ratio"][0][column]) > 0.25:
+                raise ValueError(f"Combined ratio reconciliation failed for column {column}")
         digest = hashlib.sha256(blob).hexdigest()
-        # First numeric column is the reported standalone quarter, including Q2/Q3.
-        # Third numeric column is cumulative YTD for Q2/Q3.
-        selected = {metric: (values[0], unit, label) for metric, (values, unit, label) in rows.items()}
-        if q > 1:
-            selected.update({})
-        return [{
-            "company": "Fremtind", "year": year, "quarter": q,
-            "scope": "group", "period_type": "quarter",
-            "metric": metric, "value": value, "unit": unit,
-            "status": "reported", "source_type": "official_quarterly_report",
-            "source_url": url, "source_page": page_index + 1,
-            "source_entity": "Fremtind Holding konsern",
-            "source_document_period": f"Q{q} {year}",
-            "source_definition": label, "source_sha256": digest,
-        } for metric, (value, unit, label) in selected.items()]
+        result = []
+        for column, period in ([(0, "quarter")] if q == 1 else [(0, "quarter"), (2, "ytd")]):
+            for metric, (values, unit, label) in rows.items():
+                result.append({
+                    "company": "Fremtind", "year": year, "quarter": q,
+                    "scope": "group", "period_type": period,
+                    "metric": metric, "value": values[column], "unit": unit,
+                    "status": "reported", "source_type": "official_quarterly_report",
+                    "source_url": url, "source_page": page_index + 1,
+                    "source_entity": "Fremtind Holding konsern",
+                    "source_document_period": f"Q{q} {year}",
+                    "source_definition": label, "source_sha256": digest,
+                })
+        return result
 
 def run():
     candidates = json.loads(CANDIDATES.read_text())
@@ -170,7 +135,11 @@ def run():
             rows = extract(read_pdf(url), url)
             if rows[0]["year"] < 2025:
                 continue
-            imported.extend(r for r in rows if (r["year"], r["quarter"], r["period_type"], r["metric"]) not in existing_keys)
+            for r in rows:
+                key = (r["year"], r["quarter"], r["period_type"], r["metric"])
+                if key not in existing_keys:
+                    imported.append(r)
+                    existing_keys.add(key)
         except Exception as exc:
             errors.append({"url": url, "reason": str(exc)[:1500]})
     # Q1 YTD equals Q1 standalone, by definition.
