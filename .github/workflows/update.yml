@@ -49,12 +49,19 @@ jobs:
           path: data/financial_audit.json
       - name: Commit generated financial feed and calendar
         run: |
-          if ! git diff --quiet -- data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json; do
+            if [ -f "$file" ]; then git add -- "$file"; fi
+          done
+          if ! git diff --cached --quiet; then
             git commit -m 'Update verified financial feed and report calendar'
-            git push
+            for attempt in 1 2 3; do
+              if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+              sleep 5
+            done
+            echo '::error::Could not publish validated feed after three attempts'
+            exit 1
           fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
