@@ -41,7 +41,10 @@ def parse_group(blob,year,quarter,url):
             pattern=r'^'+label+r'(?:a\))?\s+'+r'\s+'.join('('+NUMBER+')' for _ in range(column_count))+r'\s*$'
             found=[re.match(pattern,line.strip(),re.I) for line in lines]
             matches=[m for m in found if m]
-            if len(matches)!=1:raise ValueError('Tryg group metric missing or ambiguous: '+metric)
+            if len(matches)!=1:
+                print('TRYG_PDF_UNMATCHED',year,quarter,metric,'columns',column_count,
+                      'candidates',[x for x in lines if re.search(label,x,re.I)],flush=True)
+                raise ValueError('Tryg group metric missing or ambiguous: '+metric)
             for period,col in [('quarter',1),('ytd',3)]:
                 val=float(matches[0].group(1 if period=='quarter' else (3 if column_count==5 else 1)).replace(',',''))
                 out.append(dict(company='Tryg',year=year,quarter=quarter,scope='group',
