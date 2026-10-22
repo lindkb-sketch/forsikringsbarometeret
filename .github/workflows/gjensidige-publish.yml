@@ -46,7 +46,6 @@ jobs:
       - name: Import only validated official Gjensidige quarterly PDFs
         run: python scripts/gjensidige_publish.py
       - name: Validate Norway Excel extraction against PM and BM standalone ratios
-        continue-on-error: true
         run: python scripts/gjensidige_norway_excel.py
       - name: Audit and validate publication files
         run: |
