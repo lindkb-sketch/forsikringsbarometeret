@@ -94,7 +94,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Forsikring',year)
     if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
-    if quarter==4:raise ValueError('Storebrand Forsikring AS Q4 requires annual report minus Q3 YTD; use parse_norway_annual_q4')
+    if quarter==4:raise ValueError('Storebrand Forsikring AS Q4 must remain blank: no Q4 report')
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
     if 'Totalresultat' not in t or not ((('3.kvartal' in t) if quarter==3 else re.search(r'4\.\s*kvartal',t,re.I))) or not ('01.01 - '+('30.09' if quarter==3 else '31.12')) in t:raise ValueError('Norway income statement header changed')
@@ -205,24 +205,14 @@ def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
     result.append(obs('norway',year,quarter,'quarter','solvency_ratio',margin,sp+1,url,sha,'Solvency II margin at quarter end','Storebrand Forsikring AS',year,quarter))
     return result
 
-def parse_norway_annual_q4(annual_path,q3_path,annual_url, q3_url,year=2025):
-    """Q4 subsidiary flow = audited annual total minus official Q3 YTD.
+def parse_norway_annual_q4(*args, **kwargs):
+    """No Q4 observations for Storebrand Forsikring AS without a Q4 report.
 
-    Only reconciled insurance revenue and insurance service result are derived.
-    Never subtract ratios, balance-sheet solvency or claims ratios.
+    An annual report is not a standalone fourth-quarter report. Neither
+    derived Q4 flows nor annual YTD values should populate its Q4 slot.
     """
-    if year<2025:raise ValueError('Unsupported annual period')
-    if not (annual_url.startswith('https://') and q3_url.startswith('https://')):
-        raise ValueError('Official HTTPS report provenance required')
-    annual,sha=pages(annual_path,'Storebrand Forsikring',year)
-    q3,sha3=pages(q3_path,'Storebrand Forsikring',year)
-    if not any('Årsrapport' in p or 'årsrapport' in p.lower() for p in annual[:3]):
-        raise ValueError('Q4 subsidiary requires annual report, not quarterly PDF')
-    if not any(re.search(r'3\\.\\s*kvartal',p,re.I) for p in q3[:4]):
-        raise ValueError('Q3 comparator report period not verified')
-    # The annual report and Q3 report have different presentation layouts.
-    # Do not infer figures unless both totals can be uniquely located and reconciled.
-    raise ValueError('Annual/Q3 table mapping requires independently verified issuer figures; Q4 publication blocked')
+    raise ValueError('Storebrand Forsikring AS Q4 must remain blank: no Q4 report')
+
 
 def integrate(existing, incoming):
     result=json.loads(json.dumps(existing)); index={tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric')):i for i,r in enumerate(result['observations'])}
