@@ -57,6 +57,26 @@ jobs:
                       t=pdf.pages[i].extract_text() or ''
                       print('SOURCE_PAGE',q,scope,i,repr(t[:5200]))
           PY
+      - name: Verify Q1 and Q2 imports from official PDFs
+        run: |
+          python - <<'PY'
+          import sys,tempfile
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from storebrand_sources import discover
+          from storebrand_automation_check import choose_reports,download_pdf
+          from import_storebrand_reports import parse_group,parse_norway
+          records=discover(year=2026)['reports']
+          for q in (1,2):
+            selected=choose_reports(records,2026,q)
+            with tempfile.TemporaryDirectory() as d:
+              gp,np=Path(d)/'group.pdf',Path(d)/'norway.pdf'
+              download_pdf(selected['group']['document_url'],gp)
+              download_pdf(selected['norway']['document_url'],np)
+              rows=parse_group(gp,selected['group']['document_url'],2026,q)+parse_norway(np,selected['norway']['document_url'],2026,q)
+              print('STOREBRAND EARLY VERIFIED',q,[(r['scope'],r['metric'],r['value']) for r in rows])
+              assert len(rows)==11 and all(r['quarter']==q and r['year']==2026 for r in rows)
+          PY
       - name: Verify required Storebrand files
         run: python scripts/storebrand_preflight.py
       - name: Run isolated Storebrand tests
