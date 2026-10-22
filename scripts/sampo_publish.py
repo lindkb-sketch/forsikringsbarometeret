@@ -47,7 +47,10 @@ def parse(blob,url,year,quarter):
  sha=hashlib.sha256(blob).hexdigest()
  with pdfplumber.open(io.BytesIO(blob)) as pdf:
   pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
- if str(year) not in ' '.join(t for _,t in pages[:5]):raise ValueError('Incorrect report year')
+ header=' '.join(t for _,t in pages[:5])
+ if str(year) not in header:raise ValueError('Incorrect report year')
+ quarter_words={1:('January-March','Jan-Mar','Q1'),2:('January-June','Apr-Jun','April-June','Q2'),3:('January-September','Jul-Sep','July-September','Q3'),4:('January-December','Oct-Dec','October-December','Q4')}
+ if not any(word.lower() in header.lower() for word in quarter_words[quarter]):raise ValueError('Report quarter does not match target period')
  observations=[]
  labels={'insurance_revenue':'Insurance revenue, net','insurance_service_result':'Underwriting result','loss_ratio':'Risk ratio','expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
  for segment in ('Sampo Group',)+SEGMENTS:
