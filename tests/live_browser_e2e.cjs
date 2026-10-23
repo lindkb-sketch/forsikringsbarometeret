@@ -25,7 +25,7 @@ async function main(){
   const [feed,editorial,news,stocks]=files;
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
-       document.querySelector('.live-market-updates'),null,{timeout:35000});
+       window.FBNews?.editorial && document.querySelector('.mon-calendar'),null,{timeout:35000});
   const periods=[...new Set(feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&
      ['insurance_revenue','combined_ratio'].includes(r.metric)).map(r=>r.year+'-'+r.quarter))].sort((a,b)=>{
       const aa=a.split('-').map(Number),bb=b.split('-').map(Number);return bb[0]-aa[0]||bb[1]-aa[1];});
@@ -44,7 +44,9 @@ async function main(){
      media:document.querySelector('#media-news')?.innerText||'',
      strategic:document.querySelector('.quarter-changes')?.innerText||'',
      brief:document.querySelector('.quarter-comment')?.innerText||'',
-     ticker:document.querySelector('.live-market-updates')?.innerText||''
+     calendar:document.querySelector('.mon-calendar')?.innerText||'',
+     newsGroups:FBNews.newsGroups(),
+     technical:!!document.querySelector('#verified-financial-panel, #automated-editorial, .live-market-updates')
   }));
   check('Original KPI card/grid design remains intact',!view.oldReplacement&&view.kpis>=6&&view.tableRows>=7,JSON.stringify({kpis:view.kpis,rows:view.tableRows}));
   const metrics={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',
@@ -70,8 +72,31 @@ async function main(){
   check('Quarter labels never disappear when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
   check('Strategic original cards present',view.strategic.includes('Strategiske bevegelser')&&view.media.includes('Forsikring i mediebildet'),view.strategic.slice(0,150));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>view.brief.includes(x.text)),view.brief.slice(0,250));
-  check('News visible',news.items.filter(x=>x.approved).length===0||news.items.some(x=>view.ticker.includes(x.headline)),view.ticker.slice(0,250));
-  check('Delayed quotes visible',Object.entries(stocks.prices||{}).every(([c,x])=>view.ticker.includes(c)),Object.keys(stocks.prices||{}).join(','));
+  check('Technical duplicate sections removed',!view.technical);
+  check('Strategic news visible in original cards',view.newsGroups.strategic.length===0||
+     view.newsGroups.strategic.some(n=>view.strategic.includes(n.headline)),view.strategic.slice(0,280));
+  check('News visible in original media cards',view.newsGroups.other.length===0||
+     view.newsGroups.other.some(n=>view.media.includes(n.headline)),view.media.slice(0,280));
+  check('No repeated headlines across news sections',!view.newsGroups.strategic.some(a=>
+     view.newsGroups.other.some(b=>a.source_url===b.source_url||a.headline===b.headline)));
+  const withoutQuarter=companies.filter(c=>!feed.observations.some(r=>r.company===c&&r.scope==='group'&&
+    r.year===year&&r.quarter===quarter&&r.period_type==='quarter'&&r.metric==='combined_ratio'));
+  check('Upcoming list contains only missing issuers',withoutQuarter.every(c=>
+    view.calendar.includes(c)),view.calendar.slice(0,250));
+  check('Upcoming list excludes published issuers',companies.filter(c=>!withoutQuarter.includes(c))
+    .every(c=>!view.calendar.includes(c)),view.calendar.slice(0,250));
+  await page.evaluate(()=>show('Gjensidige',true));
+  const companyComment=await page.locator('.quarter-comment').first().innerText();
+  const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
+  if(companyBrief)check('Company page has current sourced financial commentary',
+       companyComment.includes(companyBrief.comment)&&companyComment.includes(companyBrief.summary),
+       companyComment.slice(0,400));
+  const quotesOnCompany=await page.locator('.stock-section').first().innerText();
+  const quote=stocks.prices?.Gjensidige;
+  if(quote)check('Last delayed closing price in existing company stock panel',
+       quotesOnCompany.includes(String(quote.close))&&quotesOnCompany.includes(quote.trading_date),
+       quotesOnCompany.slice(0,420));
+  await page.evaluate(()=>show('home',true));
   const tableQ=norm(await page.locator('#results-comparison').innerText());
   for(const c of ['Fremtind','Storebrand']){
    const r=feed.observations.find(x=>x.company===c&&x.year===year&&x.quarter===quarter&&
