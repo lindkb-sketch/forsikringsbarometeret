@@ -15,7 +15,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: forsikringsbarometeret-publish
+  group: sampo-verified-publish
   cancel-in-progress: false
 jobs:
   verify:
