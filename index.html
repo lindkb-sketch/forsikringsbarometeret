@@ -846,7 +846,7 @@ const profitabilityReturns={
 function setProfitabilityCompany(name){profitabilityCompany=name;document.getElementById("profitability-panel").innerHTML=profitabilityChart()}
 function profitabilityChart(){
  const names=['Fremtind',...companies],selected=profitabilityVerified[profitabilityCompany]||{},returns=profitabilityReturns[profitabilityCompany]||{};
- const displayedQuarters=profitabilityQuarters.filter(q=>selected[q]).slice(-5);
+ const displayedQuarters=profitabilityQuarters.slice(-5); // retain labels for quarters without verifiable data
  const fmt=n=>n.toFixed(1).replace('.',',')+' %';
  const valid=profitabilityQuarters.filter(q=>returns[q]);
  const returnMetric=profitabilityCompany==='Tryg'?'ROOF':profitabilityCompany==='Fremtind'?'Justert EK-avkastning':'ROE';
@@ -966,7 +966,7 @@ function companyMediaNews(c){
  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
  return `<section class="panel company-media-news"><div class="section-head"><div><h2>${esc(c)} i mediebildet</h2><p class="hint">Strategisk prioriterte artikler · Q2 2026 og etter kvartalsslutt · hvorfor saken er relevant for Fremtind</p></div></div><div class="company-media-grid">${articles.map(a=>`<a class="company-media-link" href="${esc(a[4])}" target="_blank" rel="noopener noreferrer"><span class="company-media-meta">${esc(a[0])} · ${esc(a[1])}</span><strong>${esc(a[2])} ↗</strong><span class="company-media-desc">${esc(a[3])}</span></a>`).join('')}</div></section>`;
 }
-function company(c){period='Q2';const d=groupData[c], segments=segmentData[c];return `<button class="back" onclick="show('home')">← Tilbake til oversikten</button>${shell(c,'Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','SELSKAPSANALYSE / '+c.toUpperCase())}<div class="section-head"><div><h2>${c==='Storebrand'?'Storebrand ASA · Insurance-segmentet':'Konsern'} · Q2 2026</h2></div><span class="pill">${c==='Storebrand'?'INSURANCE':'KONSERN'}</span></div>${quarterComment(c)}${kpiCards(c)}<div class="panel"><div class="section-head"><div><h2>${c==='Sampo'?'Nordiske forretningssegmenter':'<strong style="font-size:1.12em">NORGE</strong> · segmentoversikt'}</h2></div><span class="pill norway-pill">${c==='Sampo'?'NORDEN':'NORGE'}</span></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Forsikringsteknisk resultat</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>${segments.map(x=>`<tr class="${c==='Gjensidige'&&x.name==='Norge total'?'norway-total':''}"><td>${x.name}</td><td>${segmentCell(x,'growth')}</td><td>${segmentCell(x,'underwriting')}</td><td>${segmentCell(x,'cr')}</td><td>${segmentCell(x,'loss')}</td><td>${segmentCell(x,'cost')}</td></tr>`).join('')}</tbody></table></div></div>${stockMarketSection(c)}${companyMediaNews(c)}`}
+function company(c){const d=groupData[c], segments=segmentData[c];return `<button class="back" onclick="show('home')">← Tilbake til oversikten</button>${shell(c,'Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','SELSKAPSANALYSE / '+c.toUpperCase())}<div class="section-head"><div><h2>${c==='Storebrand'?'Storebrand ASA · Insurance-segmentet':'Konsern'} · Q2 2026</h2></div><span class="pill">${c==='Storebrand'?'INSURANCE':'KONSERN'}</span></div>${quarterComment(c)}${kpiCards(c)}<div class="panel"><div class="section-head"><div><h2>${c==='Sampo'?'Nordiske forretningssegmenter':'<strong style="font-size:1.12em">NORGE</strong> · segmentoversikt'}</h2></div><span class="pill norway-pill">${c==='Sampo'?'NORDEN':'NORGE'}</span></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Forsikringsteknisk resultat</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>${segments.map(x=>`<tr class="${c==='Gjensidige'&&x.name==='Norge total'?'norway-total':''}"><td>${x.name}</td><td>${segmentCell(x,'growth')}</td><td>${segmentCell(x,'underwriting')}</td><td>${segmentCell(x,'cr')}</td><td>${segmentCell(x,'loss')}</td><td>${segmentCell(x,'cost')}</td></tr>`).join('')}</tbody></table></div></div>${stockMarketSection(c)}${companyMediaNews(c)}`}
 function methodology(){return shell('Forutsetninger og kilder','Definisjoner, sammenlignbarhet og dokumentasjon av rapporterte nøkkeltall.','DOKUMENTASJON')+`<div class="panel"><h2>Markedsandeler · periode og oppdatering</h2><p>Markedsandelene oppdateres separat fra kvartalsregnskapene. Inntil ny offisiell markedsstatistikk fra Finans Norge er lagt inn via «Oppdater markedsandeler», vises sist tilgjengelige markedsandel, for tiden Q2 2026, også når finansrapporteringen står på Q3 2026. Periodeangivelsen står direkte i kort og tabell. Sammenligningstallet gjelder samme kvartal i 2025, ikke Q3 2025. PM og BM følger samme kildeperiode.</p><p>Ved opplasting av nye tall må rapporteringsperioden oppdateres sammen med verdiene. Kilde: Finans Norges premiestatistikk (Tab5), publisert med etterslep. Fravær av Q3-statistikk betyr ikke at markedsandelen er null.</p></div><div class="panel"><h2>Inntektsvekst · beregning og kvalitetskontroll</h2><p><strong>Isolert kvartal:</strong> (forsikringsinntekter i kvartalet / forsikringsinntekter samme kvartal året før − 1) × 100. <strong>Hiå:</strong> (akkumulerte forsikringsinntekter hittil i år / tilsvarende akkumulert periode i fjor − 1) × 100. Ved kun akkumulert rapportering beregnes Q3 isolert som Hiå Q3 minus Hiå Q2, separat for hvert år.</p><p>Beregningene utføres separat per selskap, juridisk enhet/segment, valuta, regnskapsstandard og inntektsbegrep. IFRS 17-forsikringsinntekter, premieinntekter, GWP og driftsinntekter blandes ikke. Sammenligningsåret må bruke samme definisjon; hvis ikke markeres tallet som ikke sammenlignbart. Valutajustert og organisk vekst vises kun når selskapet dokumenterer slike størrelser.</p><p><strong>Kontroll:</strong> Beregningen avviser manglende kilde, ikke-positive fjorårsinntekter, blandede enheter, manglende periode og vesentlige avvik mellom direkte rapporterte og beregnede prosenter. Den endrer ikke godkjente tall uten kildegrunnlag. Kilde: <a href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-17-insurance-contracts/" target="_blank" rel="noopener">IFRS 17 – IFRS Foundation</a>.</p></div><div class="panel"><h2>Storebrand Forsikring AS · Norge totalt · Q2 2026</h2><p>Norge-tabellen viser kun Storebrand Forsikring AS totalt, uten PM/BM-splitt. Nøkkeltallboksene over viser Storebrand ASA sitt Insurance-segment, som også inkluderer virksomhet utenfor Storebrand Forsikring AS. Kilde: <a href="https://www.storebrand.no/en/investor-relations/quarterly-reporting/storebrand-forsikring-as" target="_blank" rel="noopener">Storebrands kvartalsrapportarkiv</a>, Q2 2026 s. 4 og note 4 s. 9, samt Q2 2025 s. 4 og note 3 s. 9. Inntektsvekst Norge totalt Q2 2026: (1 470,3 / 1 185,9 − 1) × 100 = 24,0 %. Q2 2025: (1 185,9 / 896,0 − 1) × 100 = 32,4 %. Forsikringsresultat etter reassuranse: 283,0 mot 113,7 MNOK. Combined ratio er beregnet som 100 × (1 − forsikringsresultat / forsikringsinntekter) for Norge totalt. Netto skadeprosent for Norge totalt er rapportert avrundet til 58 % mot 69 %. Kostnadsprosent er residualen mellom combined ratio og netto skadeprosent, og er derfor et omtrentlig avledet mål, ikke en selvstendig rapportert størrelse. Skade- og kostnadsprosenter for PM/BM er ikke vist da de ikke kan avstemmes direkte fra rapportens noter. PM/BM-fjorårsvekst mangler fordi segmentinntektene for Q2 2024 ikke er spesifisert i Q2 2025-tabellen.</p></div><div class="panel"><h2>Datakontroll og gjenstående hull · Q2 2026</h2><p><strong>Tryg Norge – korrigert:</strong> Forsikringsteknisk resultat Q2 2026 er 818 MNOK mot 605 MNOK i Q2 2025. Hiå er 1 044 MNOK mot 757 MNOK. Tallene gjelder norsk virksomhet og må ikke blandes med Tryg A/S-konsernets resultat på 1 190 MDKK mot 2 307 MDKK, som er påvirket av en dansk engangsavsetning. Kilde: <a href="https://kommunikasjon.ntb.no/pressemelding/18987965/tryg-norge-med-solid-q2-resultat?publisherId=17849174" target="_blank" rel="noopener">Tryg Norge, Q2 2026</a> og <a href="https://view.news.eu.nasdaq.com/view?id=b9b8b4ce62d857832639045e04f2d6a2e&amp;lang=en" target="_blank" rel="noopener">Tryg A/S, Q2 2026</a>.</p><p><strong>Fortsatt ikke avstemt:</strong> Fremtind Forsikring AS Norge (inntektsvekst og forsikringsteknisk resultat), Protector Norge (fjorårsvekst og forsikringsteknisk resultat), Storebrand Norge (separate selskapstall) og Frende Holding (numerisk solvensgrad på konsernnivå). Disse feltene vises ikke med estimerte tall. Flere eksisterende konserntall, spesielt sammenlignbare ROE-definisjoner, krever fortsatt full kontroll mot primærrapportene.</p><p><strong>Merk:</strong> Gjensidige Norge total er summen av PM og BM. Sampos nordiske segmenter er ikke Norge-tall. Markedsandeler er norske bestandstall og kan ikke sammenlignes direkte med konsernets inntektsvekst.</p></div><div class="panel"><h2>Storebrand · inntektsvekst avstemt mot Q2 2025</h2><p>Storebrand ASA, segment Insurance: Vekst beregnes fra <strong>Insurance premiums f.o.a.</strong> (premieinntekter for egen regning), ikke konsernets samlede inntekter. <strong>Q2 2026:</strong> (2 799 / 2 408 − 1) × 100 = <strong>16,2 %</strong>. <strong>Q2 2025:</strong> (2 408 / 1 955 − 1) × 100 = <strong>23,2 %</strong>, basert på Q2 2025-rapportens sammenligning med Q2 2024. <strong>Hiå 2026:</strong> (5 483 / 4 665 − 1) × 100 = 17,5 %. <strong>Hiå 2025:</strong> (4 665 / 3 830 − 1) × 100 = 21,8 %. Alle beløp i MNOK og prosentene avrundet til én desimal. <a href="https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/4237d035-d763-4991-b204-bc1f67cf23ea%3Ad3110f016fb66573dd897fa09fdf013b05a792df/2026-q2-interim-report-storebrand-asa.pdf" target="_blank" rel="noopener">Storebrand Q2 2026-rapport</a> · <a href="https://www.storebrand.no/en/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a4131574-d3ed-4fb6-9852-365911a431c5%3A6d62ce063b73bd13da22ec04d805c8b3e8afa04a/2025-q2-interim-report-storebrand-asa.pdf" target="_blank" rel="noopener">Storebrand Q2 2025-rapport</a>.</p></div><div class="panel"><h2>Gjensidige Norge · fjorårsvekst beregnet fra Q2 2025</h2><p>Veksten for Q2 2025 sammenlignes med Q2 2024 fra Gjensidiges Q2 2025-delårsrapport. Private Norway: (3 523,6 / 3 056,6 − 1) × 100 = <strong>15,3 %</strong>. Commercial Norway: (3 790,2 / 3 462,2 − 1) × 100 = <strong>9,5 %</strong>. Norge total, summert uten gjennomsnitt av vekstratene: ((3 523,6 + 3 790,2) / (3 056,6 + 3 462,2) − 1) × 100 = <strong>12,2 %</strong>. Alle inntekter i MNOK. Q2 2026 mot Q2 2025 er henholdsvis 16,2 %, 6,9 % og 11,4 %. Kilder: <a href="https://mb.cision.com/Public/1122/4205875/8c7ae2fc7ad58bd1.pdf" target="_blank" rel="noopener">Gjensidige Q2 2025, Private Norway</a> · <a href="https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2025/07/11/651095_Interim_report_Q2_2025.pdf" target="_blank" rel="noopener">Gjensidige Q2 2025, Commercial Norway</a> · <a href="https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf" target="_blank" rel="noopener">Gjensidige Q2 2026</a>.</p></div><div class="panel"><h2>Gjensidige · kontroll mot Q2 2026-rapport og kvartalspresentasjon</h2><p>Konsern: forsikringsinntekter 11 257,8 MNOK (10 493,2), forsikringsresultat 2 375,0 MNOK (2 200,5), combined ratio 78,9 % (79,0 %), skadeprosent 67,2 % (67,1 %), kostnadsprosent 11,7 % (12,0 %). Annualisert egenkapitalavkastning hittil i år 33,3 %; konsernsolvens 189 %. En dansk høyesterettsavgjørelse påvirket forsikringsresultatet negativt med 419,3 MNOK. Kilder: <a href="https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf" target="_blank" rel="noopener">Delårsrapport Q2 2026</a> og <a href="https://mb.cision.com/Public/1122/4373892/98a4bf97d8fd4f71.pdf" target="_blank" rel="noopener">Kvartalspresentasjon Q2 2026</a>.</p><p>Norge PM: forsikringsinntekter 4 093,4 MNOK (3 523,6) og forsikringsresultat 1 359,5 MNOK (1 191,8), delårsrapport side 11. Norge BM: forsikringsinntekter 4 051,7 MNOK (3 790,2) og forsikringsresultat 1 413,9 MNOK (913,4), side 15. Norge total er sum PM+BM: inntekter 8 145,1 MNOK (7 313,8) og resultat 2 773,4 MNOK (2 105,2). Vekst og Norge-totalens forholdstall er beregnet fra rapporterte segmenttall. Norge total er ikke et separat rapportert IFRS-segment.</p></div><div class="panel"><h2>Redaksjonelle kvartalskommentarer · Q2 2026</h2><p>Kommentarene på forsiden og selskapssidene er kvalitative oppsummeringer basert på selskapenes rapportering. De skiller mellom underliggende drift, engangseffekter og strategiske hendelser, og oppdateres manuelt når nye kvartalsrapporter publiseres. De er ikke egne prognoser.</p><p><a href="https://www.mynewsdesk.com/no/fremtind/news/fremtind-leverer-solide-resultater-i-andre-kvartal-2026-511321" target="_blank" rel="noopener">Fremtind</a> · <a href="https://news.cision.com/gjensidige-forsikring-asa/r/gjensidige-q2-2026--higher-general-insurance-service-result,c4373895" target="_blank" rel="noopener">Gjensidige</a> · <a href="https://view.news.eu.nasdaq.com/view?id=b9b8b4ce62d857832639045e04f2d6a2e&lang=en" target="_blank" rel="noopener">Tryg</a> · <a href="https://view.news.eu.nasdaq.com/view?id=b35f039030605001dab0aec9fa93fc60a&lang=en" target="_blank" rel="noopener">Sampo</a> · <a href="https://www.frende.no/aktuelt/sv%C3%A6rt-godt-f%C3%B8rste-halv%C3%A5r-for-frende/" target="_blank" rel="noopener">Frende</a> · <a href="https://investor.protectorforsikring.no/pressreleases/q2-2026-cr-815-earnings-per-share-nok-90-dividend-nok-300-per-share-mrdoao71" target="_blank" rel="noopener">Protector</a> · <a href="https://news.cision.com/no/storebrand-asa/r/storebrand-asa--resultater-for-andre-kvartal-2026,c4374688" target="_blank" rel="noopener">Storebrand</a>.</p></div>`+`<div class="panel"><h2>Piler, segmentresultat og kilder</h2><p>Pilene i sammenligningstabellen og segmentoversiktene viser endring fra Q2 2025 til Q2 2026. ▲ er økning, ▼ er nedgang og → er uendret. For CR, skadeprosent og kostnadsprosent er nedgang grønn; for vekst og finans-/forsikringsteknisk resultat er økning grønn. Pil vises bare når sammenligningstall finnes. For Sampo er Private Nordic og Nordic Commercial nordiske segmenter, ikke Norge isolert.</p><p><strong>Sampo Q2 2026:</strong> Private Nordic underwriting result 198 MEUR (182 MEUR), CR 81,7 % (81,7 %), risk ratio 59,9 % (60,1 %), cost ratio 21,8 % (21,6 %) og like-for-like GWP-vekst 4,8 % (8,7 %). Nordic Commercial underwriting result 100 MEUR (107 MEUR), CR 82,9 % (80,5 %), risk ratio 59,5 % (56,3 %), cost ratio 23,4 % (24,2 %) og like-for-like GWP-vekst 8,6 % (6,3 %). <a href="https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969" target="_blank" rel="noopener noreferrer">Kilde: Sampo Half-Year Financial Report 2026, segmenttabeller for Q2</a>.</p><p>Forsikringsteknisk resultat vises bare når tilsvarende segmenttall er dokumentert. Manglende verdier er ikke estimert. Frende Skadeforsikring AS er avstemt mot Q2-rapportene for 2026 og 2025; andre manglende segmentresultater står som — frem til avstemming.</p></div><div class="panel"><h2>Markedsandel i resultatsammenligningen</h2><p>Markedsandeler gjelder landbasert norsk skadeforsikring basert på bestandspremie fra Finans Norge. Øverste verdi er Q2 2026, tallet i parentes er Q2 2025, og pilen viser endring i markedsandel. Markedsandelen er et bestandstall per 30. juni og er den samme uavhengig av om resultatsammenligningen er filtrert til Q2 eller Hiå.</p><p><a href="https://www.finansnorge.no/tema/statistikk-og-analyse/statistikkgrunnlag/" target="_blank" rel="noopener noreferrer">Finans Norge – premiestatistikk Q2 2026 og Q2 2025 ↗</a></p></div><div class="panel"><h2>Solvensgrad på konsernnivå – dokumentasjon og sammenlignbarhet</h2>
 <p>Solvensgrad skal konsekvent gjelde rapportert forsikringskonsern, ikke enkeltstående skadeforsikringsselskap. For Fremtind er målet eksplisitt merket Fremtind Forsikring konsern i Fremtind Holdings Q2-rapport. Alle publiserte solvenstall er målt ved utgangen av andre kvartal (30. juni), med Q2 2025 som sammenligningsperiode. Endringer vises i prosentpoeng. Nøkkeltallskortene viser kun verdi, fjorårstall og utvikling; rapporteringsnivå, metode og kilde dokumenteres her.</p>
 <table><thead><tr><th>Selskap / nivå</th><th>Q2 2026</th><th>Q2 2025</th><th>Kilde og presisering</th></tr></thead><tbody>
@@ -1116,11 +1116,12 @@ let MON_CARD=(c,key,originalHtml)=>{
  return doc.innerHTML;
 };
 const MON_NAME={growth:'Vekst i forsikringsinntekter',cr:'Combined ratio',loss:'Skadeprosent',cost:'Kostnadsprosent'};
-const MON_SOURCE=c=>MON_QUARTER==='Q3' && !MON_Q3[c]
- ? '<p class="notice">Q3 2026: Offentlig kvartalsrapport er ikke kildeverifisert i denne versjonen. Nøkkeltall fylles fra rapportens Q3- og Q1–Q3-kolonner når den foreligger.</p>'
- : MON_QUARTER==='Q3' && MON_Q3_PERIOD_SOURCE[c]
- ? `<p class="notice">Kilde: <a href="${MON_Q3_PERIOD_SOURCE[c].url}" target="_blank" rel="noopener">${MON_Q3_PERIOD_SOURCE[c].publisher} · Q3 2026</a>. Kvartal isolert og Hiå leses fra separate rapportkolonner.</p>` : '';
-const MON_SELECT=()=>`<div class="mon-period"><div><b>Rapporteringskvartal</b><div style="font-size:12px;color:#617589;margin-top:3px">Lik visning og samme komponenter i begge kvartaler</div></div><select aria-label="Velg kvartal" onchange="monSetQuarter(this.value)"><option value="Q3" ${MON_QUARTER==='Q3'?'selected':''}>Q3 2026 · løpende</option><option value="Q2" ${MON_QUARTER==='Q2'?'selected':''}>Q2 2026 · arkiv</option></select></div>`;
+const MON_SOURCE=c=>{
+ const source=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])?.source;
+ return source?'<p class="notice">Kildeverifiserte tall: <a href="'+source+'" target="_blank" rel="noopener noreferrer">Åpne offisiell kvartalsrapport ↗</a></p>'
+ :'<p class="notice">Kildeverifiserte rapporttall for denne perioden er ennå ikke tilgjengelige.</p>';
+};
+let MON_SELECT=()=>`<div class="mon-period"><div><b>Rapporteringskvartal</b><div style="font-size:12px;color:#617589;margin-top:3px">Lik visning og samme komponenter i begge kvartaler</div></div><select aria-label="Velg kvartal" onchange="monSetQuarter(this.value)"><option value="Q3" ${MON_QUARTER==='Q3'?'selected':''}>Q3 2026 · løpende</option><option value="Q2" ${MON_QUARTER==='Q2'?'selected':''}>Q2 2026 · arkiv</option></select></div>`;
 function monSetQuarter(q){MON_QUARTER=q;period=q;for(const [c,arr] of Object.entries(MON_Q2_SEGMENTS))segmentData[c]=arr.map(x=>({...x}));if(q==='Q3'){for(const [c,arr] of Object.entries(segmentData)){segmentData[c]=arr.map(x=>{const r={...x};for(const k of Object.keys(r)){if(['growth','growthPrev','underwriting','underwritingPrev','cr','crPrev','loss','lossPrev','cost','costPrev'].includes(k))r[k]='';}return r})}}show(current);}
 function monCalendar(){const pending=MON_CAL.filter(x=>!MON_Q3[x[0]]);return `<section class="mon-calendar"><div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER</div><h2>Venter på kvartalstall</h2></div><span class="pill">${pending.length} gjenstår</span></div><div class="mon-cal-grid">${pending.map(([n,date,url])=>`<a class="mon-cal-row" href="${url}" target="_blank" rel="noopener noreferrer"><strong>${n}</strong><span>${date} ↗</span></a>`).join('')}</div></section>`}
 metricCardFor=(c,key)=>MON_QUARTER==='Q2'?MON_ORIG.metricCardFor(c,key):MON_CARD(c,key,MON_ORIG.metricCardFor(c,key));
@@ -1197,7 +1198,7 @@ home=()=>{
  if(MON_QUARTER==='Q3' && period==='H3'){
    h=h.replace('Resultatsammenligning · konsern · Q3 2026','Resultatsammenligning · konsern · Hiå 2026');
    h=h.replace('</select></div><div class="tablewrap">','</select></div><div class="tablewrap">');
-   h=h.replace('</select></div>',`</select></div><p class="hint" style="margin:0 0 12px">Hiå Q3 2026 · januar–september. <a href="${MON_YTD_SOURCES.Fremtind}" target="_blank" rel="noopener">Fremtind ↗</a> · <a href="${MON_YTD_SOURCES.Tryg}" target="_blank" rel="noopener">Tryg ↗</a></p>`);
+   h=h.replace('</select></div>','</select></div><p class="hint" style="margin:0 0 12px">HIÅ: Januar til og med valgt kvartal, fra kildeverifiserte data.</p>');
  }
  return h;
 };
@@ -1210,7 +1211,7 @@ window.addEventListener('DOMContentLoaded',()=>monSetQuarter('Q3'));
 let crPodiumPeriod='quarter';
 function crPodium(){
  const q=typeof MON_QUARTER==='undefined'?'Q2':MON_QUARTER;
- const label=q==='Q3'?'Q3 2026':'Q2 2026';
+ const label=window.FBActivePeriod?.label||(q==='Q3'?'Q3 2026':'Q2 2026');
  // Use the same period-specific, reported profitability series as the graph on the left.
  // The ranking must not read the Q2 group table when the Q3 view is active.
  const periodLabel=label;
@@ -1650,114 +1651,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  }catch(e){status.textContent='Kildekontrollerte data kunne ikke lastes.';}
 })();
 </script>
-<section id="automated-editorial" style="max-width:1200px;margin:28px auto;padding:20px;border:1px solid #b9c7d4;border-radius:12px"><h2>Kildekontrollert kvartalsbrief</h2><p id="ed-status">Henter verifiserte data …</p><div id="ed-brief"></div><h3>Strategiske kontrollpunkter</h3><div id="ed-implications"></div><h3>Bekreftede nyheter</h3><div id="ed-news"></div></section><script>(async()=>{const status=document.getElementById('ed-status');try{const r=await fetch('data/quarterly_editorial.json',{cache:'no-store'});if(!r.ok)throw Error('Mangler analysefil');const d=await r.json();status.textContent=(d.period||'Ukjent periode')+' · '+(d.coverage==='complete'?'Full dekning':'Ufullstendig dekning; kun verifiserte data vises');for(const [id,items,format] of [['ed-brief',d.brief,x=>x.text],['ed-implications',d.implications,x=>x.text],['ed-news',d.news,x=>x.headline+' ('+x.published_at+')']]){const el=document.getElementById(id);el.replaceChildren();if(!items.length){el.textContent='Ingen kildeverifiserte oppføringer.';continue;}for(const x of items){const paragraph=document.createElement('p');paragraph.textContent=format(x)+' ';const link=document.createElement('a');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Kilde ↗';paragraph.append(link);el.append(paragraph);}}}catch(e){status.textContent='Automatisk analyse ikke tilgjengelig: '+e.message;}})();</script><script id="verified-q3-dashboard-bridge">
-/* Render audited quarterly observations in the actual comparison table, not only in the appendix. */
-(()=>{
- const fmt=(v,pct=false)=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:pct?1:0,minimumFractionDigits:pct?1:0}).format(v)+(pct?' %':'');
- const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',insurance_service_result:'result',return_on_equity:'return',solvency_ratio:'solvency'};
- for(const c of ['Fremtind',...companies]){delete MON_Q3[c];delete MON_YTD_Q3[c];profitabilityVerified[c]={};profitabilityReturns[c]={};}
- async function syncVerified(){
-  try{
-   const response=await fetch('data/verified_financial_feed.json?ts='+Date.now(),{cache:'no-store'});
-   if(!response.ok)throw Error('Finansfeed HTTP '+response.status);
-   const feed=await response.json();
-   if(!Array.isArray(feed.observations)||!feed.observations.length)throw Error('Verifisert finansfeed mangler observasjoner');
-   // Never show legacy snapshots as current data. Rebuild all visible Q3/HIÅ
-   // and comparison values from the audited feed on every refresh.
-   const names=['Fremtind',...companies];
-   for(const c of names){
-    delete MON_Q3[c];
-    delete MON_YTD_Q3[c];
-    profitabilityVerified[c]={};
-    profitabilityReturns[c]={};
-   }
-   const all=feed.observations.filter(r=>r.scope==='group' &&
-      ['quarter','ytd'].includes(r.period_type) &&
-      ['reported','calculated'].includes(r.status) &&
-      Number.isFinite(r.value) && r.source_url && r.source_page);
-   const currentRows=all.filter(r=>r.year===2026 && r.quarter===3);
-   const beforeRows=all.filter(r=>r.year===2025 && r.quarter===3);
-   const mappings={combined_ratio:'cr',loss_ratio:'loss',
-      expense_ratio:'cost',insurance_service_result:'result',
-      return_on_equity:'return',solvency_ratio:'solvency'};
-   for(const row of [...beforeRows,...currentRows]){
-    const c=row.company;
-    if(!names.includes(c))continue;
-    const bucket=row.period_type==='ytd'?MON_YTD_Q3:MON_Q3;
-    const d=bucket[c]||(bucket[c]={});
-    const suffix=row.year===2025?'Prev':'';
-    const k=mappings[row.metric];
-    if(k)d[k+suffix]=fmt(row.value,['cr','loss','cost','return','solvency'].includes(k));
-    if(row.metric==='insurance_revenue'){
-      d['revenue'+suffix]=fmt(row.value);
-      d['revenueUnit'+suffix]=row.unit||'';
-      if(row.source_definition && /not IFRS insurance revenue|segment premiums|premiums f\.o\.a\./i.test(row.source_definition))
-        d.revenueBasis='Segmentpremier (APM) – ikke IFRS-forsikringsinntekter';
-    }
-    if(row.year===2026)d.source=row.source_url;
-   }
-   for(const c of names){
-    const yearRows=all.filter(r=>r.company===c && r.period_type==='quarter');
-    const periods=[...new Set(yearRows.map(r=>'Q'+r.quarter+' '+r.year))];
-    for(const label of periods){
-      const hits=yearRows.filter(r=>'Q'+r.quarter+' '+r.year===label);
-      const value=key=>hits.find(r=>r.metric===key)?.value;
-      const loss=value('loss_ratio'),cost=value('expense_ratio'),cr=value('combined_ratio');
-      if([loss,cost,cr].every(Number.isFinite))profitabilityVerified[c][label]=[loss,cost,cr];
-      const roe=value('return_on_equity');
-      if(Number.isFinite(roe))profitabilityReturns[c][label]={label:'Rapportert egenkapitalavkastning',value:roe};
-    }
-    for(const bucket of [MON_Q3,MON_YTD_Q3]){
-      const d=bucket[c];if(!d)continue;
-      const current=all.find(r=>r.company===c && r.year===2026 && r.quarter===3 &&
-        r.period_type===(bucket===MON_Q3?'quarter':'ytd') && r.metric==='insurance_revenue');
-      const prev=all.find(r=>r.company===c && r.year===2025 && r.quarter===3 &&
-        r.period_type===(bucket===MON_Q3?'quarter':'ytd') && r.metric==='insurance_revenue');
-      if(current && prev && prev.value>0 && current.unit===prev.unit)
-        d.growth=fmt((current.value/prev.value-1)*100,true);
-    }
-   }
-   const chronological=[...new Set(all.map(r=>'Q'+r.quarter+' '+r.year))].sort(
-     (a,b)=>{const pa=a.match(/Q(\d) (\d{4})/),pb=b.match(/Q(\d) (\d{4})/);
-       return Number(pa[2])-Number(pb[2])||Number(pa[1])-Number(pb[1]);});
-   profitabilityQuarters.splice(0,profitabilityQuarters.length,...chronological);
-   // The main profitability plot and CR podium both consume profitabilityVerified.
-   // Prior-year values remain unavailable unless explicitly reported in the feed.
-   if(typeof profitabilityQuarters!=='undefined'&&!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
-   if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
-  }catch(e){console.warn('Verifiserte kvartalstall kunne ikke oppdateres',e);}
- }
- function calendarAlways(){
-  if(typeof home!=='function'||typeof monCalendar!=='function')return;
-  // The comparison's revenue column is sourced from the same audited quarterly feed.
-  const oldTable=table;
-  table=function(){
-   const html=oldTable();
-   if(typeof MON_QUARTER==='undefined'||MON_QUARTER!=='Q3')return html;
-   const doc=document.createElement('div');doc.innerHTML=html;
-   const head=doc.querySelector('thead tr');if(!head)return html;
-   const th=document.createElement('th');th.textContent=period==='H3'?'Forsikringsinntekter · HIÅ':'Forsikringsinntekter · Q3';head.insertBefore(th,head.children[1]);
-   for(const tr of doc.querySelectorAll('tbody tr')){
-    const raw=(tr.cells[0]?.textContent||'').trim();
-    const c=raw==='Frende Holding'?'Frende':raw;
-    const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{};
-    const td=document.createElement('td');
-    const unit=d.revenueUnit||'';
-    td.innerHTML=d.revenue?'<strong>'+d.revenue+'</strong> <small>'+unit+'</small>'+(d.revenueBasis?'<div class="muted">'+d.revenueBasis+'</div>':'')+(d.revenuePrev?'<div class="muted">'+(period==='H3'?'HIÅ':'Q3')+' 2025: '+d.revenuePrev+'</div>':'<div class="muted">'+(period==='H3'?'HIÅ':'Q3')+' 2025: ikke verifisert</div>'):'<span class="muted">Ikke rapportert</span>';
-    tr.insertBefore(td,tr.cells[1]);
-   }
-   return doc.innerHTML;
-  };
-  const previous=home;
-  home=function(){const html=previous();return html.includes('class="mon-calendar"')?html:html+monCalendar();};
-  if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
- }
- // The live calendar is installed by an earlier script; its data is refreshed independently.
- calendarAlways();
- syncVerified();
- setInterval(syncVerified,300000);
-})();
-</script>
+<section id="automated-editorial" style="max-width:1200px;margin:28px auto;padding:20px;border:1px solid #b9c7d4;border-radius:12px"><h2>Kildekontrollert kvartalsbrief</h2><p id="ed-status">Henter verifiserte data …</p><div id="ed-brief"></div><h3>Strategiske kontrollpunkter</h3><div id="ed-implications"></div><h3>Bekreftede nyheter</h3><div id="ed-news"></div></section><script>(async()=>{const status=document.getElementById('ed-status');try{const r=await fetch('data/quarterly_editorial.json',{cache:'no-store'});if(!r.ok)throw Error('Mangler analysefil');const d=await r.json();status.textContent=(d.period||'Ukjent periode')+' · '+(d.coverage==='complete'?'Full dekning':'Ufullstendig dekning; kun verifiserte data vises');for(const [id,items,format] of [['ed-brief',d.brief,x=>x.text],['ed-implications',d.implications,x=>x.text],['ed-news',d.news,x=>x.headline+' ('+x.published_at+')']]){const el=document.getElementById(id);el.replaceChildren();if(!items.length){el.textContent='Ingen kildeverifiserte oppføringer.';continue;}for(const x of items){const paragraph=document.createElement('p');paragraph.textContent=format(x)+' ';const link=document.createElement('a');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Kilde ↗';paragraph.append(link);el.append(paragraph);}}}catch(e){status.textContent='Automatisk analyse ikke tilgjengelig: '+e.message;}})();</script><script id="verified-q3-dashboard-bridge" src="scripts/quarterly_runtime.js" defer></script>
 <script id="live-editorial-market-updates">
 /* Published editorial and news are rendered in the main dashboard and refreshed. */
 (()=>{
