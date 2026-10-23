@@ -2,7 +2,7 @@
   "period": "Q3 2026",
   "brief": [
     {
-      "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Rapporttallene alene forklarer ikke årsakene.",
+      "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
       "source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -21,7 +21,7 @@
       "theme": "diverging_underwriting"
     },
     {
-      "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Fremtind, Gjensidige, Protector, Storebrand. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+      "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
       "source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -40,7 +40,7 @@
       "theme": "revenue_direction"
     },
     {
-      "text": "Rapporterte inntekter eller segmentpremier har falt fra foregående kvartal hos Tryg. Utviklingen må vurderes i lys av selskapenes ulike rapporteringsgrunnlag.",
+      "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Tryg. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
       "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
       "source_urls": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
@@ -136,7 +136,7 @@
     "Q3 2026": {
       "brief": [
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Rapporttallene alene forklarer ikke årsakene.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -155,7 +155,7 @@
           "theme": "diverging_underwriting"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Fremtind, Gjensidige, Protector, Storebrand. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -174,7 +174,7 @@
           "theme": "revenue_direction"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har falt fra foregående kvartal hos Tryg. Utviklingen må vurderes i lys av selskapenes ulike rapporteringsgrunnlag.",
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Tryg. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
           "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
           "source_urls": [
             "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
@@ -270,7 +270,7 @@
     "Q2 2026": {
       "brief": [
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Rapporttallene alene forklarer ikke årsakene.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
@@ -295,7 +295,7 @@
           "theme": "diverging_underwriting"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
           "source_urls": [
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
@@ -316,7 +316,7 @@
           "theme": "revenue_direction"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har falt fra foregående kvartal hos Fremtind, Frende. Utviklingen må vurderes i lys av selskapenes ulike rapporteringsgrunnlag.",
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Fremtind, Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
@@ -444,7 +444,7 @@
     "Q1 2026": {
       "brief": [
         {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene fastslår ikke alene hva som ligger bak.",
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
           "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
@@ -457,7 +457,7 @@
           "theme": "underwriting_pressure"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Frende. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
@@ -583,7 +583,7 @@
     "Q4 2025": {
       "brief": [
         {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene fastslår ikke alene hva som ligger bak.",
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
           "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6"
@@ -596,7 +596,7 @@
           "theme": "underwriting_pressure"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Frende. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6"
@@ -632,7 +632,7 @@
     "Q3 2025": {
       "brief": [
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Gjensidige, Tryg, Frende har en svakere utvikling. Rapporttallene alene forklarer ikke årsakene.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Gjensidige, Tryg, Frende har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -651,7 +651,7 @@
           "theme": "diverging_underwriting"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Fremtind, Gjensidige, Tryg. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
@@ -668,7 +668,7 @@
           "theme": "revenue_direction"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har falt fra foregående kvartal hos Frende. Utviklingen må vurderes i lys av selskapenes ulike rapporteringsgrunnlag.",
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
           "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6"
@@ -764,7 +764,7 @@
     "Q2 2025": {
       "brief": [
         {
-          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Frende. Årsakene må vurderes i selskapenes egne rapportkommentarer.",
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Frende. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
@@ -783,7 +783,7 @@
           "theme": "underwriting_improvement"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har økt fra foregående kvartal hos Gjensidige, Tryg. Ulik rapporteringspraksis gjør dette til en retningsbeskrivelse, ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
           "source_urls": [
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
@@ -798,7 +798,7 @@
           "theme": "revenue_direction"
         },
         {
-          "text": "Rapporterte inntekter eller segmentpremier har falt fra foregående kvartal hos Fremtind, Frende. Utviklingen må vurderes i lys av selskapenes ulike rapporteringsgrunnlag.",
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Fremtind, Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
@@ -881,7 +881,7 @@
     "Q1 2025": {
       "brief": [
         {
-          "text": "Kvartalsrapportene er registrert, men sammenligningsgrunnlaget er foreløpig for begrenset til å trekke sikre fellestrekk. Les selskapenes rapporter for ledelsens kvalitative vurderinger.",
+          "text": "Kvartalsrapportene er registrert, men det finnes foreløpig ikke tilstrekkelig sammenlignbare opplysninger til å trekke dokumenterte fellestrekk eller forklare utviklingen. Les selskapenes rapporter for den kvalitative ledelsesgjennomgangen.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
@@ -1191,5 +1191,5 @@
     }
   ],
   "coverage": "partial",
-  "method": "qualitative cross-company quarter themes from audited observations; no causal claims without commentary evidence"
+  "method": "qualitative cross-company quarter themes from audited same-basis observations, without unverified causal explanations; source-attributed news"
 }
