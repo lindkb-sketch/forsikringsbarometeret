@@ -2,7 +2,7 @@ name: Protector official KPI verification
 on:
   workflow_dispatch:
   schedule:
-    - cron: '41 6,12,18 * * *'
+    - cron: '27 * * * *'
   push:
     branches: [main]
     paths:
