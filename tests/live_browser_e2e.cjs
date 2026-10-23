@@ -6,6 +6,10 @@ const BASE=process.env.BAROMETER_URL||'https://lindkb-sketch.github.io/forsikrin
 const OUTPUT='data/browser_e2e_report.json';
 const nf=x=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:2}).format(x).replace(/\u00a0/g,' ');
 const norm=x=>String(x??'').replace(/\u00a0/g,' ').replace(/\u202f/g,' ').trim();
+const displayed=x=>norm(x).replace(/([+-]?\d+(?:[.,]\d+)?)\s*%/g,(_,raw)=>{
+ const v=Number(raw.replace(',','.'));
+ return Number.isFinite(v)?v.toFixed(1).replace('.',',')+' %':raw+' %';
+});
 async function main(){
  const report={url:BASE,checked_at:new Date().toISOString(),checks:[],errors:[],screenshots:[]};
  const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
@@ -17,12 +21,12 @@ async function main(){
   const first=await page.goto(BASE,{waitUntil:'domcontentloaded',timeout:45000});
   check('Homepage HTTP 200',first?.status()===200,'HTTP '+first?.status());
   const files=await Promise.all(['verified_financial_feed.json','quarterly_editorial.json',
-       'official_news.json','stock_prices.json'].map(async f=>{
+       'official_news.json','stock_prices.json','live.json'].map(async f=>{
    const r=await page.request.get(BASE+'data/'+f+'?browser_audit='+Date.now());
    if(r.status()!==200)throw Error(f+' HTTP '+r.status());
    return r.json();
   }));
-  const [feed,editorial,news,stocks]=files;
+  const [feed,editorial,news,stocks,calendarFeed]=files;
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && document.querySelector('.mon-calendar'),null,{timeout:35000});
@@ -71,7 +75,7 @@ async function main(){
   check('Five chronological quarters on chart',view.graph.length===5&&view.graph[4]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
   check('Quarter labels never disappear when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
   check('Strategic original cards present',view.strategic.includes('Strategiske bevegelser')&&view.media.includes('Forsikring i mediebildet'),view.strategic.slice(0,150));
-  check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>view.brief.includes(x.text)),view.brief.slice(0,250));
+  check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   check('Technical duplicate sections removed',!view.technical);
   check('Strategic news visible in original cards',view.newsGroups.strategic.length===0||
      view.newsGroups.strategic.some(n=>view.strategic.includes(n.headline)),view.strategic.slice(0,280));
@@ -79,18 +83,35 @@ async function main(){
      view.newsGroups.other.some(n=>view.media.includes(n.headline)),view.media.slice(0,280));
   check('No repeated headlines across news sections',!view.newsGroups.strategic.some(a=>
      view.newsGroups.other.some(b=>a.source_url===b.source_url||a.headline===b.headline)));
-  const withoutQuarter=companies.filter(c=>!feed.observations.some(r=>r.company===c&&r.scope==='group'&&
-    r.year===year&&r.quarter===quarter&&r.period_type==='quarter'&&r.metric==='combined_ratio'));
-  check('Upcoming list contains only missing issuers',withoutQuarter.every(c=>
-    view.calendar.includes(c)),view.calendar.slice(0,250));
-  check('Upcoming list excludes published issuers',companies.filter(c=>!withoutQuarter.includes(c))
-    .every(c=>!view.calendar.includes(c)),view.calendar.slice(0,250));
+  const missing=companies.filter(c=>['combined_ratio','insurance_revenue'].some(metric=>
+    !feed.observations.some(r=>r.company===c&&r.scope==='group'&&
+      r.year===year&&r.quarter===quarter&&r.period_type==='quarter'&&
+      r.metric===metric&&['reported','calculated'].includes(r.status)&&r.source_url)));
+  const calendarName=c=>c==='Sampo'?'Sampo / If':c;
+  check('All missing issuers shown, including those without dates',
+    missing.every(c=>view.calendar.includes(calendarName(c))),view.calendar.slice(0,400));
+  const announced=Object.entries(calendarFeed.companies||{});
+  const futureScheduled=announced.filter(([name,config])=>{
+    const next=config.next_event;
+    const match=/^Q([1-4]) (\d{4})$/.exec(next?.period||'');
+    return next&&!next.locked&&match&&Number(match[2])*4+Number(match[1])>year*4+quarter;
+  });
+  check('Future reports are preserved when current results are published',
+    futureScheduled.every(([name,config])=>view.calendar.includes(name+'\n'+config.next_event.period)),
+    view.calendar.slice(0,400));
+  const alreadyPublished=announced.filter(([name,config])=>
+    config.next_event?.period==='Q'+quarter+' '+year&&
+    !missing.includes(name==='Sampo / If'?'Sampo':name));
+  check('Published current quarter is not repeated in calendar',
+    alreadyPublished.every(([name])=>!view.calendar.includes(name+'\nQ'+quarter+' '+year)),
+    view.calendar.slice(0,400));
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
   const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
   if(companyBrief)check('Company page has current sourced financial commentary',
-       companyComment.includes(companyBrief.comment)&&companyComment.includes(companyBrief.summary),
+       displayed(companyComment).includes(displayed(companyBrief.comment))&&displayed(companyComment).includes(displayed(companyBrief.summary)),
        companyComment.slice(0,400));
+  check('Company commentary has no duplicated quarter prefix',!companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
   const quotesOnCompany=await page.locator('.stock-section').first().innerText();
   const quote=stocks.prices?.Gjensidige;
   if(quote)check('Last delayed closing price in existing company stock panel',

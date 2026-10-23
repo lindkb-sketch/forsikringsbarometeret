@@ -1154,7 +1154,7 @@ mediaNews=()=>MON_QUARTER==='Q2'?MON_ORIG.mediaNews():'';
 companyMediaNews=c=>MON_QUARTER==='Q2'?MON_ORIG.companyMediaNews(c):'';
 const MON_ORIG_HOME=MON_ORIG.home,MON_ORIG_COMPANY=MON_ORIG.company;
 home=()=>{let h=MON_ORIG_HOME();h=h.replace('Fremtinds nøkkeltall som referanse for konkurrentene · velg Q2 eller Hiå.','Fremtinds nøkkeltall som referanse for konkurrentene');if(MON_QUARTER==='Q3'){h=h.replace(/Q2 2026 · Kildekontrollerte utdrag/g,'Q3 2026 · Kildekontrollerte utdrag').replace(/Q2 2026<\/span>/g,'Q3 2026</span>').replace('Viktig å følge i Q3','Viktig å følge videre').replace(/Resultatsammenligning · konsern · [^<]*2026/,'Resultatsammenligning · konsern · Q3 2026').replace(/<select aria-label="Rapporteringsperiode"[\s\S]*?<\/select>/,`<select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period!=='H3'?'selected':''}>Q3 2026</option><option value="H3" ${period==='H3'?'selected':''}>Hiå 2026</option></select>`);h=h.replace('Viktig å følge i Q3','Viktig å følge videre');}return MON_SELECT()+h};
-company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026 · kun kildebekreftede tall');h=h.replace('2025:','Q3 2025:');h+=MON_SOURCE(c);}return MON_SELECT()+h};
+company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026 · kun kildebekreftede tall');h+=MON_SOURCE(c);}return MON_SELECT()+h};
 if(!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
 
 
@@ -1522,11 +1522,52 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
  function install(){
   if(!live||typeof monCalendar!=='function')return;
   monCalendar=function(){
-   if(typeof MON_QUARTER!=='undefined'&&MON_QUARTER!=='Q3')return '';
-   const entries=Object.entries(live.companies||{}).filter(([k,v])=>v.next_event);
-   const pending=entries.filter(([k,v])=>v.next_event && !v.next_event.locked && !(v.next_event.period==='Q3 2026' && MON_Q3[k==='Sampo / If'?'Sampo':k]?.cr));
-   if(!pending.length)return '<section class="mon-calendar"><h2>Finansiell kalender</h2><p>Ingen kommende rapporter registrert.</p></section>';
-   return `<section class="mon-calendar" aria-label="Kommende kvartalsrapporter"><div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER · OPPDATERT ${esc((live.updated_at||'').slice(0,10))}</div><h2>Neste rapporter</h2></div><span class="pill">${pending.length} kommende</span></div><div class="mon-cal-grid">${pending.map(([name,v])=>{let e=v.next_event;let date=dateNo(e.date);return `<a class="mon-cal-row" href="${esc(e.source_url||'#')}" target="_blank" rel="noopener noreferrer"><span class="mon-cal-company"><strong>${esc(name)}</strong><small>${esc(e.period)} · ${esc(date)}</small></span><span class="mon-cal-countdown" data-report-date="${esc(date)}">Beregner …</span></a>`}).join('')}</div></section>`;
+    if(typeof MON_QUARTER!=='undefined'&&MON_QUARTER!=='Q3')return '';
+    // Calendar and website numbers are reconciled at EVERY refresh, not
+    // overwritten by generated live.json when the quarter changes.
+    const latest=window.FBQuarterly?.available?.[0];
+    if(!latest)return '';
+    const observations=window.FBQuarterly?.verified?.observations||[];
+    const current='Q'+latest.quarter+' '+latest.year;
+    const periodIndex=value=>{
+      const match=/^Q([1-4]) (\d{4})$/.exec(value||'');
+      return match?Number(match[2])*4+Number(match[1]):null;
+    };
+    const entries=Object.entries(live.companies||{}).flatMap(([name,config])=>{
+      const company=name==='Sampo / If'?'Sampo':name;
+      const published=['combined_ratio','insurance_revenue'].every(metric=>
+        observations.some(r=>r.company===company&&r.scope==='group'&&
+          r.period_type==='quarter'&&r.year===latest.year&&r.quarter===latest.quarter&&
+          r.metric===metric&&['reported','calculated'].includes(r.status)&&r.source_url));
+      const pending=[];
+      const event=config.next_event;
+      if(!published){
+        const activeEvent=event?.period===current&&!event.locked?event:null;
+        pending.push({name,period:current,date:activeEvent?.date,
+          source_url:activeEvent?.source_url||config.calendar_source});
+      }
+      if(event&&!event.locked&&periodIndex(event.period)>periodIndex(current)){
+        pending.push({name,period:event.period,date:event.date,
+          source_url:event.source_url||config.calendar_source});
+      }
+      return pending;
+    }).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')||
+      a.name.localeCompare(b.name,'nb'));
+    if(!entries.length)return '<section class="mon-calendar"><h2>Finansiell kalender</h2><p>Ingen kommende rapporter registrert.</p></section>';
+    const cards=entries.map(({name,period,date,source_url})=>{
+      const formatted=dateNo(date);
+      const url=/^https:\/\/[^/\s]+/.test(source_url||'')?source_url:'#';
+      return '<a class="mon-cal-row" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+
+        '<span class="mon-cal-company"><strong>'+esc(name)+'</strong><small>'+
+        esc(period)+' · '+esc(formatted)+'</small></span><span class="mon-cal-countdown"'+
+        (date?' data-report-date="'+esc(formatted)+'"':'')+'>'+
+        (date?'Beregner …':'Dato ikke bekreftet')+'</span></a>';
+    }).join('');
+    return '<section class="mon-calendar" aria-label="Kommende kvartalsrapporter">'+
+      '<div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER · OPPDATERT '+
+      esc((live.updated_at||'').slice(0,10))+'</div><h2>Neste rapporter</h2></div>'+
+      '<span class="pill">'+entries.length+' rapporter</span></div>'+
+      '<div class="mon-cal-grid">'+cards+'</div></section>';
   };
   if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
  }
@@ -1650,7 +1691,13 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    .replace(/storbrannen|brannen|brannskaden/g,'brann')
    .replace(/millionar|millioner/g,'millioner')
    .split(/[^a-z0-9æøå]+/).filter(w=>w.length>2&&!insignificant.has(w)))];
+ const namedIssuers=title=>new Set(
+   ['gjensidige','fremtind','frende','protector','storebrand','tryg','sampo']
+     .filter(name=>new RegExp('(^|[^a-z])'+name+'(?=$|[^a-z])','i').test(title||'')));
  const equivalent=(a,b)=>{
+  const left=namedIssuers(a.headline),right=namedIssuers(b.headline);
+  // Similar headlines about different named insurers remain distinct stories.
+  if(left.size&&right.size&&![...left].some(name=>right.has(name)))return false;
   if(a.source_url===b.source_url)return true;
   const wa=words(a.headline),wb=words(b.headline);
   const n=wa.filter(w=>wb.includes(w)).length;
