@@ -5,6 +5,9 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from refresh_report_commentary import candidates,extract,TOPICS
 
 class QuarterlyNarrativeExtractionTests(unittest.TestCase):
+ def test_backfill_starts_at_2026(self):
+  source=(ROOT/'scripts/refresh_report_commentary.py').read_text()
+  self.assertIn("if x['year']<2026:continue",source)
  def test_official_prose_extraction_from_report_text(self):
   text=("Several large claims affected the underwriting performance during the quarter.\n"
         "The company reported weather-related claims after severe storm activity across its home market.\n"
