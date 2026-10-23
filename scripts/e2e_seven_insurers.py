@@ -46,7 +46,7 @@ def current_report_candidates(holding, generic, year=2026, quarter=3):
         if (str(year) in context and
             re.search(r'(?<![a-z0-9])q'+str(quarter)+r'(?![0-9])|'+str(quarter)+r'\.\s*kvartal',context)):
             found.append({'company':r.get('company'),'year':year,'quarter':quarter,
-                          'document_url':r.get('document_url')})
+                          'document_url':r.get('document_url'),'link_text':r.get('link_text','')})
     return found
 
 def publication_state(company, now, calendar, candidates, year=2026, quarter=3):
@@ -61,7 +61,7 @@ def publication_state(company, now, calendar, candidates, year=2026, quarter=3):
     aliases={'Sampo':'Sampo / If'}
     company_calendar=calendar.get(aliases.get(company,company),{})
     dates=[event.get('date') for event in company_calendar.get('events',[])
-           if event.get('period')=='Q3 2026' and event.get('date')]
+           if event.get('period')==f'Q{quarter} {year}' and event.get('date')]
     if dates:
         planned=date.fromisoformat(min(dates))
         if now < planned:
