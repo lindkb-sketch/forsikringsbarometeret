@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/future_quarter_e2e_drill.py'
+      - 'tests/future_quarter_browser.cjs'
       - '.github/workflows/future-quarter-drill.yml'
 permissions:
   contents: read
