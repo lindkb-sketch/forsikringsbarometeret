@@ -10,7 +10,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: forsikringsbarometeret-publish
+  group: forsikringsbarometeret-publish-v2
   cancel-in-progress: false
 jobs:
   validate-and-deploy:
@@ -108,10 +108,10 @@ jobs:
         id: deployment
       - name: Verify actual public finance, news, stock and editorial JSON
         run: python scripts/verify_public_pages.py
-      - name: Install Chromium and browser automation
+      - name: Prepare preinstalled Google Chrome browser automation
         run: |
           npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          google-chrome --version
       - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
         run: node tests/live_browser_e2e.cjs
       - name: Save browser screenshots and audit
