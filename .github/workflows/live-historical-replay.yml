@@ -21,6 +21,20 @@ jobs:
         run: python -m pip install -r requirements-reports.txt
       - name: Attempt real report discovery and imports in isolation
         run: python scripts/live_historical_replay.py
+      - name: Simulate malformed report and invalid observation rejection
+        run: python -m unittest tests/test_final_failure_simulations.py -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local browser test runner
+        run: npm install --no-save playwright
+      - name: Check local rendered site against audited production feed
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/fb-final-browser.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          sleep 2
+          BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
       - name: Archive per-issuer successes and blocked steps
         if: always()
         uses: actions/upload-artifact@v4
