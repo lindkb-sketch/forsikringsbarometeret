@@ -9,7 +9,7 @@ import json
 import sys
 import time
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -35,6 +35,26 @@ def remote(path):
         if len(blob)>4_000_000:raise ValueError(f'{path}: oversized response')
         return blob.decode('utf-8')
 
+def publication_state(company, now, calendar, candidates):
+    """Only demand current-quarter data when its publication is due/verified.
+
+    A missing financial report is not an ingestion failure before publication.
+    Undated issuers are treated as not confirmed published, never as ready.
+    """
+    aliases={'Sampo':'Sampo / If'}
+    company_calendar=calendar.get(aliases.get(company,company),{})
+    dates=[event.get('date') for event in company_calendar.get('events',[])
+           if event.get('period')=='Q3 2026' and event.get('date')]
+    if dates:
+        planned=date.fromisoformat(min(dates))
+        if now < planned:
+            return 'awaiting_publication', 'scheduled_for_'+planned.isoformat()
+        return 'publication_due', 'calendar_date_reached'
+    known=any(r.get('company')==company and r.get('year')==2026
+              and r.get('quarter')==3 for r in candidates)
+    return ('publication_due','issuer_q3_document_discovered') if known else (
+        'publication_unconfirmed','no_verified_q3_release_date_or_document')
+
 def audit(public=True):
     source=read_json(ROOT/'data/financial_observations.json')['observations']
     feed=read_json(ROOT/'data/verified_financial_feed.json')['observations']
@@ -52,6 +72,10 @@ def audit(public=True):
                    'Forsikringsinntekter · Q3','quarterly_editorial.json'):
         if marker not in html:issues.append('Missing homepage integration: '+marker)
     if editorial.get('period')!='Q3 2026':issues.append('Quarterly editorial is not Q3 2026')
+    calendar=read_json(ROOT/'data/calendar.json')
+    candidates_file=ROOT/'data/frende_fremtind_candidates.json'
+    candidates=read_json(candidates_file).get('candidates',[]) if candidates_file.exists() else []
+    today=datetime.now(timezone.utc).date()
     groups=[]
     for company in COMPANIES:
         q3=[r for r in feed if r.get('company')==company and r.get('year')==2026
@@ -66,8 +90,12 @@ def audit(public=True):
             if not r.get('source_url','').startswith('https://') or not r.get('source_page') or not r.get('source_sha256'):
                 documented.append(r.get('metric'))
         missing=sorted(REQUIRED-q3metrics)
-        status='ready' if not missing and not documented else 'incomplete'
-        groups.append({'company':company,'status':status,'q3_2026_metrics':sorted(q3metrics),
+        release,release_evidence=publication_state(company,today,calendar,candidates)
+        status=('ready' if not missing and not documented else
+                'awaiting_publication' if release in ('awaiting_publication','publication_unconfirmed') else
+                'missing_import_or_verification')
+        groups.append({'company':company,'status':status,'publication_state':release,
+                       'publication_evidence':release_evidence,'q3_2026_metrics':sorted(q3metrics),
                        'q3_2026_missing':missing,'q3_2025_available_metrics':sorted({r['metric'] for r in q3prior}),
                        'q3_2026_missing_source_provenance':documented})
     if public:
@@ -86,17 +114,20 @@ def audit(public=True):
                 public_errors=[str(exc)]
                 if attempt!=2:time.sleep(10)
         issues.extend('Public deploy: '+x for x in public_errors)
-    incomplete=[c['company'] for c in groups if c['status']!='ready']
+    incomplete=[c['company'] for c in groups if c['status']=='missing_import_or_verification']
+    awaiting=[c['company'] for c in groups if c['status']=='awaiting_publication']
+    ready=[c['company'] for c in groups if c['status']=='ready']
     report={'checked_at_utc':datetime.now(timezone.utc).isoformat(),
             'period':'Q3 2026','scope':'group','companies':groups,
-            'ready_companies':len(groups)-len(incomplete),'total_companies':len(groups),
+            'ready_companies':len(ready),'eligible_companies':len(ready)+len(incomplete),
+            'awaiting_publication':awaiting,'total_companies':len(groups),
             'incomplete_companies':incomplete,'integrity_errors':issues,
             'overall':'pass' if not incomplete and not issues else 'fail'}
     OUT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     for c in groups:
         print('E2E',c['company'],c['status'],'missing',','.join(c['q3_2026_missing']) or '-',
               'prior-year',len(c['q3_2025_available_metrics']))
-    print('E2E_RESULT',report['overall'],'ready',report['ready_companies'],'/7',
+    print('E2E_RESULT',report['overall'],'ready',report['ready_companies'],'/',report['eligible_companies'],'eligible',
           'integrity_errors',len(issues),'report',str(OUT),flush=True)
     return report
 
