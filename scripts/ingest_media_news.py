@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent media headline ingestion; never used as financial data."""
-import datetime as dt,email.utils,hashlib,json,re,urllib.parse,urllib.request,xml.etree.ElementTree as ET
+import datetime as dt,email.utils,hashlib,json,re,unicodedata,urllib.parse,urllib.request,xml.etree.ElementTree as ET
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'data/official_news.json'
 PUBLISHERS={'dn.no':'DN','e24.no':'E24','finansavisen.no':'Finansavisen','vg.no':'VG','nrk.no':'NRK','nettavisen.no':'Nettavisen','aftenposten.no':'Aftenposten','reuters.com':'Reuters'}
@@ -31,10 +31,27 @@ def parse_rss(payload,now=None):
   key=hashlib.sha256((domain+'|'+re.sub(r'\W+','',title.casefold())).encode()).hexdigest()[:20]
   rows.append({'id':key,'headline':title[:300],'publisher':PUBLISHERS[domain],'published_at':published.isoformat(),'source_url':url,'approved':True,'provenance':'Google News RSS, attributed publisher headline only; full article not verified'})
  return rows
+STOPWORDS={'med','for','til','som','har','fra','etter','det','den','og','nye','sine','etter','ved','fra','en','ett','sitt','sier','der','sin','norge','forsikring'}
+def tokens(title):
+ text=unicodedata.normalize('NFKD',title.casefold())
+ text=''.join(c for c in text if not unicodedata.combining(c))
+ text=text.replace('storbrannen','brann').replace('brannen','brann').replace('millionar','millioner')
+ return set(t for t in re.split(r'[^a-z0-9æøå]+',text) if len(t)>2 and t not in STOPWORDS)
+def same_story(a,b):
+ if a.get('source_url')==b.get('source_url'):return True
+ x,y=tokens(a['headline']),tokens(b['headline'])
+ if not x or not y:return False
+ overlap=len(x&y)
+ return overlap>=3 and overlap/min(len(x),len(y))>=0.7
 def merge(existing,new):
  items={x['id']:x for x in existing.get('items',[]) if x.get('id')}
  for x in new:items[x['id']]=x
- return {'items':sorted(items.values(),key=lambda x:x['published_at'],reverse=True)[:100],'source_policy':'Independent publisher-attributed media headlines, not quarterly reports'}
+ approved=sorted(items.values(),key=lambda x:x['published_at'],reverse=True)
+ distinct=[]
+ for row in approved:
+  if not any(same_story(row,prior) for prior in distinct):distinct.append(row)
+  if len(distinct)>=100:break
+ return {'items':distinct,'source_policy':'Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports'}
 def run(fetcher=fetch,out=OUT):
  old=json.loads(out.read_text()) if out.exists() else {'items':[]}
  incoming=[]
