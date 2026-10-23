@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: forsikringsbarometeret-publish
+  group: seven-insurer-readonly-audit
   cancel-in-progress: false
 jobs:
   end-to-end:
