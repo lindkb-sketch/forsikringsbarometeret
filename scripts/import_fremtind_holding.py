@@ -97,22 +97,34 @@ def extract(blob, url):
                     raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
         if len(rows) != len(FIELDS):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
-        for column in ([0] if q == 1 else [0, 2]):
+        # Verify every comparison column too. The issuer's standard table
+        # order is current quarter, prior-year quarter, current YTD,
+        # prior-year YTD, previous financial year (Q2-Q4).
+        selected_columns = (
+            [(0, "quarter", year), (1, "quarter", year-1)]
+            if q == 1 else
+            [(0, "quarter", year), (1, "quarter", year-1),
+             (2, "ytd", year), (3, "ytd", year-1)]
+        )
+        for column, _, _ in selected_columns:
             if abs(rows["combined_ratio"][0][column] - rows["loss_ratio"][0][column] - rows["expense_ratio"][0][column]) > 0.25:
                 raise ValueError(f"Combined ratio reconciliation failed for column {column}")
         digest = hashlib.sha256(blob).hexdigest()
         result = []
-        for column, period in ([(0, "quarter")] if q == 1 else [(0, "quarter"), (2, "ytd")]):
+        for column, period, observation_year in selected_columns:
             for metric, (values, unit, label) in rows.items():
                 result.append({
-                    "company": "Fremtind", "year": year, "quarter": q,
+                    "company": "Fremtind", "year": observation_year, "quarter": q,
                     "scope": "group", "period_type": period,
                     "metric": metric, "value": values[column], "unit": unit,
                     "status": "reported", "source_type": "official_quarterly_report",
                     "source_url": url, "source_page": page_index + 1,
                     "source_entity": "Fremtind Holding konsern",
                     "source_document_period": f"Q{q} {year}",
-                    "source_definition": label, "source_sha256": digest,
+                    "source_definition": label + (
+                        f" (sammenligningskolonne fra Q{q} {year})"
+                        if observation_year != year else ""),
+                    "source_sha256": digest,
                 })
         return result
 
