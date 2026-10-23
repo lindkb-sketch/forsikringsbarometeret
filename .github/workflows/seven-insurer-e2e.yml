@@ -7,6 +7,7 @@ on:
       - 'scripts/e2e_seven_insurers.py'
       - 'tests/test_e2e_publication_state.py'
       - 'tests/test_future_year_discovery_contracts.py'
+      - 'tests/test_q4_rollover_integration.py'
       - '.github/workflows/seven-insurer-e2e.yml'
   schedule:
     - cron: '15 9,14,19 * * *'
