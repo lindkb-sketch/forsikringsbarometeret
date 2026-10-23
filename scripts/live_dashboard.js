@@ -61,11 +61,14 @@ function renderFinancial(){
    }).join('');
    return '<tr><th>'+esc(c)+(c==='Sampo'?'/If':'')+'</th>'+cells+'</tr>';
  }).join('')+'</tbody></table></div>';
- const groupRow=METRICS.map(([metric])=>{
-   const r=get('Storebrand','quarter',metric,year,quarter,'norway');
-   return '<td data-metric="'+metric+'">'+(r?'<strong>'+metricValue(r)+'</strong><div class="live-disclaimer">'+esc(definition(r))+'</div><a class="live-source" target="_blank" rel="noopener noreferrer" href="'+safeUrl(r.source_url)+'">Kilde ↗</a>':'—')+'</td>';
+ const norwayRow=type=>METRICS.map(([metric])=>{
+   const r=get('Storebrand',type,metric,year,quarter,'norway');
+   return '<td data-scope="norway" data-period="'+type+'" data-metric="'+metric+'">'+(r?'<strong>'+metricValue(r)+'</strong><div class="live-disclaimer">'+esc(definition(r))+'</div><a class="live-source" target="_blank" rel="noopener noreferrer" href="'+safeUrl(r.source_url)+'">Kilde ↗</a>':'—')+'</td>';
  }).join('');
- const norway='<details class="live-norway" open><summary>Storebrand Forsikring AS – norske IFRS 17-tall ('+label+')</summary><div class="live-scroll"><table class="live-fin-table"><thead>'+thead+'</thead><tbody><tr><th>Storebrand Forsikring AS</th>'+groupRow+'</tr></tbody></table></div><p class="live-disclaimer">Storebrand ASA konsern: «Insurance premiums f.o.a.» er et alternativt resultatmål (APM). Storebrand Forsikring AS: «Forsikringsinntekter» følger IFRS 17. Tallene representerer ulike avgrensninger og skal ikke sammenlignes direkte.</p></details>';
+ const norway='<details class="live-norway" open><summary>Storebrand Forsikring AS – IFRS 17, kvartal og HIÅ ('+label+')</summary>'+
+  '<h3>Storebrand Forsikring AS · '+label+' isolert</h3><div class="live-scroll"><table class="live-fin-table"><thead>'+thead+'</thead><tbody><tr><th>Storebrand Forsikring AS</th>'+norwayRow('quarter')+'</tr></tbody></table></div>'+
+  '<h3>Storebrand Forsikring AS · HIÅ Q1–Q'+quarter+' '+year+'</h3><div class="live-scroll"><table class="live-fin-table"><thead>'+thead+'</thead><tbody><tr><th>Storebrand Forsikring AS</th>'+norwayRow('ytd')+'</tr></tbody></table></div>'+
+  '<p class="live-disclaimer">Storebrand ASA konsern: «Insurance premiums f.o.a.» er et alternativt resultatmål (APM). Storebrand Forsikring AS: «Forsikringsinntekter» følger IFRS 17. Tallene representerer ulike avgrensninger og skal ikke sammenlignes direkte.</p></details>';
  return '<section class="live-complete-financial" aria-label="Automatisk rapporterte kvartals- og HIÅ-tall"><div class="live-section-head"><div><div class="eyebrow">KILDEVERIFISERTE RESULTATER</div><h2>Rapporterte finansielle nøkkeltall</h2><p>Automatisk fra offisielle kvartalsrapporter. «—» betyr at et sammenlignbart tall ikke er verifisert.</p></div><label>Velg kvartal <select id="live-quarter-select" aria-label="Velg kildeverifisert kvartal">'+choices+'</select></label></div><h3>Kvartalet isolert · '+label+'</h3>'+table('quarter')+'<h3>HIÅ · Q1–Q'+quarter+' '+year+'</h3>'+table('ytd')+norway+'</section>';
 }
 function newsItems(){
