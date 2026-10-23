@@ -44,7 +44,7 @@ def current_report_candidates(holding, generic, year=2026, quarter=3):
         # Do not mistake Q1-Q3 (year-to-date) for a Q3-only filing unless
         # the source is an official interim report showing Q3 explicitly.
         if (str(year) in context and
-            re.search(r'(?<![a-z0-9])q'+str(quarter)+r'(?![0-9])|'+str(quarter)+r'\\.\\s*kvartal',context)):
+            re.search(r'(?<![a-z0-9])q'+str(quarter)+r'(?![0-9])|'+str(quarter)+r'\.\s*kvartal',context)):
             found.append({'company':r.get('company'),'year':year,'quarter':quarter,
                           'document_url':r.get('document_url')})
     return found
