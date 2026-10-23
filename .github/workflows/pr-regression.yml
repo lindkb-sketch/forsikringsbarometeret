@@ -148,3 +148,46 @@ jobs:
                   if re.search('geograph',name,re.I):
                       print('XLSX_GEO',name,'FIRST',list(cells.items())[:30])
           PY
+
+  browser-e2e:
+    name: Render dashboard with PR changes (local Pages preview)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser automation
+        run: |
+          npm install --no-save playwright
+          google-chrome --version
+      - name: Rebuild source-verified website data
+        run: python scripts/build_verified_feed.py
+      - name: Serve PR website and test rendered dashboard
+        env:
+          BAROMETER_URL: http://127.0.0.1:8765/
+        run: |
+          set -euo pipefail
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/forsikringsbarometeret-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail --output /dev/null http://127.0.0.1:8765/index.html; then break; fi
+            sleep 1
+          done
+          curl --fail http://127.0.0.1:8765/index.html --output /dev/null
+          node tests/live_browser_e2e.cjs
+      - name: Preserve screenshots and browser audit on every result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-rendered-dashboard
+          path: |
+            data/browser_home_q3.png
+            data/browser_home_ytd.png
+            data/browser_e2e_report.json
+          if-no-files-found: warn
