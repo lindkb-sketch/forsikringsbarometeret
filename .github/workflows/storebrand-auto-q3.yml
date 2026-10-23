@@ -88,9 +88,26 @@ jobs:
         run: python scripts/audit_financials.py
       - name: Download and validate both official Storebrand Q3 reports
         run: |
-          python scripts/storebrand_publish_q3.py --year 2026 --quarter 1
-          python scripts/storebrand_publish_q3.py --year 2026 --quarter 2
-          python scripts/storebrand_publish_q3.py --year 2026 --quarter 3
+          python - <<'PY'
+          import subprocess,sys
+          from datetime import date
+          sys.path.insert(0,'scripts')
+          from storebrand_sources import discover
+          from storebrand_automation_check import choose_reports
+          this_year=date.today().year
+          for year in range(2026,this_year+1):
+              records=discover(year=year)['reports']
+              periods=sorted({r['quarter'] for r in records if r.get('year')==year})
+              for quarter in periods:
+                  # The insurance subsidiary may not publish Q4 separately.
+                  scopes={r.get('scope') for r in records if r.get('quarter')==quarter}
+                  if scopes!={'group','norway'}:
+                      print('STOREBRAND_SOURCE_INCOMPLETE',year,quarter,sorted(scopes),flush=True)
+                      continue
+                  print('STOREBRAND_VALIDATE',year,quarter,flush=True)
+                  subprocess.run([sys.executable,'scripts/storebrand_publish_q3.py',
+                                  '--year',str(year),'--quarter',str(quarter)],check=True)
+          PY
       - name: Audit imported observations and feed
         run: |
           python scripts/audit_financials.py
