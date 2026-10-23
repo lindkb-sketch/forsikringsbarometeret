@@ -67,12 +67,12 @@ jobs:
             if [ -f "$file" ]; then git add -- "$file"; fi
           done
           if ! git diff --cached --quiet; then
-            # Generated files are the output of this validated run. Never rebase a
+            # Stage only generated data against newest main; a soft reset would also stage\n            # newer workflow/code changes that this token cannot push.\n            # Generated files are the output of this validated run. Never rebase a
             # generated-data commit across a newer generated-data commit: it
             # creates deterministic JSON conflicts and blocks Pages deployment.
             for attempt in 1 2 3; do
               git fetch origin main
-              git reset --soft origin/main
+              git reset --mixed origin/main
               for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json; do
                 if [ -f "$file" ]; then git add -- "$file"; fi
               done
