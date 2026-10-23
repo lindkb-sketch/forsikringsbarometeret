@@ -2,7 +2,7 @@ name: Gjensidige verified publication
 on:
   workflow_dispatch:
   schedule:
-    - cron: '47 7,10,16 * * *'
+    - cron: '07 * * * *'
   push:
     branches: [main]
     paths:
