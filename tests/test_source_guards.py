@@ -15,4 +15,16 @@ class SourceGuards(unittest.TestCase):
   result=audit({"observations":[]})
   self.assertEqual(len(result["missing_cells"]),7*2*2*7)
   self.assertFalse(result["coverage_complete"])
+ def test_percentage_not_allowed_as_amount_unit(self):
+  r=self.row();r["unit"]="percent"
+  self.assertFalse(audit({"observations":[r]})["ok"])
+ def test_currency_not_allowed_as_ratio_unit(self):
+  r=self.row();r["metric"]="combined_ratio";r["unit"]="MNOK"
+  self.assertFalse(audit({"observations":[r]})["ok"])
+ def test_group_source_not_allowed_for_norway(self):
+  r=self.row();r["scope"]="norway";r["source_scope"]="group"
+  self.assertFalse(audit({"observations":[r]})["ok"])
+ def test_legacy_unspecified_unit_does_not_break_previous_records(self):
+  r=self.row()
+  self.assertTrue(audit({"observations":[r]})["ok"])
 if __name__=="__main__":unittest.main()
