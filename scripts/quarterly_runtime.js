@@ -123,7 +123,8 @@
     selection=chosen;
     if(manual)manuallySelected=true;
     MON_QUARTER='Q3'; // live-data mode, distinct from the obsolete, static Q2 adapter
-    period='Q3';
+    // Auto-refresh must not throw the user out of the HIÅ tab.
+    if(manual || period!=='H3')period='Q3';
     populate();
     if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
   }
