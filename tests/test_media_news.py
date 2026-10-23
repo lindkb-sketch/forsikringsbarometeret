@@ -9,5 +9,19 @@ class MediaTests(unittest.TestCase):
   rows=parse_rss(XML,NOW);self.assertEqual(len(rows),1);self.assertEqual(rows[0]['publisher'],'E24')
  def test_dedup(self):
   rows=parse_rss(XML,NOW);self.assertEqual(len(merge({'items':rows},rows)['items']),1)
+ def test_near_duplicate_cross_publisher_news_is_shown_only_once(self):
+  story={'id':'nrk1','headline':'Brannen i Krokstadelva kostet Gjensidige 100 millioner kroner',
+         'publisher':'NRK','published_at':'2026-10-23T07:00:00+00:00',
+         'source_url':'https://news.google.com/rss/articles/a','approved':True}
+  other={'id':'ap1','headline':'Brannen i Krokstadelva kosta Gjensidige 100 millionar kroner',
+         'publisher':'Aftenposten','published_at':'2026-10-23T06:00:00+00:00',
+         'source_url':'https://news.google.com/rss/articles/b','approved':True}
+  self.assertEqual(len(merge({'items':[story]},[other])['items']),1)
+ def test_different_insurer_headlines_are_not_collapsed(self):
+  a={'id':'1','headline':'Gjensidige øker forsikringspremiene etter Q3 rapport',
+      'published_at':'2026-10-23T07:00:00+00:00','source_url':'https://news.google.com/rss/articles/one'}
+  b={'id':'2','headline':'Tryg øker forsikringspremiene etter Q3 rapport',
+      'published_at':'2026-10-23T06:00:00+00:00','source_url':'https://news.google.com/rss/articles/two'}
+  self.assertEqual(len(merge({'items':[a]},[b])['items']),2)
  def test_no_unrelated(self):
   self.assertEqual(parse_rss(XML.replace(b'Gjensidige og forsikring',b'Brod og mat'),NOW),[])
