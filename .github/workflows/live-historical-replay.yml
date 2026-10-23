@@ -60,4 +60,6 @@ jobs:
           path: |
             data/live_historical_replay.json
             data/replay_only_verified_feed.json
+            data/tryg_historical_diagnostics.json
+            data/storebrand_roe_diagnostics.json
           if-no-files-found: warn
