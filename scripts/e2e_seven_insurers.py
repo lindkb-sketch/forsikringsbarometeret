@@ -76,8 +76,7 @@ def audit(public=True):
     html=(ROOT/'index.html').read_text(encoding='utf-8')
     issues=[]
     expected={key(r):r for r in source
-              if r.get('status') in ('reported','calculated')
-              and not (r.get('scope')=='norway' and r.get('period_type')!='quarter')}
+              if r.get('status') in ('reported','calculated')}
     received={key(r):r for r in feed}
     if len(received)!=len(feed):issues.append('Duplicate keys in local verified feed')
     for k,r in expected.items():
