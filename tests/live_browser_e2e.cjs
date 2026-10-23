@@ -29,7 +29,8 @@ async function main(){
   const [feed,editorial,news,stocks,calendarFeed]=files;
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
-       window.FBNews?.editorial && document.querySelector('.mon-calendar'),null,{timeout:35000});
+       window.FBNews?.editorial && window.FBReportCalendar?.ready &&
+       document.querySelector('.mon-calendar'),null,{timeout:35000});
   const periods=[...new Set(feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&
      ['insurance_revenue','combined_ratio'].includes(r.metric)).map(r=>r.year+'-'+r.quarter))].sort((a,b)=>{
       const aa=a.split('-').map(Number),bb=b.split('-').map(Number);return bb[0]-aa[0]||bb[1]-aa[1];});

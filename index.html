@@ -1516,11 +1516,12 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
 </style>
 <script id="live-report-calendar">
 (()=>{
- let live=null;
+ let live=null,installed=false;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const dateNo=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s.slice(8,10)+'.'+s.slice(5,7)+'.'+s.slice(0,4):'Dato ikke bekreftet';
  function install(){
-  if(!live||typeof monCalendar!=='function')return;
+  if(!live||typeof monCalendar!=='function'||!window.FBQuarterly?.period)return;
+  // Reapply after the delayed quarterly runtime initializes or refreshes.
   monCalendar=function(){
     if(typeof MON_QUARTER!=='undefined'&&MON_QUARTER!=='Q3')return '';
     // Calendar and website numbers are reconciled at EVERY refresh, not
@@ -1569,8 +1570,11 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       '<span class="pill">'+entries.length+' rapporter</span></div>'+
       '<div class="mon-cal-grid">'+cards+'</div></section>';
   };
+  installed=true;
   if(typeof show==='function'&&typeof current!=='undefined')show(current,true);
  }
+ // Browser tests wait for both verified financial and calendar data to render.
+ window.FBReportCalendar={get ready(){return installed;},reconcile:install};
  async function refresh(){try{const r=await fetch('data/live.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(r.status);const obj=await r.json();if(!obj.companies)return;live=obj;install()}catch(e){console.warn('Kalender: beholder sist publiserte datoer',e.message)}}
  refresh();setInterval(refresh,300000);
 })();
