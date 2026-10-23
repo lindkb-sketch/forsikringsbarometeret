@@ -17,8 +17,8 @@ class DashboardRuntimeTests(unittest.TestCase):
    self.assertEqual(result.returncode,0,f'Inline script {i}: {result.stderr}')
  def test_visible_q3_table_uses_audited_data(self):
   html=(ROOT/'index.html').read_text()
-  self.assertIn("const d=MON_Q3[r.company]||(MON_Q3[r.company]={})",html)
-  self.assertIn("d[key+suffix]=fmt(r.value",html)
+  self.assertIn("const bucket=row.period_type==='ytd'?MON_YTD_Q3:MON_Q3",html)
+  self.assertIn("d[k+suffix]=fmt(row.value",html)
   self.assertIn("show(current,true)",html)
   self.assertIn("verified_financial_feed.json?ts=",html)
  def test_live_updates_present(self):
@@ -48,7 +48,7 @@ class DashboardRuntimeTests(unittest.TestCase):
 
  def test_q3_revenue_previous_year_profitability_and_brief_are_wired(self):
   html=(ROOT/'index.html').read_text()
-  for expected in ("d['revenue'+suffix]=fmt(r.value)","d[key+suffix]=fmt(r.value","profitabilityVerified[c]['Q3 2026']=[loss.value,cost.value,ratio.value]","Forsikringsinntekter · Q3","Q3 2025: ikke verifisert","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
+  for expected in ("d['revenue'+suffix]=fmt(row.value)","d[k+suffix]=fmt(row.value","profitabilityVerified[c][label]=[loss,cost,cr]","Forsikringsinntekter · Q3","Q3 2025: ikke verifisert","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
    self.assertIn(expected,html)
   import json
   feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
