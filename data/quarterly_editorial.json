@@ -1434,6 +1434,42 @@
               "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
             }
           ]
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "source_urls": [
+            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+            "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
+            "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+          ],
+          "companies": [
+            "Gjensidige",
+            "Tryg",
+            "Sampo",
+            "Protector",
+            "Storebrand"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_direction"
+        },
+        {
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Fremtind, Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+            "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6"
+          ],
+          "companies": [
+            "Fremtind",
+            "Frende"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
