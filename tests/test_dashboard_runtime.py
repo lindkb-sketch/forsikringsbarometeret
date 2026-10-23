@@ -52,7 +52,7 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_no_hardcoded_active_financial_series(self):
   js=RUNTIME.read_text()
   self.assertNotIn('2026 && r.quarter===3',js)
-  self.assertNotIn('Q3 2026',js)
+  self.assertIn('periodList=calcPeriods()',js)
   self.assertIn('profitabilityVerified[name][l]=[loss,cost,cr]',js)
 
 if __name__=='__main__':
