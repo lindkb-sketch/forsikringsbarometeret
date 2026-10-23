@@ -93,6 +93,7 @@ async function main() {
   check('Visible Fremtind HIÅ revenue',live.fremtindYtd.includes('18')&&live.fremtindYtd.includes('373'),live.fremtindYtd.slice(0,250));
   check('Visible Storebrand group revenue with APM disclaimer',live.storebrand.includes('2')&&live.storebrand.includes('896')&&live.storebrand.includes('APM'),live.storebrand.slice(0,250));
   check('Visible Storebrand Forsikring AS IFRS revenue',live.norway.includes('Storebrand Forsikring AS')&&live.norway.includes('1')&&live.norway.includes('550')&&live.norway.includes('IFRS 17'),live.norway.slice(0,300));
+  check('Storebrand Forsikring AS YTD IFRS revenue',live.norway.includes('HIÅ')&&live.norway.includes('4')&&live.norway.includes('396,1'),live.norway.slice(0,700));
   check('Strategic news cards restored',live.strategy.includes('Strategiske bevegelser')&&live.strategy.includes('Les originaloverskrift'),live.strategy.slice(0,250));
   check('Stock quote date and updates visible',live.quotes.includes('Kursdato')&&live.quotes.includes('innhentingsforsøk'),live.quotes.slice(0,250));
   check('Quarterly brief and comment visibly restored',live.brief.includes('Kvartalsbrief')&&live.brief.includes('Kvartalskommentar'),live.brief.slice(0,250));
