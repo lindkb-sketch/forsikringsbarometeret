@@ -40,8 +40,8 @@ def run():
    recovered=sum(k in new for k in old)
    missing=sum(k not in new for k in old)
    added=sum(k not in old for k in new)
-   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"golden_value_mismatches":mismatches[:15],"full_website_e2e_certified":False})
+   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"golden_value_mismatches":mismatches[:15],"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and len(old)>0,"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["import_commands_passed"] else "BLOCKED",flush=True)
- report={"results":results,"production_data_modified":False,"full_seven_certified":False,"replay_mode":"company historical rows removed from disposable baseline"}
+ report={"results":results,"production_data_modified":False,"full_seven_certified":all(r["clean_replay_certified"] for r in results),"replay_mode":"company historical rows removed from disposable baseline"}
  (ROOT/"data/live_historical_replay.json").write_text(json.dumps(report,indent=2)+"\n")
 if __name__=="__main__":run()
