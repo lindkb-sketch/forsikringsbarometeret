@@ -58,7 +58,7 @@ async function main(){
    for(const r of current){
     const key=metrics[r.metric];if(!key)continue;
     const parsed=Number(norm(view.quarter[c]?.[key]).replace(/\s/g,'').replace(/%/g,'').replace(',','.'));
-    check(c+' reported Q'+quarter+' '+r.metric,Number.isFinite(parsed)&&Math.abs(parsed-r.value)<(key==='revenue'||key==='result'?.55:.12),parsed+' / '+r.value);
+    check(c+' reported Q'+quarter+' '+r.metric,Number.isFinite(parsed)&&Math.abs(parsed-r.value)<((key==='revenue'||key==='result')?0.55:0.12),parsed+' / '+r.value);
    }
    for(const r of previous){
     const key=metrics[r.metric];if(!key||!current.some(x=>x.metric===r.metric))continue;
