@@ -1075,7 +1075,7 @@ adminInputs();if(true){const b=document.createElement('button');b.id='admin-entr
 const stockObserver=new MutationObserver(()=>{for(const c of Object.keys(stockMarketConfig)){const el=document.getElementById('stock-plot-'+c);if(el&&!el.dataset.ready){el.dataset.ready='1';drawStockYear(c,stockCSV[c]||stockFallback[c]||[],'Månedssluttkurser fra 2026');}}});
 window.addEventListener('DOMContentLoaded',()=>{stockObserver.observe(document.body,{childList:true,subtree:true});show('home');});
 </script><script id="quarter-dynamic">
-const MON_Q3={}, MON_CAL=[["Storebrand", "21.10.2026", "https://www.storebrand.no/en/investor-relations"], ["Protector", "22.10.2026", "https://investor.protectorforsikring.no/data"], ["Gjensidige", "23.10.2026", "https://www.gjensidige.com/no/investorinformasjon/finansiell-kalender"], ["Sampo / If", "04.11.2026", "https://www.sampo.com/investors/"], ["Frende", "Dato ikke bekreftet", "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/"]];
+const MON_Q3={}, MON_CAL=[];
 let MON_QUARTER='Q3';
 const MON_ORIG={home,company,metricCardFor,resultServiceCard,returnCard,solvencyCard,marketCard,table,quarterComment,quarterChanges,mediaNews,companyMediaNews,serviceResultCell};
 const MON_Q2_SEGMENTS=Object.fromEntries(Object.entries(segmentData).map(([k,v])=>[k,v.map(x=>({...x}))]));
@@ -1523,7 +1523,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
   monCalendar=function(){
    if(typeof MON_QUARTER!=='undefined'&&MON_QUARTER!=='Q3')return '';
    const entries=Object.entries(live.companies||{}).filter(([k,v])=>v.next_event);
-   const pending=entries.filter(([k,v])=>v.next_event && !v.next_event.locked);
+   const pending=entries.filter(([k,v])=>v.next_event && !v.next_event.locked && !(v.next_event.period==='Q3 2026' && MON_Q3[k==='Sampo / If'?'Sampo':k]?.cr));
    if(!pending.length)return '<section class="mon-calendar"><h2>Finansiell kalender</h2><p>Ingen kommende rapporter registrert.</p></section>';
    return `<section class="mon-calendar" aria-label="Kommende kvartalsrapporter"><div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER · OPPDATERT ${esc((live.updated_at||'').slice(0,10))}</div><h2>Neste rapporter</h2></div><span class="pill">${pending.length} kommende</span></div><div class="mon-cal-grid">${pending.map(([name,v])=>{let e=v.next_event;let date=dateNo(e.date);return `<a class="mon-cal-row" href="${esc(e.source_url||'#')}" target="_blank" rel="noopener noreferrer"><span class="mon-cal-company"><strong>${esc(name)}</strong><small>${esc(e.period)} · ${esc(date)}</small></span><span class="mon-cal-countdown" data-report-date="${esc(date)}">Beregner …</span></a>`}).join('')}</div></section>`;
   };
