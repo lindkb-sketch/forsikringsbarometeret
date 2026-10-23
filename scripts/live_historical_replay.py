@@ -26,7 +26,14 @@ def run():
     except subprocess.TimeoutExpired:
      evidence.append({"step":name,"code":124,"log":"Timed out"})
     if evidence[-1]["code"]:break
-   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"full_website_e2e_certified":False})
+   before=json.loads((ROOT/"data/financial_observations.json").read_text())["observations"]
+   after=json.loads((root/"data/financial_observations.json").read_text())["observations"]
+   key=lambda row:(row.get("company"),row.get("year"),row.get("quarter"),row.get("scope"),row.get("period_type"),row.get("metric"),row.get("segment"))
+   old={key(row):row for row in before if row.get("company")==company}
+   new={key(row):row for row in after if row.get("company")==company}
+   mismatches=[str(k) for k,row in new.items() if k in old and isinstance(row.get("value"),(int,float)) and isinstance(old[k].get("value"),(int,float)) and abs(row["value"]-old[k]["value"])>max(.15,abs(old[k]["value"])*.00025)]
+   added=sum(k not in old for k in new)
+   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"golden_value_mismatches":mismatches[:15],"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["import_commands_passed"] else "BLOCKED",flush=True)
  report={"results":results,"production_data_modified":False,"full_seven_certified":False}
  (ROOT/"data/live_historical_replay.json").write_text(json.dumps(report,indent=2)+"\n")
