@@ -74,6 +74,8 @@ jobs:
           python scripts/build_editorial.py
           python scripts/update.py
           python scripts/verify_feed_coverage.py
+          python scripts/report_coverage.py
+          python scripts/investor_readiness.py
       - name: Prepare Chrome browser regression dependencies
         run: |
           npm install --no-save playwright
@@ -166,7 +168,10 @@ jobs:
           npm install --no-save playwright
           google-chrome --version
       - name: Rebuild source-verified website data
-        run: python scripts/build_verified_feed.py
+        run: |
+          python scripts/build_verified_feed.py
+          python scripts/report_coverage.py
+          python scripts/investor_readiness.py
       - name: Serve PR website and test rendered dashboard
         env:
           BAROMETER_URL: http://127.0.0.1:8765/
