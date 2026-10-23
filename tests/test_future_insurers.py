@@ -21,18 +21,19 @@ class FutureTests(unittest.TestCase):
  def test_gjensidige_q3_and_q4_group_quarter_and_ytd(self):
   for q in (3,4):
    rows=g.parse_group_table(self.table(q,2026),2026,q,'https://example.com/report.pdf','testhash')
-   self.assertEqual(len(rows),10)
+   self.assertEqual(len(rows),20)
    self.assertEqual({r['period_type'] for r in rows},{'quarter','ytd'})
-   self.assertEqual({r['metric'] for r in rows if r['period_type']=='quarter'},set(g.REQUIRED)|{'loss_ratio'})
-   self.assertTrue(all(r['quarter']==q and r['year']==2026 for r in rows))
+   self.assertEqual({r['metric'] for r in rows if r['period_type']=='quarter' and r['year']==2026},set(g.REQUIRED)|{'loss_ratio'})
+   self.assertTrue(all(r['quarter']==q and r['year'] in (2025,2026) for r in rows))
+   self.assertTrue(any(r['year']==2025 and r['metric']=='insurance_revenue' for r in rows))
  def test_gjensidige_q4_cover_and_isolated_prepare(self):
   from unittest.mock import patch
   baseline={'observations':[]}
   with patch.object(g,'audit',return_value={'ok':True}),patch.object(g,'discover_quarter',return_value='https://example.com/report.pdf'),patch.object(g,'read_pdf',return_value=[(1,'Gjensidige fourth quarter 2026')]+self.table(4,2026)):
    merged,feed,summary=g.prepare(baseline,(4,),year=2026,downloader=lambda _:b'%PDF-fake')
-  self.assertEqual(summary['added'],10)
-  self.assertEqual(len(feed['observations']),10)
-  self.assertEqual(len(merged['observations']),10)
+  self.assertEqual(summary['added'],20)
+  self.assertEqual(len(feed['observations']),20)
+  self.assertEqual(len(merged['observations']),20)
  def test_protector_q4_and_next_year_kpis(self):
   def table(title):
    periods=['Q1 27','Q4 26','Q3 26','Q2 26','Q1 26']
