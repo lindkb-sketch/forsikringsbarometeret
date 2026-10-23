@@ -12,6 +12,10 @@ def build(feed,news):
   metric=r['metric']
   if metric not in ('insurance_revenue','insurance_service_result','combined_ratio'):continue
   label={'insurance_revenue':'forsikringsinntekter','insurance_service_result':'forsikringsresultat','combined_ratio':'combined ratio'}[metric]
+  if metric=='insurance_revenue' and any(
+      token in r.get('source_definition','').lower()
+      for token in ('not ifrs insurance revenue','segment premiums','premiums f.o.a.')):
+   label='segmentpremier (APM, ikke IFRS-forsikringsinntekter)'
   unit='%' if metric=='combined_ratio' else r.get('unit','')
   brief.append({'text':f"{r['company']} ({r['scope']}): {label} {r['value']:g} {unit} i Q{q} {year}.",'source_url':r['source_url']})
   if metric=='combined_ratio':implications.append({'text':f"{r['company']}: combined ratio {r['value']:g} % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",'source_url':r['source_url'],'type':'rule_based_interpretation'})
