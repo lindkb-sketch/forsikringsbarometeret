@@ -81,6 +81,25 @@ def thematic_brief(by_company, rows, year, quarter):
        names,'insufficient_comparatives')
  return output
 
+def documented_report_insights(label, available_companies):
+ """Use only source-linked issuer commentary for this precise quarter."""
+ path=ROOT/'data/quarterly_insights.json'
+ if not path.exists():return None
+ dataset=json.loads(path.read_text(encoding='utf-8'))
+ rows=dataset.get('periods',{}).get(label)
+ if not rows:return None
+ result=[]
+ for row in rows:
+  linked=[x for x in row.get('sources',[]) if x.get('company') in available_companies and
+          x.get('url','').startswith('https://') and x.get('kind') in ('official_company_release','issuer_interim_report_announcement','official_quarterly_report')]
+  if not linked or not row.get('text') or not row.get('companies'):continue
+  if not set(row['companies']).issubset(set(x['company'] for x in linked)):continue
+  result.append({'text':row['text'],'source_url':linked[0]['url'],
+       'source_urls':[x['url'] for x in linked], 'companies':row['companies'],
+       'period':label,'type':'qualitative_quarter_theme','theme':row.get('theme','report_commentary'),
+       'basis':'issuer_commentary','sources':linked})
+ return result or None
+
 def build(feed,news):
  rows=[r for r in feed.get('observations',[]) if
        r.get('status','reported') in ('reported','calculated') and r.get('scope')=='group'
@@ -154,7 +173,8 @@ def build(feed,news):
     'summary':fact['text'],'comment':comment or fact['text'],
     'ytd':ytd_note,'source_url':source,'period':label,
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
-  periods[label]={'brief':thematic_brief(by_company,rows,year,q),'implications':implications,'by_company':by_company}
+  brief=documented_report_insights(label,by_company) or thematic_brief(by_company,rows,year,q)
+  periods[label]={'brief':brief,'implications':implications,'by_company':by_company}
  current=f'Q{dates[0][1]} {dates[0][0]}'
  approved=[{'headline':n['headline'],'published_at':n['published_at'],
             'source_url':n['source_url'],'publisher':n.get('publisher','')} for n in news.get('items',[])
