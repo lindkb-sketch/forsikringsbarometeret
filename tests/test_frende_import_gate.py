@@ -13,6 +13,13 @@ def table(q):
     return '<h1>Nøkkeltall konsern</h1><table>'+''.join('<tr>'+''.join('<td>'+v+'</td>' for v in row)+'</tr>' for row in [head]+rows)+'</table>'
 
 class FrendeTests(unittest.TestCase):
+    def test_audit_rejects_frende_revenue_without_ifrs_definition(self):
+        from audit_financials import audit
+        row=dict(company='Frende',year=2026,quarter=2,scope='group',period_type='quarter',
+                 metric='insurance_revenue',value=100,unit='NOKm',source_type='official_quarterly_report',
+                 source_url='https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',
+                 source_page=7,source_definition='Sum driftsinntekter')
+        self.assertTrue(any('Frende insurance revenue requires' in x for x in audit({'observations':[row]})['errors']))
     def test_real_q1_q2_kpi_golden_values(self):
         for q,quarter,ytd in [(1,93.9,93.9),(2,81.3,87.5)]:
             rows=extract(table(q),f'https://frende.wrep.it/q{q}-2026-frende-holding-as/sec/6',2026,q)
@@ -22,17 +29,21 @@ class FrendeTests(unittest.TestCase):
             self.assertEqual(len(rows),6)
     def test_income_statement_q2_quarter_and_ytd(self):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2026</th><th>2. kv 2025</th><th>30.06.26</th></tr><tr><td>Sum driftsinntekter</td><td>935 132</td><td>823 863</td><td>2 758 452</td></tr></table>'
-        rows=extract_revenue(markup,'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',2026,2)
-        self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',935.132),('ytd',2758.452)])
+        with self.assertRaisesRegex(ValueError,'not verified IFRS insurance_revenue'):
+            extract_revenue(markup,'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7',2026,2)
     def test_q4_omitted_expense_is_explicitly_calculated(self):
         markup='<h1>Nøkkeltall konsern</h1><table><tr><td>Tall i 1000</td><td>Q4 2025</td><td>Q4 2024</td><td>2025</td></tr><tr><td>Resultat før skatt</td><td>206 975</td><td>117 695</td><td>785 288</td></tr><tr><td>Skadeprosent f.e.r</td><td>62,8 %</td><td>67,6 %</td><td>67,2 %</td></tr><tr><td>Combined ratio</td><td>90,8 %</td><td>90,7 %</td><td>90,7 %</td></tr></table>'
         rows=extract(markup,'https://frende.wrep.it/q4-2025-frende-holding-as/sec/6',2025,4)
         expense=[r for r in rows if r['metric']=='expense_ratio']
         self.assertEqual([(r['period_type'],r['value'],r['status']) for r in expense],[('quarter',28.0,'calculated'),('ytd',23.5,'calculated')])
+    def test_q4_missing_annual_column_fails_closed(self):
+        markup='<h1>Nøkkeltall konsern</h1><table><tr><td>Tall i 1000</td><td>Q4 2025</td><td>Q4 2024</td></tr><tr><td>Kostnads %</td><td>20,0 %</td><td>21,0 %</td></tr><tr><td>Skadeprosent f.e.r</td><td>70,0 %</td><td>70,0 %</td></tr><tr><td>Combined ratio</td><td>90,0 %</td><td>91,0 %</td></tr><tr><td>Resultat før skatt</td><td>100</td><td>90</td></tr></table>'
+        with self.assertRaisesRegex(ValueError,'Missing YTD column'):
+            extract(markup,'https://frende.wrep.it/q4-2025-frende-holding-as/sec/6',2025,4)
     def test_2025_income_ytd_date_range(self):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>2. kv 2025</th><th>2. kv 2024</th><th>01.01-30.06.25</th></tr><tr><td>Sum driftsinntekter</td><td>823 863</td><td>656 381</td><td>1 700 000</td></tr></table>'
-        rows=extract_revenue(markup,'https://frende.wrep.it/q2-2025-frende-holding-as/sec/7',2025,2)
-        self.assertEqual([(r['period_type'],r['value']) for r in rows],[('quarter',823.863),('ytd',1700.0)])
+        with self.assertRaisesRegex(ValueError,'not verified IFRS insurance_revenue'):
+            extract_revenue(markup,'https://frende.wrep.it/q2-2025-frende-holding-as/sec/7',2025,2)
     def test_future_q3_publisher_layout(self):
         q2=table(2)
         q3=q2.replace('Q2 2026','Q3 2026').replace('Pr Q2 2026','Pr Q3 2026').replace('Q2 2025','Q3 2025').replace('Pr Q2 2025','Pr Q3 2025')

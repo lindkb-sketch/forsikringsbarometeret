@@ -52,7 +52,7 @@ def extract(section_html,url,year,quarter):
         label=f'Pr Q{quarter} {year}'
         if label in header:ytd_col=header.index(label)
         elif quarter==4 and str(year) in header:ytd_col=header.index(str(year))
-        elif quarter!=4:raise ValueError('Missing YTD column')
+        else:raise ValueError('Missing YTD column')
     records={row[0]:row for row in t.rows[1:] if row}
     missing=[label for label in FIELDS if label not in records]
     if missing and not (quarter==4 and missing==['Kostnads %']):
@@ -79,34 +79,9 @@ def extract(section_html,url,year,quarter):
     return results
 
 def extract_revenue(section_html,url,year,quarter):
-    if not re.search(r'Resultatregnskap',section_html,re.I):raise ValueError('Missing group income statement')
-    t=TableReader();t.feed(section_html)
-    if not t.rows or t.rows[0][0]!='Resultatregnskap':raise ValueError('Invalid income statement header')
-    header=t.rows[0]
-    if header[1]!=f'{quarter}. kv {year}':raise ValueError('Wrong income statement quarter')
-    rows={r[0]:r for r in t.rows[1:] if r}
-    label='Sum driftsinntekter'
-    if label not in rows:raise ValueError('Missing group operating revenue')
-    values=[('quarter',1)]
-    if quarter==1:values.append(('ytd',1))
-    else:
-        period={2:f'30.06.{str(year)[2:]}',3:f'30.09.{str(year)[2:]}',4:f'31.12.{str(year)[2:]}'}[quarter]
-        variants=(period,f'01.01-{period}')
-        match=next((header.index(v) for v in variants if v in header),None)
-        if match is not None:values.append(('ytd',match))
-        elif quarter!=4:raise ValueError('Missing income YTD header')
-    digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
-    result=[]
-    for period,col in values:
-        amount=number(rows[label][col])/1000
-        result.append({'company':'Frende','year':year,'quarter':quarter,'scope':'group',
-            'period_type':period,'metric':'insurance_revenue','value':round(amount,3),'unit':'NOKm',
-            'status':'reported','source_type':'official_quarterly_report','source_url':url,
-            'source_page':7,'source_entity':'Frende Holding AS konsern',
-            'source_document_period':f'Q{quarter} {year}',
-            'source_definition':'Sum driftsinntekter (group operating revenue, not insurance-only revenue)',
-            'source_sha256':digest})
-    return result
+    """Fail closed: Wrepit 'Sum driftsinntekter' is not proven IFRS insurance revenue."""
+    raise ValueError("Sum driftsinntekter is not verified IFRS insurance_revenue")
+
 
 def read(url,section=6):
     parsed=urllib.parse.urlparse(url)
@@ -137,7 +112,6 @@ def run():
             quarter,year=map(int,match.groups())
             if (year,quarter)!=(item['year'],item['quarter']):raise ValueError('Discovery and publisher period mismatch')
             rows=extract(read(url),url+'/sec/6',year,quarter)
-            rows+=extract_revenue(read(url,7),url+'/sec/7',year,quarter)
             verified.append([year,quarter])
             for row in rows:
                 key=(year,quarter,row['period_type'],row['metric'])

@@ -67,20 +67,14 @@ jobs:
             if [ -f "$file" ]; then git add -- "$file"; fi
           done
           if ! git diff --cached --quiet; then
-            # Generated files are the output of this validated run. Never rebase a
-            # generated-data commit across a newer generated-data commit: it
-            # creates deterministic JSON conflicts and blocks Pages deployment.
+            git commit -m 'Update verified financial feed and report calendar'
             for attempt in 1 2 3; do
               git fetch origin main
-              git reset --soft origin/main
-              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json; do
-                if [ -f "$file" ]; then git add -- "$file"; fi
-              done
-              if git diff --cached --quiet; then
-                echo 'Validated artifacts already current'
-                break
+              if ! git rebase origin/main; then
+                # Only stock JSON conflicts may be resolved automatically.
+                python scripts/resolve_stock_rebase.py
+                GIT_EDITOR=true git rebase --continue
               fi
-              git commit -m 'Update verified financial feed and report calendar'
               if git push origin HEAD:main; then
                 echo 'Published validated artifacts'
                 break

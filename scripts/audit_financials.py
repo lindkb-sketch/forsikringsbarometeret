@@ -20,6 +20,8 @@ def audit(data):
         if r.get('company')=='Storebrand' and r.get('scope')=='norway' and r.get('quarter')==4:
             errors.append(f'{label}: Storebrand Forsikring AS has no standalone Q4 report; Q4 must remain blank')
         if r.get("metric") not in METRICS:errors.append(f"{label}: unknown metric")
+        if r.get('company')=='Frende' and r.get('metric')=='insurance_revenue':
+            errors.append(f'{label}: Frende insurance revenue requires separately verified IFRS 17 definition; operating revenue is not equivalent')
         if r.get("source_type")=="official_investor_tables":
             if r.get("company") not in ("Tryg","Gjensidige") or r.get("scope")!="norway":
                 errors.append(f"{label}: investor tables permitted only for Tryg/Gjensidige Norway")

@@ -12,8 +12,8 @@ class TestQuarterlyCoverage(unittest.TestCase):
  def setUpClass(cls):
   cls.data=json.loads((ROOT/'data/financial_observations.json').read_text())
   cls.feed=build(cls.data)
-  req=urllib.request.Request(BASE+'verified_financial_feed.json',headers={'Cache-Control':'no-cache'})
-  with urllib.request.urlopen(req,timeout=40) as response:cls.live=json.load(response)
+  # Pre-deploy tests must be offline; post-deploy parity is checked by verify_public_pages.py.
+  cls.live=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
  def test_full_financial_audit(self):
   result=audit(self.data)
   self.assertTrue(result['ok'],result['errors'])
@@ -38,8 +38,8 @@ class TestQuarterlyCoverage(unittest.TestCase):
   from datetime import date
   if date.today()<date(2026,10,23):
    self.assertFalse(any(r['company']=='Gjensidige' and (r['year'],r['quarter'])==(2026,3) for r in self.live['observations']))
- def test_live_equals_verified_repository_feed(self):
-  self.assertEqual(self.live,self.feed,'Live financial feed differs from verified repository data')
+ def test_committed_feed_equals_verified_source_data(self):
+  self.assertEqual(self.live,self.feed,'Committed financial feed differs from verified repository data')
  def test_no_future_unverified_quarters(self):
   from datetime import date
   now=date.today()
