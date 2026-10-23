@@ -316,40 +316,6 @@
     ],
     "Q2 2026": [
       {
-        "theme": "competition",
-        "text": "Fremtind forventer et norsk forsikringsmarked preget av sterk konkurranse og fortsatt fokus på lønnsomhet. Det setter selskapenes prisjusteringer og vekstambisjoner inn i en mer krevende markedsramme.",
-        "companies": [
-          "Fremtind"
-        ],
-        "sources": [
-          {
-            "company": "Fremtind",
-            "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-            "kind": "official_quarterly_report",
-            "page": 10,
-            "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
-      {
-        "theme": "inflation",
-        "text": "Fremtind peker på værhendelser, skadeinflasjon, renteutvikling og uføreutvikling som forhold selskapet følger tett. Dette er risikofaktorer, ikke dokumentasjon på at alle har gitt høyere skadekostnader i kvartalet.",
-        "companies": [
-          "Fremtind"
-        ],
-        "sources": [
-          {
-            "company": "Fremtind",
-            "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-            "kind": "official_quarterly_report",
-            "page": 9,
-            "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
-      {
         "theme": "profitability",
         "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and with continued underwriting discipline, the insurance service result is expected to stay strong.»",
         "companies": [
@@ -657,74 +623,6 @@
       }
     ],
     "Q1 2026": [
-      {
-        "theme": "large_claims",
-        "text": "Sampo opplyser at første kvartal hadde færre storskader enn budsjettert. Dette bidrar til å forklare skadebildet hos selskapet, men kan ikke uten videre overføres til resten av markedet.",
-        "companies": [
-          "Sampo"
-        ],
-        "sources": [
-          {
-            "company": "Sampo",
-            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-            "kind": "official_quarterly_report",
-            "page": 5,
-            "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
-      {
-        "theme": "reinsurance",
-        "text": "Sampo beskriver lavere reassuransepriser, både som følge av gunstige markedsforhold og tiltak for å redusere eksponeringen mot store eiendomsskader. Det illustrerer hvordan risikoavlastning kan påvirke forsikringsøkonomien.",
-        "companies": [
-          "Sampo"
-        ],
-        "sources": [
-          {
-            "company": "Sampo",
-            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-            "kind": "official_quarterly_report",
-            "page": 4,
-            "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
-      {
-        "theme": "operations",
-        "text": "Gjensidige knytter forbedringen i combined ratio til disiplinert prising og kostnadseffektivitet. Dermed er utviklingen ikke bare et spørsmål om skadefrekvens, men også gjennomføringen av tidligere prisingstiltak.",
-        "companies": [
-          "Gjensidige"
-        ],
-        "sources": [
-          {
-            "company": "Gjensidige",
-            "url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-            "kind": "official_quarterly_report",
-            "page": 5,
-            "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
-      {
-        "theme": "growth",
-        "text": "Sampo viser til at tidligere premieøkninger slår gjennom samtidig med vekst i antall kunder. Det gjør det viktig å skille mellom prisvirkning og reell volumvekst når markedet sammenlignes.",
-        "companies": [
-          "Sampo"
-        ],
-        "sources": [
-          {
-            "company": "Sampo",
-            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-            "kind": "official_quarterly_report",
-            "page": 11,
-            "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-          }
-        ],
-        "basis": "curated_issuer_commentary"
-      },
       {
         "theme": "profitability",
         "text": "Fremtind omtaler i kvartalsrapporten: «Sammen med sterk distribusjonskraft gir dette gode forutsetninger for konkurransedyktig lønnsomhet fremover.»",
