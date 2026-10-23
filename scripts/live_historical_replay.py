@@ -10,7 +10,7 @@ PLANS={
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py"],
-"Storebrand":["storebrand_publish_q3.py","replay_storebrand_early.py"]}
+"Storebrand":["storebrand_publish_q3.py","replay_storebrand_early.py","replay_storebrand_roe_diagnostics.py"]}
 def run():
  results=[]
  restored=[]
