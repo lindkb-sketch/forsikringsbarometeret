@@ -2,125 +2,904 @@
   "period": "Q3 2026",
   "brief": [
     {
-      "text": "Fremtind (group): combined ratio 73 % i Q3 2026.",
-      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+      "text": "Fremtind: forsikringsinntekter 6305 NOKm (+4.3 % mot Q3 2025), forsikringsresultat 1704 NOKm, combined ratio 73 % (Q3 2025: 76.7 %) i Q3 2026.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "type": "reported_summary"
     },
     {
-      "text": "Fremtind (group): forsikringsinntekter 6305 NOKm i Q3 2026.",
-      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+      "text": "Gjensidige: forsikringsinntekter 11367.4 MNOK (+1.5 % mot Q3 2025), forsikringsresultat 3003.6 MNOK, combined ratio 73.6 % (Q3 2025: 79.7 %) i Q3 2026.",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "type": "reported_summary"
     },
     {
-      "text": "Fremtind (group): forsikringsresultat 1704 NOKm i Q3 2026.",
-      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+      "text": "Tryg: forsikringsinntekter 10591 MDKK (+4.1 % mot Q3 2025), forsikringsresultat 2454 MDKK, combined ratio 76.8 % (Q3 2025: 78.6 %) i Q3 2026.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "type": "reported_summary"
     },
     {
-      "text": "Gjensidige (group): combined ratio 73.6 % i Q3 2026.",
-      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+      "text": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "company": "Protector",
+      "period": "Q3 2026",
+      "type": "reported_summary"
     },
     {
-      "text": "Gjensidige (group): forsikringsinntekter 11367.4 MNOK i Q3 2026.",
-      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
-    },
-    {
-      "text": "Gjensidige (group): forsikringsresultat 3003.6 MNOK i Q3 2026.",
-      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
-    },
-    {
-      "text": "Protector (group): combined ratio 82.7 % i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Protector (group): forsikringsinntekter 3864 MNOK i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Protector (group): forsikringsresultat 670 MNOK i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Protector (norway): combined ratio 67.1 % i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Protector (norway): forsikringsinntekter 798 MNOK i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Protector (norway): forsikringsresultat 263 MNOK i Q3 2026.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-    },
-    {
-      "text": "Storebrand (group): combined ratio 87 % i Q3 2026.",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
-    },
-    {
-      "text": "Storebrand (group): segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK i Q3 2026.",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
-    },
-    {
-      "text": "Storebrand (norway): combined ratio 79.791 % i Q3 2026.",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
-    },
-    {
-      "text": "Storebrand (norway): forsikringsinntekter 1550.3 MNOK i Q3 2026.",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
-    },
-    {
-      "text": "Storebrand (norway): forsikringsresultat 313.3 MNOK i Q3 2026.",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
-    },
-    {
-      "text": "Tryg (group): combined ratio 76.8 % i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
-    },
-    {
-      "text": "Tryg (group): forsikringsinntekter 10591 MDKK i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
-    },
-    {
-      "text": "Tryg (group): forsikringsresultat 2454 MDKK i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
-    },
-    {
-      "text": "Tryg (norway): combined ratio 76.0604 % i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
-    },
-    {
-      "text": "Tryg (norway): forsikringsinntekter 2512.55  i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
-    },
-    {
-      "text": "Tryg (norway): forsikringsresultat 601.494  i Q3 2026.",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx"
+      "text": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "company": "Storebrand",
+      "period": "Q3 2026",
+      "type": "reported_summary"
     }
   ],
   "implications": [
     {
       "text": "Fremtind: combined ratio 73 % i Q3 2026, forbedret med 4.5 prosentpoeng fra Q2 2026 (77.5 %).",
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "company": "Fremtind",
+      "period": "Q3 2026",
       "type": "rule_based_interpretation"
     },
     {
       "text": "Gjensidige: combined ratio 73.6 % i Q3 2026, forbedret med 5.3 prosentpoeng fra Q2 2026 (78.9 %).",
       "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
-      "type": "rule_based_interpretation"
-    },
-    {
-      "text": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-      "type": "rule_based_interpretation"
-    },
-    {
-      "text": "Storebrand: combined ratio 87 % i Q3 2026, uendret med 0 prosentpoeng fra Q2 2026 (87 %).",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "company": "Gjensidige",
+      "period": "Q3 2026",
       "type": "rule_based_interpretation"
     },
     {
       "text": "Tryg: combined ratio 76.8 % i Q3 2026, forbedret med 12 prosentpoeng fra Q2 2026 (88.8 %).",
       "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "company": "Protector",
+      "period": "Q3 2026",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Storebrand: combined ratio 87 % i Q3 2026, uendret med 0 prosentpoeng fra Q2 2026 (87 %).",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "company": "Storebrand",
+      "period": "Q3 2026",
       "type": "rule_based_interpretation"
     }
   ],
+  "by_company": {
+    "Fremtind": {
+      "summary": "Fremtind: forsikringsinntekter 6305 NOKm (+4.3 % mot Q3 2025), forsikringsresultat 1704 NOKm, combined ratio 73 % (Q3 2025: 76.7 %) i Q3 2026.",
+      "comment": "Fremtind: combined ratio 73 % i Q3 2026, forbedret med 4.5 prosentpoeng fra Q2 2026 (77.5 %).",
+      "ytd": "HIÅ: forsikringsinntekter 18373 NOKm (+5.7 % mot HIÅ 2025).",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "period": "Q3 2026",
+      "has_comparative": true
+    },
+    "Gjensidige": {
+      "summary": "Gjensidige: forsikringsinntekter 11367.4 MNOK (+1.5 % mot Q3 2025), forsikringsresultat 3003.6 MNOK, combined ratio 73.6 % (Q3 2025: 79.7 %) i Q3 2026.",
+      "comment": "Gjensidige: combined ratio 73.6 % i Q3 2026, forbedret med 5.3 prosentpoeng fra Q2 2026 (78.9 %).",
+      "ytd": "HIÅ: forsikringsinntekter 33629.3 MNOK (+6.1 % mot HIÅ 2025).",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "period": "Q3 2026",
+      "has_comparative": true
+    },
+    "Tryg": {
+      "summary": "Tryg: forsikringsinntekter 10591 MDKK (+4.1 % mot Q3 2025), forsikringsresultat 2454 MDKK, combined ratio 76.8 % (Q3 2025: 78.6 %) i Q3 2026.",
+      "comment": "Tryg: combined ratio 76.8 % i Q3 2026, forbedret med 12 prosentpoeng fra Q2 2026 (88.8 %).",
+      "ytd": "HIÅ: forsikringsinntekter 31563 MDKK (+5.0 % mot HIÅ 2025).",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "period": "Q3 2026",
+      "has_comparative": true
+    },
+    "Protector": {
+      "summary": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+      "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
+      "ytd": "",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "period": "Q3 2026",
+      "has_comparative": false
+    },
+    "Storebrand": {
+      "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
+      "comment": "Storebrand: combined ratio 87 % i Q3 2026, uendret med 0 prosentpoeng fra Q2 2026 (87 %).",
+      "ytd": "HIÅ: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 8379 MNOK (+17.4 % mot HIÅ 2025).",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "period": "Q3 2026",
+      "has_comparative": true
+    }
+  },
+  "periods": {
+    "Q3 2026": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 6305 NOKm (+4.3 % mot Q3 2025), forsikringsresultat 1704 NOKm, combined ratio 73 % (Q3 2025: 76.7 %) i Q3 2026.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "company": "Fremtind",
+          "period": "Q3 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 11367.4 MNOK (+1.5 % mot Q3 2025), forsikringsresultat 3003.6 MNOK, combined ratio 73.6 % (Q3 2025: 79.7 %) i Q3 2026.",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "company": "Gjensidige",
+          "period": "Q3 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 10591 MDKK (+4.1 % mot Q3 2025), forsikringsresultat 2454 MDKK, combined ratio 76.8 % (Q3 2025: 78.6 %) i Q3 2026.",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q3 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q3 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q3 2026",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 73 % i Q3 2026, forbedret med 4.5 prosentpoeng fra Q2 2026 (77.5 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "company": "Fremtind",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 73.6 % i Q3 2026, forbedret med 5.3 prosentpoeng fra Q2 2026 (78.9 %).",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "company": "Gjensidige",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 76.8 % i Q3 2026, forbedret med 12 prosentpoeng fra Q2 2026 (88.8 %).",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Storebrand: combined ratio 87 % i Q3 2026, uendret med 0 prosentpoeng fra Q2 2026 (87 %).",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 6305 NOKm (+4.3 % mot Q3 2025), forsikringsresultat 1704 NOKm, combined ratio 73 % (Q3 2025: 76.7 %) i Q3 2026.",
+          "comment": "Fremtind: combined ratio 73 % i Q3 2026, forbedret med 4.5 prosentpoeng fra Q2 2026 (77.5 %).",
+          "ytd": "HIÅ: forsikringsinntekter 18373 NOKm (+5.7 % mot HIÅ 2025).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "period": "Q3 2026",
+          "has_comparative": true
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 11367.4 MNOK (+1.5 % mot Q3 2025), forsikringsresultat 3003.6 MNOK, combined ratio 73.6 % (Q3 2025: 79.7 %) i Q3 2026.",
+          "comment": "Gjensidige: combined ratio 73.6 % i Q3 2026, forbedret med 5.3 prosentpoeng fra Q2 2026 (78.9 %).",
+          "ytd": "HIÅ: forsikringsinntekter 33629.3 MNOK (+6.1 % mot HIÅ 2025).",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "period": "Q3 2026",
+          "has_comparative": true
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 10591 MDKK (+4.1 % mot Q3 2025), forsikringsresultat 2454 MDKK, combined ratio 76.8 % (Q3 2025: 78.6 %) i Q3 2026.",
+          "comment": "Tryg: combined ratio 76.8 % i Q3 2026, forbedret med 12 prosentpoeng fra Q2 2026 (88.8 %).",
+          "ytd": "HIÅ: forsikringsinntekter 31563 MDKK (+5.0 % mot HIÅ 2025).",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "period": "Q3 2026",
+          "has_comparative": true
+        },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+          "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
+          "ytd": "",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "period": "Q3 2026",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
+          "comment": "Storebrand: combined ratio 87 % i Q3 2026, uendret med 0 prosentpoeng fra Q2 2026 (87 %).",
+          "ytd": "HIÅ: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 8379 MNOK (+17.4 % mot HIÅ 2025).",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "period": "Q3 2026",
+          "has_comparative": true
+        }
+      }
+    },
+    "Q2 2026": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 5863 NOKm (+5.4 % mot Q2 2025), forsikringsresultat 1321 NOKm, combined ratio 77.5 % (Q2 2025: 84.6 %) i Q2 2026.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "company": "Fremtind",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 11257.8 MNOK (+7.3 % mot Q2 2025), forsikringsresultat 2375 MNOK, combined ratio 78.9 % (Q2 2025: 79 %) i Q2 2026.",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "company": "Gjensidige",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 10597 MDKK (+4.7 % mot Q2 2025), forsikringsresultat 1190 MDKK, combined ratio 88.8 % (Q2 2025: 77.2 %) i Q2 2026.",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Sampo: forsikringsinntekter 2437 EURm, forsikringsresultat 418 EURm, combined ratio 82.9 % i Q2 2026.",
+          "source_url": "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
+          "company": "Sampo",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Frende: forsikringsinntekter 935.132 NOKm (+13.5 % mot Q2 2025), combined ratio 81.3 % (Q2 2025: 84.5 %) i Q2 2026.",
+          "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Protector: forsikringsinntekter 3698 MNOK, forsikringsresultat 684 MNOK, combined ratio 81.5 % i Q2 2026.",
+          "source_url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2799 MNOK, combined ratio 87 % i Q2 2026.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q2 2026",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 77.5 % i Q2 2026, forbedret med 2.3 prosentpoeng fra Q1 2026 (79.8 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "company": "Fremtind",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 78.9 % i Q2 2026, forbedret med 0.3 prosentpoeng fra Q1 2026 (79.2 %).",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "company": "Gjensidige",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 88.8 % i Q2 2026, svekket med 4.8 prosentpoeng fra Q1 2026 (84 %).",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Sampo: combined ratio 82.9 % i Q2 2026, forbedret med 1.5 prosentpoeng fra Q1 2026 (84.4 %).",
+          "source_url": "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
+          "company": "Sampo",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Frende: combined ratio 81.3 % i Q2 2026, forbedret med 12.6 prosentpoeng fra Q1 2026 (93.9 %).",
+          "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Protector: combined ratio 81.5 % i Q2 2026, forbedret med 3.4 prosentpoeng fra Q1 2026 (84.9 %).",
+          "source_url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Storebrand: combined ratio 87 % i Q2 2026, forbedret med 6 prosentpoeng fra Q1 2026 (93 %).",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q2 2026",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 5863 NOKm (+5.4 % mot Q2 2025), forsikringsresultat 1321 NOKm, combined ratio 77.5 % (Q2 2025: 84.6 %) i Q2 2026.",
+          "comment": "Fremtind: combined ratio 77.5 % i Q2 2026, forbedret med 2.3 prosentpoeng fra Q1 2026 (79.8 %).",
+          "ytd": "HIÅ: forsikringsinntekter 12068 NOKm (+6.5 % mot HIÅ 2025).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "period": "Q2 2026",
+          "has_comparative": true
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 11257.8 MNOK (+7.3 % mot Q2 2025), forsikringsresultat 2375 MNOK, combined ratio 78.9 % (Q2 2025: 79 %) i Q2 2026.",
+          "comment": "Gjensidige: combined ratio 78.9 % i Q2 2026, forbedret med 0.3 prosentpoeng fra Q1 2026 (79.2 %).",
+          "ytd": "HIÅ: forsikringsinntekter 22261.9 MNOK (+8.7 % mot HIÅ 2025).",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "period": "Q2 2026",
+          "has_comparative": true
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 10597 MDKK (+4.7 % mot Q2 2025), forsikringsresultat 1190 MDKK, combined ratio 88.8 % (Q2 2025: 77.2 %) i Q2 2026.",
+          "comment": "Tryg: combined ratio 88.8 % i Q2 2026, svekket med 4.8 prosentpoeng fra Q1 2026 (84 %).",
+          "ytd": "HIÅ: forsikringsinntekter 20972 MDKK (+5.5 % mot HIÅ 2025).",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "period": "Q2 2026",
+          "has_comparative": true
+        },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2437 EURm, forsikringsresultat 418 EURm, combined ratio 82.9 % i Q2 2026.",
+          "comment": "Sampo: combined ratio 82.9 % i Q2 2026, forbedret med 1.5 prosentpoeng fra Q1 2026 (84.4 %).",
+          "ytd": "",
+          "source_url": "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
+          "period": "Q2 2026",
+          "has_comparative": false
+        },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 935.132 NOKm (+13.5 % mot Q2 2025), combined ratio 81.3 % (Q2 2025: 84.5 %) i Q2 2026.",
+          "comment": "Frende: combined ratio 81.3 % i Q2 2026, forbedret med 12.6 prosentpoeng fra Q1 2026 (93.9 %).",
+          "ytd": "HIÅ: forsikringsinntekter 2758.45 NOKm (+12.7 % mot HIÅ 2025).",
+          "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
+          "period": "Q2 2026",
+          "has_comparative": true
+        },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3698 MNOK, forsikringsresultat 684 MNOK, combined ratio 81.5 % i Q2 2026.",
+          "comment": "Protector: combined ratio 81.5 % i Q2 2026, forbedret med 3.4 prosentpoeng fra Q1 2026 (84.9 %).",
+          "ytd": "",
+          "source_url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+          "period": "Q2 2026",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2799 MNOK, combined ratio 87 % i Q2 2026.",
+          "comment": "Storebrand: combined ratio 87 % i Q2 2026, forbedret med 6 prosentpoeng fra Q1 2026 (93 %).",
+          "ytd": "",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "period": "Q2 2026",
+          "has_comparative": false
+        }
+      }
+    },
+    "Q1 2026": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 6205 NOKm (+7.6 % mot Q1 2025), forsikringsresultat 1256 NOKm, combined ratio 79.8 % (Q1 2025: 85.4 %) i Q1 2026.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "company": "Fremtind",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 11004.1 MNOK (+10.1 % mot Q1 2025), forsikringsresultat 2288.1 MNOK, combined ratio 79.2 % (Q1 2025: 86.9 %) i Q1 2026.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "company": "Gjensidige",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 10375 MDKK (+6.2 % mot Q1 2025), forsikringsresultat 1655 MDKK, combined ratio 84 % (Q1 2025: 84.2 %) i Q1 2026.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "company": "Tryg",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Sampo: forsikringsinntekter 2363 EURm, forsikringsresultat 368 EURm, combined ratio 84.4 % i Q1 2026.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
+          "company": "Sampo",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Frende: forsikringsinntekter 1823.32 NOKm (+12.3 % mot Q1 2025), combined ratio 93.9 % (Q1 2025: 102.7 %) i Q1 2026.",
+          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Protector: forsikringsinntekter 3696 MNOK, forsikringsresultat 559 MNOK, combined ratio 84.9 % i Q1 2026.",
+          "source_url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2684 MNOK, combined ratio 93 % i Q1 2026.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q1 2026",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 79.8 % i Q1 2026, 5.6 prosentpoeng lavere enn Q1 2025 (85.4 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "company": "Fremtind",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 79.2 % i Q1 2026, 7.7 prosentpoeng lavere enn Q1 2025 (86.9 %).",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "company": "Gjensidige",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 84 % i Q1 2026, 0.2 prosentpoeng lavere enn Q1 2025 (84.2 %).",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "company": "Tryg",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Sampo: combined ratio 84.4 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
+          "company": "Sampo",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Frende: combined ratio 93.9 % i Q1 2026, svekket med 3.1 prosentpoeng fra Q4 2025 (90.8 %).",
+          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Protector: combined ratio 84.9 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Storebrand: combined ratio 93 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q1 2026",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 6205 NOKm (+7.6 % mot Q1 2025), forsikringsresultat 1256 NOKm, combined ratio 79.8 % (Q1 2025: 85.4 %) i Q1 2026.",
+          "comment": "Fremtind: combined ratio 79.8 % i Q1 2026, 5.6 prosentpoeng lavere enn Q1 2025 (85.4 %).",
+          "ytd": "HIÅ: forsikringsinntekter 6205 NOKm (+7.6 % mot HIÅ 2025).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "period": "Q1 2026",
+          "has_comparative": true
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 11004.1 MNOK (+10.1 % mot Q1 2025), forsikringsresultat 2288.1 MNOK, combined ratio 79.2 % (Q1 2025: 86.9 %) i Q1 2026.",
+          "comment": "Gjensidige: combined ratio 79.2 % i Q1 2026, 7.7 prosentpoeng lavere enn Q1 2025 (86.9 %).",
+          "ytd": "",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "period": "Q1 2026",
+          "has_comparative": true
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 10375 MDKK (+6.2 % mot Q1 2025), forsikringsresultat 1655 MDKK, combined ratio 84 % (Q1 2025: 84.2 %) i Q1 2026.",
+          "comment": "Tryg: combined ratio 84 % i Q1 2026, 0.2 prosentpoeng lavere enn Q1 2025 (84.2 %).",
+          "ytd": "HIÅ: forsikringsinntekter 10375 MDKK (+6.2 % mot HIÅ 2025).",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "period": "Q1 2026",
+          "has_comparative": true
+        },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2363 EURm, forsikringsresultat 368 EURm, combined ratio 84.4 % i Q1 2026.",
+          "comment": "Sampo: combined ratio 84.4 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
+          "period": "Q1 2026",
+          "has_comparative": false
+        },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 1823.32 NOKm (+12.3 % mot Q1 2025), combined ratio 93.9 % (Q1 2025: 102.7 %) i Q1 2026.",
+          "comment": "Frende: combined ratio 93.9 % i Q1 2026, svekket med 3.1 prosentpoeng fra Q4 2025 (90.8 %).",
+          "ytd": "HIÅ: forsikringsinntekter 1823.32 NOKm (+12.3 % mot HIÅ 2025).",
+          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
+          "period": "Q1 2026",
+          "has_comparative": true
+        },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3696 MNOK, forsikringsresultat 559 MNOK, combined ratio 84.9 % i Q1 2026.",
+          "comment": "Protector: combined ratio 84.9 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
+          "period": "Q1 2026",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2684 MNOK, combined ratio 93 % i Q1 2026.",
+          "comment": "Storebrand: combined ratio 93 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "period": "Q1 2026",
+          "has_comparative": false
+        }
+      }
+    },
+    "Q4 2025": {
+      "brief": [
+        {
+          "text": "Frende: forsikringsinntekter 878.037 NOKm, combined ratio 90.8 % i Q4 2025.",
+          "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q4 2025",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Frende: combined ratio 90.8 % i Q4 2025, svekket med 5.5 prosentpoeng fra Q3 2025 (85.3 %).",
+          "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q4 2025",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 878.037 NOKm, combined ratio 90.8 % i Q4 2025.",
+          "comment": "Frende: combined ratio 90.8 % i Q4 2025, svekket med 5.5 prosentpoeng fra Q3 2025 (85.3 %).",
+          "ytd": "HIÅ: forsikringsinntekter 4144.31 NOKm.",
+          "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
+          "period": "Q4 2025",
+          "has_comparative": false
+        }
+      }
+    },
+    "Q3 2025": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 6047 NOKm, forsikringsresultat 1411 NOKm, combined ratio 76.7 % i Q3 2025.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "company": "Fremtind",
+          "period": "Q3 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 11201.9 MNOK, forsikringsresultat 2270.6 MNOK, combined ratio 79.7 % i Q3 2025.",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "company": "Gjensidige",
+          "period": "Q3 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 10175 MDKK, forsikringsresultat 2181 MDKK, combined ratio 78.6 % i Q3 2025.",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q3 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Frende: forsikringsinntekter 818.27 NOKm, combined ratio 85.3 % i Q3 2025.",
+          "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q3 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2475 MNOK, combined ratio 89 % i Q3 2025.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q3 2025",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 76.7 % i Q3 2025, forbedret med 7.9 prosentpoeng fra Q2 2025 (84.6 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "company": "Fremtind",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 79.7 % i Q3 2025, svekket med 0.7 prosentpoeng fra Q2 2025 (79 %).",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "company": "Gjensidige",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 78.6 % i Q3 2025, svekket med 1.4 prosentpoeng fra Q2 2025 (77.2 %).",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Frende: combined ratio 85.3 % i Q3 2025, svekket med 0.8 prosentpoeng fra Q2 2025 (84.5 %).",
+          "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Storebrand: combined ratio 89 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "company": "Storebrand",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 6047 NOKm, forsikringsresultat 1411 NOKm, combined ratio 76.7 % i Q3 2025.",
+          "comment": "Fremtind: combined ratio 76.7 % i Q3 2025, forbedret med 7.9 prosentpoeng fra Q2 2025 (84.6 %).",
+          "ytd": "HIÅ: forsikringsinntekter 17376 NOKm.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "period": "Q3 2025",
+          "has_comparative": false
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 11201.9 MNOK, forsikringsresultat 2270.6 MNOK, combined ratio 79.7 % i Q3 2025.",
+          "comment": "Gjensidige: combined ratio 79.7 % i Q3 2025, svekket med 0.7 prosentpoeng fra Q2 2025 (79 %).",
+          "ytd": "HIÅ: forsikringsinntekter 31689 MNOK.",
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "period": "Q3 2025",
+          "has_comparative": false
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 10175 MDKK, forsikringsresultat 2181 MDKK, combined ratio 78.6 % i Q3 2025.",
+          "comment": "Tryg: combined ratio 78.6 % i Q3 2025, svekket med 1.4 prosentpoeng fra Q2 2025 (77.2 %).",
+          "ytd": "HIÅ: forsikringsinntekter 30063 MDKK.",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "period": "Q3 2025",
+          "has_comparative": false
+        },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 818.27 NOKm, combined ratio 85.3 % i Q3 2025.",
+          "comment": "Frende: combined ratio 85.3 % i Q3 2025, svekket med 0.8 prosentpoeng fra Q2 2025 (84.5 %).",
+          "ytd": "HIÅ: forsikringsinntekter 3266.27 NOKm.",
+          "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
+          "period": "Q3 2025",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2475 MNOK, combined ratio 89 % i Q3 2025.",
+          "comment": "Storebrand: combined ratio 89 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 7140 MNOK.",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "period": "Q3 2025",
+          "has_comparative": false
+        }
+      }
+    },
+    "Q2 2025": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 5560 NOKm, forsikringsresultat 856 NOKm, combined ratio 84.6 % i Q2 2025.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "company": "Fremtind",
+          "period": "Q2 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 10493.2 MNOK, forsikringsresultat 2200.5 MNOK, combined ratio 79 % i Q2 2025.",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "company": "Gjensidige",
+          "period": "Q2 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 10120 MDKK, forsikringsresultat 2307 MDKK, combined ratio 77.2 % i Q2 2025.",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q2 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Frende: forsikringsinntekter 823.863 NOKm, combined ratio 84.5 % i Q2 2025.",
+          "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q2 2025",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 84.6 % i Q2 2025, forbedret med 0.8 prosentpoeng fra Q1 2025 (85.4 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "company": "Fremtind",
+          "period": "Q2 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 79 % i Q2 2025, forbedret med 7.9 prosentpoeng fra Q1 2025 (86.9 %).",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "company": "Gjensidige",
+          "period": "Q2 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 77.2 % i Q2 2025, forbedret med 7 prosentpoeng fra Q1 2025 (84.2 %).",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q2 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Frende: combined ratio 84.5 % i Q2 2025, forbedret med 18.2 prosentpoeng fra Q1 2025 (102.7 %).",
+          "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q2 2025",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 5560 NOKm, forsikringsresultat 856 NOKm, combined ratio 84.6 % i Q2 2025.",
+          "comment": "Fremtind: combined ratio 84.6 % i Q2 2025, forbedret med 0.8 prosentpoeng fra Q1 2025 (85.4 %).",
+          "ytd": "HIÅ: forsikringsinntekter 11328 NOKm.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "period": "Q2 2025",
+          "has_comparative": false
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 10493.2 MNOK, forsikringsresultat 2200.5 MNOK, combined ratio 79 % i Q2 2025.",
+          "comment": "Gjensidige: combined ratio 79 % i Q2 2025, forbedret med 7.9 prosentpoeng fra Q1 2025 (86.9 %).",
+          "ytd": "HIÅ: forsikringsinntekter 20487.1 MNOK.",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "period": "Q2 2025",
+          "has_comparative": false
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 10120 MDKK, forsikringsresultat 2307 MDKK, combined ratio 77.2 % i Q2 2025.",
+          "comment": "Tryg: combined ratio 77.2 % i Q2 2025, forbedret med 7 prosentpoeng fra Q1 2025 (84.2 %).",
+          "ytd": "HIÅ: forsikringsinntekter 19888 MDKK.",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "period": "Q2 2025",
+          "has_comparative": false
+        },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 823.863 NOKm, combined ratio 84.5 % i Q2 2025.",
+          "comment": "Frende: combined ratio 84.5 % i Q2 2025, forbedret med 18.2 prosentpoeng fra Q1 2025 (102.7 %).",
+          "ytd": "HIÅ: forsikringsinntekter 2448 NOKm.",
+          "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
+          "period": "Q2 2025",
+          "has_comparative": false
+        }
+      }
+    },
+    "Q1 2025": {
+      "brief": [
+        {
+          "text": "Fremtind: forsikringsinntekter 5769 NOKm, forsikringsresultat 843 NOKm, combined ratio 85.4 % i Q1 2025.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "company": "Fremtind",
+          "period": "Q1 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Gjensidige: forsikringsinntekter 9993.9 MNOK, forsikringsresultat 1313.6 MNOK, combined ratio 86.9 % i Q1 2025.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "company": "Gjensidige",
+          "period": "Q1 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Tryg: forsikringsinntekter 9768 MDKK, forsikringsresultat 1540 MDKK, combined ratio 84.2 % i Q1 2025.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "company": "Tryg",
+          "period": "Q1 2025",
+          "type": "reported_summary"
+        },
+        {
+          "text": "Frende: forsikringsinntekter 1624.14 NOKm, combined ratio 102.7 % i Q1 2025.",
+          "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q1 2025",
+          "type": "reported_summary"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 85.4 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "company": "Fremtind",
+          "period": "Q1 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Gjensidige: combined ratio 86.9 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "company": "Gjensidige",
+          "period": "Q1 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 84.2 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "company": "Tryg",
+          "period": "Q1 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Frende: combined ratio 102.7 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q1 2025",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 5769 NOKm, forsikringsresultat 843 NOKm, combined ratio 85.4 % i Q1 2025.",
+          "comment": "Fremtind: combined ratio 85.4 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 5769 NOKm.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+          "period": "Q1 2025",
+          "has_comparative": false
+        },
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 9993.9 MNOK, forsikringsresultat 1313.6 MNOK, combined ratio 86.9 % i Q1 2025.",
+          "comment": "Gjensidige: combined ratio 86.9 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "period": "Q1 2025",
+          "has_comparative": false
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 9768 MDKK, forsikringsresultat 1540 MDKK, combined ratio 84.2 % i Q1 2025.",
+          "comment": "Tryg: combined ratio 84.2 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 9768 MDKK.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "period": "Q1 2025",
+          "has_comparative": false
+        },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 1624.14 NOKm, combined ratio 102.7 % i Q1 2025.",
+          "comment": "Frende: combined ratio 102.7 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 1624.14 NOKm.",
+          "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
+          "period": "Q1 2025",
+          "has_comparative": false
+        }
+      }
+    }
+  },
   "news": [
     {
       "headline": "Knallsterke forsikringstall: – Nesten for godt til å være sant",
@@ -130,7 +909,7 @@
     },
     {
       "headline": "Gjensidige, Forsikring | Øker forsikringsprisene og håver inn: – Tar av oss hatten",
-      "published_at": "2026-10-23T07:46:21+00:00",
+      "published_at": "2026-10-23T09:33:49+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPZjd0cVE2ZURzWUtWZ08tb21FeUo0cEdLRUVIaUNfMHUtUC1XeHE4UFdpd1NUeVEwZE9DdThoVmF1MDNsdXh4X3BDcDZZUVFUSFFLVGRjN3BVTlZiRGVQVXV1RUxUZ1VMS3JNRHgweWJvZmpkSHBsUkJiZ0tjMmpBa1gtQ19SVFJjejRFcWtXRUcwb2xzR1ZXNFQzZmQtUGNBU3VrMEV3?oc=5",
       "publisher": "Nettavisen"
     },
@@ -351,12 +1130,6 @@
       "publisher": "Finansavisen"
     },
     {
-      "headline": "STOREBRAND ASA: Status share buyback program",
-      "published_at": "2026-10-19T06:30:07+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOajB4bDBDTWRMTDdRd21VLW5fTzNCOVI3ckdaUGxSY1NMZ3NHbmg1WnFScEZnSHRUdEhjMGNlb2xocXYtajR1ZmUwRkdMa2djQXU0OTBHT0lVN2VBbldwandIcHRtVlYya0pBMXF0SUNld29TQURRWkRrMmFfSFoySklRa2lLOG9GZlF3bXc2ZDNJeE1QSlpVSFNWV3VqN3hBWS1iX3Fob19aQTlZY243VGRQVV92Z1FSX25sUzVjMVFJR0dTek5Ld3JjZGZZdw?oc=5",
-      "publisher": "Finansavisen"
-    },
-    {
       "headline": "STOREBRAND: GJENNOMFØRER KNIF-TRANSAKSJONEN",
       "published_at": "2026-10-16T06:24:38+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOTmltbGV1Ul9TOUExMGhiWXJTaWtiS1hCN0s1LWl0N21OQmx5MlhLNGdFNFljQVZIUzlsQWhDbjlFWXdkSzZZQTU5X0o2bnFpYktYX0dvZzRvYnV1X3Z2UGdidVFaYWlaVzJ0TDlkc09UMHA2SFBVVmxwakV3UTZaLV9JUWRDSWp4dHhqSDBHSy1ZdGZlTThvNXBn?oc=5",
@@ -364,14 +1137,20 @@
     },
     {
       "headline": "STOREBRAND ASA: Resolution to increase the share capital",
-      "published_at": "2026-10-16T06:00:18+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQbUJUOWo3U2xfTkd1V3hQVU9NM3JXTzZwODdHNVBPQWFsOG1wbS1PMEdSLXktbWREX0tYM1RQSDlreEZndC1EcjNFcWJVeUczeXUxR2o3Wm9wWjVvT3h5b2FUVzNNT3MzTWRZX0JEejMwX0hBREtZOTltNXZhY0c0aUo0cjlGYjJMb25kTk9qVjg5SkxuT1BERE54VjhzazlzVFRIaFhMQlgzTFZVOUdwZkNNV211a3VSZWsxMTZnVFhIRmlrLTVxeUpFN190RXY5WWdUNkM2Qmhhalc5RVE?oc=5",
+      "published_at": "2026-10-16T06:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOOWt6dlgxMzVHOERFdTVNS2ljMlNfVldmMGlBQnF2bjRfaDN0ZDkyR0pHelNEMHJmMUI2SVF0RU9MN0FGb2VLeFJ3NUEtTWdOUi11OVdsSl9tYVNNSkNMSVRiel9JRG5KejNRVEtRY2lvQlJIU0p0bHVaRGFxVHVXZnR0MDRGSXd0ZVNkN2xZTnJxSHBWY1pZcGFHS25lTFhLb3V2QWplUXlFSUdnSXZUcjFIYklRclNzQjE4SGJaSlZsbm1UUzZLb3g0NFhfM0pieU9aU2hRUFpPa1NhdFE?oc=5",
       "publisher": "Finansavisen"
     },
     {
       "headline": "STOREBRAND ASA: Vedtak om kapitalforhøyelse",
       "published_at": "2026-10-16T06:00:00+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNQnZheE4yemhFdFY1c2hyQlJsNWJCbTN2c1lIbHlLcVdEa0RoZkRucVpUT3VEUXNNaHM3blM3emlXal9ZSThNUHRKV29YZWh2Ql9wTmtGY2FfYnpTWmdTVTFoZzR6X1RJeVhWc1BOSjNMZ1dCZGtHRXgxU1N6ODlqLVZqblVydEw2dTg5azR3X194UUc3S19TSHZiOTg0eW1PRkg2LVR1VnpNUlFUQ2tzWEFLaW9hUGpVRGJjTzhHdUFhbWJZM1Y5NV84dE0?oc=5",
+      "publisher": "Finansavisen"
+    },
+    {
+      "headline": "STOREBRAND ASA: Status share buyback program",
+      "published_at": "2026-10-12T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZnFPRG1ZbXVXdUttaF9kX3NuSHVSN1FFUWl5UmVYb3p5LWRZek9TX002Umh5MDloTkdYcmhpMVl3NC1JSm1CZUJtUDBaNHQ4OTMxbU45R3o4SGUxT29NSnhRWVpzQWZxMW9SNVM5ZEs3a3JNSl9jNTJJVUJyTGFaRkNEQTB0M0lIck5EdmdyTXYzbGFwVUt2MUYyUW82YmY2NS1CR01ka2JHWk1UQVhGblNqeFlTMVlMUEE4dWtsSFBSTmsyQXdhRWNCb2x0Zw?oc=5",
       "publisher": "Finansavisen"
     },
     {
@@ -394,5 +1173,5 @@
     }
   ],
   "coverage": "partial",
-  "method": "verified financial feed and approved news only"
+  "method": "verified quarterly financial observations, same-scope comparisons and source-attributed news"
 }
