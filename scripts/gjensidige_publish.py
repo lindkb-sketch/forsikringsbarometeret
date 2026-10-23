@@ -92,14 +92,24 @@ def parse_group_table(pages, year, quarter, url, sha):
         values = re.findall(r'(?<![A-Za-z0-9])[-]?\d[\d,]*\.\d+(?!\d)', remainder)
         if len(values) < (3 if quarter > 1 else 1):
             raise ValueError(f'Insufficient group table columns for {metric}')
-        for period, index in [('quarter', 0)] + ([('ytd', 2)] if quarter > 1 else []):
-            result.append(dict(company='Gjensidige', year=year, quarter=quarter,
+        columns=(
+            [('quarter',year,0),('quarter',year-1,1)]
+            if quarter==1 else
+            [('quarter',year,0),('quarter',year-1,1),
+             ('ytd',year,2),('ytd',year-1,3)]
+        )
+        if len(values)<(2 if quarter==1 else 4):
+            raise ValueError('Gjensidige prior-year comparative columns missing')
+        for period,observation_year,index in columns:
+            result.append(dict(company='Gjensidige', year=observation_year, quarter=quarter,
                 scope='group', source_scope='group', period_type=period, metric=metric,
                 value=float(values[index].replace(',', '')),
                 unit='percent' if 'ratio' in metric else 'MNOK', status='reported',
                 source_url=url, source_type='official_quarterly_report',
                 source_page=page, source_sha256=sha,
-                source_section='Group highlights / Alternative performance measures'))
+                source_document_period=f'Q{quarter} {year}',
+                source_section='Group highlights / Alternative performance measures'+
+                 (' / prior-year comparative column' if observation_year!=year else '')))
     return result
 
 def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
@@ -134,7 +144,7 @@ def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
         if not REQUIRED <= found:
             raise ValueError(f'Gjensidige Q{quarter} {year} missing verified quarterly metrics: {sorted(REQUIRED-found)}')
         if any(r['company'] != 'Gjensidige' or r['scope'] != 'group' or
-               r['quarter'] != quarter or r['year'] != year for r in rows):
+               r['quarter'] != quarter or r['year'] not in (year,year-1) for r in rows):
             raise ValueError('Cross-period or scope contamination')
         staged.extend(rows)
         source_urls[f'Q{quarter}'] = url
