@@ -24,7 +24,7 @@ class VerifiedDashboardTests(unittest.TestCase):
   s=(ROOT/'index.html').read_text()
   self.assertIn('id="verified-q3-dashboard-bridge"',s)
   self.assertIn("const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost'",s)
-  self.assertIn("d[key]=fmt(r.value",s)
+  self.assertIn("d[key+suffix]=fmt(r.value",s)
   self.assertIn("show(current,true)",s)
   self.assertIn("setInterval(syncVerified,300000)",s)
  def test_calendar_is_present_on_dashboard(self):
