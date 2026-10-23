@@ -45,13 +45,23 @@ def parse_group(blob,year,quarter,url):
                 print('TRYG_PDF_UNMATCHED',year,quarter,metric,'columns',column_count,
                       'candidates',[x for x in lines if re.search(label,x,re.I)],flush=True)
                 raise ValueError('Tryg group metric missing or ambiguous: '+metric)
-            for period,col in [('quarter',1),('ytd',3)]:
-                val=float(matches[0].group(1 if period=='quarter' else (3 if column_count==5 else 1)).replace(',',''))
-                out.append(dict(company='Tryg',year=year,quarter=quarter,scope='group',
+            positions=(
+                [('quarter',year,1),('quarter',year-1,2),
+                 ('ytd',year,3),('ytd',year-1,4)]
+                if column_count==5 else
+                [('quarter',year,1),('quarter',year-1,2),
+                 ('ytd',year,1),('ytd',year-1,2)]
+            )
+            for period,observation_year,col in positions:
+                val=float(matches[0].group(col).replace(',',''))
+                out.append(dict(company='Tryg',year=observation_year,quarter=quarter,scope='group',
                                 source_scope='group',period_type=period,metric=metric,value=val,
                                 unit='percent' if metric.endswith('ratio') else 'MDKK',
                                 status='reported',source_url=url,source_type='official_quarterly_report',
-                                source_page=page_no,source_sha256=sha,source_section='Income overview'))
+                                source_page=page_no,source_sha256=sha,
+                                source_document_period=f'Q{quarter} {year}',
+                                source_section='Income overview'+
+                                  (' / prior-year comparative column' if observation_year!=year else '')))
         return out
 
 def run(pairs=None):
