@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-22T20:20:58+00:00",
+  "updated_at": "2026-10-23T07:30:02+00:00",
   "companies": {
     "Storebrand": {
       "next_event": {
@@ -12,8 +12,8 @@
     },
     "Protector": {
       "next_event": {
-        "period": "Q3 2026",
-        "date": "2026-10-22",
+        "period": "Q4 2026",
+        "date": "2027-01-28",
         "source_url": "https://investor.protectorforsikring.no/all-events"
       },
       "locked_periods": [],
