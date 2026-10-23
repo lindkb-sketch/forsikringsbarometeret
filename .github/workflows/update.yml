@@ -106,3 +106,19 @@ jobs:
         id: deployment
       - name: Verify actual public finance, news, stock and editorial JSON
         run: python scripts/verify_public_pages.py
+      - name: Install Chromium and browser automation
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
+        run: node tests/live_browser_e2e.cjs
+      - name: Save browser screenshots and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-homepage-e2e
+          path: |
+            data/browser_home_q3.png
+            data/browser_home_ytd.png
+            data/browser_e2e_report.json
+          if-no-files-found: warn
