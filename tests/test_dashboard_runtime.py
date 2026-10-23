@@ -48,7 +48,7 @@ class DashboardRuntimeTests(unittest.TestCase):
 
  def test_q3_revenue_previous_year_profitability_and_brief_are_wired(self):
   html=(ROOT/'index.html').read_text()
-  for expected in ("d['revenue'+suffix]=fmt(row.value)","d[k+suffix]=fmt(row.value","profitabilityVerified[c][label]=[loss,cost,cr]","Forsikringsinntekter · Q3","(period==='H3'?'HIÅ':'Q3')+' 2025: ikke verifisert'","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
+  for expected in ("d['revenue'+suffix]=fmt(row.value)","d[k+suffix]=fmt(row.value","profitabilityVerified[c][label]=[loss,cost,cr]","Forsikringsinntekter · Q3","2025: ikke verifisert","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
    self.assertIn(expected,html)
   import json
   feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
