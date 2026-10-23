@@ -2,109 +2,55 @@
   "period": "Q3 2026",
   "brief": [
     {
-      "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
-      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+      "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
       "source_urls": [
-        "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-        "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-        "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en"
+        "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
       ],
       "companies": [
         "Fremtind",
         "Gjensidige",
+        "Tryg",
+        "Protector"
+      ],
+      "period": "Q3 2026",
+      "type": "qualitative_quarter_theme",
+      "theme": "diverging_underwriting"
+    },
+    {
+      "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_urls": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+      ],
+      "companies": [
+        "Fremtind",
+        "Gjensidige",
+        "Protector",
+        "Storebrand"
+      ],
+      "period": "Q3 2026",
+      "type": "qualitative_quarter_theme",
+      "theme": "revenue_direction"
+    },
+    {
+      "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Tryg. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_urls": [
+        "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+      ],
+      "companies": [
         "Tryg"
       ],
       "period": "Q3 2026",
       "type": "qualitative_quarter_theme",
-      "theme": "profitability",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Fremtind",
-          "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "kind": "official_company_release"
-        },
-        {
-          "company": "Gjensidige",
-          "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-          "kind": "official_company_release"
-        },
-        {
-          "company": "Tryg",
-          "url": "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en",
-          "kind": "issuer_interim_report_announcement"
-        }
-      ]
-    },
-    {
-      "text": "Pristiltak er fortsatt en sentral drivkraft bak inntektsveksten. Gjensidige trekker særlig frem prisendringer på tvers av privat- og bedriftsmarkedet, kombinert med volumvekst i utvalgte forsikringsområder. Dette gjør det viktig å skille prisdrevet vekst fra økt kundetilfang når selskapene vurderes.",
-      "source_url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-      "source_urls": [
-        "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
-      ],
-      "companies": [
-        "Gjensidige"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "growth",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Gjensidige",
-          "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-          "kind": "official_company_release"
-        }
-      ]
-    },
-    {
-      "text": "Storbrannen i Krokstadelva i Drammensregionen er en av kvartalets viktigste enkelthendelser. Fremtind beskriver omfattende skadehåndtering og opplyser at brannen var hovedforklaringen på selskapets storskader. Gjensidige omtaler også hendelsen og hvordan berørte kunder ble fulgt opp. Det er ikke grunnlag for å tillegge alle selskapene samme skadebelastning.",
-      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-      "source_urls": [
-        "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-        "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
-      ],
-      "companies": [
-        "Fremtind",
-        "Gjensidige"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "large_claims",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Fremtind",
-          "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "kind": "official_company_release"
-        },
-        {
-          "company": "Gjensidige",
-          "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-          "kind": "official_company_release"
-        }
-      ]
-    },
-    {
-      "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
-      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-      "source_urls": [
-        "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
-      ],
-      "companies": [
-        "Fremtind"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "weather",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Fremtind",
-          "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "kind": "official_company_release"
-        }
-      ]
+      "theme": "revenue_decline"
     }
   ],
   "implications": [
@@ -190,109 +136,55 @@
     "Q3 2026": {
       "brief": [
         {
-          "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
-          "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Tryg forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Protector har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
-            "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-            "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-            "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en"
+            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+            "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
           ],
           "companies": [
             "Fremtind",
             "Gjensidige",
+            "Tryg",
+            "Protector"
+          ],
+          "period": "Q3 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "diverging_underwriting"
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+            "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+          ],
+          "companies": [
+            "Fremtind",
+            "Gjensidige",
+            "Protector",
+            "Storebrand"
+          ],
+          "period": "Q3 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_direction"
+        },
+        {
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Tryg. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_urls": [
+            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+          ],
+          "companies": [
             "Tryg"
           ],
           "period": "Q3 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-              "kind": "official_company_release"
-            },
-            {
-              "company": "Gjensidige",
-              "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-              "kind": "official_company_release"
-            },
-            {
-              "company": "Tryg",
-              "url": "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en",
-              "kind": "issuer_interim_report_announcement"
-            }
-          ]
-        },
-        {
-          "text": "Pristiltak er fortsatt en sentral drivkraft bak inntektsveksten. Gjensidige trekker særlig frem prisendringer på tvers av privat- og bedriftsmarkedet, kombinert med volumvekst i utvalgte forsikringsområder. Dette gjør det viktig å skille prisdrevet vekst fra økt kundetilfang når selskapene vurderes.",
-          "source_url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-          "source_urls": [
-            "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "growth",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-              "kind": "official_company_release"
-            }
-          ]
-        },
-        {
-          "text": "Storbrannen i Krokstadelva i Drammensregionen er en av kvartalets viktigste enkelthendelser. Fremtind beskriver omfattende skadehåndtering og opplyser at brannen var hovedforklaringen på selskapets storskader. Gjensidige omtaler også hendelsen og hvordan berørte kunder ble fulgt opp. Det er ikke grunnlag for å tillegge alle selskapene samme skadebelastning.",
-          "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "source_urls": [
-            "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-            "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
-          ],
-          "companies": [
-            "Fremtind",
-            "Gjensidige"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "large_claims",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-              "kind": "official_company_release"
-            },
-            {
-              "company": "Gjensidige",
-              "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
-              "kind": "official_company_release"
-            }
-          ]
-        },
-        {
-          "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
-          "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "source_urls": [
-            "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
-          ],
-          "companies": [
-            "Fremtind"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-              "kind": "official_company_release"
-            }
-          ]
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
@@ -1138,7 +1030,7 @@
     {
       "headline": "Økt resultat og enda bedre lønnsomhet for Gjensidige",
       "published_at": "2026-10-22T20:03:00+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxONmtPbnI4RUhvaF9MbV9ubnpkSXFaREdrVWYzYllFNGFuS19yMHNzcWFZVklVeHpWbXNrU1lwNHk3c2pGRmNwdFNXMkFlb1dZU1dxRHU3dkcwekV3aW9VYUVYcWt6SnFSVUYyUWVkNzFwdTV3aWFMeF9yZ3NHdDN6VngxSDZuUW5mdkxvd3FMZVc?oc=5",
+      "source_url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQVG12d0RrcEFxRDY5X2I1QjhLU1M4bUt1RE1Eb2sxVWk4Z0E5VWpoaFBaMHh2N05zOEpqUlZOZUxkanpxZTIyR2dwWW5rb3RuNm1XbUFMR2dXY0ZuTXhxdGMzZlZYZWp4UDNjUU9SU0VrR1dxMERvbTdhU1hhUXVyMDhjTkJTY3l2Zk1pRzVXXzJyempVcUhVLUNteU11NzV2aDlYSGZtYndfLWotSl91emM3ckZ6UlpINW1ZTUJua1JVdw?oc=5",
       "publisher": "DN"
     },
     {
@@ -1299,5 +1191,5 @@
     }
   ],
   "coverage": "partial",
-  "method": "Issuer-sourced thematic commentary for quarters with grounded supporting sources; audited financial trends fallback elsewhere"
+  "method": "qualitative cross-company quarter themes from audited same-basis observations, without unverified causal explanations; source-attributed news"
 }
