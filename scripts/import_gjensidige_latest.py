@@ -56,11 +56,11 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
         document_head = " ".join(text for _, text in pages[:6]).lower()
         quarter_word = ("first", "second", "third", "fourth")[quarter - 1]
         indicators = (
-            rf"\\bq\\s*{quarter}\\b",
-            rf"\\b{quarter}(?:st|nd|rd|th)\\s+quarter\\b",
-            rf"\\b{quarter}\\.?\\s*kvartal\\b",
-            rf"\\b{quarter}\\s*quarter\\b",
-            rf"\\b{quarter_word}\\s+quarter\\b",
+            rf"\bq\s*{quarter}\b",
+            rf"\b{quarter}(?:st|nd|rd|th)\s+quarter\b",
+            rf"\b{quarter}\.?\s*kvartal\b",
+            rf"\b{quarter}\s*quarter\b",
+            rf"\b{quarter_word}\s+quarter\b",
         )
         if ("gjensidige" not in document_head or str(year) not in document_head or
             not any(re.search(pattern, document_head) for pattern in indicators)):
