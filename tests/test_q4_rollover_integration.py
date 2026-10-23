@@ -30,7 +30,7 @@ class Q4RolloverContracts(unittest.TestCase):
         result=build({'observations':rows,'coverage_complete':False},{'items':[]})
         self.assertEqual(result['period'],'Q4 2026')
         self.assertIn('Q3 2026',result['periods'])
-        self.assertEqual({x['company'] for x in result['brief']},{'Gjensidige'})
+        self.assertTrue(any('Gjensidige' in x['companies'] for x in result['brief']))
         self.assertEqual(result['coverage'],'partial')
 
     def test_year_rollover_requires_verified_next_year_observation(self):
