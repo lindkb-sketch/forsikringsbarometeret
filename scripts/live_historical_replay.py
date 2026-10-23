@@ -74,4 +74,5 @@ def run():
   stage_error=type(exc).__name__+': '+str(exc)[:350]
  report={"staged_feed_generated":stage_path.exists(),"staged_feed_error":stage_error,"results":results,"production_data_modified":False,"full_seven_certified":all(r["clean_replay_certified"] for r in results),"replay_mode":"company historical rows removed from disposable baseline"}
  (ROOT/"data/live_historical_replay.json").write_text(json.dumps(report,indent=2)+"\n")
+ print("REPLAY_CERTIFICATION",sum(x["historical_rows_recovered"] for x in results),"/",sum(x["historical_rows_expected"] for x in results),"full_seven",report["full_seven_certified"],flush=True)
 if __name__=="__main__":run()
