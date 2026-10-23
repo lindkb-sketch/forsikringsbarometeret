@@ -11,12 +11,13 @@ const pct=v=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1,minimumFract
 const safeUrl=v=>typeof v==='string'&&/^https:\/\//.test(v)?esc(v):'#';
 const metricValue=r=>r?(RATE.has(r.metric)?pct(r.value):money(r.value)+' '+esc(r.unit||'')):'—';
 let state={feed:null,news:null,editorial:null,stocks:null,selected:null,lastSync:null,errors:[]};
+let manuallySelected=false;
 function periods(){
  const all=state.feed?.observations||[];
  return [...new Set(all.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported')
  .map(r=>r.year+'-'+r.quarter))].sort((a,b)=>{const [ay,aq]=a.split('-').map(Number),[by,bq]=b.split('-').map(Number);return by-ay||bq-aq});
 }
-function activePeriod(){const ps=periods();if(!ps.length)return null;if(!ps.includes(state.selected))state.selected=ps[0];const [year,quarter]=state.selected.split('-').map(Number);return {year,quarter,label:'Q'+quarter+' '+year};}
+function activePeriod(){const ps=periods();if(!ps.length)return null;if(!manuallySelected||!ps.includes(state.selected))state.selected=ps[0];const [year,quarter]=state.selected.split('-').map(Number);return {year,quarter,label:'Q'+quarter+' '+year};}
 function get(company,periodType,metric,year,quarter,scope='group'){
  return (state.feed?.observations||[]).find(r=>r.company===company&&r.scope===scope&&r.period_type===periodType&&r.metric===metric&&r.year===year&&r.quarter===quarter&&['reported','calculated'].includes(r.status)&&Number.isFinite(r.value));
 }
@@ -105,7 +106,7 @@ function install(){
   home=function(){return '<div id="live-primary-dashboard">'+html()+'</div>'+originalHome();};
   company=function(c){return '<div id="live-primary-dashboard">'+renderFinancial()+'</div>'+originalCompany(c);};
   window.__liveDashboardInstalled=true;
-  document.addEventListener('change',e=>{if(e.target?.id==='live-quarter-select'){state.selected=e.target.value;show(current,true);}});
+  document.addEventListener('change',e=>{if(e.target?.id==='live-quarter-select'){state.selected=e.target.value;manuallySelected=true;show(current,true);}});
  }
  if(typeof show==='function')show(current,true);
 }
