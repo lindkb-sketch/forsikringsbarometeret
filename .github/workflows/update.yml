@@ -25,6 +25,8 @@ jobs:
           node-version: '22'
       - name: Install Python dependencies
         run: python -m pip install -r requirements-reports.txt
+      - name: Rebuild validated feed before regression tests
+        run: python scripts/build_verified_feed.py
       - name: Test dashboard and financial data
         run: |
           python -m unittest discover -s tests -v
