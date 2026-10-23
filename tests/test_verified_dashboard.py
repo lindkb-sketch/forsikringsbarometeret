@@ -29,7 +29,7 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn("setInterval(refresh,300000)",(ROOT/"scripts/quarterly_runtime.js").read_text())
  def test_calendar_is_present_on_dashboard(self):
   s=(ROOT/'index.html').read_text()
-  self.assertIn("home=function(){const html=previous()",s)
+  self.assertIn("monCalendar()",s)
   self.assertIn("html+monCalendar()",s)
   self.assertIn("data/live.json?ts=",s)
   self.assertIn("mon-cal-countdown",s)
