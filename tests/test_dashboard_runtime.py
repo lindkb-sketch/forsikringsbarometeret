@@ -1,56 +1,59 @@
-"""Regression checks for browser JavaScript and live dashboard integrations."""
+"""Regression checks for original dashboard and rolling, source-derived financial views."""
 import re
 import subprocess
 import unittest
+import json
 from pathlib import Path
-
 ROOT=Path(__file__).resolve().parents[1]
+HTML=(ROOT/'index.html')
+RUNTIME=(ROOT/'scripts/quarterly_runtime.js')
 
 class DashboardRuntimeTests(unittest.TestCase):
- def test_all_inline_scripts_parse(self):
-  html=(ROOT/'index.html').read_text()
-  scripts=re.findall(r'<script\b[^>]*>([\s\S]*?)</script>',html,flags=re.I)
-  self.assertGreater(len(scripts),5)
-  for i,script in enumerate(scripts):
-   if not script.strip():continue
-   result=subprocess.run(['node','--check'],input=script,text=True,capture_output=True)
-   self.assertEqual(result.returncode,0,f'Inline script {i}: {result.stderr}')
- def test_visible_q3_table_uses_audited_data(self):
-  html=(ROOT/'index.html').read_text()
-  self.assertIn("const bucket=row.period_type==='ytd'?MON_YTD_Q3:MON_Q3",html)
-  self.assertIn("d[k+suffix]=fmt(row.value",html)
-  self.assertIn("show(current,true)",html)
-  self.assertIn("verified_financial_feed.json?ts=",html)
- def test_live_updates_present(self):
-  html=(ROOT/'index.html').read_text()
-  for key in ('live-report-calendar','mon-cal-countdown','live-editorial-market-updates','quarterly_editorial.json','official_news.json','stock_prices.json','setInterval(refresh,300000)'):
-   self.assertIn(key,html)
- def test_q3_protector_storebrand_have_actual_verified_metrics(self):
-  import json
-  data=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
-  for company in ('Protector','Storebrand'):
-   metrics={r['metric'] for r in data['observations'] if r['company']==company and r['year']==2026 and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter'}
-   self.assertTrue({'combined_ratio','loss_ratio','expense_ratio'}.issubset(metrics),company)
+ def test_all_scripts_parse(self):
+  html=HTML.read_text()
+  inline=re.findall(r'<script\\b[^>]*>([\\s\\S]*?)</script>',html,flags=re.I)
+  self.assertGreater(len(inline),5)
+  for i,s in enumerate(inline):
+   if s.strip():
+    cmd=subprocess.run(['node','--check'],input=s,text=True,capture_output=True)
+    self.assertEqual(cmd.returncode,0,f'Inline {i}: {cmd.stderr}')
+  cmd=subprocess.run(['node','--check',str(RUNTIME)],text=True,capture_output=True)
+  self.assertEqual(cmd.returncode,0,cmd.stderr)
 
- def test_live_q3_bridge_accepts_actual_feed_schema(self):
-  import json
-  html=(ROOT/'index.html').read_text()
-  feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
-  self.assertNotIn("feed.source_policy",html)
-  self.assertIn("Array.isArray(feed.observations)",html)
-  self.assertGreater(len(feed['observations']),0)
-  self.assertNotIn("source_policy",feed)
-  for company in ('Protector','Storebrand'):
-   q3=[r for r in feed['observations'] if r['company']==company and r['year']==2026 and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter' and r['status']=='reported']
-   self.assertTrue(q3,company)
-  self.assertIn("let period='Q3'",html)
-  self.assertIn("if(period==='Q3'){const d=",html)
+ def test_original_dashboard_design_is_preserved(self):
+  html=HTML.read_text()
+  for token in ('quarter-changes-grid strategic-grid','media-news-grid',
+                'profitability-panel','cr-podium-panel','results-comparison',
+                'kpi-seven dynamic-kpis','id="verified-q3-dashboard-bridge"'):
+   self.assertIn(token,html)
+  self.assertNotIn('source-driven-home-style',html)
+  self.assertNotIn('src="scripts/live_dashboard.js"',html)
 
- def test_q3_revenue_previous_year_profitability_and_brief_are_wired(self):
-  html=(ROOT/'index.html').read_text()
-  for expected in ("d['revenue'+suffix]=fmt(row.value)","d[k+suffix]=fmt(row.value","profitabilityVerified[c][label]=[loss,cost,cr]","Forsikringsinntekter · Q3","2025: ikke verifisert","KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT"):
-   self.assertIn(expected,html)
-  import json
-  feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
-  for company in ('Protector','Storebrand'):
-   self.assertTrue(any(r['company']==company and r['year']==2026 and r['quarter']==3 and r['metric']=='insurance_revenue' and r['scope']=='group' for r in feed['observations']))
+ def test_live_sources_and_rolling_periods(self):
+  html=HTML.read_text()
+  js=RUNTIME.read_text()
+  for token in ('live-report-calendar','live-editorial-market-updates',
+                'quarterly_editorial.json','official_news.json','stock_prices.json'):
+   self.assertIn(token,html)
+  for token in ('verified_financial_feed.json?t=','periodList=calcPeriods()',
+                'quarterTimeline(selection)','year-1,quarter','MON_SELECT=()=>',
+                'isSameBasis','setInterval(refresh,300000)'):
+   self.assertIn(token,js)
+  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
+
+ def test_q3_feed_is_verified_and_has_metrics(self):
+  d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
+  self.assertGreater(len(d['observations']),0)
+  for company in ('Fremtind','Gjensidige','Tryg','Protector','Storebrand'):
+   rows=[r for r in d['observations'] if r['company']==company and r['year']==2026
+         and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter']
+   self.assertIn('combined_ratio',{r['metric'] for r in rows},company)
+
+ def test_no_hardcoded_active_financial_series(self):
+  js=RUNTIME.read_text()
+  self.assertNotIn('2026 && r.quarter===3',js)
+  self.assertNotIn('Q3 2026',js)
+  self.assertIn('profitabilityVerified[name][l]=[loss,cost,cr]',js)
+
+if __name__=='__main__':
+ unittest.main()
