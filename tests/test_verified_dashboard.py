@@ -7,9 +7,11 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertEqual({r["company"] for r in d["sources"]},{"Fremtind","Gjensidige","Tryg","Sampo","Frende","Protector","Storebrand"})
  def test_dashboard_renders_observations(self):
   s=(ROOT/"index.html").read_text()
-  self.assertIn('id="verified-financial-panel"',s)
-  self.assertIn("data/verified_financial_feed.json",s)
-  self.assertIn("r.source_page",s)
+  self.assertNotIn('id="verified-financial-panel"',s)
+  self.assertNotIn('id="automated-editorial"',s)
+  self.assertNotIn('Løpende oppdateringer fra publiserte kilder',s)
+  self.assertIn('src="scripts/quarterly_runtime.js"',s)
+  self.assertIn('verified_financial_feed.json',(ROOT/'scripts/quarterly_runtime.js').read_text())
 
  def test_all_seven_are_visible_as_clickable_company_selectors(self):
   s=(ROOT/'index.html').read_text()
