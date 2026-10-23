@@ -95,9 +95,13 @@ class InvestorReadinessTests(unittest.TestCase):
                          'report_date_unconfirmed')
 
     def test_future_ytd_must_not_be_misread_as_quarter(self):
-        self.rows += [dict(row('Sampo', 2027, 1, 'insurance_revenue'),
-                           period_type='ytd')]
+        # A current Q1 group observation for another insurer advances the
+        # global period, but Sampo has only a YTD figure, not a Q1 quarter.
+        self.rows.append(row('Fremtind', 2027, 1, 'combined_ratio'))
+        self.rows.append(dict(row('Sampo', 2027, 1, 'insurance_revenue'),
+                              period_type='ytd'))
         r = self.report(dt.date(2027, 4, 15))
+        self.assertEqual(r['reference_quarter'], 'Q1 2027')
         self.assertNotEqual(next(x for x in r['companies'] if x['company'] == 'Sampo')['status'],
                             'source_located_quarter')
 
