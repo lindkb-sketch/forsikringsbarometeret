@@ -12,7 +12,7 @@ class EditorialTests(unittest.TestCase):
     'scope':'group','period_type':'quarter','metric':'insurance_revenue',
     'value':2896,'unit':'MNOK','source_url':'https://example.org/storebrand.pdf',
     'source_definition':'APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'}]}
-  text=build(feed,{'items':[]})['brief'][0]['text']
+  text=build(feed,{'items':[]})['periods']['Q3 2026']['by_company']['Storebrand']['summary']
   self.assertIn('segmentpremier (APM, ikke IFRS-forsikringsinntekter)',text)
   self.assertNotIn(': forsikringsinntekter 2896',text)
  def test_group_quarterly_commentary_compares_last_reported_quarter(self):
@@ -25,4 +25,15 @@ class EditorialTests(unittest.TestCase):
   self.assertIn('forbedret',text)
   self.assertIn('4.5 prosentpoeng',text)
   self.assertIn('Q2 2026',text)
+ def test_brief_has_no_repeated_numeric_kpis(self):
+  feed={'observations':[]}
+  for company,deltas in [('Fremtind',(86,81)),('Tryg',(78,83))]:
+   for quarter,value in [(2,deltas[0]),(3,deltas[1])]:
+    feed['observations'].append({'company':company,'year':2026,'quarter':quarter,'scope':'group','period_type':'quarter','metric':'combined_ratio','value':value,'unit':'percent','source_url':'https://example.org/'+company+'.pdf','status':'reported'})
+  result=build(feed,{'items':[]})
+  self.assertTrue(result['brief'])
+  self.assertIn('lønnsomhetsretninger',result['brief'][0]['text'])
+  self.assertNotIn('86',result['brief'][0]['text'])
+  self.assertNotIn('83',result['brief'][0]['text'])
+  self.assertEqual(set(result['brief'][0]['companies']),{'Fremtind','Tryg'})
  def test_no_data(self):self.assertEqual(build({'observations':[]},{'items':[]})['coverage'],'no_verified_data')
