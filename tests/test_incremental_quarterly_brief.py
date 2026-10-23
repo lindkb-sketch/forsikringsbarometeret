@@ -21,6 +21,12 @@ class IncrementalQuarterlyBriefTests(unittest.TestCase):
     second=build_editorial.build({'observations':[self.row('Fremtind'),self.row('Tryg')]},{'items':[]})
     self.assertEqual({x['theme'] for x in second['brief']},{'large_claims','strategy'})
     self.assertEqual(second['period'],'Q1 2027')
+ def test_brief_remains_short_when_many_companies_arrive(self):
+  rows=[{'text':f'Tema {i}: '+('dokumentert innsikt '*20),'theme':f'theme_{i}','basis':'issuer_commentary','source_url':'https://example.com/report.pdf'} for i in range(18)]
+  selected=build_editorial.concise_brief(rows)
+  self.assertLessEqual(len(selected),4)
+  self.assertLessEqual(sum(len(r['text'].split()) for r in selected),220)
+  self.assertEqual(len(rows),18)
  def test_unreported_company_is_not_attributed_commentary(self):
   with tempfile.TemporaryDirectory() as d:
    data=Path(d)/'data';data.mkdir()
