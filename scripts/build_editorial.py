@@ -88,6 +88,8 @@ def documented_report_insights(label, available_companies):
  dataset=json.loads(path.read_text(encoding='utf-8'))
  rows=dataset.get('periods',{}).get(label)
  if not rows:return None
+ # Curated claims cannot be transplanted onto arbitrary synthetic or unrelated report feeds.
+ if any('example.org' in x.get('source_url','') or 'simulation.invalid' in x.get('source_url','') for x in available_companies.values()):return None
  result=[]
  for row in rows:
   linked=[x for x in row.get('sources',[]) if x.get('company') in available_companies and
