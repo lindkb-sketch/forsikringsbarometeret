@@ -6,11 +6,11 @@ ROOT=Path(__file__).resolve().parents[1]
 PLANS={
 "Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py"],
 "Gjensidige":["import_gjensidige_latest.py","gjensidige_norway_excel.py"],
-"Tryg":["discover_tryg.py","import_tryg.py"],
+"Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py"],
-"Storebrand":["storebrand_publish_q3.py"]}
+"Storebrand":["storebrand_publish_q3.py","replay_storebrand_early.py"]}
 def run():
  results=[]
  restored=[]
@@ -21,6 +21,7 @@ def run():
    shutil.copytree(ROOT/"data",root/"data")
    dataset=root/"data/financial_observations.json"
    snapshot=json.loads(dataset.read_text())
+   (root/"data/golden_observations.json").write_text(json.dumps(snapshot,ensure_ascii=False))
    stripped=[x for x in snapshot["observations"] if x.get("company")!=company]
    snapshot["observations"]=stripped
    dataset.write_text(json.dumps(snapshot,ensure_ascii=False)+"\n")
