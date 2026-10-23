@@ -1,0 +1,81 @@
+{
+  "periods": {
+    "Q3 2026": [
+      {
+        "theme": "profitability",
+        "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
+        "companies": [
+          "Fremtind",
+          "Gjensidige",
+          "Tryg"
+        ],
+        "sources": [
+          {
+            "company": "Fremtind",
+            "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+            "kind": "official_company_release"
+          },
+          {
+            "company": "Gjensidige",
+            "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
+            "kind": "official_company_release"
+          },
+          {
+            "company": "Tryg",
+            "url": "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en",
+            "kind": "issuer_interim_report_announcement"
+          }
+        ]
+      },
+      {
+        "theme": "growth",
+        "text": "Pristiltak er fortsatt en sentral drivkraft bak inntektsveksten. Gjensidige trekker særlig frem prisendringer på tvers av privat- og bedriftsmarkedet, kombinert med volumvekst i utvalgte forsikringsområder. Dette gjør det viktig å skille prisdrevet vekst fra økt kundetilfang når selskapene vurderes.",
+        "companies": [
+          "Gjensidige"
+        ],
+        "sources": [
+          {
+            "company": "Gjensidige",
+            "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
+            "kind": "official_company_release"
+          }
+        ]
+      },
+      {
+        "theme": "large_claims",
+        "text": "Storbrannen i Krokstadelva i Drammensregionen er en av kvartalets viktigste enkelthendelser. Fremtind beskriver omfattende skadehåndtering og opplyser at brannen var hovedforklaringen på selskapets storskader. Gjensidige omtaler også hendelsen og hvordan berørte kunder ble fulgt opp. Det er ikke grunnlag for å tillegge alle selskapene samme skadebelastning.",
+        "companies": [
+          "Fremtind",
+          "Gjensidige"
+        ],
+        "sources": [
+          {
+            "company": "Fremtind",
+            "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+            "kind": "official_company_release"
+          },
+          {
+            "company": "Gjensidige",
+            "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
+            "kind": "official_company_release"
+          }
+        ]
+      },
+      {
+        "theme": "weather",
+        "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
+        "companies": [
+          "Fremtind"
+        ],
+        "sources": [
+          {
+            "company": "Fremtind",
+            "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+            "kind": "official_company_release"
+          }
+        ]
+      }
+    ]
+  },
+  "policy": "Only attributed issuer commentary or official report statements; not solely inferred from financial ratios. Absence of supported claims events produces no events paragraph."
+}
