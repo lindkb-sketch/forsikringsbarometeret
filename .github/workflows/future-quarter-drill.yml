@@ -48,7 +48,7 @@ jobs:
           pid=$!
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           sleep 2
-          BAROMETER_URL=http://127.0.0.1:8768/ node tests/live_browser_e2e.cjs
+          BAROMETER_URL=http://127.0.0.1:8768/ node tests/future_quarter_browser.cjs
       - name: Assert production source unchanged and archive synthetic drill
         if: always()
         run: |
