@@ -20,6 +20,67 @@ def same_basis(a,b):
  return (a is not None and b is not None and
   a.get('unit')==b.get('unit') and revenue_label(a)==revenue_label(b))
 
+
+def thematic_brief(by_company, rows, year, quarter):
+ """Qualitative, grounded patterns only. No metrics or causal explanations invented."""
+ current={(r['company'],r['metric']):r for r in rows if r.get('year')==year and
+          r.get('quarter')==quarter and r.get('scope')=='group' and
+          r.get('period_type')=='quarter' and r.get('status','reported') in ('reported','calculated')}
+ previous={(r['company'],r['metric']):r for r in rows if r.get('year')==(year if quarter>1 else year-1) and
+          r.get('quarter')==(quarter-1 if quarter>1 else 4) and
+          r.get('scope')=='group' and r.get('period_type')=='quarter' and
+          r.get('status','reported') in ('reported','calculated')}
+ patterns={'better':[],'worse':[],'growing':[],'slowing':[]}
+ sources={}
+ for company in COMPANIES:
+  sources[company]=by_company.get(company,{}).get('source_url')
+  now=current.get((company,'combined_ratio'))
+  old=previous.get((company,'combined_ratio'))
+  if now and old and now.get('unit')==old.get('unit'):
+   delta=now['value']-old['value']
+   if delta < -0.25:patterns['better'].append(company)
+   elif delta > 0.25:patterns['worse'].append(company)
+  rev=current.get((company,'insurance_revenue'))
+  prior=previous.get((company,'insurance_revenue'))
+  if rev and prior and same_basis(rev,prior) and rev['value']>0 and prior['value']>0:
+   delta=rev['value']-prior['value']
+   if delta>0:patterns['growing'].append(company)
+   elif delta<0:patterns['slowing'].append(company)
+ def emit(text,names,theme):
+  valid=[n for n in names if sources.get(n)]
+  if not valid:return
+  output.append({'text':text,'source_url':sources[valid[0]],
+    'source_urls':[sources[n] for n in valid],
+    'companies':valid,'period':f'Q{quarter} {year}',
+    'type':'qualitative_quarter_theme','theme':theme})
+ output=[]
+ if patterns['better'] and patterns['worse']:
+  emit('Kvartalet viser ulike lønnsomhetsretninger: '+', '.join(patterns['better'])+
+       ' forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens '+
+       ', '.join(patterns['worse'])+' har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.',
+       patterns['better']+patterns['worse'],'diverging_underwriting')
+ elif patterns['better']:
+  emit('Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos '+
+       ', '.join(patterns['better'])+'. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.',
+       patterns['better'],'underwriting_improvement')
+ elif patterns['worse']:
+  emit('Forsikringslønnsomheten er svekket fra foregående kvartal hos '+
+       ', '.join(patterns['worse'])+'. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.',
+       patterns['worse'],'underwriting_pressure')
+ if patterns['growing']:
+  emit('Den rapporterte premie- eller inntektsutviklingen peker oppover hos '+
+       ', '.join(patterns['growing'])+'. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.',
+       patterns['growing'],'revenue_direction')
+ if patterns['slowing']:
+  emit('Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos '+
+       ', '.join(patterns['slowing'])+'. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.',
+       patterns['slowing'],'revenue_decline')
+ if not output:
+  names=list(by_company)
+  emit('Kvartalsrapportene er registrert, men det finnes foreløpig ikke tilstrekkelig sammenlignbare opplysninger til å trekke dokumenterte fellestrekk eller forklare utviklingen. Les selskapenes rapporter for den kvalitative ledelsesgjennomgangen.',
+       names,'insufficient_comparatives')
+ return output
+
 def build(feed,news):
  rows=[r for r in feed.get('observations',[]) if
        r.get('status','reported') in ('reported','calculated') and r.get('scope')=='group'
@@ -93,7 +154,7 @@ def build(feed,news):
     'summary':fact['text'],'comment':comment or fact['text'],
     'ytd':ytd_note,'source_url':source,'period':label,
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
-  periods[label]={'brief':facts,'implications':implications,'by_company':by_company}
+  periods[label]={'brief':thematic_brief(by_company,rows,year,q),'implications':implications,'by_company':by_company}
  current=f'Q{dates[0][1]} {dates[0][0]}'
  approved=[{'headline':n['headline'],'published_at':n['published_at'],
             'source_url':n['source_url'],'publisher':n.get('publisher','')} for n in news.get('items',[])
@@ -107,7 +168,7 @@ def build(feed,news):
  return {'period':current,**periods[current],'periods':periods,
          'news':list(distinct.values()),
          'coverage':'complete' if feed.get('coverage_complete') else 'partial',
-         'method':'verified quarterly financial observations, same-scope comparisons and source-attributed news'}
+         'method':'qualitative cross-company quarter themes from audited same-basis observations, without unverified causal explanations; source-attributed news'}
 
 def main():
  feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text(encoding='utf-8'))
