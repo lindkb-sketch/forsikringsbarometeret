@@ -55,6 +55,8 @@ jobs:
         run: python scripts/verify_feed_coverage.py
       - name: Generate coverage after validated quarterly imports
         run: python scripts/report_coverage.py
+      - name: Build investor readiness manifest (fail closed on missing evidence)
+        run: python scripts/investor_readiness.py
       - name: Prepare preinstalled Google Chrome browser automation
         run: |
           npm install --no-save playwright
@@ -76,7 +78,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json; do
+          for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/investor_readiness.json data/frende_fremtind_candidates.json; do
             if [ -f "$file" ]; then git add -- "$file"; fi
           done
           if ! git diff --cached --quiet; then
@@ -86,7 +88,7 @@ jobs:
             for attempt in 1 2 3; do
               git fetch origin main
               git reset --mixed origin/main
-              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/frende_fremtind_candidates.json; do
+              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/investor_readiness.json data/frende_fremtind_candidates.json; do
                 if [ -f "$file" ]; then git add -- "$file"; fi
               done
               if git diff --cached --quiet; then

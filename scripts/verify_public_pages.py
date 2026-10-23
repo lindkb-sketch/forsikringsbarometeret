@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/data/'
-FILES=['verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json']
+FILES=['verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json','investor_readiness.json']
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 
@@ -81,6 +81,11 @@ def check():
             stock=public['stock_prices.json']['prices'].get('Protector')
             if not stock or stock.get('symbol')!='PROT.OL' or not stock.get('trading_date'):
                 raise ValueError('Protector delayed stock quote missing')
+            readiness=public['investor_readiness.json']
+            if readiness.get('schema_version')!=1 or len(readiness.get('companies',[]))!=7:
+                raise ValueError('Investor readiness manifest missing or structurally invalid')
+            if readiness.get('investor_ready') is not True and readiness.get('status')!='NOT_APPROVED_FOR_INVESTOR_USE':
+                raise ValueError('Incomplete investor audit must be marked NOT APPROVED')
             editorial=public['quarterly_editorial.json']
             if not isinstance(editorial.get('brief'),list) or not isinstance(editorial.get('news'),list):
                 raise ValueError('Editorial schema missing')

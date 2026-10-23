@@ -21,16 +21,24 @@ async function main(){
   const first=await page.goto(BASE,{waitUntil:'domcontentloaded',timeout:45000});
   check('Homepage HTTP 200',first?.status()===200,'HTTP '+first?.status());
   const files=await Promise.all(['verified_financial_feed.json','quarterly_editorial.json',
-       'official_news.json','stock_prices.json','live.json'].map(async f=>{
+       'official_news.json','stock_prices.json','live.json','investor_readiness.json'].map(async f=>{
    const r=await page.request.get(BASE+'data/'+f+'?browser_audit='+Date.now());
    if(r.status()!==200)throw Error(f+' HTTP '+r.status());
    return r.json();
   }));
-  const [feed,editorial,news,stocks,calendarFeed]=files;
+  const [feed,editorial,news,stocks,calendarFeed,readiness]=files;
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
-       document.querySelector('.mon-calendar'),null,{timeout:35000});
+       window.FBInvestorReadiness?.report &&
+       document.querySelector('.mon-calendar') &&
+       document.querySelector('#investor-readiness-banner'),null,{timeout:35000});
+  check('Published control edition includes investor readiness status',readiness.schema_version===1&&
+    readiness.companies.length===7&&typeof readiness.investor_ready==='boolean');
+  const uiReadiness=await page.locator('#investor-readiness-banner').innerText();
+  check('Investor warning respects generated release status',
+    readiness.investor_ready?uiReadiness.includes('Automatiske datakontroller bestått'):
+    uiReadiness.includes('IKKE GODKJENT FOR INVESTORBRUK'),uiReadiness.slice(0,250));
   const periods=[...new Set(feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&
      ['insurance_revenue','combined_ratio'].includes(r.metric)).map(r=>r.year+'-'+r.quarter))].sort((a,b)=>{
       const aa=a.split('-').map(Number),bb=b.split('-').map(Number);return bb[0]-aa[0]||bb[1]-aa[1];});
