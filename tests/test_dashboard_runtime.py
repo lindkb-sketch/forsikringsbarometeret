@@ -18,7 +18,7 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_visible_q3_table_uses_audited_data(self):
   html=(ROOT/'index.html').read_text()
   self.assertIn("const d=MON_Q3[r.company]||(MON_Q3[r.company]={})",html)
-  self.assertIn("d[key]=fmt(r.value",html)
+  self.assertIn("d[key+suffix]=fmt(r.value",html)
   self.assertIn("show(current,true)",html)
   self.assertIn("verified_financial_feed.json?ts=",html)
  def test_live_updates_present(self):
