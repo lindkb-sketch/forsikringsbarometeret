@@ -6,6 +6,7 @@ quarters are recorded as incomplete, rather than fabricated or silently passed.
 """
 import argparse
 import json
+import re
 import sys
 import time
 import urllib.request
@@ -34,6 +35,19 @@ def remote(path):
         blob=response.read(4_000_001)
         if len(blob)>4_000_000:raise ValueError(f'{path}: oversized response')
         return blob.decode('utf-8')
+
+def current_report_candidates(holding, generic, year=2026, quarter=3):
+    """Derive explicit Q3 report candidates; never infer from financial calendar."""
+    found=[r for r in holding if r.get('year')==year and r.get('quarter')==quarter]
+    for r in generic:
+        context=(r.get('link_text','')+' '+r.get('document_url','')).lower()
+        # Do not mistake Q1-Q3 (year-to-date) for a Q3-only filing unless
+        # the source is an official interim report showing Q3 explicitly.
+        if (str(year) in context and
+            re.search(r'(?<![a-z0-9])q'+str(quarter)+r'(?![0-9])|'+str(quarter)+r'\\.\\s*kvartal',context)):
+            found.append({'company':r.get('company'),'year':year,'quarter':quarter,
+                          'document_url':r.get('document_url')})
+    return found
 
 def publication_state(company, now, calendar, candidates):
     """Use confirmed issuer-report discovery ahead of optional calendar dates.
@@ -74,7 +88,10 @@ def audit(public=True):
     if editorial.get('period')!='Q3 2026':issues.append('Quarterly editorial is not Q3 2026')
     calendar=read_json(ROOT/'data/calendar.json')
     candidates_file=ROOT/'data/frende_fremtind_candidates.json'
-    candidates=read_json(candidates_file).get('candidates',[]) if candidates_file.exists() else []
+    holding_candidates=read_json(candidates_file).get('candidates',[]) if candidates_file.exists() else []
+    generic_file=ROOT/'data/report_candidates.json'
+    generic_candidates=read_json(generic_file).get('candidates',[]) if generic_file.exists() else []
+    candidates=current_report_candidates(holding_candidates,generic_candidates)
     today=datetime.now(timezone.utc).date()
     groups=[]
     for company in COMPANIES:
