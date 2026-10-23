@@ -93,7 +93,7 @@ def documented_report_insights(label, available_companies):
  result=[]
  for row in rows:
   # Literal extracted PDF fragments are evidence, not publish-ready analysis.
-  if row.get('basis')=='issuer_pdf_verbatim':continue
+  if row.get('basis')=='issuer_pdf_verbatim' or ' omtaler i kvartalsrapporten:' in row.get('text',''):continue
   linked=[x for x in row.get('sources',[]) if x.get('company') in available_companies and
           x.get('url','').startswith('https://') and x.get('kind') in ('official_company_release','issuer_interim_report_announcement','official_quarterly_report')]
   if not linked or not row.get('text') or not row.get('companies'):continue
@@ -203,7 +203,6 @@ def build(feed,news):
   # Preserve published issuer commentary while adding new arrivals, and use
   # audited comparative context only for themes not already explained by sources.
   covered={x.get('theme') for x in documented}
-  generic={'profitability':'underwriting_improvement','growth':'revenue_direction'}
   brief=list(documented)
   for item in baseline:
    category='profitability' if item.get('theme') in ('diverging_underwriting','underwriting_improvement','underwriting_pressure') else (
