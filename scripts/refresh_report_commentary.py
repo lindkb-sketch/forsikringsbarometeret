@@ -80,15 +80,14 @@ def refresh(max_sources=4):
  # Latest reports first, then systematically backfill older periods.
  periods=sorted(by_period,key=lambda s:(int(s[-4:]),int(s[1])),reverse=True)
  # Editorial commentary is required only from 2026 onward; older financial history stays untouched.
- done={(label,c) for label,rows in storage.get('periods',{}).items()
-       for row in rows
-       for c in row.get('companies',[])}
- attempted=set(tuple(x) for x in storage.get('checked',[])) if storage.get('extraction_version')==2 else set()
+ # Track exact report URLs: newly released revisions can contribute further insight.
+ checked_sources=storage.get('checked_sources',{})
  count=0
  for label in periods:
   year=int(label[-4:]);quarter=int(label[1])
   for company,url in sorted(by_period[label].items()):
-   if (label,company) in attempted or (label,company) in done:continue
+   source_key=label+'|'+company
+   if checked_sources.get(source_key)==url:continue
    if count>=max_sources:break
    count+=1
    try:
@@ -100,10 +99,10 @@ def refresh(max_sources=4):
    except Exception as exc:
     status=type(exc).__name__
    # Retry temporary download errors next run; don't repeatedly parse irrelevant pages.
-   if status in ('found','no_unambiguous_prose'):attempted.add((label,company))
+   if status in ('found','no_unambiguous_prose'):checked_sources[source_key]=url
    print('REPORT_COMMENTARY',label,company,status,flush=True)
   if count>=max_sources:break
- storage['checked']=[list(x) for x in sorted(attempted)]
+ storage['checked_sources']=checked_sources
  storage['extraction_version']=2
  storage['policy']='Only exact issuer PDF narrative excerpts with page and SHA; no invented event, loss or weather causes.'
  OUT.write_text(json.dumps(storage,ensure_ascii=False,indent=2)+'\n')
