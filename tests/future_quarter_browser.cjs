@@ -8,7 +8,7 @@ try{
 const page=await browser.newPage();
 const res=await page.goto(base,{waitUntil:'domcontentloaded',timeout:40000});
 if(res.status()!==200)throw Error('Homepage HTTP '+res.status());
-await page.waitForFunction(()=>window.FBQuarterly?.period&&window.MON_Q3&&window.FBNews?.editorial,null,{timeout:35000});
+await page.waitForFunction(()=>window.FBQuarterly?.period&&typeof MON_Q3!=='undefined'&&window.FBNews?.editorial,null,{timeout:35000});
 const info=await page.evaluate(()=>({period:FBQuarterly.period,companies:JSON.parse(JSON.stringify(MON_Q3)),graph:profitabilityQuarters.slice(),brief:FBNews.editorial?.period}));
 const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
 const assert=(condition,message)=>{if(!condition)throw Error(message)};
