@@ -69,35 +69,32 @@ async function main() {
    check('HIÅ table shown',hiatxt.includes('Hiå'),hiatxt.slice(0,130));
    const shot='data/browser_home_ytd.png';await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
-  await page.waitForFunction(()=>document.querySelector('#live-primary-dashboard .live-fin-table') &&
-    document.querySelectorAll('#live-primary-dashboard .live-fin-table').length>=3 &&
-    document.querySelectorAll('#live-primary-dashboard .live-strategy-card').length>0,null,{timeout:20000});
-  const live=await page.evaluate(()=>{
-    const root=document.getElementById('live-primary-dashboard');
-    const cells=[...root.querySelectorAll('.live-fin-table')].flatMap(t=>[...t.querySelectorAll('td')]);
-    const find=(company,metric,period)=>cells.find(td=>td.getAttribute('data-company')===company &&
-       td.getAttribute('data-metric')===metric &&td.getAttribute('data-period')===period)?.innerText||'';
-    const norway=root.querySelector('.live-norway')?.innerText||'';
-    const quotes=root.querySelector('.live-stock-panel')?.innerText||'';
-    const strategy=root.querySelector('.live-strategy')?.innerText||'';
-    const brief=root.querySelector('.live-quarterly-editorial')?.innerText||'';
-    return {current:ForsikringsbarometerLive.activePeriod()?.label,
-     fremtind:find('Fremtind','insurance_revenue','quarter'),
-     fremtindYtd:find('Fremtind','insurance_revenue','ytd'),
-     storebrand:find('Storebrand','insurance_revenue','quarter'),
-     norway,quotes,strategy,brief,
-     periods:[...root.querySelectorAll('#live-quarter-select option')].map(o=>o.value)};
-  });
-  const fm=feed.observations.find(r=>r.company==='Fremtind'&&r.year===2026&&r.quarter===3&&r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue');
-  check('Visible Fremtind revenue from source',Boolean(fm)&&live.fremtind.includes(new Intl.NumberFormat('nb-NO').format(fm.value)),live.fremtind.slice(0,250));
-  check('Visible Fremtind HIÅ revenue',live.fremtindYtd.includes('18')&&live.fremtindYtd.includes('373'),live.fremtindYtd.slice(0,250));
-  check('Visible Storebrand group revenue with APM disclaimer',live.storebrand.includes('2')&&live.storebrand.includes('896')&&live.storebrand.includes('APM'),live.storebrand.slice(0,250));
-  check('Visible Storebrand Forsikring AS IFRS revenue',live.norway.includes('Storebrand Forsikring AS')&&live.norway.includes('1')&&live.norway.includes('550')&&live.norway.includes('IFRS 17'),live.norway.slice(0,300));
-  check('Storebrand Forsikring AS YTD IFRS revenue',live.norway.includes('HIÅ')&&live.norway.includes('4')&&live.norway.includes('396,1'),live.norway.slice(0,700));
-  check('Strategic news cards restored',live.strategy.includes('Strategiske bevegelser')&&live.strategy.includes('Les originaloverskrift'),live.strategy.slice(0,250));
-  check('Stock quote date and updates visible',live.quotes.includes('Kursdato')&&live.quotes.includes('innhentingsforsøk'),live.quotes.slice(0,250));
-  check('Quarterly brief and comment visibly restored',live.brief.includes('Kvartalsbrief')&&live.brief.includes('Kvartalskommentar'),live.brief.slice(0,250));
-  check('Future quarters driven by feed not Q3-only',live.periods.length>1,JSON.stringify(live.periods));
+  // Validate the ORIGINAL homepage design, not the removed replacement dashboard.
+  await page.waitForFunction(()=>document.querySelectorAll('.quarter-changes .quarter-changes-item').length>0 &&
+    document.querySelectorAll('#media-news .media-news-card').length>0,null,{timeout:20000});
+  await page.selectOption('#results-comparison select','Q3');
+  const q3Text=await page.locator('#results-comparison').innerText();
+  const originalLayout=await page.evaluate(()=>({
+    extraDashboard:!!document.querySelector('#live-primary-dashboard'),
+    originalKpis:document.querySelectorAll('.dynamic-kpis .metric').length,
+    strategyCards:document.querySelectorAll('.quarter-changes-grid .quarter-changes-item').length,
+    mediaCards:document.querySelectorAll('#media-news .media-news-card').length,
+    strategicText:document.querySelector('.quarter-changes')?.innerText||'',
+    mediaText:document.querySelector('#media-news')?.innerText||'',
+    briefText:document.querySelector('.quarter-comment')?.innerText||'',
+    quotes:document.querySelector('.live-market-updates')?.innerText||''
+  }));
+  check('Original layout restored',!originalLayout.extraDashboard&&originalLayout.originalKpis>=6,JSON.stringify({replacement:originalLayout.extraDashboard,kpis:originalLayout.originalKpis}));
+  check('Verified Fremtind Q3 revenue visible in original table',q3Text.includes('6 305'),q3Text.slice(0,400));
+  check('Storebrand APM 2896 Q3 revenue visible in original table',q3Text.includes('2 896')&&q3Text.includes('APM'),q3Text.slice(-700));
+  check('Original strategy cards show live news',originalLayout.strategyCards>=1&&originalLayout.strategicText.includes('Strategiske bevegelser'),originalLayout.strategicText.slice(0,250));
+  check('Original media cards show sourced headlines',originalLayout.mediaCards>=1&&news.items.some(n=>originalLayout.mediaText.includes(n.headline)),originalLayout.mediaText.slice(0,300));
+  check('Quarterly brief visible in original section',originalLayout.briefText.includes('KVARTALSBRIEF')&&editorial.brief.some(b=>originalLayout.briefText.includes(b.text)),originalLayout.briefText.slice(0,350));
+  check('Delayed quotes retained',originalLayout.quotes.includes('Aksjekurser')&&originalLayout.quotes.includes('forsinket sluttkurs'),originalLayout.quotes.slice(-350));
+  await page.selectOption('#results-comparison select','H3');
+  const ytdText=await page.locator('#results-comparison').innerText();
+  check('HIÅ Fremtind insurance revenue visible in original table',ytdText.includes('18 373'),ytdText.slice(0,350));
+  check('HIÅ Storebrand premiums remain labeled APM',ytdText.includes('8 379')&&ytdText.includes('APM'),ytdText.slice(-600));
   check('No browser runtime errors',bad.length===0,bad.join(' | ').slice(0,1000));
  }catch(e){report.errors.push('Fatal: '+String(e.stack||e));}
  finally{
