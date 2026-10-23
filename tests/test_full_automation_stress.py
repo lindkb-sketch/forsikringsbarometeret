@@ -29,7 +29,7 @@ class StressContracts(unittest.TestCase):
                      r["historical_rows_recovered"]+r["historical_rows_missing"])
     self.assertEqual(r["clean_replay_certified"],
       r["import_commands_passed"] and r["historical_rows_missing"]==0
-      and not r["golden_value_mismatches"] and r["historical_rows_expected"]>0)
+      and not r["golden_value_mismatches"] and r["staged_feed_parity"] and r["historical_rows_expected"]>0)
 
  def test_same_source_build_is_idempotent(self):
   original=json.loads(SOURCE.read_text())
