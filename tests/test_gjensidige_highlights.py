@@ -22,19 +22,24 @@ Combined ratio³ 78.9 % 79.0 % 79.1 % 82.8 % 83.4 %
 class GjensidigeHighlightsTests(unittest.TestCase):
     def test_official_q1_table(self):
         rows = parse_group_table([(4,Q1)],2026,1,'https://mb.cision.com/q1.pdf','sha')
-        self.assertEqual(len(rows),5)
+        self.assertEqual(len(rows),10)
         self.assertEqual({r['metric']:r['value'] for r in rows if r['period_type']=='quarter'},
                          {'insurance_revenue':11004.1,'insurance_service_result':2288.1,
                           'combined_ratio':79.2,'expense_ratio':11.7,'loss_ratio':67.5})
         self.assertTrue(all(r['source_page']==4 for r in rows))
     def test_official_q2_table_quarter_and_ytd(self):
         rows = parse_group_table([(4,Q2)],2026,2,'https://mb.cision.com/q2.pdf','sha')
-        self.assertEqual(len(rows),10)
+        self.assertEqual(len(rows),20)
         quarter = {r['metric']:r['value'] for r in rows if r['period_type']=='quarter'}
         ytd = {r['metric']:r['value'] for r in rows if r['period_type']=='ytd'}
         self.assertEqual(quarter['insurance_revenue'],11257.8)
         self.assertEqual(ytd['insurance_revenue'],22261.9)
         self.assertEqual(ytd['insurance_service_result'],4663.1)
+        lastyear={(r['period_type'],r['metric']):r['value'] for r in rows if r['year']==2025}
+        self.assertEqual(lastyear[('quarter','insurance_revenue')],10493.2)
+        self.assertEqual(lastyear[('ytd','insurance_revenue')],20487.1)
+        self.assertEqual(lastyear[('quarter','combined_ratio')],79.0)
+        self.assertEqual(lastyear[('ytd','combined_ratio')],82.8)
     def test_reject_ambiguous_group_table(self):
         with self.assertRaisesRegex(ValueError,'uniquely'):
             parse_group_table([(4,Q2),(5,Q2)],2026,2,'https://mb.cision.com/q2.pdf','sha')
