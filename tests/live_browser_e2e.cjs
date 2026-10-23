@@ -73,7 +73,7 @@ async function main() {
   await page.waitForFunction(()=>document.querySelectorAll('.quarter-changes .quarter-changes-item').length>0 &&
     document.querySelectorAll('#media-news .media-news-card').length>0,null,{timeout:20000});
   await page.selectOption('#results-comparison select','Q3');
-  const q3Text=await page.locator('#results-comparison').innerText();
+  const q3Text=await page.locator('#results-comparison').innerText().replace(/\u00a0/g,' ');
   const originalLayout=await page.evaluate(()=>({
     extraDashboard:!!document.querySelector('#live-primary-dashboard'),
     originalKpis:document.querySelectorAll('.dynamic-kpis .metric').length,
@@ -92,7 +92,7 @@ async function main() {
   check('Quarterly brief visible in original section',originalLayout.briefText.includes('KVARTALSBRIEF')&&editorial.brief.some(b=>originalLayout.briefText.includes(b.text)),originalLayout.briefText.slice(0,350));
   check('Delayed quotes retained',originalLayout.quotes.includes('Aksjekurser')&&originalLayout.quotes.includes('forsinket sluttkurs'),originalLayout.quotes.slice(-350));
   await page.selectOption('#results-comparison select','H3');
-  const ytdText=await page.locator('#results-comparison').innerText();
+  const ytdText=await page.locator('#results-comparison').innerText().replace(/\u00a0/g,' ');
   check('HIÅ Fremtind insurance revenue visible in original table',ytdText.includes('18 373'),ytdText.slice(0,350));
   check('HIÅ Storebrand premiums remain labeled APM',ytdText.includes('8 379')&&ytdText.includes('APM'),ytdText.slice(-600));
   check('No browser runtime errors',bad.length===0,bad.join(' | ').slice(0,1000));
