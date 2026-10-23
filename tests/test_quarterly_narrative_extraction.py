@@ -16,6 +16,12 @@ class QuarterlyNarrativeExtractionTests(unittest.TestCase):
   self.assertIn('large_claims',rows)
   self.assertIn('weather',rows)
   self.assertIn('growth',rows)
+ def test_additional_material_quarterly_drivers(self):
+  passage=('The company increased claims reserves following an updated assessment of prior year claims.\n'
+           'Reinsurance arrangements were renewed to reduce exposure to severe individual losses.\n'
+           'Competitive pressure and customer retention remained central to the strategic agenda.\n')
+  topics={theme for theme,_ in candidates(passage)}
+  self.assertTrue({'reserves','reinsurance','competition'}.issubset(topics),topics)
  def test_no_unsubstantiated_events_from_financial_table(self):
   text="Large claims 2026 Q3 345 290 210\nCombined ratio 78.5 % | Gross profit 11.5\n"
   self.assertEqual(list(candidates(text)),[])
