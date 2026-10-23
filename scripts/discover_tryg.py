@@ -28,10 +28,10 @@ def parse(markup,year):
         if u.scheme!='https' or u.hostname not in ('tryg.com','www.tryg.com'):continue
         name=urllib.parse.unquote(u.path.split('/')[-1])
         search_text=label+' '+name
-        matches=re.findall(r'(?i)\\bQ([1-4])\\b|(?i:Q)([1-4])(?=20\\d{2})',search_text)
+        matches=re.findall(r'(?i)\bQ([1-4])\b|(?i:Q)([1-4])(?=20\d{2})',search_text)
         if matches:
             quarter=int((matches[-1][0] or matches[-1][1]))
-        elif re.search(r'(?i)half[- ]year|\\bH1\\b',search_text):
+        elif re.search(r'(?i)half[- ]year|\bH1\b',search_text):
             quarter=2
         elif re.search(r'(?i)annual report|full[- ]year|investortables[_ -]?Q4',search_text):
             quarter=4
