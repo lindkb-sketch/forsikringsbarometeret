@@ -55,7 +55,7 @@ async function main() {
   check('Live news visible',!headlines.length||headlines.some(x=>view.newsroom.includes(x.headline)),String(headlines.length));
   const prices=Object.entries(stocks.prices||{});
   check('Delayed stocks visible',prices.every(([c,x])=>view.newsroom.includes(c)&&view.newsroom.includes(String(x.close))),String(prices.length));
-  check('Quarter brief source backed',!editorial.brief?.length||view.newsroom.includes(editorial.brief[0].text),'brief count '+editorial.brief?.length);
+  check('Quarter brief source backed',!editorial.brief?.length||view.text.includes(editorial.brief[0].text),'brief count '+editorial.brief?.length);
   check('Quarter/year selectors',view.select.includes('Q3')&&view.select.includes('H3'),JSON.stringify(view.select));
   const screenshot='data/browser_home_q3.png';await page.screenshot({path:screenshot,fullPage:true});report.screenshots.push(screenshot);
   if(view.select.includes('H3')){
