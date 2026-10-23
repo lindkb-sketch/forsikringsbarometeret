@@ -49,13 +49,22 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
         blob = fetch_pdf(url)
         sha = hashlib.sha256(blob).hexdigest()
         pages = extract(blob)
-        opening = " ".join(text for _, text in pages[:2]).lower()
-        quarter_word = ("first", "second", "third", "fourth")[quarter - 1]
+        # The official cover can be image-based or use "Q3"/"interim report"
+        # instead of the spelled-out quarter. Require issuer/year/period in
+        # extractable report text before parsing the labelled group KPI table.
         import re
-        if ("gjensidige" not in opening or str(year) not in opening or
-            not (quarter_word + " quarter" in opening or
-                 re.search(rf"\\b{quarter}(?:st|nd|rd|th) quarter\\b", opening))):
-            raise ValueError("The official PDF cover does not match the issuer and quarter")
+        document_head = " ".join(text for _, text in pages[:6]).lower()
+        quarter_word = ("first", "second", "third", "fourth")[quarter - 1]
+        indicators = (
+            rf"\\bq\\s*{quarter}\\b",
+            rf"\\b{quarter}(?:st|nd|rd|th)\\s+quarter\\b",
+            rf"\\b{quarter}\\.?\\s*kvartal\\b",
+            rf"\\b{quarter}\\s*quarter\\b",
+            rf"\\b{quarter_word}\\s+quarter\\b",
+        )
+        if ("gjensidige" not in document_head or str(year) not in document_head or
+            not any(re.search(pattern, document_head) for pattern in indicators)):
+            raise ValueError("Official PDF text does not confirm Gjensidige and the requested reporting period")
         rows = parse_group_table(pages, year, quarter, url, sha)
         expected = {"insurance_revenue", "insurance_service_result", "combined_ratio", "expense_ratio"}
         present = {r["metric"] for r in rows if r["period_type"] == "quarter"}
