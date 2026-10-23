@@ -18,7 +18,7 @@ async function main() {
    ['verified_financial_feed.json','quarterly_editorial.json','official_news.json','stock_prices.json']
     .map(async name=>{const resp=await page.request.get(BASE+'data/'+name,{headers:{'Cache-Control':'no-cache'}});assert.equal(resp.status(),200,name);return resp.json()}));
   await page.waitForFunction(()=>document.querySelector('.live-market-updates') &&
-    typeof MON_Q3!=='undefined' && document.querySelector('#results-comparison tbody'),{timeout:35000}).catch(()=>{});
+    typeof MON_Q3!=='undefined' && document.querySelector('#results-comparison tbody'),null,{timeout:35000}).catch(()=>{});
   const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
   const view=await page.evaluate(()=>{
     const text=document.body.innerText;
@@ -36,7 +36,7 @@ async function main() {
    const bucket=view.quarter?.[company]||{};
    for(const r of metrics){
     const key=expected[r.metric];if(!key)continue;
-    const displayed=bucket[key];const numeric=Number(String(displayed||'').replace(/\\s/g,'').replace(/%/g,'').replace(',','.'));
+    const displayed=bucket[key];const numeric=Number(String(displayed||'').replace(/\s/g,'').replace(/%/g,'').replace(',','.'));
     const tolerance=['cr','loss','cost'].includes(key)?0.11:0.51;
     check(company+' Q3 '+r.metric,Number.isFinite(numeric)&&Math.abs(numeric-r.value)<=tolerance,displayed+' vs source '+r.value);
    }
@@ -69,7 +69,7 @@ async function main() {
  finally{
   report.passed=report.errors.length===0;
   fs.mkdirSync('data',{recursive:true});
-  fs.writeFileSync(RESULTS,JSON.stringify(report,null,2)+'\\n');
+  fs.writeFileSync(RESULTS,JSON.stringify(report,null,2)+'\n');
   await browser.close();
  }
  console.log('BROWSER_E2E',report.passed?'PASS':'FAIL',report.checks.length,'checks',report.errors.slice(0,20));
