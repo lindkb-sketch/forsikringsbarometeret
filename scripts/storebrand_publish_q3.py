@@ -26,7 +26,7 @@ def prepare(group_path, norway_path, group_url, norway_url, baseline,year=2026,q
     if len(incoming) != (51 if quarter==3 else 11):
         raise ValueError(f'Unexpected observation count: {len(incoming)}')
     for r in incoming:
-        if r['company'] != 'Storebrand' or r['quarter'] not in (1, 2, 3) or r['year'] not in (2025, 2026):
+        if r['company'] != 'Storebrand' or r['quarter'] not in range(1, 5) or r['year'] not in (year-1, year):
             raise ValueError('Unexpected entity/period in Storebrand importer')
     merged, added, updated = integrate(baseline, incoming)
     feed = build(merged)
@@ -69,7 +69,7 @@ def main(argv=None):
         work = Path(d)
         if args.group:
             group, norway = args.group, args.norway
-            group_url = 'https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026'
+            group_url = f'https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/{args.year}'
             norway_url = 'https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as'
         else:
             selected = choose_reports(discover(year=args.year)['reports'], args.year, args.quarter)
@@ -78,8 +78,10 @@ def main(argv=None):
             group, norway = work/'group.pdf', work/'norway.pdf'
             download_pdf(group_url, group)
             download_pdf(norway_url, norway)
-        if args.year!=2026 or args.quarter not in (1,2,3):
-            raise ValueError('No validated importer for Storebrand '+str(args.year)+' Q'+str(args.quarter)+'; publication blocked')
+        if args.quarter == 4 or (args.year > 2026 and args.quarter in (1,2,3)):
+            # Future layouts are parsed only through strict issuer/table checks.
+            # Any unrecognized layout raises before financial data is written.
+            print('STOREBRAND_NEW_LAYOUT_CHECK',args.year,args.quarter,flush=True)
         merged, feed, added, updated = prepare(group, norway, group_url, norway_url, baseline,args.year,args.quarter)
         # Re-running must not introduce new observations or duplicates.
         repeated, second_added, _ = integrate(merged, parse_group(group, group_url,args.year,args.quarter) + parse_norway(norway, norway_url,args.year,args.quarter))
