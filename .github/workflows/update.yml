@@ -51,6 +51,8 @@ jobs:
         run: python scripts/update_stock_prices.py
       - name: Integrated quarterly pipeline (fail closed)
         run: python scripts/run_pipeline.py
+      - name: Require current qualitative quarterly brief
+        run: python scripts/check_quarterly_brief.py
       - name: Verify all seven insurers reach generated website feed
         run: python scripts/verify_feed_coverage.py
       - name: Generate coverage after validated quarterly imports
