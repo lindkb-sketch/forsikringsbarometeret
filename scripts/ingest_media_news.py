@@ -37,7 +37,13 @@ def tokens(title):
  text=''.join(c for c in text if not unicodedata.combining(c))
  text=text.replace('storbrannen','brann').replace('brannen','brann').replace('millionar','millioner')
  return set(t for t in re.split(r'[^a-z0-9æøå]+',text) if len(t)>2 and t not in STOPWORDS)
+def issuers(title):
+ text=title.casefold()
+ names=('gjensidige','fremtind','frende','protector','storebrand','tryg','sampo')
+ return {name for name in names if re.search(r'\\b'+name+r'\\b',text)}
 def same_story(a,b):
+ left,right=issuers(a['headline']),issuers(b['headline'])
+ if left and right and not left.intersection(right):return False
  if a.get('source_url')==b.get('source_url'):return True
  x,y=tokens(a['headline']),tokens(b['headline'])
  if not x or not y:return False
