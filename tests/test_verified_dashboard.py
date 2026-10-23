@@ -23,8 +23,8 @@ class VerifiedDashboardTests(unittest.TestCase):
  def test_verified_q3_values_reach_visible_comparison(self):
   s=(ROOT/'index.html').read_text()
   self.assertIn('id="verified-q3-dashboard-bridge"',s)
-  self.assertIn("const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost'",s)
-  self.assertIn("d[key+suffix]=fmt(r.value",s)
+  self.assertIn("const mappings={combined_ratio:'cr',loss_ratio:'loss'",s)
+  self.assertIn("d[k+suffix]=fmt(row.value",s)
   self.assertIn("show(current,true)",s)
   self.assertIn("setInterval(syncVerified,300000)",s)
  def test_calendar_is_present_on_dashboard(self):
