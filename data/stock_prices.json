@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T08:47:00.125037+00:00",
+  "updated_at": "2026-10-23T08:50:03.700690+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -19,7 +19,7 @@
     },
     "Storebrand": {
       "symbol": "STB.OL",
-      "close": 190.8,
+      "close": 191.0,
       "currency": "NOK",
       "trading_date": "2026-10-23",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/STB.OL?interval=1d&range=10d",
