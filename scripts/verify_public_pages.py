@@ -45,12 +45,25 @@ def check():
             html=load_html()
             local_html=(ROOT/'index.html').read_text(encoding='utf-8')
             if html!=local_html:raise ValueError('Published dashboard HTML differs from deployed artifact')
+            # The rolling financial bridge is an external script. Verify the
+            # actual deployed bytes rather than an obsolete inline Q3 marker.
+            runtime_req=urllib.request.Request(
+                'https://lindkb-sketch.github.io/forsikringsbarometeret/scripts/quarterly_runtime.js'
+                + '?check=' + str(time.time_ns()),
+                headers={'Cache-Control':'no-cache'})
+            with urllib.request.urlopen(runtime_req,timeout=25) as runtime_response:
+                public_runtime=runtime_response.read(250_000).decode('utf-8')
+            local_runtime=(ROOT/'scripts'/'quarterly_runtime.js').read_text(encoding='utf-8')
+            if public_runtime != local_runtime:
+                raise ValueError('Rolling quarterly runtime differs from deployed artifact')
+            if 'periodList=calcPeriods()' not in public_runtime:
+                raise ValueError('Published rolling quarterly model is missing period auto-selection')
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
             for marker in ('id="verified-q3-dashboard-bridge"',
                            'id="live-editorial-market-updates"',
                            'id="live-report-calendar"',
-                           'data/verified_financial_feed.json?ts=',
+                           'src="scripts/quarterly_runtime.js"',
                            'quarterly_editorial.json',
                            'official_news.json',
                            'stock_prices.json',
