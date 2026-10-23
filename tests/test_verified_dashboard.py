@@ -30,6 +30,6 @@ class VerifiedDashboardTests(unittest.TestCase):
  def test_calendar_is_present_on_dashboard(self):
   s=(ROOT/'index.html').read_text()
   self.assertIn("monCalendar()",s)
-  self.assertIn("html+monCalendar()",s)
+  self.assertIn("html+=monCalendar()",s)
   self.assertIn("data/live.json?ts=",s)
   self.assertIn("mon-cal-countdown",s)
