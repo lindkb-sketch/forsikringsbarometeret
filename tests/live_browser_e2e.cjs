@@ -69,6 +69,34 @@ async function main() {
    check('HIÅ table shown',hiatxt.includes('Hiå'),hiatxt.slice(0,130));
    const shot='data/browser_home_ytd.png';await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
   }
+  await page.waitForFunction(()=>document.querySelector('#live-primary-dashboard .live-fin-table') &&
+    document.querySelectorAll('#live-primary-dashboard .live-fin-table').length>=3 &&
+    document.querySelectorAll('#live-primary-dashboard .live-strategy-card').length>0,null,{timeout:20000});
+  const live=await page.evaluate(()=>{
+    const root=document.getElementById('live-primary-dashboard');
+    const cells=[...root.querySelectorAll('.live-fin-table')].flatMap(t=>[...t.querySelectorAll('td')]);
+    const find=(company,metric,period)=>cells.find(td=>td.getAttribute('data-company')===company &&
+       td.getAttribute('data-metric')===metric &&td.getAttribute('data-period')===period)?.innerText||'';
+    const norway=root.querySelector('.live-norway')?.innerText||'';
+    const quotes=root.querySelector('.live-stock-panel')?.innerText||'';
+    const strategy=root.querySelector('.live-strategy')?.innerText||'';
+    const brief=root.querySelector('.live-quarterly-editorial')?.innerText||'';
+    return {current:ForsikringsbarometerLive.activePeriod()?.label,
+     fremtind:find('Fremtind','insurance_revenue','quarter'),
+     fremtindYtd:find('Fremtind','insurance_revenue','ytd'),
+     storebrand:find('Storebrand','insurance_revenue','quarter'),
+     norway,quotes,strategy,brief,
+     periods:[...root.querySelectorAll('#live-quarter-select option')].map(o=>o.value)};
+  });
+  const fm=feed.observations.find(r=>r.company==='Fremtind'&&r.year===2026&&r.quarter===3&&r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue');
+  check('Visible Fremtind revenue from source',Boolean(fm)&&live.fremtind.includes(new Intl.NumberFormat('nb-NO').format(fm.value)),live.fremtind.slice(0,250));
+  check('Visible Fremtind HIÅ revenue',live.fremtindYtd.includes('18')&&live.fremtindYtd.includes('373'),live.fremtindYtd.slice(0,250));
+  check('Visible Storebrand group revenue with APM disclaimer',live.storebrand.includes('2')&&live.storebrand.includes('896')&&live.storebrand.includes('APM'),live.storebrand.slice(0,250));
+  check('Visible Storebrand Forsikring AS IFRS revenue',live.norway.includes('Storebrand Forsikring AS')&&live.norway.includes('1')&&live.norway.includes('550')&&live.norway.includes('IFRS 17'),live.norway.slice(0,300));
+  check('Strategic news cards restored',live.strategy.includes('Strategiske bevegelser')&&live.strategy.includes('Les originaloverskrift'),live.strategy.slice(0,250));
+  check('Stock quote date and updates visible',live.quotes.includes('Kursdato')&&live.quotes.includes('innhentingsforsøk'),live.quotes.slice(0,250));
+  check('Quarterly brief and comment visibly restored',live.brief.includes('Kvartalsbrief')&&live.brief.includes('Kvartalskommentar'),live.brief.slice(0,250));
+  check('Future quarters driven by feed not Q3-only',live.periods.length>1,JSON.stringify(live.periods));
   check('No browser runtime errors',bad.length===0,bad.join(' | ').slice(0,1000));
  }catch(e){report.errors.push('Fatal: '+String(e.stack||e));}
  finally{
