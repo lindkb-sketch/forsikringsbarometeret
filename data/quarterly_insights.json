@@ -77,5 +77,23 @@
       }
     ]
   },
-  "policy": "Only attributed issuer commentary or official report statements; not solely inferred from financial ratios. Absence of supported claims events produces no events paragraph."
+  "policy": "Only exact issuer PDF narrative excerpts with page and SHA; no invented event, loss or weather causes.",
+  "checked": [
+    [
+      "Q2 2026",
+      "Fremtind"
+    ],
+    [
+      "Q2 2026",
+      "Gjensidige"
+    ],
+    [
+      "Q3 2026",
+      "Protector"
+    ],
+    [
+      "Q3 2026",
+      "Storebrand"
+    ]
+  ]
 }
