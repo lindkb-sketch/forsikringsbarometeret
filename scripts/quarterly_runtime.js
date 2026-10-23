@@ -11,7 +11,7 @@
   let verified=null, periodList=[], selection=null, manuallySelected=false;
   const label=({year,quarter})=>'Q'+quarter+' '+year;
   const fmt=(value,pct=false)=>new Intl.NumberFormat('nb-NO',{
-      maximumFractionDigits:pct?1:0,minimumFractionDigits:pct?1:0
+      maximumFractionDigits:pct?1:2,minimumFractionDigits:pct?1:0
     }).format(value)+(pct?' %':'');
   const ytdMode=()=>period==='H3';
   const basis=row=>/not ifrs insurance revenue|segment premiums|premiums f\.o\.a\./i.test(row?.source_definition||'')?'apm':'ifrs_or_other';
