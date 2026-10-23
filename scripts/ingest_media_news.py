@@ -40,7 +40,7 @@ def tokens(title):
 def issuers(title):
  text=title.casefold()
  names=('gjensidige','fremtind','frende','protector','storebrand','tryg','sampo')
- return {name for name in names if re.search(r'\\b'+name+r'\\b',text)}
+ return {name for name in names if re.search(r'(?<![a-z])'+name+r'(?![a-z])',text)}
 def same_story(a,b):
  left,right=issuers(a['headline']),issuers(b['headline'])
  if left and right and not left.intersection(right):return False
