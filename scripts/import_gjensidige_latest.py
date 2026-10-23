@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from gjensidige_report_check import ARCHIVE, HOME, official_report_links
 from ingest_official_pdf import download, read_pdf, merge
-from gjensidige_publish import parse_group_table
+from gjensidige_publish import parse_group_table, APPROVED_PDFS
 
 TARGET = ROOT / "data" / "financial_observations.json"
 
@@ -40,6 +40,10 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
             urls.update(official_report_links(fetch_index(index), index, quarter, year))
         except Exception as exc:
             errors.append(f"{index}: {type(exc).__name__}: {exc}")
+    if not urls and (year,quarter) in APPROVED_PDFS:
+        # Historical direct PDFs have already been independently issuer-verified.
+        # They remain subject to the same PDF cover, table, and audit checks.
+        urls.add(APPROVED_PDFS[(year,quarter)])
     if not urls:
         return {"status": "not_discovered", "period": f"Q{quarter} {year}", "errors": errors, "imported": 0}
     # Reject ambiguous source selection rather than choosing an arbitrary document.
