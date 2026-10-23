@@ -7,7 +7,7 @@ OUT=ROOT/"data"/"verified_financial_feed.json"
 def build(data):
     result=audit(data)
     if not result["ok"]:raise ValueError("Financial source validation failed: "+"; ".join(result["errors"]))
-    observations=[r for r in data["observations"] if r.get("status","reported") in ("reported","calculated") and not (r.get("scope")=="norway" and r.get("period_type")!="quarter")]
+    observations=[r for r in data["observations"] if r.get("status","reported") in ("reported","calculated")]
     observations.sort(key=lambda r:(r["company"],r["year"],r["quarter"],r["scope"],r["period_type"],r["metric"],r.get("segment","")))
     return {"schema_version":1,"observations":observations,"coverage_complete":result["coverage_complete"],"observation_count":len(observations),"note":"Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"}
 def publish(out=OUT,data_path=DATA):
