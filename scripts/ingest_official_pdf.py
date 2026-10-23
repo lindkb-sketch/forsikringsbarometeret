@@ -92,6 +92,11 @@ def run(registry=None,fetch=download,extract=read_pdf):
  imported=[];statuses=[]
  for s in sources:
   if not s.get('document_url') or not s.get('year') or not s.get('quarter'):continue
+  # This parser supports Gjensidige highlights only. Other issuers have
+  # dedicated validated importers; never fetch their URLs here.
+  if s['company']!='Gjensidige':
+   statuses.append({'company':s['company'],'status':'handled_by_dedicated_importer','extracted':0})
+   continue
   try:
    blob=fetch(s['document_url']);sha=hashlib.sha256(blob).hexdigest()
    records=parse_highlights(extract(blob),s['company'],s['year'],s['quarter'],s['document_url'],sha)
