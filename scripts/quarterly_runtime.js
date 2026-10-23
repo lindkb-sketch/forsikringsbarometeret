@@ -298,6 +298,9 @@
           !periodList.some(p=>p.year===selection.year&&p.quarter===selection.quarter))
         selection=latest;
       choose(selection.year+'-'+selection.quarter,false);
+      // The calendar combines this verified quarter with future issuer dates.
+      // Async script timing must not leave an obsolete interim calendar rendered.
+      window.FBReportCalendar?.reconcile?.();
     }catch(e){console.error('[Forsikringsbarometeret] Kunne ikke oppdatere kvartalsvisning',e);}
   }
   window.FBQuarterly={refresh,get period(){return selection&&{...selection};},
