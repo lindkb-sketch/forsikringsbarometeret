@@ -62,4 +62,26 @@ class YearRolloverTests(unittest.TestCase):
                     pairs=run_tryg()
         self.assertIn(2027,{r['year'] for r in pairs})
 
+    def test_future_quarter_calendar_waits_without_false_failure(self):
+        from datetime import date
+        from e2e_seven_insurers import publication_state
+        calendar={'Sampo / If':{'events':[{'period':'Q4 2026','date':'2027-02-10'}]},
+                  'Frende':{'events':[]}}
+        self.assertEqual(publication_state('Sampo',date(2027,1,15),calendar,[],2026,4)[0],
+                         'awaiting_publication')
+        self.assertEqual(publication_state('Frende',date(2027,1,15),calendar,[],2026,4)[0],
+                         'publication_unconfirmed')
+        report=[{'company':'Frende','year':2026,'quarter':4}]
+        self.assertEqual(publication_state('Frende',date(2027,1,15),calendar,report,2026,4)[0],
+                         'publication_due')
+
+    def test_future_quarter_candidate_detection_requires_explicit_period(self):
+        from e2e_seven_insurers import current_report_candidates
+        rows=[{'company':'Frende','link_text':'Kvartalsrapport Q4 2026',
+               'document_url':'https://example.com/q4-2026.pdf'},
+              {'company':'Frende','link_text':'Kvartalsrapport Q3 2026',
+               'document_url':'https://example.com/q3-2026.pdf'}]
+        found=current_report_candidates([],rows,2026,4)
+        self.assertEqual([r['link_text'] for r in found],['Kvartalsrapport Q4 2026'])
+
 if __name__=='__main__':unittest.main()
