@@ -54,7 +54,7 @@ def obs(scope,year,quarter,period,metric,value,page,url,sha,definition,entity,do
 
 def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Group',year)
-    if quarter in (1,2) and year==2026:return parse_group_early(path,url,year,quarter)
+    if quarter in (1,2):return parse_group_early(path,url,year,quarter)
     if quarter not in (3,4) or year < 2025: raise ValueError('Unsupported report period')
     candidates=[(i,text) for i,text in enumerate(texts) if 'Insurance – Results' in text]
     if len(candidates)!=1:raise ValueError('Expected exactly one Group insurance results table')
@@ -93,7 +93,7 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
 
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
     texts,sha=pages(path,'Storebrand Forsikring',year)
-    if quarter in (1,2) and year==2026:return parse_norway_early(path,url,year,quarter)
+    if quarter in (1,2):return parse_norway_early(path,url,year,quarter)
     if quarter==4:raise ValueError('Storebrand Forsikring AS Q4 must remain blank: no Q4 report')
     if quarter != 3 or year != 2026: raise ValueError('New report layout requires independent validation before import')
     t=texts[3]
@@ -151,7 +151,7 @@ def _unique_table(texts, marker):
     return hits[0]
 
 def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
-    if year!=2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand group period')
+    if year < 2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand group period')
     texts,sha=pages(path,'Storebrand Group',year)
     page,t=_unique_table(texts,'Insurance – Results')
     section=t.split('Insurance – Results',1)[1].split('Financial performance',1)[0]
@@ -173,7 +173,7 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     return result
 
 def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
-    if year!=2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand Norway period')
+    if year < 2026 or quarter not in (1,2): raise ValueError('Unsupported Storebrand Norway period')
     texts,sha=pages(path,'Storebrand Forsikring',year)
     page,t=_unique_table(texts,'Totalresultat')
     if not re.search(r'0[1-9]\.0[1-9]\s*-\s*(?:31\.03|30\.06)',t) and not ('31.03' if quarter==1 else '30.06') in t:
