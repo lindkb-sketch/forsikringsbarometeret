@@ -40,6 +40,17 @@ class IncrementalQuarterlyBriefTests(unittest.TestCase):
    self.assertNotIn('omtaler i kvartalsrapporten',text)
    self.assertNotIn('Large claims affected',text)
    self.assertTrue(output['brief'])
+ def test_legacy_excerpt_mislabeled_as_commentary_is_not_published(self):
+  with tempfile.TemporaryDirectory() as d:
+   data=Path(d)/'data';data.mkdir()
+   legacy={'theme':'large_claims','basis':'issuer_commentary',
+    'text':'Fremtind omtaler i kvartalsrapporten: «Large claims affected the quarter.»',
+    'companies':['Fremtind'],'sources':[{'company':'Fremtind','url':'https://reports.example.com/fremtind.pdf','kind':'official_quarterly_report'}]}
+   (data/'quarterly_insights.json').write_text(json.dumps({'periods':{'Q1 2027':[legacy]}}))
+   with patch.object(build_editorial,'ROOT',Path(d)):
+    result=build_editorial.build({'observations':[self.row('Fremtind')]},{'items':[]})
+   self.assertTrue(result['brief'])
+   self.assertTrue(all(' omtaler i kvartalsrapporten:' not in item['text'] for item in result['brief']))
  def test_unreported_company_is_not_attributed_commentary(self):
   with tempfile.TemporaryDirectory() as d:
    data=Path(d)/'data';data.mkdir()
