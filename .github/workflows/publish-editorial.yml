@@ -1,0 +1,63 @@
+name: Publish editorial frontend update
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/quarterly_editorial.json'
+      - '.github/workflows/publish-editorial.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: editorial-pages-refresh
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assert editorial brief has qualitative text and no repeated KPI figures
+        run: |
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          a=json.loads(Path('data/quarterly_editorial.json').read_text())
+          assert a['period'] in a['periods']
+          briefs=a['periods'][a['period']]['brief']
+          assert briefs and a['brief']==briefs
+          for row in briefs:
+              text=row['text']
+              assert row.get('type')=='qualitative_quarter_theme'
+              assert not re.search(r'\d+[,.]?\d*\s*(?:%|MNOK|NOKm|MDKK|DKKm)',text),text
+              assert row.get('source_url','').startswith('https://')
+          print('EDITORIAL_DEPLOY_CHECK PASS',a['period'],len(briefs))
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - uses: actions/deploy-pages@v4
+      - name: Verify public editorial endpoint contains new brief
+        run: |
+          python - <<'PY'
+          import json,time,urllib.request
+          url='https://lindkb-sketch.github.io/forsikringsbarometeret/data/quarterly_editorial.json'
+          for n in range(8):
+              try:
+                  req=urllib.request.Request(url+'?editorial_validation='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+                  with urllib.request.urlopen(req,timeout=25) as response:result=json.load(response)
+                  if result['brief'] and result['brief'][0].get('type')=='qualitative_quarter_theme':
+                      print('PUBLIC_EDITORIAL_DEPLOY PASS',result['period'])
+                      break
+              except Exception as exc:print('Editorial propagation:',str(exc)[:180])
+              time.sleep(8)
+          else:raise SystemExit('Public Pages still serves old numeric editorial brief')
+          PY
