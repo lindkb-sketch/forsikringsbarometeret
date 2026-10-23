@@ -190,7 +190,22 @@
           ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
            '" aria-label="Endring mot samme periode i fjor">'+
            (now>then?'▲':now<then?'▼':'→')+'</span>':'';
-        td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
+        let subsidiary='';
+        if(name==='Storebrand'){
+          const local=(verified?.observations||[]).find(r=>
+            r.company==='Storebrand'&&r.scope==='norway'&&
+            r.source_entity==='Storebrand Forsikring AS'&&
+            r.year===year&&r.quarter===q&&
+            r.period_type===(isYtd?'ytd':'quarter')&&
+            r.metric==='insurance_revenue'&&valid(r)&&
+            /IFRS\s*17/i.test(r.source_definition||''));
+          if(local){
+            subsidiary='<div class="table-prior">Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+
+              fmt(local.value)+' '+escape(local.unit||'MNOK')+
+              ' · <a href="'+escape(local.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></div>';
+          }
+        }
+        td.innerHTML='<strong>'+title+'</strong>'+basis+subsidiary+prior+delta;
       }else td.innerHTML='<span class="muted">Ikke rapportert</span>';
       tr.insertBefore(td,tr.cells[1]||null);
     }
