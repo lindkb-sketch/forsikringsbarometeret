@@ -50,14 +50,20 @@ class FremtindImporterTests(unittest.TestCase):
         for q, (quarter, ytd) in expected.items():
             with self.subTest(q=q), patch("import_fremtind_holding.pdfplumber.open", return_value=PDF(q, tables[q])):
                 rows = extract(b"%PDF-test", "https://cdn.sanity.io/files/report.pdf")
-                values = {(r["period_type"], r["metric"]): r["value"] for r in rows}
+                values = {(r["period_type"], r["metric"]): r["value"] for r in rows if r["year"] == 2026}
+                comparisons = {(r["period_type"],r["metric"]):r["value"] for r in rows if r["year"] == 2025}
+                self.assertEqual(comparisons[("quarter","insurance_revenue")],{1:5769,2:5560,3:6047}[q])
+                self.assertEqual(comparisons[("quarter","combined_ratio")],{1:85.4,2:84.6,3:76.7}[q])
+                if q > 1:
+                    self.assertEqual(comparisons[("ytd","insurance_revenue")],{2:11328,3:17376}[q])
+                    self.assertEqual(comparisons[("ytd","combined_ratio")],{2:85.0,3:82.1}[q])
                 self.assertEqual(values[("quarter", "insurance_revenue")], quarter)
                 self.assertEqual(values[("quarter", "combined_ratio")], {1:79.8,2:77.5,3:73.0}[q])
                 if ytd is not None:
                     self.assertEqual(values[("ytd", "insurance_revenue")], ytd)
-                    self.assertEqual(len(rows), 10)
+                    self.assertEqual(len(rows), 20)
                 else:
-                    self.assertEqual(len(rows), 5)
+                    self.assertEqual(len(rows), 10)
     def test_non_pdf_rejected(self):
         with self.assertRaises(Exception):
             extract(b"not a pdf", "https://cdn.sanity.io/files/test.pdf")
