@@ -66,10 +66,12 @@ def refresh(max_sources=4):
   if x.get('scope')!='group' or x.get('period_type')!='quarter' or x.get('source_type')!='official_quarterly_report':continue
   url=x.get('source_url','')
   if '.pdf' not in urllib.parse.urlparse(url).path.lower():continue
+  if x['year']<2026:continue
   key=f"Q{x['quarter']} {x['year']}"
   by_period[key].setdefault(x['company'],url)
  # Latest reports first, then systematically backfill older periods.
  periods=sorted(by_period,key=lambda s:(int(s[-4:]),int(s[1])),reverse=True)
+ # Editorial commentary is required only from 2026 onward; older financial history stays untouched.
  done={(label,c) for label,rows in storage.get('periods',{}).items()
        for row in rows
        for c in row.get('companies',[])}
