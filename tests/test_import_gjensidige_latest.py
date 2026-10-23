@@ -32,6 +32,16 @@ class GjensidigeLatestTests(unittest.TestCase):
             self.assertEqual(result["status"], "not_discovered")
             self.assertEqual(target.read_text(), '{"observations": []}')
 
+    def test_approved_historical_pdf_is_still_validated_before_backfill(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "observations.json"
+            target.write_text('{"observations": []}')
+            result = import_period(2026, 2, fetch_index=lambda url: "<html>No Q2 link</html>",
+                                   fetch_pdf=lambda url: b"not a pdf", target=target)
+            self.assertEqual(result["status"], "import_failed")
+            self.assertIn("mb.cision.com",result["source"])
+            self.assertEqual(target.read_text(), '{"observations": []}')
+
     def test_issuer_link_without_valid_pdf_cannot_publish(self):
         markup = '<a href="https://mb.cision.com/Main/123/456/789.pdf">23 October 2026 Interim report Q3 2026 (PDF)</a>'
         with tempfile.TemporaryDirectory() as directory:
