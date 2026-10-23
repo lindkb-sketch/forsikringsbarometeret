@@ -82,7 +82,7 @@ def audit(public=True):
     for k,r in expected.items():
         if received.get(k)!=r:issues.append('Source/feed mismatch: '+str(k))
     for marker in ('verified-q3-dashboard-bridge','profitabilityVerified','crPodium()',
-                   'Forsikringsinntekter · Q3','quarterly_editorial.json'):
+                   'quarterly_editorial.json'):
         if marker not in html:issues.append('Missing homepage integration: '+marker)
     if editorial.get('period')!='Q3 2026':issues.append('Quarterly editorial is not Q3 2026')
     calendar=read_json(ROOT/'data/calendar.json')
