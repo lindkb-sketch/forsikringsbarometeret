@@ -68,6 +68,33 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
+      - name: Report validation and publication diagnostics
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path("data")
+          lines=["## Forsikringsbarometeret – datakontroll"]
+          for filename in ("financial_audit.json", "report_coverage.json", "investor_readiness.json"):
+              path=root/filename
+              if not path.exists():
+                  lines.append(f"- {filename}: ingen oppdatert fil (se jobblogg)")
+                  continue
+              try:
+                  data=json.loads(path.read_text(encoding="utf-8"))
+                  if filename=="financial_audit.json":
+                      lines.append(f"- Kildekontroll: {'OK' if data.get('ok') else 'FEIL'}; feil: {len(data.get('errors', []))}; advarsler: {len(data.get('warnings', []))}")
+                  elif filename=="report_coverage.json":
+                      lines.append(f"- Alle syv automatisk verifisert: {data.get('all_seven_automatic', False)}")
+                  else:
+                      lines.append(f"- Investorstatus: {data.get('status', 'ikke bekreftet')}")
+              except (OSError, ValueError) as exc:
+                  lines.append(f"- {filename}: kunne ikke leses: {type(exc).__name__}")
+          lines.append("- Rapporter som ennå ikke er offentliggjort, er forventet og skal ikke erstattes med beregnede verdier.")
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as out:
+              out.write("\\n".join(lines)+"\\n")
+          PY
       - name: Upload diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@v4
