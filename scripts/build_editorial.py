@@ -102,6 +102,27 @@ def documented_report_insights(label, available_companies):
        'basis':'issuer_commentary','sources':linked})
  return result or None
 
+def concise_brief(items, limit=220, max_paragraphs=4):
+ """Keep a compact, source-backed executive briefing. Archive retains all findings."""
+ priority={'large_claims':0,'weather':1,'reserves':2,'profitability':3,
+           'diverging_underwriting':3,'underwriting_improvement':3,
+           'underwriting_pressure':3,'growth':4,'revenue_direction':4,
+           'revenue_decline':4,'strategy':5,'reinsurance':5,'competition':5,
+           'inflation':5,'operations':6,'investment':6,'regulation':6}
+ order=sorted(enumerate(items),key=lambda e:(0 if e[1].get('basis')=='issuer_commentary' else 1,
+   priority.get(e[1].get('theme'),7),e[0]))
+ selected=[];total=0;themes=set()
+ for _,item in order:
+  words=len(item['text'].split())
+  theme=item.get('theme')
+  if theme in themes or words>limit or total+words>limit:continue
+  selected.append(item);total+=words;themes.add(theme)
+  if len(selected)>=max_paragraphs:break
+ if not selected and items:
+  # Never silently lose every source-backed observation to the display limit.
+  selected=[min(items,key=lambda item:len(item['text'].split()))]
+ return selected
+
 def build(feed,news):
  rows=[r for r in feed.get('observations',[]) if
        r.get('status','reported') in ('reported','calculated') and r.get('scope')=='group'
@@ -188,6 +209,7 @@ def build(feed,news):
    if category not in covered and documented and item.get('theme')!='insufficient_comparatives':
     brief.append(item)
   if not documented:brief=baseline
+  brief=concise_brief(brief)
   periods[label]={'brief':brief,'implications':implications,'by_company':by_company}
  current=f'Q{dates[0][1]} {dates[0][0]}'
  approved=[{'headline':n['headline'],'published_at':n['published_at'],
