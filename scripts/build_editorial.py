@@ -92,6 +92,8 @@ def documented_report_insights(label, available_companies):
  if any('example.org' in x.get('source_url','') or 'simulation.invalid' in x.get('source_url','') for x in available_companies.values()):return None
  result=[]
  for row in rows:
+  # Literal extracted PDF fragments are evidence, not publish-ready analysis.
+  if row.get('basis')=='issuer_pdf_verbatim':continue
   linked=[x for x in row.get('sources',[]) if x.get('company') in available_companies and
           x.get('url','').startswith('https://') and x.get('kind') in ('official_company_release','issuer_interim_report_announcement','official_quarterly_report')]
   if not linked or not row.get('text') or not row.get('companies'):continue
