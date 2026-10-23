@@ -18,6 +18,11 @@ def run():
    root=Path(folder)
    shutil.copytree(ROOT/"scripts",root/"scripts")
    shutil.copytree(ROOT/"data",root/"data")
+   dataset=root/"data/financial_observations.json"
+   snapshot=json.loads(dataset.read_text())
+   stripped=[x for x in snapshot["observations"] if x.get("company")!=company]
+   snapshot["observations"]=stripped
+   dataset.write_text(json.dumps(snapshot,ensure_ascii=False)+"\n")
    evidence=[]
    for name in steps:
     try:
@@ -32,9 +37,11 @@ def run():
    old={key(row):row for row in before if row.get("company")==company}
    new={key(row):row for row in after if row.get("company")==company}
    mismatches=[str(k) for k,row in new.items() if k in old and isinstance(row.get("value"),(int,float)) and isinstance(old[k].get("value"),(int,float)) and abs(row["value"]-old[k]["value"])>max(.15,abs(old[k]["value"])*.00025)]
+   recovered=sum(k in new for k in old)
+   missing=sum(k not in new for k in old)
    added=sum(k not in old for k in new)
-   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"golden_value_mismatches":mismatches[:15],"full_website_e2e_certified":False})
+   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"golden_value_mismatches":mismatches[:15],"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["import_commands_passed"] else "BLOCKED",flush=True)
- report={"results":results,"production_data_modified":False,"full_seven_certified":False}
+ report={"results":results,"production_data_modified":False,"full_seven_certified":False,"replay_mode":"company historical rows removed from disposable baseline"}
  (ROOT/"data/live_historical_replay.json").write_text(json.dumps(report,indent=2)+"\n")
 if __name__=="__main__":run()
