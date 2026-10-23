@@ -23,7 +23,7 @@ def audit(data):
         # Never combine differently denominated monetary figures or treat a
         # percentage as currency in the published comparison.
         metric=r.get("metric")
-        unit=str(r.get("unit","")).strip()
+        unit=str(r.get("unit") or "").strip()
         percent_metrics={"combined_ratio","loss_ratio","expense_ratio","return_on_equity","solvency_ratio","insurance_revenue_growth"}
         if metric in percent_metrics and unit and unit not in ("%", "percent", "percentage"):
             errors.append(f"{label}: percentage metric has invalid unit")
