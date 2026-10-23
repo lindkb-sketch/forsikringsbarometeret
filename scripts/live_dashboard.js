@@ -71,9 +71,9 @@ function renderFinancial(){
 function newsItems(){
  const now=activePeriod();
  const entries=(state.news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||''));
- const strategic=/partner|samarbeid|oppkjøp|kjøper|fusjon|distribusjon|avtale|marked|strateg|pris|vekst|produkt|konkurran|overtar|acqui|partnership/i;
+ const strategic=/partner|samarbeid|oppkjøp|fusjon|distribusjon|avtale|markedsandel|strategi|forsikringspris|premie|konkurran|overtar|acquisition|partnership/i;
  const selected=entries.filter(x=>strategic.test(x.headline)).slice(0,4);
- const fallback=selected.length?selected:entries.slice(0,4);
+ const fallback=selected;
  const tiles=fallback.map(x=>'<article class="live-strategy-card"><div class="live-muted">'+esc(x.publisher||'Nyhetskilde')+' · '+esc((x.published_at||'').slice(0,10))+'</div><h4>'+esc(x.headline)+'</h4><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les originaloverskrift ↗</a></article>').join('');
  return '<section class="live-strategy" aria-label="Strategiske nyheter"><div class="live-section-head"><div><div class="eyebrow">NYHETER OG STRATEGI</div><h2>Strategiske bevegelser i markedet</h2><p>Automatisk utvalgte, kildeattribuerte overskrifter. Innholdet i hele artiklene er ikke kontrollert.</p></div></div><div class="live-strategy-grid">'+(tiles||'<p class="live-muted">Ingen nye kildeattribuerte nyheter.</p>')+'</div></section>';
 }
