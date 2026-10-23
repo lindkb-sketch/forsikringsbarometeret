@@ -49,7 +49,7 @@ def current_report_candidates(holding, generic, year=2026, quarter=3):
                           'document_url':r.get('document_url')})
     return found
 
-def publication_state(company, now, calendar, candidates, year, quarter):
+def publication_state(company, now, calendar, candidates, year=2026, quarter=3):
     """Use confirmed issuer-report discovery ahead of optional calendar dates.
 
     A calendar forecasts publication but is not proof the PDF is available.
