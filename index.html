@@ -1630,86 +1630,139 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
 })();
 </script>
 <script src="scripts/financial_model.js"></script>
-<section id="verified-financial-panel" aria-label="Kildekontrollerte regnskapstall" style="max-width:1200px;margin:24px auto;padding:20px;background:#fff;border:1px solid #d9e2e9;border-radius:12px;color:#172c3d"><h2 style="margin-top:0">Kildekontrollerte regnskapstall</h2><p id="verified-financial-status">Laster kildekontrollerte tall …</p><div style="overflow-x:auto"><table id="verified-financial-table" style="width:100%;border-collapse:collapse"><thead><tr><th>Selskap</th><th>Periode</th><th>Omfang</th><th>Nøkkeltall</th><th>Verdi</th><th>Kilde</th></tr></thead><tbody></tbody></table></div></section>
-<script>
-(async function(){
- const el=document.getElementById('verified-financial-panel'),status=document.getElementById('verified-financial-status'),body=document.querySelector('#verified-financial-table tbody');
- if(!el||!status||!body)return;
- try{
- const response=await fetch('data/verified_financial_feed.json',{cache:'no-store'});
- if(!response.ok)throw Error('Datakilde utilgjengelig');
- const data=await response.json();
- const rows=(data.observations||[]).filter(r=>r.status==='reported'&&['official_quarterly_report','official_investor_tables'].includes(r.source_type)&&/^https:\/\//.test(r.source_url));
- status.textContent=rows.length+' kildekontrollerte observasjoner. '+(data.coverage_complete?'Dekningen er fullstendig.':'Datadekningen er ufullstendig; eldre nøkkeltall er ikke migrert.');
- rows.sort((a,b)=>b.year-a.year||b.quarter-a.quarter||a.company.localeCompare(b.company));
- for(const r of rows){
- const tr=document.createElement('tr');
- const values=[r.company,`Q${r.quarter} ${r.year} · ${r.period_type==='ytd'?'Hiå':'kvartal'}`,r.scope==='group'?'Konsern':r.scope==='norway'?'Norge':'Rapportert segment',r.metric_label||r.metric,`${Number(r.value).toLocaleString('nb-NO',{maximumFractionDigits:2})}${r.unit==='percent'?' %':''}`];
- for(const v of values){const td=document.createElement('td');td.textContent=v;td.style.padding='8px';td.style.borderBottom='1px solid #e7edf2';tr.appendChild(td);}
- const td=document.createElement('td'),a=document.createElement('a');a.href=r.source_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.source_type==='official_investor_tables'?('Excel: '+r.source_sheet+'!'+r.source_cell):('Rapport s. '+r.source_page);td.appendChild(a);tr.appendChild(td);body.appendChild(tr);
- }
- }catch(e){status.textContent='Kildekontrollerte data kunne ikke lastes.';}
-})();
-</script>
-<section id="automated-editorial" style="max-width:1200px;margin:28px auto;padding:20px;border:1px solid #b9c7d4;border-radius:12px"><h2>Kildekontrollert kvartalsbrief</h2><p id="ed-status">Henter verifiserte data …</p><div id="ed-brief"></div><h3>Strategiske kontrollpunkter</h3><div id="ed-implications"></div><h3>Bekreftede nyheter</h3><div id="ed-news"></div></section><script>(async()=>{const status=document.getElementById('ed-status');try{const r=await fetch('data/quarterly_editorial.json',{cache:'no-store'});if(!r.ok)throw Error('Mangler analysefil');const d=await r.json();status.textContent=(d.period||'Ukjent periode')+' · '+(d.coverage==='complete'?'Full dekning':'Ufullstendig dekning; kun verifiserte data vises');for(const [id,items,format] of [['ed-brief',d.brief,x=>x.text],['ed-implications',d.implications,x=>x.text],['ed-news',d.news,x=>x.headline+' ('+x.published_at+')']]){const el=document.getElementById(id);el.replaceChildren();if(!items.length){el.textContent='Ingen kildeverifiserte oppføringer.';continue;}for(const x of items){const paragraph=document.createElement('p');paragraph.textContent=format(x)+' ';const link=document.createElement('a');link.href=x.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Kilde ↗';paragraph.append(link);el.append(paragraph);}}}catch(e){status.textContent='Automatisk analyse ikke tilgjengelig: '+e.message;}})();</script><script id="verified-q3-dashboard-bridge" src="scripts/quarterly_runtime.js" defer></script>
+<script id="verified-q3-dashboard-bridge" src="scripts/quarterly_runtime.js" defer></script>
 <script id="live-editorial-market-updates">
-/* Published editorial and news are rendered in the main dashboard and refreshed. */
+/* Investor-facing briefs and news, rendered in the ORIGINAL cards and layout. */
 (()=>{
+ 'use strict';
  let editorial=null,news=null,stocks=null;
- const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
- const safeUrl=v=>/^https:\/\//.test(v||'')?esc(v):'#';
- const items=(list,max=6)=>Array.isArray(list)?list.slice(0,max):[];
-
- const previousQuarterChanges=quarterChanges;
- const previousMediaNews=mediaNews;
- const previousCompanyMediaNews=companyMediaNews;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const safeUrl=v=>typeof v==='string'&&/^https:\/\//.test(v)?esc(v):'#';
+ const selectedLabel=()=>window.FBActivePeriod?.label||editorial?.period||'';
+ const currentEditorial=()=>editorial?.periods?.[selectedLabel()]||
+    (editorial?.period===selectedLabel()?editorial:null);
+ const src=r=>r?.source_url?'<a href="'+safeUrl(r.source_url)+'" target="_blank" rel="noopener noreferrer">Rapport ↗</a>':'';
  const strategicPattern=/partner|samarbeid|oppkjøp|fusjon|distribusjon|avtale|markedsandel|strategi|forsikringspris|premie|konkurran|overtar|acquisition|partnership/i;
- // Preserve the original visual components; replace only their Q3 content
- // with sourced, automatically refreshed headlines.
+ const insignificant=new Set('i på til og med for av etter fra som har det den de en et er om nye ny seg sine i år forsikring forsikrings'.split(' '));
+ const words=title=>[...new Set(String(title||'').toLowerCase()
+   .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
+   .replace(/gjensidiges/g,'gjensidige')
+   .replace(/storbrannen|brannen|brannskaden/g,'brann')
+   .replace(/millionar|millioner/g,'millioner')
+   .split(/[^a-z0-9æøå]+/).filter(w=>w.length>2&&!insignificant.has(w)))];
+ const equivalent=(a,b)=>{
+  if(a.source_url===b.source_url)return true;
+  const wa=words(a.headline),wb=words(b.headline);
+  const n=wa.filter(w=>wb.includes(w)).length;
+  return n>=3&&n/Math.min(wa.length||1,wb.length||1)>=.7;
+ };
+ const unique=items=>{
+   const out=[];
+   for(const r of items){
+     if(!r?.approved||!r.headline||!/^https:\/\//.test(r.source_url||''))continue;
+     if(!out.some(x=>equivalent(x,r)))out.push(r);
+   }
+   return out;
+ };
+ const selectedNews=()=>unique(news?.items||[]);
+ function newsGroups(){
+  const all=selectedNews();
+  const strategic=all.filter(r=>strategicPattern.test(r.headline)).slice(0,3);
+  const other=all.filter(r=>!strategic.some(x=>equivalent(x,r))).slice(0,4);
+  return {strategic,other};
+ }
+ const oldChanges=quarterChanges,oldMedia=mediaNews,oldCompanyNews=companyMediaNews;
+ const oldStocks=stockMarketSection;
  quarterChanges=function(){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousQuarterChanges();
-  const headlines=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')&&strategicPattern.test(x.headline)).slice(0,3);
-  const cards=headlines.map(x=>'<div class="quarter-changes-item"><span class="qchange-label">'+esc(x.publisher||'Nyheter')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+'</strong><p>Offentliggjort overskrift. Artikkelinnholdet er ikke verifisert.</p><small><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les hos utgiver ↗</a></small></div>').join('');
-  return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet"><div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2><span class="quarter-changes-sub">Oppdatert fra nyhetskilder</span></div><div class="quarter-changes-grid strategic-grid">'+(cards||'<div class="quarter-changes-item"><strong>Ingen nye verifiserte strategiske overskrifter</strong><p>Overvåkingen fortsetter automatisk.</p></div>')+'</div></section>';
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldChanges();
+  const cards=newsGroups().strategic.map(x=>
+    '<div class="quarter-changes-item"><span class="qchange-label">'+esc(x.publisher||'Nyhetskilde')+
+    ' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+
+    '</strong><p>Strategisk relevant nyhet fra uavhengig utgiver.</p><small><a href="'+
+    safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les hos utgiver ↗</a></small></div>').join('');
+  return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet">'+
+   '<div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2>'+
+   '<span class="quarter-changes-sub">Aktuelle forsikringsnyheter</span></div>'+
+   '<div class="quarter-changes-grid strategic-grid">'+
+   (cards||'<div class="quarter-changes-item"><strong>Ingen nye strategiske nyheter</strong><p>Rapport- og nyhetsovervåkingen fortsetter.</p></div>')+
+   '</div></section>';
  };
  mediaNews=function(){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousMediaNews();
-  const headlines=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')).slice(0,4);
-  const cards=headlines.map(x=>'<a class="media-news-card" href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer"><div class="media-news-thumb media-editorial-preview" aria-hidden="true"><div class="media-preview-publisher">'+esc(x.publisher||'Nyhetskilde')+'</div><div class="media-preview-headline">'+esc(x.headline)+'</div><div class="media-preview-date">'+esc((x.published_at||'').slice(0,10))+'</div></div><div class="media-news-body"><div class="media-news-meta">'+esc(x.publisher||'Nyhetskilde')+' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+esc(x.headline)+' ↗</div><p class="media-news-summary">Overskrift fra nyhetsfeed; hele artikkelen er ikke gjennomgått.</p></div></a>').join('');
-  return '<section class="panel media-news" id="media-news"><div class="section-head"><div><h2>Forsikring i mediebildet</h2><p class="media-intro">Automatisk oppdaterte, kildeattribuerte overskrifter</p></div></div><div class="media-news-grid">'+(cards||'<p>Ingen nye saker tilgjengelig.</p>')+'</div></section>';
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldMedia();
+  const cards=newsGroups().other.map(x=>'<a class="media-news-card" href="'+safeUrl(x.source_url)+
+    '" target="_blank" rel="noopener noreferrer"><div class="media-news-thumb media-editorial-preview">'+
+    '<div class="media-preview-publisher">'+esc(x.publisher||'Utgiver')+'</div>'+
+    '<div class="media-preview-headline">'+esc(x.headline)+'</div>'+
+    '<div class="media-preview-date">'+esc((x.published_at||'').slice(0,10))+'</div></div>'+
+    '<div class="media-news-body"><div class="media-news-meta">'+esc(x.publisher||'Utgiver')+
+    ' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+
+    esc(x.headline)+' ↗</div></div></a>').join('');
+  return '<section class="panel media-news" id="media-news"><div class="section-head">'+
+   '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Utvalgte nyheter uten gjentatte saker</p></div>'+
+   '</div><div class="media-news-grid">'+
+   (cards||'<p>Ingen flere aktuelle nyheter.</p>')+'</div></section>';
  };
  companyMediaNews=function(c){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousCompanyMediaNews(c);
-  const matches=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')&&new RegExp(c==='Sampo'?'Sampo|If':c,'i').test(x.headline)).slice(0,3);
-  if(!matches.length)return '';
-  return '<section class="panel company-media-news"><div class="section-head"><h2>'+esc(c)+' i mediebildet</h2></div><div class="company-media-grid">'+matches.map(x=>'<a class="company-media-link" href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer"><span class="company-media-meta">'+esc(x.publisher||'')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+' ↗</strong><span class="company-media-desc">Automatisk kildeattribuert overskrift</span></a>').join('')+'</div></section>';
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldCompanyNews(c);
+  const match=c==='Sampo'?/sampo|\bif\b/i:new RegExp(c,'i');
+  const items=selectedNews().filter(x=>match.test(x.headline)).slice(0,3);
+  if(!items.length)return '';
+  return '<section class="panel company-media-news"><div class="section-head"><h2>'+
+    esc(c)+' i mediebildet</h2></div><div class="company-media-grid">'+
+    items.map(x=>'<a class="company-media-link" href="'+safeUrl(x.source_url)+
+     '" target="_blank" rel="noopener noreferrer"><span class="company-media-meta">'+
+     esc(x.publisher||'')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+
+     esc(x.headline)+' ↗</strong></a>').join('')+'</div></section>';
  };
-
- function panel(){
-  if(!editorial&&!news&&!stocks)return '';
-  const brief=items(editorial?.brief,4).map(x=>'<li>'+esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>').join('');
-  const moves=items(editorial?.implications,5).map(x=>'<li>'+esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>').join('');
-  const headlines=items((news?.items||[]).filter(x=>x.approved),6).map(x=>'<li><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">'+esc(x.headline)+'</a> · '+esc(x.publisher)+' · '+esc((x.published_at||'').slice(0,10))+'</li>').join('');
-  const quotes=Object.entries(stocks?.prices||{}).map(([c,x])=>'<li>'+esc(c)+': '+esc(x.close)+' '+esc(x.currency)+' ('+esc(x.trading_date)+', forsinket sluttkurs)</li>').join('');
-  return '<section class="live-market-updates" aria-label="Løpende markedsoppdateringer" style="background:white;border:1px solid #d9e2e9;border-radius:12px;padding:18px;margin:16px 0"><h2 style="margin:0 0 8px">Løpende oppdateringer fra publiserte kilder</h2><p style="font-size:12px;color:#526579">Oppdateres når nye kildekontrollerte filer publiseres. Aksjekurser er forsinkede sluttkurser, ikke sanntidskurser.</p>'+
-  (brief?'<h3>Kvartalsbrief</h3><ul>'+brief+'</ul>':'')+(moves?'<h3>Strategiske forhold og resultatutvikling</h3><ul>'+moves+'</ul>':'')+(headlines?'<h3>Siste nyheter</h3><ul>'+headlines+'</ul>':'')+(quotes?'<h3>Aksjekurser</h3><ul>'+quotes+'</ul>':'')+'</section>';
- }
- const oldHome=home;
- home=function(){
-  let html=oldHome();
-  if(editorial&&typeof MON_QUARTER!=='undefined'&&MON_QUARTER==='Q3'){
-   const summary=items(editorial.brief,8).map(x=>esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a>').join('<span style="display:block;margin-top:6px"></span>');
-   if(summary)html=html.replace(/<section class="quarter-comment"[^>]*>[\s\S]*?<\/section>/,'<section class="quarter-comment" aria-label="Kvartalsbrief Q3 2026"><div class="quarter-comment-head"><span class="quarter-comment-label">KVARTALSBRIEF · Q3 2026 · KILDEOPPDATERT</span></div><p>'+summary+'</p></section>');
+ quarterComment=function(c){
+  if(MON_QUARTER==='Q2'&&!window.FBActivePeriod)return oldQuarterComment(c);
+  const period=selectedLabel();
+  const block=currentEditorial();
+  const item=c?block?.by_company?.[c]:null;
+  const title=(c?'KVARTALSKOMMENTAR':'KVARTALSBRIEF')+' · '+esc(period);
+  let body='';
+  if(c){
+   body=item?
+     '<p>'+esc(item.summary)+'</p>'+
+     (item.comment!==item.summary?'<p>'+esc(item.comment)+'</p>':'')+
+     (item.ytd?'<p>'+esc(item.ytd)+'</p>':'')+
+     '<p>'+src(item)+'</p>':
+     '<p>Avventer offisiell rapport for '+esc(period)+'. Ingen ikke-verifiserte tall brukes.</p>';
+  }else{
+   const facts=(block?.brief||[]).filter(x=>x.company);
+   body=facts.length?facts.map(x=>'<p>'+esc(x.text)+' '+src(x)+'</p>').join(''):
+     '<p>Ingen nye kildeverifiserte kvartalstall er tilgjengelige for valgt periode.</p>';
   }
-  return html+panel();
+  return '<section class="quarter-comment" aria-label="'+(c?'Kvartalskommentar for '+esc(c):'Kvartalsbrief')+
+   '"><div class="quarter-comment-head"><span class="quarter-comment-label">'+title+
+   '</span><span class="quarter-comment-tag">'+(c?esc(c):'På tvers av markedet')+
+   '</span></div>'+body+'</section>';
  };
+ const oldQuarterComment=MON_ORIG.quarterComment;
+ stockMarketSection=function(c){
+  const html=oldStocks(c);if(!html)return html;
+  const price=stocks?.prices?.[c==='Sampo'?'Sampo / If':c];
+  if(!price)return html;
+  const label='<p class="stock-lead"><strong>Siste forsinkede sluttkurs: '+
+   esc(price.close)+' '+esc(price.currency)+' · handelsdato '+esc(price.trading_date)+
+   '</strong></p>';
+  return html.replace('<div class="stock-year-grid">',label+'<div class="stock-year-grid">');
+ };
+ const prevHome=home;
+ home=()=>prevHome();
  async function refresh(){
-  const get=async file=>{const r=await fetch('data/'+file+'?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(file+' HTTP '+r.status);return r.json();};
-  const results=await Promise.allSettled([get('quarterly_editorial.json'),get('official_news.json'),get('stock_prices.json')]);
-  let changed=false;
-  for(let i=0;i<results.length;i++)if(results[i].status==='fulfilled'){if(i===0)editorial=results[i].value;if(i===1)news=results[i].value;if(i===2)stocks=results[i].value;changed=true;}
-  if(changed&&typeof show==='function'&&typeof current!=='undefined')show(current,true);
+  const names=['quarterly_editorial.json','official_news.json','stock_prices.json'];
+  const updates=await Promise.allSettled(names.map(async file=>{
+   const r=await fetch('data/'+file+'?refresh='+Date.now(),{cache:'no-store'});
+   if(!r.ok)throw Error('HTTP '+r.status+' '+file);
+   return r.json();
+  }));
+  if(updates[0].status==='fulfilled')editorial=updates[0].value;
+  if(updates[1].status==='fulfilled')news=updates[1].value;
+  if(updates[2].status==='fulfilled')stocks=updates[2].value;
+  if(updates.some(x=>x.status==='fulfilled')&&typeof show==='function')show(current,true);
  }
+ window.FBNews={unique,newsGroups,get editorial(){return editorial;}};
  refresh();setInterval(refresh,300000);
 })();
 </script>
