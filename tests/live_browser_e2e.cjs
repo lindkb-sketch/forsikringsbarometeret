@@ -8,7 +8,7 @@ const nf=x=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:2}).format(x).r
 const norm=x=>String(x??'').replace(/\u00a0/g,' ').replace(/\u202f/g,' ').trim();
 async function main(){
  const report={url:BASE,checked_at:new Date().toISOString(),checks:[],errors:[],screenshots:[]};
- const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const browser=await chromium.launch({channel:'chrome',headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
  const pageErrors=[];
  const check=(name,ok,detail='')=>{report.checks.push({name,pass:!!ok,detail:String(detail).slice(0,650)});if(!ok)report.errors.push(name+': '+String(detail).slice(0,650));};
