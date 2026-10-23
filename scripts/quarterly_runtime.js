@@ -8,7 +8,7 @@
     insurance_service_result:'result',return_on_equity:'return',solvency_ratio:'solvency'};
   const PERCENT=new Set(['cr','loss','cost','return','solvency','growth']);
   const METRICS=['combined_ratio','loss_ratio','expense_ratio','insurance_revenue','insurance_service_result'];
-  let verified=null, periodList=[], selection=null, manuallySelected=false;
+  let verified=null, periodList=[], selection=null, manuallySelected=false, calendarData=null;
   const label=({year,quarter})=>'Q'+quarter+' '+year;
   const fmt=(value,pct=false)=>new Intl.NumberFormat('nb-NO',{
       maximumFractionDigits:pct?1:2,minimumFractionDigits:pct?1:0
@@ -35,17 +35,44 @@
     return rows().find(r=>r.company===company&&r.year===year&&r.quarter===quarter&&
       r.period_type===type&&r.metric===metric);
   }
-  function addYtd(company,year,quarter,metric) {
-    // Only additive money values may be summed. Percent ratios must come from the issuer.
+  function addQuarter(company,year,quarter,metric){
+    // A standalone quarter may be reconstructed from two consecutive issuer
+    // YTD columns. Only additive amounts, identical units and entity scopes.
     if(!['insurance_revenue','insurance_service_result'].includes(metric))return null;
-    const parts=Array.from({length:quarter},(_,i)=>lookup(company,'quarter',year,i+1,metric));
+    const end=lookup(company,'ytd',year,quarter,metric);
+    const before=quarter>1?lookup(company,'ytd',year,quarter-1,metric):null;
+    if(!end||quarter>1&&!before||before&&!isSameBasis(end,before))return null;
+    const result=end.value-(before?.value||0);
+    if(result<0)return null;
+    return {...end,period_type:'quarter',value:result,derived_quarter:true,
+      calculation:'difference_of_reported_ytd'};
+  }
+  function addYtd(company,year,quarter,metric){
+    const parts=Array.from({length:quarter},(_,i)=>
+      lookup(company,'quarter',year,i+1,metric)||
+      addQuarter(company,year,i+1,metric));
     if(parts.some(x=>!x)||parts.some(x=>!isSameBasis(x,parts[0])))return null;
-    return {...parts[quarter-1],value:parts.reduce((sum,r)=>sum+r.value,0),
-      derived_ytd:true};
+    if(['insurance_revenue','insurance_service_result'].includes(metric))
+      return {...parts[quarter-1],period_type:'ytd',
+        value:parts.reduce((sum,r)=>sum+r.value,0),
+        derived_ytd:true,calculation:'sum_of_verified_isolated_quarters'};
+    // A year-to-date ratio may be approximated from every official isolated
+    // quarter, weighted by insurance revenue. Never sum/average ratios blindly.
+    if(!['combined_ratio','loss_ratio','expense_ratio'].includes(metric))return null;
+    const revenues=Array.from({length:quarter},(_,i)=>
+      lookup(company,'quarter',year,i+1,'insurance_revenue')||
+      addQuarter(company,year,i+1,'insurance_revenue'));
+    if(revenues.some(x=>!x)||revenues.some(x=>!isSameBasis(x,revenues[0])))return null;
+    const denominator=revenues.reduce((sum,r)=>sum+r.value,0);
+    if(denominator<=0)return null;
+    return {...parts[quarter-1],period_type:'ytd',
+      value:parts.reduce((sum,r,i)=>sum+r.value*revenues[i].value,0)/denominator,
+      derived_ytd:true,calculation:'premium_weighted_issued_quarter_ratios'};
   }
   function quote(company,type,year,quarter,metric){
     return lookup(company,type,year,quarter,metric)||
-      (type==='ytd'?addYtd(company,year,quarter,metric):null);
+      (type==='ytd'?addYtd(company,year,quarter,metric):
+       addQuarter(company,year,quarter,metric));
   }
   function quarterTimeline({year,quarter}){
     const result=[];
@@ -73,10 +100,14 @@
           const k=metric==='insurance_revenue'?'revenue':KEYS[metric];
           if(current){
             data[k]=fmt(current.value,PERCENT.has(k));
+            if(current.calculation)data[k+'Method']=current.calculation;
             if(k==='revenue'){
               data.revenueUnit=current.unit||'';
               if(basis(current)==='apm')data.revenueBasis='Insurance premiums f.o.a. (APM) – ikke IFRS 17-forsikringsinntekter';
-              if(current.derived_ytd)data.revenueBasis=(data.revenueBasis||'')+' Beregnet HIÅ som sum av kildeverifiserte enkeltkvartaler.';
+              if(current.derived_ytd)data.revenueBasis=(data.revenueBasis||'')+
+                ' Beregnet HIÅ fra verifiserte kvartaler.';
+              if(current.derived_quarter)data.revenueBasis=(data.revenueBasis||'')+
+                ' Beregnet kvartal som differanse mellom to rapporterte HIÅ-perioder.';
             }
             if(metric==='insurance_service_result')data.resultUnit=current.unit||'';
             if(metric==='combined_ratio'||metric==='insurance_revenue')data.source=current.source_url;
@@ -133,9 +164,45 @@
     const {year,quarter}=selection;
     return html.replaceAll('Q3 2026',label(selection)).replaceAll('Q3 2025','Q'+quarter+' '+(year-1))
       .replaceAll('Hiå 2026','Hiå '+year)
+      .replaceAll('Hiå 2025','Hiå '+(year-1)).replaceAll('HIÅ 2025','HIÅ '+(year-1))
       .replaceAll('Q3 2026 · KILDEOPPDATERT',label(selection)+' · KILDEOPPDATERT')
       .replace('Forsikringsinntekter · Q3','Forsikringsinntekter · Q'+quarter);
   }
+  // The reporting date is advisory. Only an actual, verified issuer report
+  // makes a company disappear from the next-report queue.
+  monCalendar=function(){
+    if(!verified||!periodList.length||MON_QUARTER==='Q2')return '';
+    const active=periodList[0];
+    const selectedPeriod=label(active);
+    const pending=COMPANY_NAMES.filter(name=>{
+      const group=rows().filter(r=>r.company===name&&r.year===active.year&&
+        r.quarter===active.quarter&&r.period_type==='quarter');
+      const found=new Set(group.map(r=>r.metric));
+      return !found.has('combined_ratio')||!found.has('insurance_revenue');
+    });
+    if(!pending.length)return '';
+    const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const links=pending.map(name=>{
+      const config=calendarData?.[name==='Sampo'?'Sampo / If':name]||{};
+      const event=(config.events||[]).find(e=>e.period===selectedPeriod);
+      const date=event?.date||'Dato ikke meldt';
+      const address=config.calendar_url&&/^https:\/\//.test(config.calendar_url)?
+        config.calendar_url:'#';
+      return '<a class="mon-cal-row" href="'+safe(address)+
+        '" target="_blank" rel="noopener noreferrer"><span class="mon-cal-company"><strong>'+
+        safe(name==='Sampo'?'Sampo / If':name)+'</strong><small>'+safe(date)+
+        '</small></span><span class="mon-cal-countdown"'+
+        (event?.date?' data-report-date="'+safe(date)+'"':'')+
+        '>'+ (event?.date?'Planlagt dato':'Offisiell rapport overvåkes')+
+        '</span></a>';
+    }).join('');
+    return '<section class="mon-calendar" aria-label="Neste rapporter fra selskaper som mangler tall">'+
+      '<div class="mon-calendar-top"><div class="eyebrow">NESTE RAPPORTER</div>'+
+      '<h2>Avventer '+safe(selectedPeriod)+'</h2>'+
+      '<span class="pill">'+pending.length+' selskaper</span></div>'+
+      '<div class="mon-cal-grid">'+links+'</div></section>';
+  };
   const previousHome=home,previousCompany=company,previousPodium=crPodium;
   MON_SELECT=()=>'<div class="mon-period"><div><b>Rapporteringskvartal</b>'+
     '<div style="font-size:12px;color:#617589;margin-top:3px">Samme opprinnelige design for alle kvartaler</div></div>'+
@@ -152,7 +219,7 @@
     choose(value,true);
   };
   home=()=>relabel(previousHome());
-  company=c=>{const result=previousCompany(c);period='Q3';return relabel(result);};
+  company=c=>relabel(previousCompany(c));
   crPodium=()=>relabel(previousPodium());
   function normalizeRevenueTable(html){
     // Extend the EXISTING table; do not add a replacement dashboard.
@@ -215,7 +282,11 @@
   table=()=>normalizeRevenueTable(oldTable());
   async function refresh(){
     try{
-      const response=await fetch('data/verified_financial_feed.json?t='+Date.now(),{cache:'no-store'});
+      const [response, calendarResponse]=await Promise.all([
+        fetch('data/verified_financial_feed.json?t='+Date.now(),{cache:'no-store'}),
+        fetch('data/calendar.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null)
+      ]);
+      if(calendarResponse?.ok)calendarData=await calendarResponse.json();
       if(!response.ok)throw Error('Verifisert finansfeed: HTTP '+response.status);
       const incoming=await response.json();
       if(!Array.isArray(incoming.observations))throw Error('Finansfeed mangler observasjoner');
