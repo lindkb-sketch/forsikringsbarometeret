@@ -1,7 +1,7 @@
 name: Kontroller og publiser finansdata og kalender
 on:
   schedule:
-    - cron: '17 5,11,16,21 * * *'
+    - cron: '47 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
