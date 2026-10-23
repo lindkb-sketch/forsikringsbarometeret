@@ -7,4 +7,12 @@ class EditorialTests(unittest.TestCase):
   feed={'observations':[{'company':'Tryg','year':2026,'quarter':3,'scope':'norway','period_type':'quarter','metric':'combined_ratio','value':76.1,'source_url':'https://example.org/report.pdf'}]}
   result=build(feed,{'items':[{'headline':'Unverified','source_url':'https://example.org','published_at':'2026-10-01'}]})
   self.assertEqual(result['news'],[]);self.assertEqual(len(result['implications']),1)
+ def test_apm_premiums_not_mislabeled_as_ifrs_revenue(self):
+  feed={'observations':[{'company':'Storebrand','year':2026,'quarter':3,
+    'scope':'group','period_type':'quarter','metric':'insurance_revenue',
+    'value':2896,'unit':'MNOK','source_url':'https://example.org/storebrand.pdf',
+    'source_definition':'APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'}]}
+  text=build(feed,{'items':[]})['brief'][0]['text']
+  self.assertIn('segmentpremier (APM, ikke IFRS-forsikringsinntekter)',text)
+  self.assertNotIn(': forsikringsinntekter 2896',text)
  def test_no_data(self):self.assertEqual(build({'observations':[]},{'items':[]})['coverage'],'no_verified_data')
