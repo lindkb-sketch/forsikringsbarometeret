@@ -18,12 +18,15 @@ class PublicationStateTests(unittest.TestCase):
  def test_frende_not_confirmed_does_not_fail(self):
   self.assertEqual(publication_state('Frende',date(2026,10,23),CALENDAR,[])[0],'publication_unconfirmed')
  def test_gjensidige_due_today(self):
-  self.assertEqual(publication_state('Gjensidige',date(2026,10,23),CALENDAR,[])[0],'publication_due')
+  self.assertEqual(publication_state('Gjensidige',date(2026,10,23),CALENDAR,[])[0],'publication_expected')
  def test_new_official_candidate_changes_undated_issuer_to_due(self):
   candidate=[{'company':'Frende','year':2026,'quarter':3,'document_url':'https://frende.wrep.it/q3-2026'}]
   self.assertEqual(publication_state('Frende',date(2026,10,23),CALENDAR,candidate)[0],'publication_due')
+ def test_real_release_beats_future_calendar(self):
+  candidate=[{'company':'Sampo','year':2026,'quarter':3,'document_url':'https://www.sampo.com/q3-2026.pdf'}]
+  self.assertEqual(publication_state('Sampo',date(2026,10,23),CALENDAR,candidate)[0],'publication_due')
  def test_future_dated_report_not_due(self):
   self.assertEqual(publication_state('Sampo',date(2026,11,3),CALENDAR,[])[0],'awaiting_publication')
-  self.assertEqual(publication_state('Sampo',date(2026,11,4),CALENDAR,[])[0],'publication_due')
+  self.assertEqual(publication_state('Sampo',date(2026,11,4),CALENDAR,[])[0],'publication_expected')
 
 if __name__=='__main__':unittest.main()
