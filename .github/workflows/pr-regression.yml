@@ -68,6 +68,33 @@ jobs:
           python scripts/verify_feed_coverage.py
       - name: Audit Tryg group PDF and Norway Excel automation readiness
         run: python scripts/verify_tryg_end_to_end.py
+      - name: Build final website data for browser regression
+        run: |
+          python scripts/build_verified_feed.py
+          python scripts/build_editorial.py
+          python scripts/update.py
+          python scripts/verify_feed_coverage.py
+      - name: Prepare Chrome browser regression dependencies
+        run: |
+          npm install --no-save playwright
+          google-chrome --version
+      - name: Verify actual rendered PR site locally (before merge)
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/forsikringsbarometeret-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 2
+          BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
+      - name: Upload local browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-local-browser-audit
+          path: |
+            data/browser_e2e_report.json
+            data/browser_home_q3.png
+            data/browser_home_ytd.png
+          if-no-files-found: warn
       - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
         continue-on-error: true
         run: PAGES_VERIFY_ATTEMPTS=1 python scripts/verify_public_pages.py
