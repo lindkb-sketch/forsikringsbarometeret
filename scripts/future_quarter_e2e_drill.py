@@ -49,7 +49,7 @@ def exercise(original):
     if editorial["period"]!="Q4 2026":raise AssertionError("Quarter failed to roll forward")
     if {r["company"] for r in feed["observations"] if r.get("test_only_synthetic")}!=set(COMPANIES):
         raise AssertionError("Not all seven simulated reports reached verified feed")
-    if {x["company"] for x in editorial["brief"]}!=set(COMPANIES):
+    if {name for item in editorial["brief"] for name in item.get("companies",[])}!=set(COMPANIES):
         raise AssertionError("Not all seven simulated reports reached quarterly brief")
     # Negative drill: wrong issuer, absent ratio, and invalid combined-ratio arithmetic.
     for mutated in (
@@ -64,7 +64,7 @@ def exercise(original):
     if audit(damaged)["ok"]:raise AssertionError("Contradictory ratio did not fail closed")
     return feed,editorial,{"simulation":True,"report_transport":"synthetic_in_memory_not_official_pdf","real_issuer_parser_verified":False,
               "companies":list(COMPANIES),"quarter":"Q4 2026","synthetic_observations":len(observed),
-              "audit_ok":True,"editorial_companies":len(editorial["brief"]),
+              "audit_ok":True,"editorial_companies":len({name for item in editorial["brief"] for name in item.get("companies",[])}),
               "negative_cases_passed":3,"production_data_modified":False}
 def main():
     baseline=json.loads((ROOT/"data/financial_observations.json").read_text())
