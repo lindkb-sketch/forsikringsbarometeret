@@ -23,10 +23,10 @@ class VerifiedDashboardTests(unittest.TestCase):
  def test_verified_q3_values_reach_visible_comparison(self):
   s=(ROOT/'index.html').read_text()
   self.assertIn('id="verified-q3-dashboard-bridge"',s)
-  self.assertIn("const mappings={combined_ratio:'cr',loss_ratio:'loss'",s)
-  self.assertIn("d[k+suffix]=fmt(row.value",s)
+  self.assertIn("const KEYS={combined_ratio:'cr',loss_ratio:'loss'",(ROOT/"scripts/quarterly_runtime.js").read_text())
+  self.assertIn("data[k+'Prev']",(ROOT/"scripts/quarterly_runtime.js").read_text())
   self.assertIn("show(current,true)",s)
-  self.assertIn("setInterval(syncVerified,300000)",s)
+  self.assertIn("setInterval(refresh,300000)",(ROOT/"scripts/quarterly_runtime.js").read_text())
  def test_calendar_is_present_on_dashboard(self):
   s=(ROOT/'index.html').read_text()
   self.assertIn("home=function(){const html=previous()",s)
