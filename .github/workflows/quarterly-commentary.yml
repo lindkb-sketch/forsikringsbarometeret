@@ -33,7 +33,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_quarterly_narrative_extraction.py' -v
       - name: Check four historical or newly published issuer PDFs and rebuild brief
         run: |
-          python scripts/refresh_report_commentary.py
+          QUARTER_COMMENTARY_BATCH=25 python scripts/refresh_report_commentary.py
           python scripts/build_editorial.py
           python scripts/check_quarterly_brief.py
       - name: Commit validated incremental backfill
