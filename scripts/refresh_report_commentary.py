@@ -6,7 +6,7 @@ page and SHA. Never infer causal claims from numeric metrics. Existing curated
 editorial notes are retained. One bounded batch per invocation avoids delaying
 the 30-minute production publishing cadence.
 """
-import hashlib,json,re,urllib.parse,urllib.request,io
+import hashlib,json,re,urllib.parse,urllib.request,io,os
 from pathlib import Path
 from collections import defaultdict
 import pdfplumber
@@ -98,4 +98,4 @@ def refresh(max_sources=4):
  storage['policy']='Only exact issuer PDF narrative excerpts with page and SHA; no invented event, loss or weather causes.'
  OUT.write_text(json.dumps(storage,ensure_ascii=False,indent=2)+'\n')
  print('REPORT_COMMENTARY_BATCH',count,'documents checked; total archived periods',len(storage['periods']))
-if __name__=='__main__':refresh()
+if __name__=='__main__':refresh(max_sources=min(25,max(1,int(os.getenv('QUARTER_COMMENTARY_BATCH','4')))))
