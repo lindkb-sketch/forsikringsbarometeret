@@ -155,10 +155,45 @@
   company=c=>{const result=previousCompany(c);period='Q3';return relabel(result);};
   crPodium=()=>relabel(previousPodium());
   function normalizeRevenueTable(html){
+    // Extend the EXISTING table; do not add a replacement dashboard.
     if(!selection)return html;
-    return html.replace('Forsikringsinntekter · Q3','Forsikringsinntekter · Q'+selection.quarter)
-      .replaceAll('Q3 2025:',label({year:selection.year-1,quarter:selection.quarter})+':')
-      .replaceAll('HIÅ 2025:','HIÅ '+(selection.year-1)+':');
+    const fragment=document.createElement('div');
+    fragment.innerHTML=html;
+    const head=fragment.querySelector('thead tr');
+    if(!head)return html;
+    const isYtd=ytdMode(), year=selection.year, q=selection.quarter;
+    const heading=document.createElement('th');
+    heading.textContent=isYtd?'Forsikringsinntekter · HIÅ':'Forsikringsinntekter · Q'+q;
+    head.insertBefore(heading,head.children[1]||null);
+    const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const number=s=>{
+      const n=Number(String(s||'').replace(/\s/g,'').replace(/\u00a0/g,'')
+        .replace(/\u202f/g,'').replace(',','.').replace(/[^0-9.-]/g,''));
+      return Number.isFinite(n)?n:null;
+    };
+    for(const tr of fragment.querySelectorAll('tbody tr')){
+      const raw=(tr.cells[0]?.textContent||'').trim();
+      const name=raw==='Frende Holding'?'Frende':raw;
+      const d=(isYtd?MON_YTD_Q3:MON_Q3)[name]||{};
+      const td=document.createElement('td');
+      if(d.revenue){
+        const title=escape(d.revenue)+' <small>'+escape(d.revenueUnit||'')+'</small>';
+        const basis=d.revenueBasis?'<div class="table-prior">'+escape(d.revenueBasis)+'</div>':'';
+        const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
+        const prior=d.revenuePrev
+          ?'<span class="table-prior">'+lastYear+': '+escape(d.revenuePrev)+'</span>'
+          :'<span class="table-prior">'+lastYear+': ikke verifisert</span>';
+        const now=number(d.revenue),then=number(d.revenuePrev);
+        const delta=now!==null&&then!==null
+          ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
+           '" aria-label="Endring mot samme periode i fjor">'+
+           (now>then?'▲':now<then?'▼':'→')+'</span>':'';
+        td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
+      }else td.innerHTML='<span class="muted">Ikke rapportert</span>';
+      tr.insertBefore(td,tr.cells[1]||null);
+    }
+    return fragment.innerHTML;
   }
   const oldTable=table;
   table=()=>normalizeRevenueTable(oldTable());
