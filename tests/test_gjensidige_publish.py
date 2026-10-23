@@ -39,8 +39,8 @@ class GjensidigePublisherTests(unittest.TestCase):
                          unit='percent' if 'ratio' in m else 'MNOK',status='reported',
                          source_type='official_quarterly_report',source_url=url,source_page=4)
                     for y,metrics in values.items() for m,v in metrics.items()]
-        with patch.object(g,'discover_quarter',return_value='https://mb.cision.com/Public/1122/q1-2026.pdf'), \\
-             patch.object(g,'read_pdf',return_value=[(1,'Gjensidige interim report 1st quarter 2026')]), \\
+        with patch.object(g,'discover_quarter',return_value='https://mb.cision.com/Public/1122/q1-2026.pdf'), \
+             patch.object(g,'read_pdf',return_value=[(1,'Gjensidige interim report 1st quarter 2026')]), \
              patch.object(g,'parse_group_table',side_effect=fake_parse):
             merged,feed,summary=g.prepare({'observations':[]},(1,),downloader=lambda _:b'%PDF-test')
         self.assertEqual(summary['added'],10)
