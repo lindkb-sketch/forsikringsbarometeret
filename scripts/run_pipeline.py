@@ -28,6 +28,9 @@ def run(offline=False):
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_fremtind_holding.py')],cwd=ROOT,check=True)
   print('RUN import_frende_holding.py (verified official issuer publisher tables only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_frende_holding.py')],cwd=ROOT,check=True)
+ if not offline:
+  print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
  for name in ['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','build_editorial.py','update.py','verify_feed_coverage.py']:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
