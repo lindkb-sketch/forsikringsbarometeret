@@ -105,29 +105,6 @@
           "kind": "official_company_release"
         }
       ]
-    },
-    {
-      "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and continued disciplined underwriting is expected to support a strong insurance service result.»",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-      "source_urls": [
-        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-      ],
-      "companies": [
-        "Protector"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "profitability",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Protector",
-          "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-          "kind": "official_quarterly_report",
-          "page": 8,
-          "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9"
-        }
-      ]
     }
   ],
   "implications": [
@@ -316,29 +293,6 @@
               "kind": "official_company_release"
             }
           ]
-        },
-        {
-          "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and continued disciplined underwriting is expected to support a strong insurance service result.»",
-          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-          "source_urls": [
-            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
-          ],
-          "companies": [
-            "Protector"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Protector",
-              "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-              "kind": "official_quarterly_report",
-              "page": 8,
-              "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9"
-            }
-          ]
         }
       ],
       "implications": [
@@ -466,52 +420,6 @@
               "kind": "official_quarterly_report",
               "page": 7,
               "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
-            }
-          ]
-        },
-        {
-          "text": "Fremtind omtaler i kvartalsrapporten: «Det har vært særlig fokus på å etablere felles arbeidsformer skadefrekvens på næringsbygg- og bilforsikring i tillegg til premiejusteringer. og styringsmekanismer gjennom ny utviklingsmodell.»",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-          "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
-          ],
-          "companies": [
-            "Fremtind"
-          ],
-          "period": "Q2 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-              "kind": "official_quarterly_report",
-              "page": 9,
-              "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
-            }
-          ]
-        },
-        {
-          "text": "Gjensidige omtaler i kvartalsrapporten: «Gjensidige has maintained selection and favourable weather conditions travel insurance remained stable. strong competitiveness in the SME market. in the first quarter.»",
-          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-          "source_urls": [
-            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q2 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-              "kind": "official_quarterly_report",
-              "page": 13,
-              "sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512"
             }
           ]
         }
@@ -648,121 +556,6 @@
               "kind": "official_quarterly_report",
               "page": 9,
               "sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555"
-            }
-          ]
-        },
-        {
-          "text": "Gjensidige omtaler i kvartalsrapporten: «In Norway, the insurance service result Insurance revenue in Denmark increased by insurance. Favourable weather conditions competitive cost base.»",
-          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-          "source_urls": [
-            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-              "kind": "official_quarterly_report",
-              "page": 8,
-              "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
-            }
-          ]
-        },
-        {
-          "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and with continued underwriting discipline, the insurance service result is expected to stay strong.»",
-          "source_url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
-          "source_urls": [
-            "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf"
-          ],
-          "companies": [
-            "Protector"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Protector",
-              "url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
-              "kind": "official_quarterly_report",
-              "page": 7,
-              "sha256": "51532fdd777bce716766dbb3b2a8229da3db591c2deedfb50b7579eac7c914e8"
-            }
-          ]
-        },
-        {
-          "text": "Sampo omtaler i kvartalsrapporten: «For a P&C insurer operating in the Nordics, the first quarter is typically the period when weather conditions can play a significant role.»",
-          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-          "source_urls": [
-            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
-          ],
-          "companies": [
-            "Sampo"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Sampo",
-              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-              "kind": "official_quarterly_report",
-              "page": 4,
-              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-            }
-          ]
-        },
-        {
-          "text": "Sampo omtaler i kvartalsrapporten: «Furthermore, the first quarter saw fewer large claims than budgeted.»",
-          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-          "source_urls": [
-            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
-          ],
-          "companies": [
-            "Sampo"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "large_claims",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Sampo",
-              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-              "kind": "official_quarterly_report",
-              "page": 5,
-              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-            }
-          ]
-        },
-        {
-          "text": "Sampo omtaler i kvartalsrapporten: «earning through of premium rate increases and growth in customer numbers.»",
-          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-          "source_urls": [
-            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
-          ],
-          "companies": [
-            "Sampo"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "growth",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Sampo",
-              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-              "kind": "official_quarterly_report",
-              "page": 11,
-              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
             }
           ]
         }
@@ -929,73 +722,53 @@
     "Q3 2025": {
       "brief": [
         {
-          "text": "Fremtind omtaler i kvartalsrapporten: «kroner kommer fra brannen i Krokstadelva. Netto storskader i distributørene og deres samarbeidspartnere.»",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Gjensidige, Tryg, Frende har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+            "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+            "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6"
           ],
           "companies": [
-            "Fremtind"
+            "Fremtind",
+            "Gjensidige",
+            "Tryg",
+            "Frende"
           ],
           "period": "Q3 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "large_claims",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
-              "kind": "official_quarterly_report",
-              "page": 10,
-              "sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
-            }
-          ]
+          "theme": "diverging_underwriting"
         },
         {
-          "text": "Fremtind omtaler i kvartalsrapporten: «Forbedringen i combined ratio for Privatmarkedet hittil i år skyldes lavere kundeopplevelsen og legge til rette for økt effektivitet. skadefrekvens innen bilforsikring, i tillegg til premiejusteringer.»",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+            "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+            "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
           ],
           "companies": [
-            "Fremtind"
+            "Fremtind",
+            "Gjensidige",
+            "Tryg"
           ],
           "period": "Q3 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
-              "kind": "official_quarterly_report",
-              "page": 10,
-              "sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
-            }
-          ]
+          "theme": "revenue_direction"
         },
         {
-          "text": "Gjensidige omtaler i kvartalsrapporten: «The main drivers have been when customers need it, combined with fast and targeted price increases, improved risk selection and convenient digital solutions when they value simplicity.»",
-          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
           "source_urls": [
-            "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+            "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6"
           ],
           "companies": [
-            "Gjensidige"
+            "Frende"
           ],
           "period": "Q3 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "growth",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
-              "kind": "official_quarterly_report",
-              "page": 3,
-              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b"
-            }
-          ]
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
@@ -1081,73 +854,53 @@
     "Q2 2025": {
       "brief": [
         {
-          "text": "Fremtind omtaler i kvartalsrapporten: «Det har vært særlig fokus på å etablere felles arbeidsformer skadefrekvens på næringsbygg- og bilforsikring i tillegg til premiejusteringer. og styringsmekanismer gjennom ny utviklingsmodell.»",
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Frende. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+            "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6"
           ],
           "companies": [
-            "Fremtind"
+            "Fremtind",
+            "Gjensidige",
+            "Tryg",
+            "Frende"
           ],
           "period": "Q2 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-              "kind": "official_quarterly_report",
-              "page": 9,
-              "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
-            }
-          ]
+          "theme": "underwriting_improvement"
         },
         {
-          "text": "Gjensidige omtaler i kvartalsrapporten: «Gjensidige has maintained selection and favourable weather conditions travel insurance remained stable. strong competitiveness in the SME market. in the first quarter.»",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
           "source_urls": [
-            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q2 2025",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-              "kind": "official_quarterly_report",
-              "page": 13,
-              "sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512"
-            }
-          ]
-        },
-        {
-          "text": "Tryg omtaler i kvartalsrapporten: «In addition to service supporting customers and their children amid weather events, it remains a strategic priority for Tryg to internal events, Tryg participated in the Pride parade in increasing mental wellbeing challenges.»",
-          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-          "source_urls": [
+            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
             "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf"
           ],
           "companies": [
+            "Gjensidige",
             "Tryg"
           ],
           "period": "Q2 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Tryg",
-              "url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-              "kind": "official_quarterly_report",
-              "page": 7,
-              "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
-            }
-          ]
+          "theme": "revenue_direction"
+        },
+        {
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Fremtind, Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+            "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6"
+          ],
+          "companies": [
+            "Fremtind",
+            "Frende"
+          ],
+          "period": "Q2 2025",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
@@ -1218,50 +971,23 @@
     "Q1 2025": {
       "brief": [
         {
-          "text": "Fremtind omtaler i kvartalsrapporten: «Sammen med sterk distribusjonskraft gir dette gode forutsetninger for konkurransedyktig lønnsomhet fremover.»",
+          "text": "Kvartalsrapportene er registrert, men det finnes foreløpig ikke tilstrekkelig sammenlignbare opplysninger til å trekke dokumenterte fellestrekk eller forklare utviklingen. Les selskapenes rapporter for den kvalitative ledelsesgjennomgangen.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf"
+            "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+            "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+            "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6"
           ],
           "companies": [
-            "Fremtind"
+            "Fremtind",
+            "Gjensidige",
+            "Tryg",
+            "Frende"
           ],
           "period": "Q1 2025",
           "type": "qualitative_quarter_theme",
-          "theme": "profitability",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
-              "kind": "official_quarterly_report",
-              "page": 9,
-              "sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555"
-            }
-          ]
-        },
-        {
-          "text": "Gjensidige omtaler i kvartalsrapporten: «In Norway, the insurance service result Insurance revenue in Denmark increased by insurance. Favourable weather conditions competitive cost base.»",
-          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-          "source_urls": [
-            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q1 2025",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-              "kind": "official_quarterly_report",
-              "page": 8,
-              "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
-            }
-          ]
+          "theme": "insufficient_comparatives"
         }
       ],
       "implications": [
