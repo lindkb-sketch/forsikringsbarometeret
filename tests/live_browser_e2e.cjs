@@ -37,7 +37,7 @@ async function main(){
     readiness.schema_version===1 && readiness.companies.length===7 &&
     typeof readiness.investor_ready==='boolean');
   check('Data audit quarter matches selected source quarter',
-    /^Q[1-4] \\d{4}$/.test(readiness.reference_quarter),
+    /^Q[1-4] \d{4}$/.test(readiness.reference_quarter),
     readiness.reference_quarter);
   const visibleStatus=await page.locator('#app, aside').allInnerTexts();
   check('No investor approval or disapproval labels on public site',
