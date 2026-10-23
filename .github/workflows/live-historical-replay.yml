@@ -22,6 +22,27 @@ jobs:
         run: python -m pip install -r requirements-reports.txt
       - name: Attempt real report discovery and imports in isolation
         run: python scripts/live_historical_replay.py
+      - name: Summarize actual historical recovery and certification
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          path=Path('data/live_historical_replay.json')
+          if not path.exists():
+              print('Replay report missing')
+              raise SystemExit(1)
+          report=json.loads(path.read_text())
+          rows=report['results']
+          total=sum(x['historical_rows_recovered'] for x in rows)
+          expected=sum(x['historical_rows_expected'] for x in rows)
+          lines=['## Historical issuer replay',f'**Recovered: {total}/{expected}. Full certification: {report["full_seven_certified"]}.**','','| Company | Recovered | Missing | Certified |','|---|---:|---:|---|']
+          for x in rows:
+              lines.append(f'| {x["company"]} | {x["historical_rows_recovered"]}/{x["historical_rows_expected"]} | {x["historical_rows_missing"]} | {x["clean_replay_certified"]} |')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as summary:summary.write('\\n'.join(lines)+'\\n')
+          if not report['full_seven_certified']:
+              print('::warning::Historical replay is INCOMPLETE; zero exit status does not certify all issuers.')
+          PY
       - name: Verify clean replay restoration, idempotence and publication safeguards
         run: python -m unittest tests/test_full_automation_stress.py -v
       - name: Simulate malformed report and invalid observation rejection
