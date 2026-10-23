@@ -168,7 +168,8 @@
     const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const number=s=>{
-      const n=Number(String(s||'').replace(/\s/g,'').replace(/\u00a0/g,'')
+      if(s===undefined||s===null||String(s).trim()==='')return null;
+      const n=Number(String(s).replace(/\s/g,'').replace(/\u00a0/g,'')
         .replace(/\u202f/g,'').replace(',','.').replace(/[^0-9.-]/g,''));
       return Number.isFinite(n)?n:null;
     };
