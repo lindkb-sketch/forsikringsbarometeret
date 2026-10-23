@@ -16,7 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from gjensidige_report_check import ARCHIVE, HOME, official_report_links
-from ingest_official_pdf import download, read_pdf, parse_highlights, merge
+from ingest_official_pdf import download, read_pdf, merge
+from gjensidige_publish import parse_group_table
 
 TARGET = ROOT / "data" / "financial_observations.json"
 
@@ -47,8 +48,16 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
     try:
         blob = fetch_pdf(url)
         sha = hashlib.sha256(blob).hexdigest()
-        rows = parse_highlights(extract(blob), "Gjensidige", year, quarter, url, sha)
-        expected = {"insurance_revenue", "combined_ratio", "expense_ratio"}
+        pages = extract(blob)
+        opening = " ".join(text for _, text in pages[:2]).lower()
+        quarter_word = ("first", "second", "third", "fourth")[quarter - 1]
+        import re
+        if ("gjensidige" not in opening or str(year) not in opening or
+            not (quarter_word + " quarter" in opening or
+                 re.search(rf"\\b{quarter}(?:st|nd|rd|th) quarter\\b", opening))):
+            raise ValueError("The official PDF cover does not match the issuer and quarter")
+        rows = parse_group_table(pages, year, quarter, url, sha)
+        expected = {"insurance_revenue", "insurance_service_result", "combined_ratio", "expense_ratio"}
         present = {r["metric"] for r in rows if r["period_type"] == "quarter"}
         if not expected.issubset(present):
             return {"status": "unverified_report", "source": url, "found_metrics": sorted(present), "imported": 0}
