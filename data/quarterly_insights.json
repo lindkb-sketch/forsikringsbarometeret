@@ -74,6 +74,23 @@
             "kind": "official_company_release"
           }
         ]
+      },
+      {
+        "theme": "profitability",
+        "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and continued disciplined underwriting is expected to support a strong insurance service result.»",
+        "companies": [
+          "Protector"
+        ],
+        "sources": [
+          {
+            "company": "Protector",
+            "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+            "kind": "official_quarterly_report",
+            "page": 8,
+            "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
       }
     ],
     "Q2 2026": [
@@ -110,6 +127,40 @@
           }
         ],
         "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "profitability",
+        "text": "Fremtind omtaler i kvartalsrapporten: «Det har vært særlig fokus på å etablere felles arbeidsformer skadefrekvens på næringsbygg- og bilforsikring i tillegg til premiejusteringer. og styringsmekanismer gjennom ny utviklingsmodell.»",
+        "companies": [
+          "Fremtind"
+        ],
+        "sources": [
+          {
+            "company": "Fremtind",
+            "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+            "kind": "official_quarterly_report",
+            "page": 9,
+            "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "weather",
+        "text": "Gjensidige omtaler i kvartalsrapporten: «Gjensidige has maintained selection and favourable weather conditions travel insurance remained stable. strong competitiveness in the SME market. in the first quarter.»",
+        "companies": [
+          "Gjensidige"
+        ],
+        "sources": [
+          {
+            "company": "Gjensidige",
+            "url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+            "kind": "official_quarterly_report",
+            "page": 13,
+            "sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
       }
     ],
     "Q1 2026": [
@@ -135,24 +186,12 @@
   "policy": "Only exact issuer PDF narrative excerpts with page and SHA; no invented event, loss or weather causes.",
   "checked": [
     [
-      "Q1 2026",
-      "Fremtind"
-    ],
-    [
       "Q2 2026",
       "Fremtind"
     ],
     [
       "Q2 2026",
       "Gjensidige"
-    ],
-    [
-      "Q2 2026",
-      "Protector"
-    ],
-    [
-      "Q2 2026",
-      "Tryg"
     ],
     [
       "Q3 2026",
@@ -162,5 +201,6 @@
       "Q3 2026",
       "Storebrand"
     ]
-  ]
+  ],
+  "extraction_version": 2
 }

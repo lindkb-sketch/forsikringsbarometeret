@@ -105,6 +105,29 @@
           "kind": "official_company_release"
         }
       ]
+    },
+    {
+      "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and continued disciplined underwriting is expected to support a strong insurance service result.»",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "source_urls": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+      ],
+      "companies": [
+        "Protector"
+      ],
+      "period": "Q3 2026",
+      "type": "qualitative_quarter_theme",
+      "theme": "profitability",
+      "basis": "issuer_commentary",
+      "sources": [
+        {
+          "company": "Protector",
+          "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "kind": "official_quarterly_report",
+          "page": 8,
+          "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9"
+        }
+      ]
     }
   ],
   "implications": [
@@ -293,6 +316,29 @@
               "kind": "official_company_release"
             }
           ]
+        },
+        {
+          "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and continued disciplined underwriting is expected to support a strong insurance service result.»",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_urls": [
+            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+          ],
+          "companies": [
+            "Protector"
+          ],
+          "period": "Q3 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "profitability",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Protector",
+              "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+              "kind": "official_quarterly_report",
+              "page": 8,
+              "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9"
+            }
+          ]
         }
       ],
       "implications": [
@@ -420,6 +466,52 @@
               "kind": "official_quarterly_report",
               "page": 7,
               "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
+            }
+          ]
+        },
+        {
+          "text": "Fremtind omtaler i kvartalsrapporten: «Det har vært særlig fokus på å etablere felles arbeidsformer skadefrekvens på næringsbygg- og bilforsikring i tillegg til premiejusteringer. og styringsmekanismer gjennom ny utviklingsmodell.»",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
+          ],
+          "companies": [
+            "Fremtind"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "profitability",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Fremtind",
+              "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+              "kind": "official_quarterly_report",
+              "page": 9,
+              "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
+            }
+          ]
+        },
+        {
+          "text": "Gjensidige omtaler i kvartalsrapporten: «Gjensidige has maintained selection and favourable weather conditions travel insurance remained stable. strong competitiveness in the SME market. in the first quarter.»",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "source_urls": [
+            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "weather",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+              "kind": "official_quarterly_report",
+              "page": 13,
+              "sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512"
             }
           ]
         }
