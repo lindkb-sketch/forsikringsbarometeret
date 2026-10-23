@@ -36,11 +36,14 @@ def remote(path):
         return blob.decode('utf-8')
 
 def publication_state(company, now, calendar, candidates):
-    """Only demand current-quarter data when its publication is due/verified.
+    """Use confirmed issuer-report discovery ahead of optional calendar dates.
 
-    A missing financial report is not an ingestion failure before publication.
-    Undated issuers are treated as not confirmed published, never as ready.
+    A calendar forecasts publication but is not proof the PDF is available.
     """
+    known=any(r.get('company')==company and r.get('year')==2026
+              and r.get('quarter')==3 for r in candidates)
+    if known:
+        return 'publication_due', 'official_issuer_q3_candidate_discovered'
     aliases={'Sampo':'Sampo / If'}
     company_calendar=calendar.get(aliases.get(company,company),{})
     dates=[event.get('date') for event in company_calendar.get('events',[])
@@ -49,11 +52,8 @@ def publication_state(company, now, calendar, candidates):
         planned=date.fromisoformat(min(dates))
         if now < planned:
             return 'awaiting_publication', 'scheduled_for_'+planned.isoformat()
-        return 'publication_due', 'calendar_date_reached'
-    known=any(r.get('company')==company and r.get('year')==2026
-              and r.get('quarter')==3 for r in candidates)
-    return ('publication_due','issuer_q3_document_discovered') if known else (
-        'publication_unconfirmed','no_verified_q3_release_date_or_document')
+        return 'publication_expected', 'calendar_date_reached_but_no_verified_report'
+    return 'publication_unconfirmed', 'no_verified_q3_release_date_or_document'
 
 def audit(public=True):
     source=read_json(ROOT/'data/financial_observations.json')['observations']
@@ -92,7 +92,7 @@ def audit(public=True):
         missing=sorted(REQUIRED-q3metrics)
         release,release_evidence=publication_state(company,today,calendar,candidates)
         status=('ready' if not missing and not documented else
-                'awaiting_publication' if release in ('awaiting_publication','publication_unconfirmed') else
+                'awaiting_publication' if release in ('awaiting_publication','publication_unconfirmed','publication_expected') else
                 'missing_import_or_verification')
         groups.append({'company':company,'status':status,'publication_state':release,
                        'publication_evidence':release_evidence,'q3_2026_metrics':sorted(q3metrics),
