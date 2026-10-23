@@ -22,6 +22,8 @@ TOPICS={
 EXCLUDE=re.compile(r'(?i)(?:www\.|https?://|copyright|quarterly report|interim report|table of contents|page \d|\bQ[1-4]\b|\b20[2-3]\d\b)')
 def candidates(text):
  lines=[re.sub(r'\s+',' ',v).strip() for v in text.splitlines()]
+ joined=' '.join(lines)
+ lines+=re.split(r'(?<=[.!?])\s+(?=[A-ZÆØÅ])',joined)
  for line in lines:
   if not 65<=len(line)<=260 or len(line.split())<10:continue
   if re.search(r'\d',line) or EXCLUDE.search(line):continue
@@ -88,7 +90,7 @@ def refresh(max_sources=4):
    except Exception as exc:
     status=type(exc).__name__
    # Retry temporary download errors next run; don't repeatedly parse irrelevant pages.
-   if status in ('found','no_unambiguous_prose'):attempted.add((label,company))
+   if status=='found':attempted.add((label,company))
    print('REPORT_COMMENTARY',label,company,status,flush=True)
   if count>=max_sources:break
  storage['checked']=[list(x) for x in sorted(attempted)]
