@@ -98,14 +98,44 @@ def periods_due(today=None, first_year=2026):
     return [(y, q) for y in range(first_year, year + 1) for q in range(1, 5)
             if (y, q) < (year, quarter)]
 
-def import_due(today=None, importer=import_period):
+def previously_verified_periods(target=TARGET):
+    """Existing audited issuer figures remain valid if source discovery is offline.
+
+    This is diagnostic only: discovery still runs for every completed quarter,
+    and these stored rows are never treated as a newly discovered report.
+    """
+    try:
+        records = json.loads(Path(target).read_text(encoding="utf-8"))["observations"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return set()
+    required = {"insurance_revenue", "insurance_service_result",
+                "combined_ratio", "expense_ratio"}
+    by_period = {}
+    for row in records:
+        if (row.get("company") != "Gjensidige" or row.get("scope") != "group"
+                or row.get("period_type") != "quarter" or row.get("status") != "reported"
+                or not row.get("source_sha256") or not row.get("source_page")
+                or not str(row.get("source_url", "")).startswith("https://")):
+            continue
+        by_period.setdefault((row.get("year"), row.get("quarter")), set()).add(row.get("metric"))
+    return {period for period, metrics in by_period.items() if required.issubset(metrics)}
+
+def import_due(today=None, importer=import_period, target=TARGET):
+    verified_baseline = previously_verified_periods(target)
     statuses = []
     for year, quarter in periods_due(today):
         summary = importer(year, quarter)
-        statuses.append(summary)
-        if summary["status"] != "verified":
+        summary = dict(summary)
+        summary.setdefault("period", f"Q{quarter} {year}")
+        if summary["status"] == "not_discovered" and (year, quarter) in verified_baseline:
+            summary["status"] = "previously_verified"
+            summary["imported"] = 0
+            print("Gjensidige " + summary["period"] +
+                  ": verified historical figures retained; current IR index did not link report")
+        elif summary["status"] != "verified":
             print("::warning::Gjensidige " + summary["period"] +
                   " not imported: " + summary["status"])
+        statuses.append(summary)
     return statuses
 
 if __name__ == "__main__":
