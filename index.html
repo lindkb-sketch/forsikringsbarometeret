@@ -1075,7 +1075,7 @@ adminInputs();if(true){const b=document.createElement('button');b.id='admin-entr
 const stockObserver=new MutationObserver(()=>{for(const c of Object.keys(stockMarketConfig)){const el=document.getElementById('stock-plot-'+c);if(el&&!el.dataset.ready){el.dataset.ready='1';drawStockYear(c,stockCSV[c]||stockFallback[c]||[],'Månedssluttkurser fra 2026');}}});
 window.addEventListener('DOMContentLoaded',()=>{stockObserver.observe(document.body,{childList:true,subtree:true});show('home');});
 </script><script id="quarter-dynamic">
-const MON_Q3={"Fremtind": {"growth": "4,3 %", "growthPrev": "11,1 %", "cr": "73,0 %", "crPrev": "76,7 %", "loss": "52,5 %", "lossPrev": "55,2 %", "cost": "20,5 %", "costPrev": "21,4 %", "result": "1 704", "resultPrev": "1 411", "return": "40,2 %", "returnPrev": "41,4 %", "solvency": "189 %", "solvencyPrev": "180 %", "note": "Fremtind Holding konsern · Q3 isolert · justerte APM-tall. Resultat før skatt: 1 810 MNOK (1 621). PM CR 71,6 %, BM CR 80,8 %.", "source": "https://cdn.sanity.io/files/rppnrdtw/production/f3d02ffb4aef2a4d79faaa1a1034a9e467d9d3ef.pdf"}, "Tryg": {"growth": "4,1 %", "cr": "76,8 %", "crPrev": "78,6 %", "loss": "63,6 %", "lossPrev": "65,3 %", "cost": "13,3 %", "costPrev": "13,3 %", "result": "2 454", "solvency": "203 %", "note": "Tryg A/S Q3 2026, konsern: forsikringsinntekter 10 839 MDKK (10 457), forsikringsresultat 2 454 MDKK (2 181), combined ratio 76,8 % (78,6 %), skadeprosent netto 63,6 % (65,3 %), kostnadsprosent 13,3 % (13,3 %). Hiå: forsikringsresultat 5 299 MDKK (6 028), combined ratio 83,2 % (80,0 %). Norge-segmentet hentes direkte fra Trygs offisielle Q3-rapport og investortabeller. Konserntall og Norge-tall vises hver for seg.", "source": "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226", "resultPrev": "2 181", "growthPrev": "4,0 %", "solvencyPrev": "196 %", "return": "47,0 %", "returnPrev": ""}}, MON_CAL=[["Storebrand", "21.10.2026", "https://www.storebrand.no/en/investor-relations"], ["Protector", "22.10.2026", "https://investor.protectorforsikring.no/data"], ["Gjensidige", "23.10.2026", "https://www.gjensidige.com/no/investorinformasjon/finansiell-kalender"], ["Sampo / If", "04.11.2026", "https://www.sampo.com/investors/"], ["Frende", "Dato ikke bekreftet", "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/"]];
+const MON_Q3={}, MON_CAL=[["Storebrand", "21.10.2026", "https://www.storebrand.no/en/investor-relations"], ["Protector", "22.10.2026", "https://investor.protectorforsikring.no/data"], ["Gjensidige", "23.10.2026", "https://www.gjensidige.com/no/investorinformasjon/finansiell-kalender"], ["Sampo / If", "04.11.2026", "https://www.sampo.com/investors/"], ["Frende", "Dato ikke bekreftet", "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/"]];
 let MON_QUARTER='Q3';
 const MON_ORIG={home,company,metricCardFor,resultServiceCard,returnCard,solvencyCard,marketCard,table,quarterComment,quarterChanges,mediaNews,companyMediaNews,serviceResultCell};
 const MON_Q2_SEGMENTS=Object.fromEntries(Object.entries(segmentData).map(([k,v])=>[k,v.map(x=>({...x}))]));
@@ -1148,16 +1148,13 @@ const MON_ORIG_HOME=MON_ORIG.home,MON_ORIG_COMPANY=MON_ORIG.company;
 home=()=>{let h=MON_ORIG_HOME();h=h.replace('Fremtinds nøkkeltall som referanse for konkurrentene · velg Q2 eller Hiå.','Fremtinds nøkkeltall som referanse for konkurrentene');if(MON_QUARTER==='Q3'){h=h.replace(/Q2 2026 · Kildekontrollerte utdrag/g,'Q3 2026 · Kildekontrollerte utdrag').replace(/Q2 2026<\/span>/g,'Q3 2026</span>').replace('Viktig å følge i Q3','Viktig å følge videre').replace(/Resultatsammenligning · konsern · [^<]*2026/,'Resultatsammenligning · konsern · Q3 2026').replace(/<select aria-label="Rapporteringsperiode"[\s\S]*?<\/select>/,`<select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period!=='H3'?'selected':''}>Q3 2026</option><option value="H3" ${period==='H3'?'selected':''}>Hiå 2026</option></select>`);h=h.replace('Viktig å følge i Q3','Viktig å følge videre');}return MON_SELECT()+h};
 company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026 · kun kildebekreftede tall');h=h.replace('2025:','Q3 2025:');h+=MON_SOURCE(c);}return MON_SELECT()+h};
 if(!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
-profitabilityVerified.Fremtind['Q3 2026']=[52.5,20.5,73.0];
-profitabilityReturns.Fremtind['Q3 2026']={label:'Justert EK-avkastning annualisert kvartal',value:40.2};
-profitabilityVerified.Tryg['Q3 2026']=[63.6,13.3,76.8];
+
+
+
 
 // Hiå must be read directly from official Q1–Q3 columns; no ratios are calculated from other ratios.
 // Uploaded Tryg example displays 2025/2024 and is NOT evidence for 2026 values.
-const MON_YTD_Q3={
- Fremtind:{result:'4 280',resultPrev:'3 111',cr:'76,7 %',crPrev:'82,1 %',loss:'55,1 %',lossPrev:'60,1 %',cost:'21,6 %',costPrev:'22,0 %'},
- Tryg:{result:'5 299',resultPrev:'6 028',growth:'5,0 %',growthPrev:'',cr:'83,2 %',crPrev:'80,0 %',loss:'69,9 %',lossPrev:'66,6 %',cost:'13,3 %',costPrev:'13,4 %'}
-};
+const MON_YTD_Q3={};
 const MON_YTD_SOURCES={
  Fremtind:'https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122',
  Tryg:'https://via.ritzau.dk/pressemeddelelse/15217238/tryg-as?lang=en&publisherId=90446'
@@ -1256,7 +1253,7 @@ async function loadFinancialObservations(){
   if(!response.ok)throw Error('HTTP '+response.status);
   const dataset=await response.json();
   const observations=dataset.observations||[];
-  if(dataset.source_policy!=='official_quarterly_report_only')throw Error('Ugyldig kildepolicy');
+  if(!Array.isArray(observations)||!observations.every(r=>r.source_type==='official_quarterly_report'||r.source_type==='official_investor_tables'))throw Error('Ugyldig finansfeed');
   const roe=observations.filter(r=>r.company==='Storebrand' && r.metric==='return_on_equity' && r.scope==='group' && r.period_type==='quarter' && ['official_quarterly_report','official_investor_tables'].includes(r.source_type));
   for(const r of roe){
    if(!Number.isFinite(r.value)||!r.source_url||!r.source_page)continue;
@@ -1651,38 +1648,70 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
 (()=>{
  const fmt=(v,pct=false)=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:pct?1:0,minimumFractionDigits:pct?1:0}).format(v)+(pct?' %':'');
  const metricKeys={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',insurance_service_result:'result',return_on_equity:'return',solvency_ratio:'solvency'};
+ for(const c of ['Fremtind',...companies]){delete MON_Q3[c];delete MON_YTD_Q3[c];profitabilityVerified[c]={};profitabilityReturns[c]={};}
  async function syncVerified(){
   try{
    const response=await fetch('data/verified_financial_feed.json?ts='+Date.now(),{cache:'no-store'});
    if(!response.ok)throw Error('Finansfeed HTTP '+response.status);
    const feed=await response.json();
    if(!Array.isArray(feed.observations)||!feed.observations.length)throw Error('Verifisert finansfeed mangler observasjoner');
-   const valid=feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&Number.isFinite(r.value));
-   const rows=valid.filter(r=>r.year===2026&&r.quarter===3);
-   const previous=valid.filter(r=>r.year===2025&&r.quarter===3);
-   for(const r of [...previous,...rows]){
-    const d=MON_Q3[r.company]||(MON_Q3[r.company]={});
-    const suffix=r.year===2025?'Prev':'';
-    if(r.metric==='insurance_revenue'){d['revenue'+suffix]=fmt(r.value);d['revenueUnit'+suffix]=r.unit||'';}
-    const key=metricKeys[r.metric];
-    if(key)d[key+suffix]=fmt(r.value,['cr','loss','cost','return','solvency'].includes(key));
-    if(r.year===2026&&r.source_url)d.source=r.source_url;
+   // Never show legacy snapshots as current data. Rebuild all visible Q3/HIÅ
+   // and comparison values from the audited feed on every refresh.
+   const names=['Fremtind',...companies];
+   for(const c of names){
+    delete MON_Q3[c];
+    delete MON_YTD_Q3[c];
+    profitabilityVerified[c]={};
+    profitabilityReturns[c]={};
    }
-   for(const c of ['Fremtind',...companies]){
-    const d=MON_Q3[c];if(!d)continue;
-    const now=rows.find(r=>r.company===c&&r.metric==='insurance_revenue');
-    const prior=previous.find(r=>r.company===c&&r.metric==='insurance_revenue');
-    if(now&&prior&&prior.value>0&&now.unit===prior.unit)d.growth=fmt((now.value/prior.value-1)*100,true);
-    const ratio=rows.find(r=>r.company===c&&r.metric==='combined_ratio');
-    const loss=rows.find(r=>r.company===c&&r.metric==='loss_ratio');
-    const cost=rows.find(r=>r.company===c&&r.metric==='expense_ratio');
-    if(ratio&&loss&&cost){
-     profitabilityVerified[c]||(profitabilityVerified[c]={});
-     profitabilityVerified[c]['Q3 2026']=[loss.value,cost.value,ratio.value];
+   const all=feed.observations.filter(r=>r.scope==='group' &&
+      ['quarter','ytd'].includes(r.period_type) &&
+      ['reported','calculated'].includes(r.status) &&
+      Number.isFinite(r.value) && r.source_url && r.source_page);
+   const currentRows=all.filter(r=>r.year===2026 && r.quarter===3);
+   const beforeRows=all.filter(r=>r.year===2025 && r.quarter===3);
+   const mappings={combined_ratio:'cr',loss_ratio:'loss',
+      expense_ratio:'cost',insurance_service_result:'result',
+      return_on_equity:'return',solvency_ratio:'solvency'};
+   for(const row of [...beforeRows,...currentRows]){
+    const c=row.company;
+    if(!names.includes(c))continue;
+    const bucket=row.period_type==='ytd'?MON_YTD_Q3:MON_Q3;
+    const d=bucket[c]||(bucket[c]={});
+    const suffix=row.year===2025?'Prev':'';
+    const k=mappings[row.metric];
+    if(k)d[k+suffix]=fmt(row.value,['cr','loss','cost','return','solvency'].includes(k));
+    if(row.metric==='insurance_revenue'){
+      d['revenue'+suffix]=fmt(row.value);
+      d['revenueUnit'+suffix]=row.unit||'';
     }
-    const roe=rows.find(r=>r.company===c&&r.metric==='return_on_equity');
-    if(roe){profitabilityReturns[c]||(profitabilityReturns[c]={});profitabilityReturns[c]['Q3 2026']={label:'Rapportert egenkapitalavkastning',value:roe.value};}
+    if(row.year===2026)d.source=row.source_url;
    }
+   for(const c of names){
+    const yearRows=all.filter(r=>r.company===c && r.period_type==='quarter');
+    const periods=[...new Set(yearRows.map(r=>'Q'+r.quarter+' '+r.year))];
+    for(const label of periods){
+      const hits=yearRows.filter(r=>'Q'+r.quarter+' '+r.year===label);
+      const value=key=>hits.find(r=>r.metric===key)?.value;
+      const loss=value('loss_ratio'),cost=value('expense_ratio'),cr=value('combined_ratio');
+      if([loss,cost,cr].every(Number.isFinite))profitabilityVerified[c][label]=[loss,cost,cr];
+      const roe=value('return_on_equity');
+      if(Number.isFinite(roe))profitabilityReturns[c][label]={label:'Rapportert egenkapitalavkastning',value:roe};
+    }
+    for(const bucket of [MON_Q3,MON_YTD_Q3]){
+      const d=bucket[c];if(!d)continue;
+      const current=all.find(r=>r.company===c && r.year===2026 && r.quarter===3 &&
+        r.period_type===(bucket===MON_Q3?'quarter':'ytd') && r.metric==='insurance_revenue');
+      const prev=all.find(r=>r.company===c && r.year===2025 && r.quarter===3 &&
+        r.period_type===(bucket===MON_Q3?'quarter':'ytd') && r.metric==='insurance_revenue');
+      if(current && prev && prev.value>0 && current.unit===prev.unit)
+        d.growth=fmt((current.value/prev.value-1)*100,true);
+    }
+   }
+   const chronological=[...new Set(all.map(r=>'Q'+r.quarter+' '+r.year))].sort(
+     (a,b)=>{const pa=a.match(/Q(\\d) (\\d{4})/),pb=b.match(/Q(\\d) (\\d{4})/);
+       return Number(pa[2])-Number(pb[2])||Number(pa[1])-Number(pb[1]);});
+   profitabilityQuarters.splice(0,profitabilityQuarters.length,...chronological);
    // The main profitability plot and CR podium both consume profitabilityVerified.
    // Prior-year values remain unavailable unless explicitly reported in the feed.
    if(typeof profitabilityQuarters!=='undefined'&&!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
