@@ -92,6 +92,9 @@ async function main(){
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
   await page.screenshot({path:'data/browser_home_ytd.png',fullPage:true});
   report.screenshots.push('data/browser_home_ytd.png');
+  await page.evaluate(()=>FBQuarterly.refresh());
+  check('Auto-refresh preserves user-selected HIÅ tab',
+        (await page.locator('#results-comparison select').inputValue())==='H3');
   await page.selectOption('#results-comparison select','Q3');
   // Simulate two future reporting cycles with the existing CSS/DOM layout.
   // No synthetic figure is written to repository data or published files.
