@@ -17,7 +17,15 @@ TOPICS={
  'large_claims':r'(?i)\b(?:large claims?|major losses|major claims?|large loss(?:es)?|storskad\w*|storbrann\w*|store skader)\b',
  'weather':r'(?i)\b(?:weather|storm|flood(?:ing)?|extreme weather|natcat|natural catastroph\w*|været|værskad\w*|nedbør|flom|naturskad\w*)\b',
  'growth':r'(?i)\b(?:price increases?|premium growth|rate increases?|organic growth|prisøkning\w*|prisjustering\w*|premievekst|volumvekst)\b',
- 'profitability':r'(?i)\b(?:underlying profitability|underwriting performance|claims frequency|loss experience|lønnsomhet|skadefrekvens|skadeutvikling|forsikringsdrift)\b'
+ 'profitability':r'(?i)\b(?:underlying profitability|underwriting performance|claims frequency|loss experience|lønnsomhet|skadefrekvens|skadeutvikling|forsikringsdrift)\b',
+ 'reserves':r'(?i)\b(?:reserve releases?|reserve strengthening|prior.year claims|claims reserves?|reserveutvikling|reserveavsetning\w*|avviklingsresultat)\b',
+ 'reinsurance':r'(?i)\b(?:reinsurance|reinsur\w*|reassuranse|gjenforsikring)\b',
+ 'competition':r'(?i)\b(?:competition|competitive landscape|market share|customer retention|churn|konkurranse|markedsandel|kundefrafall|kundelojalitet)\b',
+ 'strategy':r'(?i)\b(?:acquisition|merger|partnership|distribution agreement|strategic initiative|oppkjøp|fusjon|partnerskap|distribusjonsavtale|strategiske tiltak)\b',
+ 'operations':r'(?i)\b(?:cost efficiency|operational efficiency|digital transformation|automation|productivity|kostnadseffektiv\w*|digitalisering|automatisering|produktivitet)\b',
+ 'investment':r'(?i)\b(?:investment return|financial markets|interest rates|yield environment|investeringsavkastning|renteutvikling|finansmarked)\b',
+ 'regulation':r'(?i)\b(?:regulatory changes?|solvency requirements?|capital requirement|regelverksendring\w*|soliditetskrav|kapitalkrav)\b',
+ 'inflation':r'(?i)\b(?:claims inflation|repair costs?|inflationary pressure|skadeinflasjon|reparasjonskostnad\w*|kostnadspress)\b'
 }
 EXCLUDE=re.compile(r'(?i)(?:www\.|https?://|copyright|quarterly report|interim report|table of contents|page \d|\bQ[1-4]\b|\b20[2-3]\d\b)')
 def candidates(text):
