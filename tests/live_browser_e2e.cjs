@@ -57,6 +57,11 @@ async function main() {
   check('Delayed stocks visible',prices.every(([c,x])=>view.newsroom.includes(c)&&view.newsroom.includes(String(x.close))),String(prices.length));
   check('Quarter brief source backed',!editorial.brief?.length||view.text.includes(editorial.brief[0].text),'brief count '+editorial.brief?.length);
   check('Quarter/year selectors',view.select.includes('Q3')&&view.select.includes('H3'),JSON.stringify(view.select));
+  const calendar=await page.locator('.mon-calendar').first().innerText().catch(()=>'');
+  if(view.quarter?.Gjensidige?.cr)
+    check('Imported Gjensidige Q3 not listed as upcoming',
+       !/Gjensidige[\\s\\S]{0,90}Q3 2026/.test(calendar),
+       calendar.slice(0,250));
   const screenshot='data/browser_home_q3.png';await page.screenshot({path:screenshot,fullPage:true});report.screenshots.push(screenshot);
   if(view.select.includes('H3')){
    await page.selectOption('#results-comparison select','H3');
