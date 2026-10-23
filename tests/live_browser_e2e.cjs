@@ -30,15 +30,21 @@ async function main(){
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
-       window.FBInvestorReadiness?.report &&
-       document.querySelector('.mon-calendar') &&
-       document.querySelector('#investor-readiness-banner'),null,{timeout:35000});
-  check('Published control edition includes investor readiness status',readiness.schema_version===1&&
-    readiness.companies.length===7&&typeof readiness.investor_ready==='boolean');
-  const uiReadiness=await page.locator('#investor-readiness-banner').innerText();
-  check('Investor warning respects generated release status',
-    readiness.investor_ready?uiReadiness.includes('Automatiske datakontroller bestått'):
-    uiReadiness.includes('IKKE GODKJENT FOR INVESTORBRUK'),uiReadiness.slice(0,250));
+       document.querySelector('.mon-calendar'),null,{timeout:35000});
+  // Publication diagnostics remain machine-readable; they are never a reader-facing
+  // investor approval label. The reader sees source-backed figures and dated blanks.
+  check('Internal data audit exists independently of dashboard labels',
+    readiness.schema_version===1 && readiness.companies.length===7 &&
+    typeof readiness.investor_ready==='boolean');
+  check('Data audit quarter matches selected source quarter',
+    /^Q[1-4] \d{4}$/.test(readiness.reference_quarter),
+    readiness.reference_quarter);
+  const visibleStatus=await page.locator('#app, aside').allInnerTexts();
+  check('No investor approval or disapproval labels on public site',
+    !visibleStatus.join(' ').match(/investorgodkjent|ikke godkjent for investorbruk|automatiske datakontroller bestått|kontrollutgave/i),
+    visibleStatus.join(' ').slice(0,150));
+  check('Investor approval banner is not rendered',
+    (await page.locator('#investor-readiness-banner').count())===0);
   const periods=[...new Set(feed.observations.filter(r=>r.scope==='group'&&r.period_type==='quarter'&&r.status==='reported'&&
      ['insurance_revenue','combined_ratio'].includes(r.metric)).map(r=>r.year+'-'+r.quarter))].sort((a,b)=>{
       const aa=a.split('-').map(Number),bb=b.split('-').map(Number);return bb[0]-aa[0]||bb[1]-aa[1];});

@@ -666,7 +666,7 @@ main{padding:30px clamp(20px,3vw,46px) 60px}
 @media(max-width:1000px){#app .kpi-seven.dynamic-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:530px){#app .kpi-seven.dynamic-kpis{grid-template-columns:1fr!important}}
 </style>
-</head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><div class="label">KONKURRENTER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · KONTROLLUTGAVE</div></aside><main id="app"></main><script>
+</head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><div class="label">KONKURRENTER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
 const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');companies.forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
 const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c==='Fremtind'?'home':c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
 function shell(title,subtitle,eyebrow='MARKEDSOVERSIKT'){return companyQuickNav()+`<div class="top"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="sub">${subtitle}</p></div><div class="tag">Q2 2026 · Kildekontrollerte utdrag</div></div>`}const peerData={
@@ -1818,13 +1818,5 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
 })();
 </script>
 
-<style id="investor-release-disclosure">
-.investor-readiness-banner{display:flex;flex-direction:column;gap:5px;padding:14px 18px;margin:0 0 17px;background:#fff8ed;color:#593a19;border:1px solid #edd7b9;border-left:4px solid #bd812d;border-radius:10px;font-size:12px;line-height:1.6}
-.investor-readiness-banner strong{font-size:12px;letter-spacing:.35px}
-.investor-readiness-banner small{font-size:11px;color:#805f3f}
-.investor-readiness-banner.is-ready{background:#f2f8fa;color:#174b53;border-color:#c8e4e7;border-left-color:#18828a}
-@media(max-width:650px){.investor-readiness-banner{padding:12px 14px}}
-</style>
-<script src="scripts/investor_readiness.js" defer></script>
 
 </body></html>
