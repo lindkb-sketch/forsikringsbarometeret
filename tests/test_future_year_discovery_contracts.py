@@ -53,7 +53,8 @@ class YearRolloverTests(unittest.TestCase):
 
     def test_tryg_no_year_lock_in_default(self):
         import discover_tryg
-        with patch.object(discover_tryg.date,'today',return_value=__import__('datetime').date(2027,2,10)):
+        with patch('discover_tryg.date') as mock_date:
+            mock_date.today.return_value=__import__('datetime').date(2027,2,10)
             with patch('discover_tryg.urllib.request.urlopen',return_value=FakeResponse(
                 '<a href="/2027/Interim_report_Q1_2027.pdf">Interim report Q1 2027</a><a href="/2027/Investor_tables_Q1_2027.xlsx">Investor tables Q1 2027</a>')):
                 with patch.object(discover_tryg,'OUT') as output:
