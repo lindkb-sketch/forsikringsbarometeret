@@ -175,7 +175,19 @@ def build(feed,news):
     'summary':fact['text'],'comment':comment or fact['text'],
     'ytd':ytd_note,'source_url':source,'period':label,
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
-  brief=documented_report_insights(label,by_company) or thematic_brief(by_company,rows,year,q)
+  documented=documented_report_insights(label,by_company) or []
+  baseline=thematic_brief(by_company,rows,year,q)
+  # Preserve published issuer commentary while adding new arrivals, and use
+  # audited comparative context only for themes not already explained by sources.
+  covered={x.get('theme') for x in documented}
+  generic={'profitability':'underwriting_improvement','growth':'revenue_direction'}
+  brief=list(documented)
+  for item in baseline:
+   category='profitability' if item.get('theme') in ('diverging_underwriting','underwriting_improvement','underwriting_pressure') else (
+     'growth' if item.get('theme') in ('revenue_direction','revenue_decline') else item.get('theme'))
+   if category not in covered and documented and item.get('theme')!='insufficient_comparatives':
+    brief.append(item)
+  if not documented:brief=baseline
   periods[label]={'brief':brief,'implications':implications,'by_company':by_company}
  current=f'Q{dates[0][1]} {dates[0][0]}'
  approved=[{'headline':n['headline'],'published_at':n['published_at'],
