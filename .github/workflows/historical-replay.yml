@@ -1,0 +1,30 @@
+name: Historical issuer replay audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/historical_replay_audit.py'
+      - '.github/workflows/historical-replay.yml'
+permissions:
+  contents: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install report parsing dependencies
+        run: python -m pip install -r requirements-reports.txt
+      - name: Run historical replay evidence for all seven insurers
+        run: python scripts/historical_replay_audit.py
+      - name: Upload insurer-by-insurer replay evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-replay-audit
+          path: data/historical_replay_audit.json
+          if-no-files-found: warn
