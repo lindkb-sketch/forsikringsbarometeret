@@ -1,0 +1,30 @@
+name: Full seven-insurer import replay evidence
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/full_import_replay_evidence.py'
+      - '.github/workflows/full-import-replay.yml'
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF and Excel dependencies
+        run: python -m pip install -r requirements-reports.txt
+      - name: Run seven-insurer replay and prove boundaries
+        run: python scripts/full_import_replay_evidence.py
+      - name: Archive company-by-company findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-import-replay-evidence
+          path: data/full_import_replay_evidence.json
+          if-no-files-found: warn
