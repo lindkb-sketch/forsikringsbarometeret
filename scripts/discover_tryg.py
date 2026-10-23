@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Discover exact Tryg A/S group PDF and investor XLSX pairs from official archive."""
 import json,re,urllib.request,urllib.parse
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -40,7 +41,8 @@ def parse(markup,year):
     return [item for _,item in sorted(result.items()) if 'workbook_url' in item and 'report_pdf_url' in item]
 
 def run(years=None):
-    years=years or (2025,2026)
+    if years is None:
+        years=range(2025,date.today().year+1)
     pairs=[]
     for year in years:
         req=urllib.request.Request(BASE+str(year),headers={'User-Agent':'Mozilla/5.0'})
