@@ -11,7 +11,7 @@ RUNTIME=(ROOT/'scripts/quarterly_runtime.js')
 class DashboardRuntimeTests(unittest.TestCase):
  def test_all_scripts_parse(self):
   html=HTML.read_text()
-  inline=re.findall(r'<script\\b[^>]*>([\\s\\S]*?)</script>',html,flags=re.I)
+  inline=re.findall(r'<script\b[^>]*>([\s\S]*?)</script>',html,flags=re.I)
   self.assertGreater(len(inline),5)
   for i,s in enumerate(inline):
    if s.strip():
