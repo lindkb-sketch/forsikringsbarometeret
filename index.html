@@ -1691,6 +1691,8 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     if(row.metric==='insurance_revenue'){
       d['revenue'+suffix]=fmt(row.value);
       d['revenueUnit'+suffix]=row.unit||'';
+      if(row.source_definition && /not IFRS insurance revenue|segment premiums|premiums f\\.o\\.a\\./i.test(row.source_definition))
+        d.revenueBasis='Segmentpremier (APM) – ikke IFRS-forsikringsinntekter';
     }
     if(row.year===2026)d.source=row.source_url;
    }
@@ -1741,7 +1743,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     const d=MON_Q3[c]||{};
     const td=document.createElement('td');
     const unit=d.revenueUnit||'';
-    td.innerHTML=d.revenue?'<strong>'+d.revenue+'</strong> <small>'+unit+'</small>'+(d.revenuePrev?'<div class="muted">Q3 2025: '+d.revenuePrev+'</div>':'<div class="muted">Q3 2025: ikke verifisert</div>'):'<span class="muted">Ikke rapportert</span>';
+    td.innerHTML=d.revenue?'<strong>'+d.revenue+'</strong> <small>'+unit+'</small>'+(d.revenueBasis?'<div class="muted">'+d.revenueBasis+'</div>':'')+(d.revenuePrev?'<div class="muted">Q3 2025: '+d.revenuePrev+'</div>':'<div class="muted">Q3 2025: ikke verifisert</div>'):'<span class="muted">Ikke rapportert</span>';
     tr.insertBefore(td,tr.cells[1]);
    }
    return doc.innerHTML;
