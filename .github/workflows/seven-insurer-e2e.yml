@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/e2e_seven_insurers.py'
+      - 'tests/test_e2e_publication_state.py'
       - '.github/workflows/seven-insurer-e2e.yml'
   schedule:
     - cron: '15 9,14,19 * * *'
