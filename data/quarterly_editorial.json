@@ -14,6 +14,18 @@
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
     },
     {
+      "text": "Gjensidige (group): combined ratio 73.6 % i Q3 2026.",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+    },
+    {
+      "text": "Gjensidige (group): forsikringsinntekter 11367.4 MNOK i Q3 2026.",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+    },
+    {
+      "text": "Gjensidige (group): forsikringsresultat 3003.6 MNOK i Q3 2026.",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+    },
+    {
       "text": "Protector (group): combined ratio 82.7 % i Q3 2026.",
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
     },
@@ -86,6 +98,11 @@
     {
       "text": "Fremtind: combined ratio 73 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "type": "rule_based_interpretation"
+    },
+    {
+      "text": "Gjensidige: combined ratio 73.6 % er et kontrollpunkt for lønnsomhet. Trend kan ikke fastslås uten sammenlignbare perioder.",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
       "type": "rule_based_interpretation"
     },
     {
@@ -343,12 +360,6 @@
       "publisher": "Finansavisen"
     },
     {
-      "headline": "STOREBRAND ASA: Status share buyback program",
-      "published_at": "2026-10-19T06:30:07+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxOajB4bDBDTWRMTDdRd21VLW5fTzNCOVI3ckdaUGxSY1NMZ3NHbmg1WnFScEZnSHRUdEhjMGNlb2xocXYtajR1ZmUwRkdMa2djQXU0OTBHT0lVN2VBbldwandIcHRtVlYya0pBMXF0SUNld29TQURRWkRrMmFfSFoySklRa2lLOG9GZlF3bXc2ZDNJeE1QSlpVSFNWV3VqN3hBWS1iX3Fob19aQTlZY243VGRQVV92Z1FSX25sUzVjMVFJR0dTek5Ld3JjZGZZdw?oc=5",
-      "publisher": "Finansavisen"
-    },
-    {
       "headline": "STOREBRAND: GJENNOMFØRER KNIF-TRANSAKSJONEN",
       "published_at": "2026-10-16T06:24:38+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOTmltbGV1Ul9TOUExMGhiWXJTaWtiS1hCN0s1LWl0N21OQmx5MlhLNGdFNFljQVZIUzlsQWhDbjlFWXdkSzZZQTU5X0o2bnFpYktYX0dvZzRvYnV1X3Z2UGdidVFaYWlaVzJ0TDlkc09UMHA2SFBVVmxwakV3UTZaLV9JUWRDSWp4dHhqSDBHSy1ZdGZlTThvNXBn?oc=5",
@@ -356,14 +367,20 @@
     },
     {
       "headline": "STOREBRAND ASA: Resolution to increase the share capital",
-      "published_at": "2026-10-16T06:00:18+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxQbUJUOWo3U2xfTkd1V3hQVU9NM3JXTzZwODdHNVBPQWFsOG1wbS1PMEdSLXktbWREX0tYM1RQSDlreEZndC1EcjNFcWJVeUczeXUxR2o3Wm9wWjVvT3h5b2FUVzNNT3MzTWRZX0JEejMwX0hBREtZOTltNXZhY0c0aUo0cjlGYjJMb25kTk9qVjg5SkxuT1BERE54VjhzazlzVFRIaFhMQlgzTFZVOUdwZkNNV211a3VSZWsxMTZnVFhIRmlrLTVxeUpFN190RXY5WWdUNkM2Qmhhalc5RVE?oc=5",
+      "published_at": "2026-10-16T06:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOOWt6dlgxMzVHOERFdTVNS2ljMlNfVldmMGlBQnF2bjRfaDN0ZDkyR0pHelNEMHJmMUI2SVF0RU9MN0FGb2VLeFJ3NUEtTWdOUi11OVdsSl9tYVNNSkNMSVRiel9JRG5KejNRVEtRY2lvQlJIU0p0bHVaRGFxVHVXZnR0MDRGSXd0ZVNkN2xZTnJxSHBWY1pZcGFHS25lTFhLb3V2QWplUXlFSUdnSXZUcjFIYklRclNzQjE4SGJaSlZsbm1UUzZLb3g0NFhfM0pieU9aU2hRUFpPa1NhdFE?oc=5",
       "publisher": "Finansavisen"
     },
     {
       "headline": "STOREBRAND ASA: Vedtak om kapitalforhøyelse",
       "published_at": "2026-10-16T06:00:00+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNQnZheE4yemhFdFY1c2hyQlJsNWJCbTN2c1lIbHlLcVdEa0RoZkRucVpUT3VEUXNNaHM3blM3emlXal9ZSThNUHRKV29YZWh2Ql9wTmtGY2FfYnpTWmdTVTFoZzR6X1RJeVhWc1BOSjNMZ1dCZGtHRXgxU1N6ODlqLVZqblVydEw2dTg5azR3X194UUc3S19TSHZiOTg0eW1PRkg2LVR1VnpNUlFUQ2tzWEFLaW9hUGpVRGJjTzhHdUFhbWJZM1Y5NV84dE0?oc=5",
+      "publisher": "Finansavisen"
+    },
+    {
+      "headline": "STOREBRAND ASA: Status share buyback program",
+      "published_at": "2026-10-12T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQZnFPRG1ZbXVXdUttaF9kX3NuSHVSN1FFUWl5UmVYb3p5LWRZek9TX002Umh5MDloTkdYcmhpMVl3NC1JSm1CZUJtUDBaNHQ4OTMxbU45R3o4SGUxT29NSnhRWVpzQWZxMW9SNVM5ZEs3a3JNSl9jNTJJVUJyTGFaRkNEQTB0M0lIck5EdmdyTXYzbGFwVUt2MUYyUW82YmY2NS1CR01ka2JHWk1UQVhGblNqeFlTMVlMUEE4dWtsSFBSTmsyQXdhRWNCb2x0Zw?oc=5",
       "publisher": "Finansavisen"
     },
     {
