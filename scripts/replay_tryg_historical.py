@@ -29,8 +29,10 @@ def main():
    expected={row["metric"]:row for row in json.loads((ROOT/"data/golden_observations.json").read_text())["observations"] if row.get("company")=="Tryg" and row.get("scope")=="norway" and row.get("year")==y and row.get("quarter")==q and row.get("period_type")=="quarter"}
    if len(expected)!=5 or {x["metric"] for x in quarter}!=set(expected):
     raise ValueError("Required Norway metric count mismatch")
-   if any(abs(row["value"]-expected[row["metric"]]["value"])>max(.15,abs(expected[row["metric"]]["value"])*.00025) for row in quarter):
-    raise ValueError("Historical Norway golden mismatch")
+   differences=[{"metric":row["metric"],"workbook_value":row["value"],"golden_value":expected[row["metric"]]["value"],"source_cell":row.get("source_cell"),"source_sheet":row.get("source_sheet"),"workbook_url":spec["workbook_url"],"pdf_url":spec["report_pdf_url"]} for row in quarter if abs(row["value"]-expected[row["metric"]]["value"])>max(.15,abs(expected[row["metric"]]["value"])*.00025)]
+   if differences:
+    report["unresolved"].append({"year":y,"quarter":q,"reason":"Workbook and golden Norway values differ; manual independent source review required","differences":differences})
+    continue
    from hashlib import sha256
    for row in quarter:row["source_sha256"]=sha256(content).hexdigest()
    baseline["observations"].extend(quarter)
@@ -38,6 +40,7 @@ def main():
    report["verified"].append({"year":y,"quarter":q,"metrics":len(quarter)})
   except Exception as exc:
    report["unresolved"].append({"year":y,"quarter":q,"reason":type(exc).__name__+": "+str(exc)[:230]})
+ (ROOT/"data/tryg_historical_diagnostics.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
  DATA.write_text(json.dumps(baseline,ensure_ascii=False)+"\n")
  print("TRYG_HISTORICAL_REPLAY",json.dumps(report))
 if __name__=="__main__":main()
