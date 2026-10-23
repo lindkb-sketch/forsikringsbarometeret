@@ -91,13 +91,13 @@ async function main(){
   check('All missing issuers shown, including those without dates',
     missing.every(c=>view.calendar.includes(calendarName(c))),view.calendar.slice(0,400));
   const announced=Object.entries(calendarFeed.companies||{});
-  const future=announced.filter(([name,config])=>{
+  const futureScheduled=announced.filter(([name,config])=>{
     const next=config.next_event;
     const match=/^Q([1-4]) (\d{4})$/.exec(next?.period||'');
     return next&&!next.locked&&match&&Number(match[2])*4+Number(match[1])>year*4+quarter;
   });
   check('Future reports are preserved when current results are published',
-    future.every(([name,config])=>view.calendar.includes(name+'\n'+config.next_event.period)),
+    futureScheduled.every(([name,config])=>view.calendar.includes(name+'\n'+config.next_event.period)),
     view.calendar.slice(0,400));
   const alreadyPublished=announced.filter(([name,config])=>
     config.next_event?.period==='Q'+quarter+' '+year&&
