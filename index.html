@@ -1780,7 +1780,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
      '<p>'+src(item)+'</p>':
      '<p>Avventer offisiell rapport for '+esc(period)+'. Ingen ikke-verifiserte tall brukes.</p>';
   }else{
-   const facts=(block?.brief||[]).filter(x=>x.company);
+   const facts=(block?.brief||[]).filter(x=>x.text && (x.type==='qualitative_quarter_theme' || x.company));
    body=facts.length?facts.map(x=>'<p>'+esc(x.text)+' '+src(x)+'</p>').join(''):
      '<p>Ingen nye kildeverifiserte kvartalstall er tilgjengelige for valgt periode.</p>';
   }
