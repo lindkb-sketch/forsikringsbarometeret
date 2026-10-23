@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""End-to-end integrity audit of all seven insurers and the public dashboard.
+
+Not an assertion that a newly published report is already ingested: missing
+quarters are recorded as incomplete, rather than fabricated or silently passed.
+"""
+import argparse
+import json
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[1]
+COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand')
+REQUIRED={'insurance_revenue','combined_ratio','loss_ratio','expense_ratio'}
+KEY=('company','year','quarter','scope','period_type','metric','segment')
+BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
+OUT=ROOT/'data/e2e_seven_insurers.json'
+
+def read_json(path):
+    return json.loads(path.read_text(encoding='utf-8'))
+
+def key(row):
+    return tuple(row.get(k) for k in KEY)
+
+def remote(path):
+    request=urllib.request.Request(BASE+path+'?e2e='+str(time.time_ns()),
+        headers={'Cache-Control':'no-cache','User-Agent':'Forsikringsbarometeret-E2E/1.0'})
+    with urllib.request.urlopen(request,timeout=30) as response:
+        if response.status!=200:
+            raise ValueError(f'{path}: HTTP {response.status}')
+        blob=response.read(4_000_001)
+        if len(blob)>4_000_000:raise ValueError(f'{path}: oversized response')
+        return blob.decode('utf-8')
+
+def audit(public=True):
+    source=read_json(ROOT/'data/financial_observations.json')['observations']
+    feed=read_json(ROOT/'data/verified_financial_feed.json')['observations']
+    editorial=read_json(ROOT/'data/quarterly_editorial.json')
+    html=(ROOT/'index.html').read_text(encoding='utf-8')
+    issues=[]
+    expected={key(r):r for r in source
+              if r.get('status') in ('reported','calculated')
+              and not (r.get('scope')=='norway' and r.get('period_type')!='quarter')}
+    received={key(r):r for r in feed}
+    if len(received)!=len(feed):issues.append('Duplicate keys in local verified feed')
+    for k,r in expected.items():
+        if received.get(k)!=r:issues.append('Source/feed mismatch: '+str(k))
+    for marker in ('verified-q3-dashboard-bridge','profitabilityVerified','crPodium()',
+                   'Forsikringsinntekter · Q3','quarterly_editorial.json'):
+        if marker not in html:issues.append('Missing homepage integration: '+marker)
+    if editorial.get('period')!='Q3 2026':issues.append('Quarterly editorial is not Q3 2026')
+    groups=[]
+    for company in COMPANIES:
+        q3=[r for r in feed if r.get('company')==company and r.get('year')==2026
+             and r.get('quarter')==3 and r.get('scope')=='group'
+             and r.get('period_type')=='quarter' and r.get('status')=='reported']
+        q3metrics={r['metric'] for r in q3}
+        q3prior=[r for r in feed if r.get('company')==company and r.get('year')==2025
+                 and r.get('quarter')==3 and r.get('scope')=='group'
+                 and r.get('period_type')=='quarter' and r.get('status')=='reported']
+        documented=[]
+        for r in q3:
+            if not r.get('source_url','').startswith('https://') or not r.get('source_page') or not r.get('source_sha256'):
+                documented.append(r.get('metric'))
+        missing=sorted(REQUIRED-q3metrics)
+        status='ready' if not missing and not documented else 'incomplete'
+        groups.append({'company':company,'status':status,'q3_2026_metrics':sorted(q3metrics),
+                       'q3_2026_missing':missing,'q3_2025_available_metrics':sorted({r['metric'] for r in q3prior}),
+                       'q3_2026_missing_source_provenance':documented})
+    if public:
+        public_errors=[]
+        for attempt in range(3):
+            try:
+                public_feed=json.loads(remote('data/verified_financial_feed.json'))
+                public_html=remote('index.html')
+                public_editorial=json.loads(remote('data/quarterly_editorial.json'))
+                if public_feed['observations']!=feed:raise ValueError('Public JSON differs from main feed')
+                if public_html!=html:raise ValueError('Public HTML differs from main')
+                if public_editorial!=editorial:raise ValueError('Public editorial differs from main')
+                public_errors=[]
+                break
+            except Exception as exc:
+                public_errors=[str(exc)]
+                if attempt!=2:time.sleep(10)
+        issues.extend('Public deploy: '+x for x in public_errors)
+    incomplete=[c['company'] for c in groups if c['status']!='ready']
+    report={'checked_at_utc':datetime.now(timezone.utc).isoformat(),
+            'period':'Q3 2026','scope':'group','companies':groups,
+            'ready_companies':len(groups)-len(incomplete),'total_companies':len(groups),
+            'incomplete_companies':incomplete,'integrity_errors':issues,
+            'overall':'pass' if not incomplete and not issues else 'fail'}
+    OUT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    for c in groups:
+        print('E2E',c['company'],c['status'],'missing',','.join(c['q3_2026_missing']) or '-',
+              'prior-year',len(c['q3_2025_available_metrics']))
+    print('E2E_RESULT',report['overall'],'ready',report['ready_companies'],'/7',
+          'integrity_errors',len(issues),'report',str(OUT),flush=True)
+    return report
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--offline',action='store_true')
+    args=parser.parse_args()
+    try:
+        result=audit(public=not args.offline)
+    except Exception as exc:
+        OUT.write_text(json.dumps({'overall':'fail','fatal_error':repr(exc)},indent=2)+'\n')
+        raise
+    sys.exit(0 if result['overall']=='pass' else 1)
