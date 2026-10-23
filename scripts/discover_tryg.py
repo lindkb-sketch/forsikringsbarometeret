@@ -27,13 +27,20 @@ def parse(markup,year):
         u=urllib.parse.urlparse(url)
         if u.scheme!='https' or u.hostname not in ('tryg.com','www.tryg.com'):continue
         name=urllib.parse.unquote(u.path.split('/')[-1])
-        matches=re.findall(r'(?i)\bQ([1-4])\b',label+' '+name)
-        if not matches:continue
-        quarter=int(matches[-1])
-        if not re.search(str(year),label+' '+name):continue
+        search_text=label+' '+name
+        matches=re.findall(r'(?i)\\bQ([1-4])\\b|(?i:Q)([1-4])(?=20\\d{2})',search_text)
+        if matches:
+            quarter=int((matches[-1][0] or matches[-1][1]))
+        elif re.search(r'(?i)half[- ]year|\\bH1\\b',search_text):
+            quarter=2
+        elif re.search(r'(?i)annual report|full[- ]year|investortables[_ -]?Q4',search_text):
+            quarter=4
+        else:
+            continue
+        if not re.search(str(year),search_text):continue
         kind=None
-        if name.lower().endswith('.xlsx') and re.search('investor.?tables|investor.?table',label+' '+name,re.I):kind='workbook_url'
-        elif name.lower().endswith('.pdf') and re.search(r'interim report|financial report',label+' '+name,re.I):kind='report_pdf_url'
+        if name.lower().endswith('.xlsx') and re.search(r'investor.?tables|investor.?table',search_text,re.I):kind='workbook_url'
+        elif name.lower().endswith('.pdf') and re.search(r'interim report|financial report|annual report',search_text,re.I):kind='report_pdf_url'
         if kind:
             item=result.setdefault((year,quarter),{'company':'Tryg','year':year,'quarter':quarter,'source_index_url':BASE+str(year)})
             if kind in item and item[kind]!=url:raise ValueError('Ambiguous Tryg official archive '+str((year,quarter,kind)))
