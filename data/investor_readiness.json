@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-23",
+  "reference_quarter": "Q3 2026",
+  "investor_ready": false,
+  "status": "NOT_APPROVED_FOR_INVESTOR_USE",
+  "financial_quarter_complete": false,
+  "all_seven_automated": false,
+  "definitions_comparable": false,
+  "market_data_fresh": true,
+  "companies": [
+    {
+      "company": "Fremtind",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "source_located_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "missing_metrics": [],
+      "invalid_metrics": [],
+      "expected_report_date": null,
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Gjensidige",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "source_located_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "missing_metrics": [],
+      "invalid_metrics": [],
+      "expected_report_date": "2026-10-23",
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Tryg",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "source_located_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "missing_metrics": [],
+      "invalid_metrics": [],
+      "expected_report_date": null,
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Sampo",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q2 2026",
+      "status": "awaiting_official_publication",
+      "source_located_metrics": [],
+      "missing_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio"
+      ],
+      "invalid_metrics": [],
+      "expected_report_date": "2026-11-04",
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Frende",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q2 2026",
+      "status": "report_date_unconfirmed",
+      "source_located_metrics": [],
+      "missing_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio"
+      ],
+      "invalid_metrics": [],
+      "expected_report_date": null,
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Protector",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "source_located_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "missing_metrics": [],
+      "invalid_metrics": [],
+      "expected_report_date": "2026-10-22",
+      "revenue_not_ifrs_comparable": false,
+      "end_to_end_automation_certified": false
+    },
+    {
+      "company": "Storebrand",
+      "quarter": "Q3 2026",
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "incomplete_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "loss_ratio"
+      ],
+      "missing_metrics": [
+        "insurance_service_result"
+      ],
+      "invalid_metrics": [],
+      "expected_report_date": "2026-10-21",
+      "revenue_not_ifrs_comparable": true,
+      "end_to_end_automation_certified": false
+    }
+  ],
+  "stocks": [
+    {
+      "company": "Gjensidige",
+      "trading_date": "2026-10-23",
+      "calendar_days_old": 0,
+      "status": "dated_delayed_close"
+    },
+    {
+      "company": "Protector",
+      "trading_date": "2026-10-23",
+      "calendar_days_old": 0,
+      "status": "dated_delayed_close"
+    },
+    {
+      "company": "Storebrand",
+      "trading_date": "2026-10-23",
+      "calendar_days_old": 0,
+      "status": "dated_delayed_close"
+    },
+    {
+      "company": "Tryg",
+      "trading_date": "2026-10-23",
+      "calendar_days_old": 0,
+      "status": "dated_delayed_close"
+    },
+    {
+      "company": "Sampo / If",
+      "trading_date": "2026-10-23",
+      "calendar_days_old": 0,
+      "status": "dated_delayed_close"
+    }
+  ],
+  "news": {
+    "latest_headline_date": "2026-10-23",
+    "recent_attributed_headlines": true
+  },
+  "limitations": [
+    "Technical verification is not independent manual review of issuer report cells.",
+    "This status must not convert an unreported quarter into estimated figures.",
+    "Delayed stock closes must not be described as live market prices.",
+    "Independent management/investor approval is required before distribution."
+  ]
+}
