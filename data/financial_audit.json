@@ -899,7 +899,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 381,
+  "observation_count": 406,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -988,6 +988,51 @@
       "inputs": [
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf",
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-forsikring-as/_/attachment/download/23398999-428e-4a65-a8b5-de39951d8c91:a810b9dd07f7766edb7e148b27a4961f6a93746d/2026-3q-interim-report-storebrand-forsikring.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 10.108165981248574,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+        "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 7.286623718217489,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 8.663012334591059,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },
@@ -1228,6 +1273,36 @@
       "inputs": [
         "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
         "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 1.4774279363322318,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 6.12294487045979,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },
