@@ -20,6 +20,18 @@ def audit(data):
         if r.get('company')=='Storebrand' and r.get('scope')=='norway' and r.get('quarter')==4:
             errors.append(f'{label}: Storebrand Forsikring AS has no standalone Q4 report; Q4 must remain blank')
         if r.get("metric") not in METRICS:errors.append(f"{label}: unknown metric")
+        # Never combine differently denominated monetary figures or treat a
+        # percentage as currency in the published comparison.
+        metric=r.get("metric")
+        unit=str(r.get("unit","")).strip()
+        percent_metrics={"combined_ratio","loss_ratio","expense_ratio","return_on_equity","solvency_ratio","insurance_revenue_growth"}
+        if metric in percent_metrics and unit not in ("%", "percent", "percentage"):
+            errors.append(f"{label}: percentage metric has invalid unit")
+        if metric in ("insurance_revenue","insurance_service_result") and unit in ("%", "percent", "percentage", ""):
+            errors.append(f"{label}: financial amount requires a monetary unit")
+        if r.get("source_type")=="official_quarterly_report" and r.get("status")=="reported" and r.get("source_scope")=="group" and r.get("scope")=="norway":
+            errors.append(f"{label}: group source cannot support Norway value")
+
         if r.get("source_type")=="official_investor_tables":
             if r.get("company") not in ("Tryg","Gjensidige") or r.get("scope")!="norway":
                 errors.append(f"{label}: investor tables permitted only for Tryg/Gjensidige Norway")
