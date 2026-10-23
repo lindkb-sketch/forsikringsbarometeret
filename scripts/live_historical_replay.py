@@ -5,12 +5,12 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 PLANS={
 "Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py"],
-"Gjensidige":["import_gjensidige_latest.py"],
+"Gjensidige":["import_gjensidige_latest.py","gjensidige_norway_excel.py"],
 "Tryg":["discover_tryg.py","import_tryg.py"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py"],
-"Storebrand":["storebrand_automation_check.py"]}
+"Storebrand":["storebrand_publish_q3.py"]}
 def run():
  results=[]
  restored=[]
@@ -52,10 +52,15 @@ def run():
    except Exception as exc:
     feed_error=type(exc).__name__+": "+str(exc)[:220]
    restored.extend(new.values())
+   missing_keys=[k for k in old if k not in new]
+   missing_by_scope={}
+   for k in missing_keys:
+    label=f"{k[3]}/{k[4]}/Q{k[2]}-{k[1]}"
+    missing_by_scope[label]=missing_by_scope.get(label,0)+1
    recovered=sum(k in new for k in old)
    missing=sum(k not in new for k in old)
    added=sum(k not in old for k in new)
-   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"golden_value_mismatches":mismatches[:15],"staged_feed_parity":feed_ok,"staged_feed_error":feed_error,"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and feed_ok and len(old)>0,"full_website_e2e_certified":False})
+   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"missing_by_scope_period":missing_by_scope,"missing_keys":[list(k) for k in missing_keys],"golden_value_mismatches":mismatches[:15],"staged_feed_parity":feed_ok,"staged_feed_error":feed_error,"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and feed_ok and len(old)>0,"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["clean_replay_certified"] else "INCOMPLETE","recovered",recovered,"expected",len(old),"feed",feed_ok,flush=True)
  stage_error=''
  stage_path=ROOT/'data/replay_only_verified_feed.json'
