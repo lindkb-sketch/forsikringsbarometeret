@@ -8,7 +8,7 @@ on:
       - 'scripts/storebrand_*.py'
       - 'scripts/import_storebrand_reports.py'
   schedule:
-    - cron: '23 7 * * *'
+    - cron: '17 * * * *'
 permissions:
   contents: write
   pages: write
