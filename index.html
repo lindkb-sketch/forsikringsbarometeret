@@ -1086,8 +1086,8 @@ let MON_CARD=(c,key,originalHtml)=>{
  const card=doc.querySelector('.metric');if(!card)return originalHtml||'';
  const v=card.querySelector('.value'),prior=card.querySelector('.prior'),delta=card.querySelector('.delta');
  const val=d[key]||'—',prev=d[key+'Prev']||'—';
- if(v)v.textContent=val+(key==='result'&&d[key]?' '+(c==='Tryg'?'MDKK':'MNOK'):'');
- if(prior)prior.textContent='Q3 2025: '+prev+(key==='result'&&d[key+'Prev']?' '+(c==='Tryg'?'MDKK':'MNOK'):'');
+ if(v)v.textContent=val+(key==='result'&&d[key]?' '+(d.resultUnit||'MNOK'):'');
+ if(prior)prior.textContent='Q3 2025: '+prev+(key==='result'&&d[key+'Prev']?' '+(d.resultUnit||'MNOK'):'');
  if(delta){
    const parse=n=>{const x=String(n||'').replace(/\s/g,'').replace(/−/g,'-').replace(',','.').match(/-?\d+(?:\.\d+)?/);return x?Number(x[0]):NaN;};
    const a=parse(val),b=parse(prev);
@@ -1096,7 +1096,7 @@ let MON_CARD=(c,key,originalHtml)=>{
      const higherIsBetter=['growth','result','return','solvency'].includes(key);
      const better=!flat&&(higherIsBetter?diff>0:diff<0);
      const worse=!flat&&!better;
-     const unit=key==='result'?(c==='Tryg'?'MDKK':'MNOK'):'pp';
+     const unit=key==='result'?(d.resultUnit||'MNOK'):'pp';
      const shown=Math.abs(diff).toLocaleString('nb-NO',{minimumFractionDigits:1,maximumFractionDigits:1});
      delta.textContent=(flat?'→':diff>0?'▲':'▼')+' '+(flat?'0,0':(diff>0?'+':'−')+shown)+' '+unit;
      delta.className='delta '+(flat?'neutral':better?'better':'worse');
@@ -1107,7 +1107,7 @@ let MON_CARD=(c,key,originalHtml)=>{
    const a=parse(val),b=parse(prev);
    if(Number.isFinite(a)&&Number.isFinite(b)){
      const diff=a-b,flat=Math.abs(diff)<0.05,higherIsBetter=['growth','result','return','solvency'].includes(key),better=!flat&&(higherIsBetter?diff>0:diff<0);
-     const unit=key==='result'?(c==='Tryg'?'MDKK':'MNOK'):'pp';
+     const unit=key==='result'?(d.resultUnit||'MNOK'):'pp';
      const el=document.createElement('div');el.className='delta '+(flat?'neutral':better?'better':'worse');
      el.textContent=(flat?'→':diff>0?'▲':'▼')+' '+(flat?'0,0':(diff>0?'+':'−')+Math.abs(diff).toLocaleString('nb-NO',{minimumFractionDigits:1,maximumFractionDigits:1}))+' '+unit;
      card.append(el);
@@ -1135,7 +1135,7 @@ returnCard=c=>{
 };
 solvencyCard=c=>MON_QUARTER==='Q2'?MON_ORIG.solvencyCard(c):MON_CARD(c,'solvency',MON_ORIG.solvencyCard(c));
 marketCard=c=>MON_ORIG.marketCard(c); // Latest published market-share period is independent of earnings quarter
-serviceResultCell=c=>MON_QUARTER==='Q2'?MON_ORIG.serviceResultCell(c):(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])?.result?`${(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c]).result} ${c==='Tryg'?'MDKK':'MNOK'}`:'—';
+serviceResultCell=c=>{if(MON_QUARTER==='Q2')return MON_ORIG.serviceResultCell(c);const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{};return d.result?d.result+' '+(d.resultUnit||'MNOK'):'—';};
 table=()=>{const original=MON_ORIG.table();if(MON_QUARTER==='Q2')return original;const e=document.createElement('div');e.innerHTML=original;for(const tr of e.querySelectorAll('tbody tr')){const name=(tr.cells[0]?.textContent||'').trim();const c=name==='Frende Holding'?'Frende':name;const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{};const keys=['growth','cr','loss','cost'];keys.forEach((key,i)=>{if(tr.cells[i+1])tr.cells[i+1].innerHTML=d[key]?comparisonCell(c,key,d[key],d[key+'Prev']):'—'});if(tr.cells[5])tr.cells[5].innerHTML=shareCell(c);}return e.innerHTML;};
 // Q3 commentary, strategic updates and news are rendered from the published
 // quarterly_editorial.json and official_news.json, not old inline snapshots.
