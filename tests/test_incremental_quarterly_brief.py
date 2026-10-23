@@ -27,6 +27,19 @@ class IncrementalQuarterlyBriefTests(unittest.TestCase):
   self.assertLessEqual(len(selected),4)
   self.assertLessEqual(sum(len(r['text'].split()) for r in selected),220)
   self.assertEqual(len(rows),18)
+ def test_raw_pdf_excerpt_is_evidence_not_published_prose(self):
+  with tempfile.TemporaryDirectory() as d:
+   data=Path(d)/'data';data.mkdir()
+   raw={'theme':'weather','basis':'issuer_pdf_verbatim',
+        'text':'Fremtind omtaler i kvartalsrapporten: «Large claims affected our operations during the period.»',
+        'companies':['Fremtind'],'sources':[{'company':'Fremtind','url':'https://reports.example.com/Fremtind.pdf','kind':'official_quarterly_report','page':3}]}
+   (data/'quarterly_insights.json').write_text(json.dumps({'periods':{'Q1 2027':[raw]}}))
+   with patch.object(build_editorial,'ROOT',Path(d)):
+    output=build_editorial.build({'observations':[self.row('Fremtind')]},{'items':[]})
+   text=' '.join(item['text'] for item in output['brief'])
+   self.assertNotIn('omtaler i kvartalsrapporten',text)
+   self.assertNotIn('Large claims affected',text)
+   self.assertTrue(output['brief'])
  def test_unreported_company_is_not_attributed_commentary(self):
   with tempfile.TemporaryDirectory() as d:
    data=Path(d)/'data';data.mkdir()
