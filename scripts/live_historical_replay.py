@@ -13,6 +13,7 @@ PLANS={
 "Storebrand":["storebrand_automation_check.py"]}
 def run():
  results=[]
+ restored=[]
  for company,steps in PLANS.items():
   with tempfile.TemporaryDirectory() as folder:
    root=Path(folder)
@@ -50,11 +51,21 @@ def run():
                 if row.get("status") in ("reported","calculated"))
    except Exception as exc:
     feed_error=type(exc).__name__+": "+str(exc)[:220]
+   restored.extend(new.values())
    recovered=sum(k in new for k in old)
    missing=sum(k not in new for k in old)
    added=sum(k not in old for k in new)
    results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"golden_value_mismatches":mismatches[:15],"staged_feed_parity":feed_ok,"staged_feed_error":feed_error,"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and feed_ok and len(old)>0,"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["clean_replay_certified"] else "INCOMPLETE","recovered",recovered,"expected",len(old),"feed",feed_ok,flush=True)
- report={"results":results,"production_data_modified":False,"full_seven_certified":all(r["clean_replay_certified"] for r in results),"replay_mode":"company historical rows removed from disposable baseline"}
+ stage_error=''
+ stage_path=ROOT/'data/replay_only_verified_feed.json'
+ try:
+  sys.path.insert(0,str(ROOT/'scripts'))
+  from build_verified_feed import build
+  staged=build({'schema_version':1,'observations':restored})
+  stage_path.write_text(json.dumps(staged,ensure_ascii=False,indent=2)+'\n')
+ except Exception as exc:
+  stage_error=type(exc).__name__+': '+str(exc)[:350]
+ report={"staged_feed_generated":stage_path.exists(),"staged_feed_error":stage_error,"results":results,"production_data_modified":False,"full_seven_certified":all(r["clean_replay_certified"] for r in results),"replay_mode":"company historical rows removed from disposable baseline"}
  (ROOT/"data/live_historical_replay.json").write_text(json.dumps(report,indent=2)+"\n")
 if __name__=="__main__":run()
