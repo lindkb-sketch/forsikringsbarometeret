@@ -38,10 +38,26 @@ jobs:
           trap 'kill "$pid" 2>/dev/null || true' EXIT
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
+      - name: Validate genuinely reconstructed data in an isolated browser
+        run: |
+          if [ ! -f data/replay_only_verified_feed.json ]; then
+            echo "::warning::Strict replay feed could not be built; inspect per-company missing data in replay evidence"
+          else
+            stage="$(mktemp -d)"
+            cp -a index.html scripts data "$stage"/
+            cp data/replay_only_verified_feed.json "$stage/data/verified_financial_feed.json"
+            python -m http.server 8766 --bind 127.0.0.1 --directory "$stage" >/tmp/fb-replayed-browser.log 2>&1 &
+            pid=$!
+            trap 'kill "$pid" 2>/dev/null || true' EXIT
+            sleep 2
+            BAROMETER_URL=http://127.0.0.1:8766/ node tests/live_browser_e2e.cjs
+          fi
       - name: Archive per-issuer successes and blocked steps
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: live-historical-import-replay
-          path: data/live_historical_replay.json
+          path: |
+            data/live_historical_replay.json
+            data/replay_only_verified_feed.json
           if-no-files-found: warn
