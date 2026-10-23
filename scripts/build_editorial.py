@@ -22,7 +22,7 @@ def same_basis(a,b):
 
 def build(feed,news):
  rows=[r for r in feed.get('observations',[]) if
-       r.get('status') in ('reported','calculated') and r.get('scope')=='group'
+       r.get('status','reported') in ('reported','calculated') and r.get('scope')=='group'
        and r.get('period_type') in ('quarter','ytd')]
  dates=sorted({(r['year'],r['quarter']) for r in rows if r['period_type']=='quarter'},reverse=True)
  if not dates:
