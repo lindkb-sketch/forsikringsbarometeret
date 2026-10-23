@@ -69,7 +69,7 @@ def refresh(max_sources=4):
  # Latest reports first, then systematically backfill older periods.
  periods=sorted(by_period,key=lambda s:(int(s[-4:]),int(s[1])),reverse=True)
  done={(label,c) for label,rows in storage.get('periods',{}).items()
-       for row in rows if row.get('basis')=='issuer_pdf_verbatim'
+       for row in rows
        for c in row.get('companies',[])}
  attempted=set(tuple(x) for x in storage.get('checked',[]))
  count=0
