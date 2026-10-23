@@ -4,7 +4,7 @@ const {chromium}=require('playwright');
 const fs=require('node:fs');
 const BASE=process.env.BAROMETER_URL||'https://lindkb-sketch.github.io/forsikringsbarometeret/';
 const OUTPUT='data/browser_e2e_report.json';
-const nf=x=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:0}).format(x).replace(/\u00a0/g,' ');
+const nf=x=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:2}).format(x).replace(/\u00a0/g,' ');
 const norm=x=>String(x??'').replace(/\u00a0/g,' ').replace(/\u202f/g,' ').trim();
 async function main(){
  const report={url:BASE,checked_at:new Date().toISOString(),checks:[],errors:[],screenshots:[]};
@@ -80,6 +80,23 @@ async function main(){
   }
   if(view.quarter.Storebrand?.revenueBasis)
    check('Storebrand APM disclaimer visible',tableQ.includes('APM'),tableQ.slice(-700));
+  for(const c of companies){
+   const now=feed.observations.find(r=>r.company===c&&r.year===year&&r.quarter===quarter&&
+      r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue');
+   const prev=feed.observations.find(r=>r.company===c&&r.year===year-1&&r.quarter===quarter&&
+      r.scope==='group'&&r.period_type==='quarter'&&r.metric==='insurance_revenue');
+   if(now&&prev&&now.unit===prev.unit){
+    const cell=await page.locator('#results-comparison tbody tr').filter({hasText:c}).first().locator('td').nth(1);
+    const txt=norm(await cell.innerText());
+    const arrows=await cell.locator('.qoq').count();
+    check(c+' source-based prior-year revenue and arrow',txt.includes(nf(prev.value))&&arrows===1,txt.slice(0,250));
+   }
+  }
+  const subsidiaryQ=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
+     r.source_entity==='Storebrand Forsikring AS'&&r.year===year&&r.quarter===quarter&&
+     r.period_type==='quarter'&&r.metric==='insurance_revenue');
+  if(subsidiaryQ)check('Storebrand Forsikring AS IFRS17 quarter revenue beside group APM',
+    tableQ.includes(nf(subsidiaryQ.value))&&tableQ.includes('Storebrand Forsikring AS')&&tableQ.includes('IFRS 17'),tableQ.slice(-900));
   await page.screenshot({path:'data/browser_home_q3.png',fullPage:true});
   report.screenshots.push('data/browser_home_q3.png');
   await page.selectOption('#results-comparison select','H3');
@@ -90,6 +107,22 @@ async function main(){
    if(metric)check(c+' HIÅ revenue visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
   }
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
+  const subsidiaryYTD=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
+      r.source_entity==='Storebrand Forsikring AS'&&r.year===year&&r.quarter===quarter&&
+      r.period_type==='ytd'&&r.metric==='insurance_revenue');
+  if(subsidiaryYTD)check('Storebrand Forsikring AS IFRS17 HIÅ in original table',
+      ytdText.includes(nf(subsidiaryYTD.value))&&ytdText.includes('Storebrand Forsikring AS'),ytdText.slice(-850));
+  for(const company of companies){
+   const prior=feed.observations.find(r=>r.company===company&&r.year===year-1&&r.quarter===quarter&&
+     r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
+   const cur=feed.observations.find(r=>r.company===company&&r.year===year&&r.quarter===quarter&&
+     r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
+   if(cur&&prior&&cur.unit===prior.unit){
+    const cell=await page.locator('#results-comparison tbody tr').filter({hasText:company}).first().locator('td').nth(1);
+    check(company+' HIÅ prior-year comparison and arrow',
+      norm(await cell.innerText()).includes(nf(prior.value))&&(await cell.locator('.qoq').count())===1,company);
+   }
+  }
   await page.screenshot({path:'data/browser_home_ytd.png',fullPage:true});
   report.screenshots.push('data/browser_home_ytd.png');
   await page.evaluate(()=>FBQuarterly.refresh());
