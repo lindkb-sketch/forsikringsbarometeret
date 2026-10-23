@@ -378,65 +378,50 @@
     "Q2 2026": {
       "brief": [
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and with continued underwriting discipline, the insurance service result is expected to stay strong.»",
+          "source_url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-            "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
-            "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
-            "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
-            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+            "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf"
+          ],
+          "companies": [
+            "Protector"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "profitability",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Protector",
+              "url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+              "kind": "official_quarterly_report",
+              "page": 8,
+              "sha256": "c83a1764cd4aa3f239fe8e0be9fcf3a0874bab5823a5022fd52fd84df0e2ceb7"
+            }
+          ]
+        },
+        {
+          "text": "Tryg omtaler i kvartalsrapporten: «In addition to service supporting customers and their children amid weather events, it remains a strategic priority for Tryg to internal events, Tryg participated in the Pride parade in increasing mental wellbeing challenges.»",
+          "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "source_urls": [
             "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf"
           ],
           "companies": [
-            "Fremtind",
-            "Gjensidige",
-            "Sampo",
-            "Frende",
-            "Protector",
-            "Storebrand",
             "Tryg"
           ],
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "diverging_underwriting"
-        },
-        {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
-          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-          "source_urls": [
-            "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-            "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
-            "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
-            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
-          ],
-          "companies": [
-            "Gjensidige",
-            "Tryg",
-            "Sampo",
-            "Protector",
-            "Storebrand"
-          ],
-          "period": "Q2 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "revenue_direction"
-        },
-        {
-          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Fremtind, Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-          "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-            "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6"
-          ],
-          "companies": [
-            "Fremtind",
-            "Frende"
-          ],
-          "period": "Q2 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "revenue_decline"
+          "theme": "weather",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Tryg",
+              "url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+              "kind": "official_quarterly_report",
+              "page": 7,
+              "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
+            }
+          ]
         }
       ],
       "implications": [
@@ -552,30 +537,27 @@
     "Q1 2026": {
       "brief": [
         {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
-          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
+          "text": "Fremtind omtaler i kvartalsrapporten: «Sammen med sterk distribusjonskraft gir dette gode forutsetninger for konkurransedyktig lønnsomhet fremover.»",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
           "source_urls": [
-            "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
+            "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf"
           ],
           "companies": [
-            "Frende"
+            "Fremtind"
           ],
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "underwriting_pressure"
-        },
-        {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
-          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
-          "source_urls": [
-            "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
-          ],
-          "companies": [
-            "Frende"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "revenue_direction"
+          "theme": "profitability",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Fremtind",
+              "url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+              "kind": "official_quarterly_report",
+              "page": 9,
+              "sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555"
+            }
+          ]
         }
       ],
       "implications": [

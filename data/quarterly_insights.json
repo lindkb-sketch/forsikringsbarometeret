@@ -75,10 +75,69 @@
           }
         ]
       }
+    ],
+    "Q2 2026": [
+      {
+        "theme": "profitability",
+        "text": "Protector omtaler i kvartalsrapporten: «Prospects Underlying profitability remains good, and with continued underwriting discipline, the insurance service result is expected to stay strong.»",
+        "companies": [
+          "Protector"
+        ],
+        "sources": [
+          {
+            "company": "Protector",
+            "url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
+            "kind": "official_quarterly_report",
+            "page": 8,
+            "sha256": "c83a1764cd4aa3f239fe8e0be9fcf3a0874bab5823a5022fd52fd84df0e2ceb7"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "weather",
+        "text": "Tryg omtaler i kvartalsrapporten: «In addition to service supporting customers and their children amid weather events, it remains a strategic priority for Tryg to internal events, Tryg participated in the Pride parade in increasing mental wellbeing challenges.»",
+        "companies": [
+          "Tryg"
+        ],
+        "sources": [
+          {
+            "company": "Tryg",
+            "url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+            "kind": "official_quarterly_report",
+            "page": 7,
+            "sha256": "cf6fc437c14e567f401ab9459e4b0c81e405ed71563ed13df7aa553e61d083de"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      }
+    ],
+    "Q1 2026": [
+      {
+        "theme": "profitability",
+        "text": "Fremtind omtaler i kvartalsrapporten: «Sammen med sterk distribusjonskraft gir dette gode forutsetninger for konkurransedyktig lønnsomhet fremover.»",
+        "companies": [
+          "Fremtind"
+        ],
+        "sources": [
+          {
+            "company": "Fremtind",
+            "url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+            "kind": "official_quarterly_report",
+            "page": 9,
+            "sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      }
     ]
   },
   "policy": "Only exact issuer PDF narrative excerpts with page and SHA; no invented event, loss or weather causes.",
   "checked": [
+    [
+      "Q1 2026",
+      "Fremtind"
+    ],
     [
       "Q2 2026",
       "Fremtind"
@@ -86,6 +145,14 @@
     [
       "Q2 2026",
       "Gjensidige"
+    ],
+    [
+      "Q2 2026",
+      "Protector"
+    ],
+    [
+      "Q2 2026",
+      "Tryg"
     ],
     [
       "Q3 2026",
