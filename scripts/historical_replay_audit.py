@@ -15,8 +15,8 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"data"/"historical_replay_audit.json"
 CASES={
  "Fremtind": {"tests":["test_fremtind_import","test_fremtind_archive_rows"],"evidence":"parser fixtures and issuer-archive matching","real_full_replay":False},
- "Gjensidige":{"tests":["test_import_gjensidige_latest","test_gjensidige_publish","test_gjensidige_report_check"],"evidence":"issuer discovery, source verification and importer unit tests","real_full_replay":False},
- "Tryg":{"tests":["test_discover_tryg","test_tryg_q3_official","test_tryg_ytd_ratios"],"evidence":"paired report discovery and official value regressions","real_full_replay":False},
+ "Gjensidige":{"tests":["test_import_gjensidige_latest","test_gjensidige_publish","test_gjensidige_report_check","test_gjensidige_norway_excel","test_publish_geographic_workbooks"],"evidence":"issuer discovery, source verification and importer unit tests","real_full_replay":False},
+ "Tryg":{"tests":["test_discover_tryg","test_tryg_q3_official","test_tryg_ytd_ratios","test_geographic_excel","test_publish_geographic_workbooks"],"evidence":"paired report discovery and official value regressions","real_full_replay":False},
  "Sampo":{"tests":["test_sampo_real_q4","test_sampo_future"],"evidence":"real issuer PDF download, Q4 2025 parse and golden values","real_full_replay":True},
  "Frende":{"tests":["test_frende_import_gate","test_frende_fremtind_discovery"],"evidence":"issuer table fixtures and discovery checks, not full live import","real_full_replay":False},
  "Protector":{"tests":["test_protector_quarters"],"evidence":"multi-quarter parser fixture, not historical live import","real_full_replay":False},
@@ -36,6 +36,8 @@ def execute():
                 "real_pdf_parser_replay":spec["real_full_replay"] and passed,
                 "full_discovery_download_import_validation_browser_certified":False,
                 "evidence":spec["evidence"],"tests":spec["tests"],
+                "excel_norway_regression_included":name in ("Gjensidige","Tryg"),
+                "excel_verified_against_live_download":False,
                 "exit_code":result.returncode,
                 "diagnostics":(result.stdout+"\n"+result.stderr)[-2000:] if not passed else ""}
         report["companies"].append(record)
