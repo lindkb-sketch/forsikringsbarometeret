@@ -136,11 +136,12 @@ def prepare(existing, quarters, year=2026, fetcher=fetch, downloader=download):
         rows = parse_group_table(pages, year, quarter, url, sha)
         reference = REFERENCE_QUARTER.get((year, quarter))
         if reference:
-            actual = {r['metric']: r['value'] for r in rows if r['period_type'] == 'quarter'}
+            actual = {r['metric']: r['value'] for r in rows
+                      if r['period_type'] == 'quarter' and r['year'] == year}
             for metric, expected in reference.items():
                 if metric not in actual or abs(actual[metric] - expected) > 0.051:
                     raise ValueError(f'Official Gjensidige Q{quarter} reference mismatch: {metric}')
-        found = {r['metric'] for r in rows if r['period_type'] == 'quarter'}
+        found = {r['metric'] for r in rows if r['period_type'] == 'quarter' and r['year'] == year}
         if not REQUIRED <= found:
             raise ValueError(f'Gjensidige Q{quarter} {year} missing verified quarterly metrics: {sorted(REQUIRED-found)}')
         if any(r['company'] != 'Gjensidige' or r['scope'] != 'group' or
