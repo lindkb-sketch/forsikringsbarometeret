@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import tempfile
+from datetime import date
 import urllib.request
 from pathlib import Path
 
@@ -86,12 +87,34 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
     except Exception as exc:
         return {"status": "import_failed", "source": url, "error": f"{type(exc).__name__}: {exc}", "imported": 0}
 
+def periods_due(today=None, first_year=2026):
+    """Return every *completed* reporting quarter; future releases require no code edit."""
+    today = today or date.today()
+    year, quarter = today.year, (today.month - 1) // 3 + 1
+    return [(y, q) for y in range(first_year, year + 1) for q in range(1, 5)
+            if (y, q) < (year, quarter)]
+
+def import_due(today=None, importer=import_period):
+    statuses = []
+    for year, quarter in periods_due(today):
+        summary = importer(year, quarter)
+        statuses.append(summary)
+        if summary["status"] != "verified":
+            print("::warning::Gjensidige " + summary["period"] +
+                  " not imported: " + summary["status"])
+    return statuses
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--year", type=int, default=2026)
-    parser.add_argument("--quarter", type=int, choices=(1, 2, 3, 4), default=3)
+    parser.add_argument("--year", type=int)
+    parser.add_argument("--quarter", type=int, choices=(1, 2, 3, 4))
     args = parser.parse_args()
-    result = import_period(args.year, args.quarter)
+    if (args.year is None) != (args.quarter is None):
+        parser.error("--year and --quarter must be specified together")
+    if args.year is None:
+        result = import_due()
+    else:
+        result = import_period(args.year, args.quarter)
+        if result["status"] != "verified":
+            print("::warning::Gjensidige official quarterly data not yet imported: " + result["status"])
     print(json.dumps(result, ensure_ascii=False))
-    if result["status"] != "verified":
-        print("::warning::Gjensidige official quarterly data not yet imported: " + result["status"])
