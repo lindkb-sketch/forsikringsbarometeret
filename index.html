@@ -1765,6 +1765,32 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
  const safeUrl=v=>/^https:\/\//.test(v||'')?esc(v):'#';
  const items=(list,max=6)=>Array.isArray(list)?list.slice(0,max):[];
+
+ const previousQuarterChanges=quarterChanges;
+ const previousMediaNews=mediaNews;
+ const previousCompanyMediaNews=companyMediaNews;
+ const strategicPattern=/partner|samarbeid|oppkjøp|fusjon|distribusjon|avtale|markedsandel|strategi|forsikringspris|premie|konkurran|overtar|acquisition|partnership/i;
+ // Preserve the original visual components; replace only their Q3 content
+ // with sourced, automatically refreshed headlines.
+ quarterChanges=function(){
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousQuarterChanges();
+  const headlines=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')&&strategicPattern.test(x.headline)).slice(0,3);
+  const cards=headlines.map(x=>'<div class="quarter-changes-item"><span class="qchange-label">'+esc(x.publisher||'Nyheter')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+'</strong><p>Offentliggjort overskrift. Artikkelinnholdet er ikke verifisert.</p><small><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les hos utgiver ↗</a></small></div>').join('');
+  return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet"><div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2><span class="quarter-changes-sub">Oppdatert fra nyhetskilder</span></div><div class="quarter-changes-grid strategic-grid">'+(cards||'<div class="quarter-changes-item"><strong>Ingen nye verifiserte strategiske overskrifter</strong><p>Overvåkingen fortsetter automatisk.</p></div>')+'</div></section>';
+ };
+ mediaNews=function(){
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousMediaNews();
+  const headlines=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')).slice(0,4);
+  const cards=headlines.map(x=>'<a class="media-news-card" href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer"><div class="media-news-thumb media-editorial-preview" aria-hidden="true"><div class="media-preview-publisher">'+esc(x.publisher||'Nyhetskilde')+'</div><div class="media-preview-headline">'+esc(x.headline)+'</div><div class="media-preview-date">'+esc((x.published_at||'').slice(0,10))+'</div></div><div class="media-news-body"><div class="media-news-meta">'+esc(x.publisher||'Nyhetskilde')+' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+esc(x.headline)+' ↗</div><p class="media-news-summary">Overskrift fra nyhetsfeed; hele artikkelen er ikke gjennomgått.</p></div></a>').join('');
+  return '<section class="panel media-news" id="media-news"><div class="section-head"><div><h2>Forsikring i mediebildet</h2><p class="media-intro">Automatisk oppdaterte, kildeattribuerte overskrifter</p></div></div><div class="media-news-grid">'+(cards||'<p>Ingen nye saker tilgjengelig.</p>')+'</div></section>';
+ };
+ companyMediaNews=function(c){
+  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return previousCompanyMediaNews(c);
+  const matches=(news?.items||[]).filter(x=>x.approved&&x.headline&&/^https:\/\//.test(x.source_url||'')&&new RegExp(c==='Sampo'?'Sampo|If':c,'i').test(x.headline)).slice(0,3);
+  if(!matches.length)return '';
+  return '<section class="panel company-media-news"><div class="section-head"><h2>'+esc(c)+' i mediebildet</h2></div><div class="company-media-grid">'+matches.map(x=>'<a class="company-media-link" href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer"><span class="company-media-meta">'+esc(x.publisher||'')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+' ↗</strong><span class="company-media-desc">Automatisk kildeattribuert overskrift</span></a>').join('')+'</div></section>';
+ };
+
  function panel(){
   if(!editorial&&!news&&!stocks)return '';
   const brief=items(editorial?.brief,4).map(x=>'<li>'+esc(x.text)+' <a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>').join('');
