@@ -1,0 +1,62 @@
+name: Seven-insurer synthetic future-quarter end-to-end drill
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/future_quarter_e2e_drill.py'
+      - '.github/workflows/future-quarter-drill.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-future:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install report and browser test dependencies
+        run: |
+          python -m pip install -r requirements-reports.txt
+          npm install --no-save playwright
+      - name: Run seven fake arrivals and real audit/feed/editorial in disposable site
+        run: |
+          stage="$(mktemp -d)"
+          echo "STAGE=$stage" >> "$GITHUB_ENV"
+          cp -a index.html scripts data "$stage/"
+          (
+            cd "$stage"
+            python scripts/future_quarter_e2e_drill.py
+          )
+          python - "$stage" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path(sys.argv[1])/'data/next_quarter_drill.json'
+          result=json.loads(p.read_text())
+          assert result['synthetic_observations']==35 and result['editorial_companies']==7
+          assert result['negative_cases_passed']==3
+          print('SEVEN_QUARTER_SIMULATION PASS',result)
+          PY
+      - name: Verify Q4 seven-company figures and graphs in actual Chrome
+        run: |
+          python -m http.server 8768 --bind 127.0.0.1 --directory "$STAGE" >/tmp/fb-future-drill-http.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          sleep 2
+          BAROMETER_URL=http://127.0.0.1:8768/ node tests/live_browser_e2e.cjs
+      - name: Assert production source unchanged and archive synthetic drill
+        if: always()
+        run: |
+          git diff --exit-code -- data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json
+      - name: Upload non-production drill evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seven-insurer-future-quarter-drill
+          path: ${{ env.STAGE }}/data/next_quarter_drill.json
+          if-no-files-found: warn
