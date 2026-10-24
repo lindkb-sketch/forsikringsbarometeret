@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T07:30:02+00:00",
+  "updated_at": "2026-10-24T01:40:24+00:00",
   "companies": {
     "Storebrand": {
       "next_event": {
@@ -21,8 +21,8 @@
     },
     "Gjensidige": {
       "next_event": {
-        "period": "Q3 2026",
-        "date": "2026-10-23",
+        "period": "Q4 2026",
+        "date": "2027-01-27",
         "source_url": "https://www.gjensidige.com/investor-relations/Financial-calendar"
       },
       "locked_periods": [],
