@@ -384,7 +384,7 @@
     "Q2 2026": {
       "brief": [
         {
-          "text": "Fremtind forventer et norsk forsikringsmarked preget av sterk konkurranse og fortsatt fokus på lønnsomhet. Det setter selskapenes prisjusteringer og vekstambisjoner inn i en mer krevende markedsramme.",
+          "text": "Fremtind fremhever værhendelser og skadeinflasjon som forhold det følger tett. Dette er selskapets egen vurdering i kvartalsrapporten.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
@@ -394,14 +394,14 @@
           ],
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "competition",
-          "basis": "issuer_commentary",
+          "theme": "inflation",
+          "basis": "rule_verified_issuer_narrative",
           "sources": [
             {
               "company": "Fremtind",
               "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
               "kind": "official_quarterly_report",
-              "page": 10,
+              "page": 9,
               "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
             }
           ]
@@ -431,7 +431,7 @@
           "basis": "verified_financial_comparison"
         },
         {
-          "text": "Fremtind peker på værhendelser, skadeinflasjon, renteutvikling og uføreutvikling som forhold selskapet følger tett. Dette er risikofaktorer, ikke dokumentasjon på at alle har gitt høyere skadekostnader i kvartalet.",
+          "text": "Fremtind forventer sterk konkurranse og fortsatt fokus på lønnsomhet. Dette er selskapets egen vurdering i kvartalsrapporten.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
@@ -441,14 +441,14 @@
           ],
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "inflation",
-          "basis": "issuer_commentary",
+          "theme": "competition",
+          "basis": "rule_verified_issuer_narrative",
           "sources": [
             {
               "company": "Fremtind",
               "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
               "kind": "official_quarterly_report",
-              "page": 9,
+              "page": 10,
               "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
             }
           ]
@@ -602,7 +602,7 @@
     "Q1 2026": {
       "brief": [
         {
-          "text": "Sampo opplyser at første kvartal hadde færre storskader enn budsjettert. Dette bidrar til å forklare skadebildet hos selskapet, men kan ikke uten videre overføres til resten av markedet.",
+          "text": "Sampo opplyser at omfanget av storskader var lavere enn budsjettert. Dette er selskapets egen vurdering i kvartalsrapporten.",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
           "source_urls": [
             "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
@@ -613,7 +613,7 @@
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
           "theme": "large_claims",
-          "basis": "issuer_commentary",
+          "basis": "rule_verified_issuer_narrative",
           "sources": [
             {
               "company": "Sampo",
@@ -625,7 +625,7 @@
           ]
         },
         {
-          "text": "Gjensidige knytter forbedringen i combined ratio til disiplinert prising og kostnadseffektivitet. Dermed er utviklingen ikke bare et spørsmål om skadefrekvens, men også gjennomføringen av tidligere prisingstiltak.",
+          "text": "Gjensidige peker på disiplinert prising og høy kostnadseffektivitet. Dette er selskapets egen vurdering i kvartalsrapporten.",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "source_urls": [
             "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
@@ -636,7 +636,7 @@
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
           "theme": "operations",
-          "basis": "issuer_commentary",
+          "basis": "rule_verified_issuer_narrative",
           "sources": [
             {
               "company": "Gjensidige",
@@ -662,7 +662,7 @@
           "basis": "verified_financial_comparison"
         },
         {
-          "text": "Sampo viser til at tidligere premieøkninger slår gjennom samtidig med vekst i antall kunder. Det gjør det viktig å skille mellom prisvirkning og reell volumvekst når markedet sammenlignes.",
+          "text": "Sampo viser til både premieøkninger og vekst i antall kunder. Dette er selskapets egen vurdering i kvartalsrapporten.",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
           "source_urls": [
             "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
@@ -673,7 +673,7 @@
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
           "theme": "growth",
-          "basis": "issuer_commentary",
+          "basis": "rule_verified_issuer_narrative",
           "sources": [
             {
               "company": "Sampo",
