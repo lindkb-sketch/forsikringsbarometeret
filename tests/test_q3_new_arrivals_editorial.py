@@ -18,7 +18,7 @@ class ArrivalTests(unittest.TestCase):
    old=['Fremtind','Gjensidige','Tryg','Protector','Storebrand']
    initial=[note(c,t) for c,t in zip(old,['large_claims','growth','profitability','strategy','competition'])]
    before=build([row(c,3) for c in old],{'Q3 2026':initial})
-   arrivals=[note('Frende','reserves'),note('Sampo','reinsurance')]
+   arrivals=[note('Frende','reserves'),note('Sampo','weather')]
    after=build([row(c,3) for c in old+['Frende','Sampo']],{'Q3 2026':initial+arrivals})
    self.assertEqual(after['periods']['Q3 2026']['reported_company_count'],7)
    self.assertEqual(after['period'],'Q3 2026')
