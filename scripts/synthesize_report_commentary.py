@@ -22,6 +22,10 @@ PATTERNS=(
   'viser til både premieøkninger og vekst i antall kunder'),
  ('operations',r'\bdisciplined pricing measures and high cost efficiency\b',
   'peker på disiplinert prising og høy kostnadseffektivitet'),
+ ('inflation',r'\b(?:lønnsvekst, reparasjonskostnader, leverandørpriser og erstatningsnivåer)\b',
+  'peker på lønnsvekst, reparasjonskostnader og leverandørpriser som påvirkninger på skadeutviklingen'),
+ ('reinsurance',r'\blower reinsurance prices, driven by favourable market conditions\b',
+  'melder om lavere reassuransepriser, blant annet som følge av gunstige markedsforhold'),
  ('weather',r'\bfavourable weather conditions\b',
   'beskriver gunstige værforhold i kvartalet'),
 )
@@ -37,13 +41,14 @@ def synthesize(row):
  quote=original.split('«',1)[1].split('»',1)[0]
  # Reject PDF multi-column joining, fragments and mislabeled sections.
  if len(quote)>250 or quote.count('.')>1 or quote.count('  '):return None
+ if re.search(r'\b(?:contents|--|annual report|table of contents)\b',quote,re.I):return None
  if re.search(r'\b(?:contents|page|prospects|in the first quarter|second quarter|third quarter)\b',quote,re.I):return None
  matches=[(theme,phrase) for theme,needle,phrase in PATTERNS
           if theme==row.get('theme') and re.search(needle,quote,re.I)]
  if len(matches)!=1:return None
  company=row['companies'][0]
  theme,phrase=matches[0]
- return {'text':f'{company} {phrase}. Dette er selskapets egen vurdering i kvartalsrapporten.',
+ return {'text':f'{company} {phrase}.',
          'source_url':evidence['url'],'source_urls':[evidence['url']],
          'companies':[company],'period':None,'type':'qualitative_quarter_theme',
          'theme':theme,'basis':'rule_verified_issuer_narrative',
