@@ -66,6 +66,32 @@ def request_model(period,items):
  with urllib.request.urlopen(request,timeout=75) as response:
   answer=json.load(response)
  return json.loads(answer['choices'][0]['message']['content'])
+def verify_entailment(period,reply,lookup):
+ """Independent critical pass: reject every claim not explicitly entailed by citations."""
+ validated=[c for c in reply.get('claims',[])[:6] if check_claim(c,lookup,period)]
+ if not validated:return {'claims':[]}
+ critical={'model':os.getenv('EDITORIAL_MODEL','gpt-4.1-mini'),'temperature':0,
+  'response_format':{'type':'json_object'},
+  'messages':[
+   {'role':'system','content':('Du er en streng faktasjekker, ikke redaktør. '
+    'Vurder hvert utsagn som helhet mot sitatene. Godkjenn KUN når alle faktiske deler '
+    'fremgår eksplisitt og entydig av sitatene. Avvis uklare årsakssammenhenger, '
+    'sammenslåtte PDF-spalter, antatte hendelser, overdrevne vurderinger og '
+    'slutninger som går ut over sitatene. Returner JSON {"approved_indices":[...]} '
+    'med nullbaserte indekser; ved tvil returner tom liste.')},
+   {'role':'user','content':json.dumps({'quarter':period,'items':[
+    {'index':i,'claim':c['text'],'quotes':[lookup[k]['text'].split('«',1)[1].split('»',1)[0]
+     for k in c['evidence_ids']]} for i,c in enumerate(validated)]},ensure_ascii=False)}]}
+ request=urllib.request.Request('https://api.openai.com/v1/chat/completions',
+  data=json.dumps(critical).encode(),method='POST',
+  headers={'Authorization':'Bearer '+os.environ['OPENAI_API_KEY'],
+           'Content-Type':'application/json'})
+ with urllib.request.urlopen(request,timeout=75) as response:answer=json.load(response)
+ result=json.loads(answer['choices'][0]['message']['content'])
+ approved=result.get('approved_indices',[])
+ if not isinstance(approved,list):return {'claims':[]}
+ approved_ids={i for i in approved if type(i) is int and 0<=i<len(validated)}
+ return {'claims':[c for i,c in enumerate(validated) if i in approved_ids]}
 def add_verified_claims(storage,period,reply,lookup):
  if not isinstance(reply,dict) or not isinstance(reply.get('claims'),list):return 0
  accepted=[]
@@ -90,8 +116,10 @@ def main():
   lookup=evidence_for_period(storage['periods'][period])
   if not lookup:continue
   try:
-   reply=request_model(period,dict(list(lookup.items())[:35]))
-   added=add_verified_claims(storage,period,reply,lookup)
+   selected=dict(list(lookup.items())[:35])
+   reply=request_model(period,selected)
+   checked=verify_entailment(period,reply,selected)
+   added=add_verified_claims(storage,period,checked,selected)
    print('EDITORIAL_AI',period,'accepted',added)
   except Exception as e:
    print('EDITORIAL_AI_FAILED',period,type(e).__name__)
