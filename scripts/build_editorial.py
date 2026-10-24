@@ -246,7 +246,7 @@ def build(feed,news):
    if changes['same']:parts.append(', '.join(changes['same'])+' viser omtrent uendret forsikringslønnsomhet')
    links=list(dict.fromkeys(x['source_url'] for x in references if x.get('source_url')))
    if parts and links:
-    brief.append({'text':'; '.join(parts).capitalize()+'. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.',
+    brief.append({'text':'; '.join(parts)+'. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.',
                   'source_url':links[0],'source_urls':links,
                   'companies':changes['better']+changes['worse']+changes['same'],
                   'period':label,'type':'qualitative_quarter_theme',
