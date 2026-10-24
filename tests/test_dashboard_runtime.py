@@ -41,6 +41,13 @@ class DashboardRuntimeTests(unittest.TestCase):
    self.assertIn(token,js)
   self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
 
+ def test_calendar_hidden_for_historical_quarter(self):
+  html=HTML.read_text()
+  # The live calendar must follow the user's chosen quarter, not merely the
+  # latest available data period. Historical navigation hides the entire panel.
+  self.assertIn('const selected=window.FBQuarterly?.period;',html)
+  self.assertIn("selected.year!==latest.year||selected.quarter!==latest.quarter)return '';",html)
+
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
   self.assertGreater(len(d['observations']),0)
