@@ -113,13 +113,26 @@ def concise_brief(items, limit=220, max_paragraphs=4):
            'inflation':5,'operations':6,'investment':6,'regulation':6}
  order=sorted(enumerate(items),key=lambda e:(0 if e[1].get('basis')=='issuer_commentary' else 1,
    priority.get(e[1].get('theme'),7),e[0]))
- selected=[];total=0;themes=set()
- for _,item in order:
-  words=len(item['text'].split())
-  theme=item.get('theme')
-  if theme in themes or words>limit or total+words>limit:continue
-  selected.append(item);total+=words;themes.add(theme)
-  if len(selected)>=max_paragraphs:break
+ selected=[];total=0;themes=set();featured=set()
+ pending=list(order)
+ while pending and len(selected)<max_paragraphs:
+  eligible=[(idx,item) for idx,item in pending if item.get('theme') not in themes
+            and len(item['text'].split())<=limit-total]
+  if not eligible:break
+  if not selected:
+   # Lead with the most material reported event, rather than issuer order.
+   idx,item=eligible[0]
+  else:
+   # A new company with a genuinely different, source-backed finding can
+   # replace repetitive coverage of already-featured companies.
+   idx,item=min(eligible,key=lambda pair:(
+    -len(set(pair[1].get('companies',[]))-featured),
+    0 if pair[1].get('basis')=='issuer_commentary' else 1,
+    priority.get(pair[1].get('theme'),7), pair[0]))
+  selected.append(item)
+  total+=len(item['text'].split());themes.add(item.get('theme'))
+  featured.update(item.get('companies',[]))
+  pending=[pair for pair in pending if pair[0]!=idx]
  if not selected and items:
   # Never silently lose every source-backed observation to the display limit.
   selected=[min(items,key=lambda item:len(item['text'].split()))]
