@@ -31,4 +31,29 @@ class ArrivalTests(unittest.TestCase):
    self.assertEqual(q4['period'],'Q4 2026')
    self.assertEqual(q4['periods']['Q4 2026']['reported_company_count'],1)
    self.assertIn('Q3 2026',q4['periods'])
+ def test_new_q3_numeric_only_arrivals_are_not_invisible(self):
+  def row(c,q,v):
+   return dict(company=c,year=2026,quarter=q,scope='group',period_type='quarter',
+      metric='combined_ratio',value=v,unit='percent',status='reported',
+      source_url='https://reports.example.com/'+c+'.pdf')
+  def note(c,t):
+   return dict(theme=t,text=c+' beskriver dokumenterte hendelser med betydning for kvartalet.',
+      companies=[c],sources=[dict(company=c,url='https://reports.example.com/'+c+'.pdf',
+      kind='official_quarterly_report')])
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);(root/'data').mkdir()
+   known=['Fremtind','Gjensidige','Tryg','Protector','Storebrand']
+   notes=[note(c,t) for c,t in zip(known,['large_claims','growth','profitability','strategy','competition'])]
+   (root/'data/quarterly_insights.json').write_text(json.dumps({'periods':{'Q3 2026':notes}}))
+   observations=[row(c,3,83) for c in known]+[row('Frende',2,89),row('Sampo',2,81),
+      row('Frende',3,77),row('Sampo',3,85)]
+   with patch.object(build_editorial,'ROOT',root):
+    output=build_editorial.build({'observations':observations},{'items':[]})
+   brief=output['periods']['Q3 2026']['brief']
+   self.assertEqual(output['periods']['Q3 2026']['reported_company_count'],7)
+   coverage={n for item in brief for n in item.get('companies',[])}
+   self.assertTrue({'Frende','Sampo'}.issubset(coverage),coverage)
+   self.assertTrue(any(item['theme']=='additional_insurers' for item in brief))
+   self.assertLessEqual(sum(len(item['text'].split()) for item in brief),220)
+   self.assertFalse(any('årsaken er' in item['text'].lower() for item in brief))
 if __name__=='__main__':unittest.main()
