@@ -53,10 +53,20 @@
   },
   "Tryg": {
     "calendar_url": "https://tryg.com/en/investor",
-    "events": []
+    "events": [
+      {
+        "period": "Q4 2026",
+        "date": "2027-01-22"
+      }
+    ]
   },
   "Fremtind": {
     "calendar_url": "https://www.fremtind.no/",
-    "events": []
+    "events": [
+      {
+        "period": "Q4 2026",
+        "date": "2027-02-01"
+      }
+    ]
   }
 }
