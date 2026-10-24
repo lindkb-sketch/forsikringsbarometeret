@@ -1,0 +1,26 @@
+name: Verify incremental quarterly brief arrivals
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_editorial.py'
+      - 'tests/test_q3_new_arrivals_editorial.py'
+      - 'tests/test_incremental_quarterly_brief.py'
+      - '.github/workflows/verify-quarterly-brief.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Simulate two late Q3 reports and future Q4 turnover
+        run: |
+          python -m unittest discover -s tests -p 'test_q3_new_arrivals_editorial.py' -v
+          python -m unittest discover -s tests -p 'test_incremental_quarterly_brief.py' -v
+          python -m unittest discover -s tests -p 'test_2026_editorial_quality.py' -v
+          python scripts/check_quarterly_brief.py
