@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T01:40:24+00:00",
+  "updated_at": "2026-10-24T07:35:59+00:00",
   "companies": {
     "Storebrand": {
       "next_event": {
@@ -43,14 +43,22 @@
       "calendar_source": "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/"
     },
     "Tryg": {
-      "next_event": null,
+      "next_event": {
+        "period": "Q4 2026",
+        "date": "2027-01-22",
+        "source_url": "https://tryg.com/en/investor"
+      },
       "locked_periods": [
         "Q3 2026"
       ],
       "calendar_source": "https://tryg.com/en/investor"
     },
     "Fremtind": {
-      "next_event": null,
+      "next_event": {
+        "period": "Q4 2026",
+        "date": "2027-02-01",
+        "source_url": "https://www.fremtind.no/"
+      },
       "locked_periods": [],
       "calendar_source": "https://www.fremtind.no/"
     }
