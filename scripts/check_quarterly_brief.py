@@ -15,6 +15,8 @@ for label,section in a["periods"].items():
     if len(section['brief'])>4 or sum(len(item['text'].split()) for item in section['brief'])>220:
         raise SystemExit(f'Editorial too long in {label}')
     for item in section["brief"]:
+        if item.get("theme")=="additional_insurers" or item.get("basis")=="verified_financial_comparison":
+            raise SystemExit(f"Uninformative restatement of KPI figures in {label}")
         if item.get("basis")=="issuer_pdf_verbatim" or " omtaler i kvartalsrapporten:" in item["text"]:
             raise SystemExit(f"Raw PDF quote in {label} publication")
         if item.get("type")!="qualitative_quarter_theme" or item.get("period")!=label:
