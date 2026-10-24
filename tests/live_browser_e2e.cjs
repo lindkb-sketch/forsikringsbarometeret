@@ -93,8 +93,9 @@ async function main(){
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
      ['Protector','Storebrand'].every(c=>editorial.periods?.['Q3 2026']?.by_company?.[c])){
-    check('Q3 brief includes verified Protector and Storebrand developments',
-      ['Protector','Storebrand'].every(c=>view.brief.includes(c)),
+    check('Q3 brief excludes redundant financial-only insurer commentary',
+      !view.brief.includes('Utviklingen er basert på sammenlignbare rapporterte måltall') &&
+      !(editorial.brief||[]).some(x=>x.theme==='additional_insurers'),
       view.brief.slice(0,900));
     check('Q3 brief is concise and free from raw PDF excerpts',
       (editorial.brief||[]).length<=4 &&
