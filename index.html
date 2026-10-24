@@ -1540,7 +1540,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
 (()=>{
  let live=null,installed=false;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const dateNo=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s.slice(8,10)+'.'+s.slice(5,7)+'.'+s.slice(0,4):'Rapportdato ikke offentliggjort';
+ const dateNo=s=>/^\d{4}-\d{2}-\d{2}$/.test(s||'')?s.slice(8,10)+'.'+s.slice(5,7)+'.'+s.slice(0,4):'Rapporteringdato ikke publisert';
  function install(){
   if(!live||typeof monCalendar!=='function'||!window.FBQuarterly?.period)return;
   // Reapply after the delayed quarterly runtime initializes or refreshes.
@@ -1582,7 +1582,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       const content='<span class="mon-cal-company"><strong>'+esc(name)+'</strong><small>'+
         esc(period)+' · '+esc(formatted)+'</small></span><span class="mon-cal-countdown"'+
         (date?' data-report-date="'+esc(formatted)+'"':' data-state="unknown"')+'>'+
-        (date?'Beregner …':'Rapportdato ikke offentliggjort')+'</span>';
+        (date?'Beregner …':'Rapporteringdato ikke publisert')+'</span>';
       return valid?'<a class="mon-cal-row" href="'+esc(source_url)+'" target="_blank" rel="noopener noreferrer">'+
         content+'</a>':'<div class="mon-cal-row">'+content+'</div>';
     };
