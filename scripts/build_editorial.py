@@ -211,7 +211,17 @@ def build(feed,news):
     brief.append(item)
   if not documented:brief=baseline
   brief=concise_brief(brief)
-  periods[label]={'brief':brief,'implications':implications,'by_company':by_company}
+  # Diagnostic coverage is separate from editorial selection: do not force
+  # every issuer into a finite-size cross-market synthesis.
+  mentioned={name for item in brief for name in item.get('companies',[])}
+  evidence={name for item in documented for name in item.get('companies',[])}
+  issuer_status={name:('featured' if name in mentioned else
+                       'source_commentary_not_selected' if name in evidence else
+                       'awaiting_curated_commentary')
+                 for name in by_company}
+  periods[label]={'brief':brief,'implications':implications,'by_company':by_company,
+                  'issuer_brief_status':issuer_status,
+                  'reported_company_count':len(by_company)}
  current=f'Q{dates[0][1]} {dates[0][0]}'
  approved=[{'headline':n['headline'],'published_at':n['published_at'],
             'source_url':n['source_url'],'publisher':n.get('publisher','')} for n in news.get('items',[])
