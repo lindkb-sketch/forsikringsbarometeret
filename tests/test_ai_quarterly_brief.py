@@ -47,4 +47,18 @@ class EditorialAiGates(unittest.TestCase):
   self.assertEqual(n,1)
   self.assertIn(curated,storage['periods']['Q1 2027'])
   self.assertIn(row,storage['periods']['Q1 2027'])
+ def test_independent_entailment_rejects_claim_without_approval(self):
+  from unittest.mock import MagicMock
+  evidence=self.evidence()
+  lookup=ai.evidence_for_period([evidence]);key=next(iter(lookup))
+  reply={'claims':[{'theme':'large_claims',
+   'text':'Protector opplyser at større enkeltskader påvirket forsikringsresultatet i kvartalet.',
+   'evidence_ids':[key]}]}
+  fake=MagicMock()
+  fake.__enter__.return_value=fake
+  fake.__exit__.return_value=False
+  fake.read.return_value=json.dumps({'choices':[{'message':{'content':'{"approved_indices":[]}'}}]}).encode()
+  with patch.dict(ai.os.environ,{'OPENAI_API_KEY':'fake'}),patch.object(ai.urllib.request,'urlopen',return_value=fake):
+   checked=ai.verify_entailment('Q1 2027',reply,lookup)
+  self.assertEqual(checked['claims'],[])
 if __name__=='__main__':unittest.main()
