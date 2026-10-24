@@ -1556,6 +1556,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       const match=/^Q([1-4]) (\d{4})$/.exec(value||'');
       return match?Number(match[2])*4+Number(match[1]):null;
     };
+    const nextPeriod=period=>{const m=/^Q([1-4]) (\d{4})$/.exec(period);if(!m)return period;const q=Number(m[1]),y=Number(m[2]);return 'Q'+(q===4?1:q+1)+' '+(q===4?y+1:y);};
     const entries=Object.entries(live.companies||{}).map(([name,config])=>{
       const company=name==='Sampo / If'?'Sampo':name;
       const published=['combined_ratio','insurance_revenue'].every(metric=>
@@ -1596,7 +1597,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       '<span class="pill">'+entries.length+' selskaper</span></div>'+
       '<div class="mon-cal-split">'+
       column('Avventer kvartalstall','Har ennå ikke publisert verifiserte '+esc(current)+'-tall.',outstanding,'pending')+
-      column('Har rapportert','Har publisert '+esc(current)+'. Viser neste kvartalsrapport.',reported,'reported')+
+      column('Neste rapporter · '+esc(nextPeriod(current)),'Har publisert '+esc(current)+'. Nedtelling til neste rapport.',reported,'reported')+
       '</div></section>';
   };
   installed=true;
