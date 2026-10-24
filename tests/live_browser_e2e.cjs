@@ -91,6 +91,17 @@ async function main(){
   check('Quarter labels never disappear when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
   check('Strategic original cards present',view.strategic.includes('Strategiske bevegelser')&&view.media.includes('Forsikring i mediebildet'),view.strategic.slice(0,150));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
+  if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
+     ['Protector','Storebrand'].every(c=>editorial.periods?.['Q3 2026']?.by_company?.[c])){
+    check('Q3 brief includes verified Protector and Storebrand developments',
+      ['Protector','Storebrand'].every(c=>view.brief.includes(c)),
+      view.brief.slice(0,900));
+    check('Q3 brief is concise and free from raw PDF excerpts',
+      (editorial.brief||[]).length<=4 &&
+      (editorial.brief||[]).reduce((sum,x)=>sum+x.text.split(/\\s+/).length,0)<=220 &&
+      !view.brief.includes('omtaler i kvartalsrapporten:'),
+      view.brief.slice(0,550));
+  }
   check('Technical duplicate sections removed',!view.technical);
   check('Strategic news visible in original cards',view.newsGroups.strategic.length===0||
      view.newsGroups.strategic.some(n=>view.strategic.includes(n.headline)),view.strategic.slice(0,280));
