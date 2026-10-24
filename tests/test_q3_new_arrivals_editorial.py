@@ -52,8 +52,9 @@ class ArrivalTests(unittest.TestCase):
    brief=output['periods']['Q3 2026']['brief']
    self.assertEqual(output['periods']['Q3 2026']['reported_company_count'],7)
    coverage={n for item in brief for n in item.get('companies',[])}
-   self.assertTrue({'Frende','Sampo'}.issubset(coverage),coverage)
-   self.assertTrue(any(item['theme']=='additional_insurers' for item in brief))
+   self.assertFalse(any(item['theme']=='additional_insurers' for item in brief))
+   self.assertFalse(any('har svakere forsikringslønnsomhet' in item['text'] for item in brief))
+   self.assertEqual(len(output['periods']['Q3 2026']['by_company']),7)
    self.assertLessEqual(sum(len(item['text'].split()) for item in brief),220)
    self.assertFalse(any('årsaken er' in item['text'].lower() for item in brief))
 if __name__=='__main__':unittest.main()
