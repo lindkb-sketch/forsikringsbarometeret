@@ -15,6 +15,16 @@ class Tests(unittest.TestCase):
         config = {'Storebrand': {'calendar_url': 'https://example.com', 'events': [{'period': 'Q3 2026', 'date': '2026-10-21'}, {'period': 'Q4 2026', 'date': '2027-02-10'}]}}
         locks = {'Storebrand': {'Q3 2026': {'reviewed': True, 'locked_at': '2026-10-22', 'source_url': 'https://example.com/report'}}}
         self.assertEqual(mod.build(config, locks)['companies']['Storebrand']['next_event']['period'], 'Q4 2026')
+    def test_q4_full_year_reports_are_calendar_events(self):
+        import json
+        config=json.loads((ROOT/'data/calendar.json').read_text())
+        for company,date in [('Tryg','2027-01-22'),('Fremtind','2027-02-01')]:
+            with self.subTest(company=company):
+                matches=[x for x in config[company]['events'] if x['period']=='Q4 2026']
+                self.assertEqual([x['date'] for x in matches],[date])
+        result=mod.build(config,{})
+        for company in ('Tryg','Fremtind'):
+            self.assertEqual(result['companies'][company]['next_event']['period'],'Q4 2026')
     def test_bad_date(self):
         with self.assertRaises(ValueError): mod.validate_events([{'period': 'Q4 2026', 'date': '2027-02-30'}])
     def test_past_unlocked_q3_does_not_hide_future_q4(self):
