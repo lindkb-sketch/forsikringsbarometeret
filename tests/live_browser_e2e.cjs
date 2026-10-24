@@ -239,6 +239,19 @@ async function main(){
     chart:[...document.querySelectorAll('.profit-quarter')].map(x=>x.textContent)
   }));
   check('Next-year Q1 auto-selection after simulated publication',future.active?.year===year+1&&future.active?.quarter===1,JSON.stringify(future.active));
+  const futureCalendar=await page.evaluate(()=>{
+    const html=typeof monCalendar==='function'?monCalendar():'';
+    const current=FBQuarterly.available?.[0];
+    const next=current?.quarter===4?'Q1 '+(current.year+1):
+      'Q'+(current.quarter+1)+' '+current.year;
+    return {next,heading:html.includes('Neste rapporter · '+next),
+      currentHeading:html.includes('Neste rapporter · Q'+current.quarter+' '+current.year),
+      columns:html.includes('data-calendar-group="pending"')&&
+        html.includes('data-calendar-group="reported"')};
+  });
+  check('Calendar right heading follows future verified quarter and year rollover',
+    futureCalendar.heading&&futureCalendar.currentHeading&&futureCalendar.columns,
+    JSON.stringify(futureCalendar));
   check('Rolling graph includes next-year Q1',future.quarters.includes('Q1 '+(year+1)),future.quarters.join(','));
   check('Next quarter and year in dropdown',future.options.some(x=>x.includes('Q1 '+(year+1))),future.options.join(','));
   check('Original design survives future publication',future.kpis>=6&&!future.hasReplacement,future.kpis);
