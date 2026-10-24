@@ -36,4 +36,12 @@ class SynthesisTests(unittest.TestCase):
    self.assertIn('Sampo',out['brief'][0]['text'])
    self.assertEqual(out['brief'][0]['basis'],'rule_verified_issuer_narrative')
    self.assertLessEqual(sum(len(x['text'].split()) for x in out['brief']),220)
+ def test_actual_insurer_cost_drivers_in_norwegian(self):
+  row=self.evidence('Utviklingen påvirkes blant annet av lønnsvekst, reparasjonskostnader, leverandørpriser og erstatningsnivåer.','inflation','Fremtind')
+  result=synthesize(row)
+  self.assertIsNotNone(result)
+  self.assertIn('reparasjonskostnader',result['text'])
+  self.assertNotIn('Dette er selskapets egen vurdering',result['text'])
+ def test_report_page_must_be_traceable(self):
+  self.assertIsNone(synthesize(self.evidence('Utviklingen påvirkes blant annet av lønnsvekst, reparasjonskostnader, leverandørpriser og erstatningsnivåer.','inflation','Fremtind',page=0)))
 if __name__=='__main__':unittest.main()
