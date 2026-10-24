@@ -103,6 +103,22 @@ async function main(){
       !view.brief.includes('omtaler i kvartalsrapporten:'),
       view.brief.slice(0,550));
   }
+  const calendarColumns=await page.evaluate(()=>{
+    const pending=document.querySelector('.mon-cal-column[data-calendar-group="pending"]');
+    const reported=document.querySelector('.mon-cal-column[data-calendar-group="reported"]');
+    return {pending:pending?.querySelectorAll('.mon-cal-row').length||0,
+      reported:reported?.querySelectorAll('.mon-cal-row').length||0,
+      total:document.querySelectorAll('.mon-cal-split .mon-cal-row').length,
+      dates:[...document.querySelectorAll('.mon-cal-split .mon-cal-row')]
+        .map(x=>x.querySelector('.mon-cal-countdown')?.textContent?.trim())};
+  });
+  check('Calendar separates reported and pending companies',calendarColumns.total===7 &&
+    calendarColumns.pending+calendarColumns.reported===7,
+    JSON.stringify(calendarColumns));
+  check('Every insurer has a report countdown or explicit unknown date',
+    calendarColumns.total===7 && calendarColumns.dates.length===7 &&
+    calendarColumns.dates.every(x=>x&&x.length>0),
+    JSON.stringify(calendarColumns.dates));
   check('Technical duplicate sections removed',!view.technical);
   check('Strategic news visible in original cards',view.newsGroups.strategic.length===0||
      view.newsGroups.strategic.some(n=>view.strategic.includes(n.headline)),view.strategic.slice(0,280));
