@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/build_editorial.py'
+      - 'scripts/generate_ai_quarterly_brief.py'
+      - 'tests/test_ai_quarterly_brief.py'
       - 'scripts/synthesize_report_commentary.py'
       - 'tests/test_auto_editorial_synthesis.py'
       - 'tests/test_real_pdf_editorial_replay.py'
@@ -23,6 +25,7 @@ jobs:
           python-version: '3.12'
       - name: Simulate two late Q3 reports and future Q4 turnover
         run: |
+          python -m unittest discover -s tests -p 'test_ai_quarterly_brief.py' -v
           python -m unittest discover -s tests -p 'test_auto_editorial_synthesis.py' -v
           python -m unittest discover -s tests -p 'test_real_pdf_editorial_replay.py' -v
           python -m unittest discover -s tests -p 'test_q3_new_arrivals_editorial.py' -v
