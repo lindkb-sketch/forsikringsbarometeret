@@ -15,6 +15,8 @@ print(json.dumps({"scheduled_runs_in_recent_history":len(scheduled),
                   "last_scheduled_run":latest.isoformat() if latest else None,
                   "minutes_since_last":round(minutes,1) if minutes is not None else None}))
 if latest is None or minutes>95:
+    message="Scheduled 30-minute importer delayed: "+("no scheduled runs found" if minutes is None else f"{minutes:.1f} minutes since latest scheduled start")
+    print("::warning::"+message)
     # GitHub may delay scheduled workflows. Recover a missed run, but never
     # launch a duplicate when an update workflow is already active.
     api=f"https://api.github.com/repos/{REPO}/actions/workflows/update.yml/runs?per_page=10"
@@ -23,7 +25,7 @@ if latest is None or minutes>95:
         active=json.load(response)["workflow_runs"]
     underway=[x for x in active if x.get("status") in ("queued","pending","waiting","in_progress","requested")]
     if underway:
-        print("::warning::Scheduled importer is delayed, but an update is already active; no duplicate dispatched.")
+        print("WATCHDOG_RECOVERY active_update_exists; no duplicate dispatched.")
     else:
         request=urllib.request.Request(f"https://api.github.com/repos/{REPO}/actions/workflows/update.yml/dispatches",
            data=json.dumps({"ref":"main"}).encode("utf-8"),method="POST",
@@ -32,5 +34,8 @@ if latest is None or minutes>95:
                     "Authorization":"Bearer "+os.environ["GITHUB_TOKEN"]})
         with urllib.request.urlopen(request,timeout=25):
             pass
-        print("::warning::Missed half-hour run; requested a fresh publication workflow.")
-    sys.exit(1)
+        print("WATCHDOG_RECOVERY dispatched_update_workflow")
+    summary=os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary,"a",encoding="utf-8") as output:
+            output.write("### Scheduled import watchdog\n\n- "+message+"\n- Recovery: "+("An update is already running." if underway else "Requested a new update.yml run.")+"\n- This does not certify the original cron trigger or the import result.\n")
