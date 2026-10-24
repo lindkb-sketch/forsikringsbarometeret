@@ -1545,7 +1545,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
   if(!live||typeof monCalendar!=='function'||!window.FBQuarterly?.period)return;
   // Reapply after the delayed quarterly runtime initializes or refreshes.
   monCalendar=function(){
-    if(typeof MON_QUARTER!=='undefined'&&MON_QUARTER!=='Q3')return '';
+    // Always derive the report cycle from the latest verified quarter, including Q4 and future years.
     // Calendar and website numbers are reconciled at EVERY refresh, not
     // overwritten by generated live.json when the quarter changes.
     const latest=window.FBQuarterly?.available?.[0];
