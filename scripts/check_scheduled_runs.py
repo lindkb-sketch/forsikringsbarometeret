@@ -15,5 +15,22 @@ print(json.dumps({"scheduled_runs_in_recent_history":len(scheduled),
                   "last_scheduled_run":latest.isoformat() if latest else None,
                   "minutes_since_last":round(minutes,1) if minutes is not None else None}))
 if latest is None or minutes>95:
-    print("::error::Scheduled 30-minute importer may have stopped; inspect update.yml and GitHub Actions")
+    # GitHub may delay scheduled workflows. Recover a missed run, but never
+    # launch a duplicate when an update workflow is already active.
+    api=f"https://api.github.com/repos/{REPO}/actions/workflows/update.yml/runs?per_page=10"
+    active_req=urllib.request.Request(api,headers={"Accept":"application/vnd.github+json","User-Agent":"Forsikringsbarometeret-schedule-watch","Authorization":"Bearer "+os.environ["GITHUB_TOKEN"]})
+    with urllib.request.urlopen(active_req,timeout=25) as response:
+        active=json.load(response)["workflow_runs"]
+    underway=[x for x in active if x.get("status") in ("queued","pending","waiting","in_progress","requested")]
+    if underway:
+        print("::warning::Scheduled importer is delayed, but an update is already active; no duplicate dispatched.")
+    else:
+        request=urllib.request.Request(f"https://api.github.com/repos/{REPO}/actions/workflows/update.yml/dispatches",
+           data=json.dumps({"ref":"main"}).encode("utf-8"),method="POST",
+           headers={"Accept":"application/vnd.github+json","Content-Type":"application/json",
+                    "User-Agent":"Forsikringsbarometeret-schedule-watch",
+                    "Authorization":"Bearer "+os.environ["GITHUB_TOKEN"]})
+        with urllib.request.urlopen(request,timeout=25):
+            pass
+        print("::warning::Missed half-hour run; requested a fresh publication workflow.")
     sys.exit(1)
