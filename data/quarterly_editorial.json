@@ -30,27 +30,6 @@
       ]
     },
     {
-      "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
-      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-      "source_urls": [
-        "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
-      ],
-      "companies": [
-        "Fremtind"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "weather",
-      "basis": "issuer_commentary",
-      "sources": [
-        {
-          "company": "Fremtind",
-          "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "kind": "official_company_release"
-        }
-      ]
-    },
-    {
       "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
       "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
       "source_urls": [
@@ -82,6 +61,27 @@
           "company": "Tryg",
           "url": "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en",
           "kind": "issuer_interim_report_announcement"
+        }
+      ]
+    },
+    {
+      "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
+      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+      "source_urls": [
+        "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
+      ],
+      "companies": [
+        "Fremtind"
+      ],
+      "period": "Q3 2026",
+      "type": "qualitative_quarter_theme",
+      "theme": "weather",
+      "basis": "issuer_commentary",
+      "sources": [
+        {
+          "company": "Fremtind",
+          "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+          "kind": "official_company_release"
         }
       ]
     },
@@ -226,27 +226,6 @@
           ]
         },
         {
-          "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
-          "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-          "source_urls": [
-            "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
-          ],
-          "companies": [
-            "Fremtind"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "weather",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
-              "kind": "official_company_release"
-            }
-          ]
-        },
-        {
           "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
           "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
           "source_urls": [
@@ -278,6 +257,27 @@
               "company": "Tryg",
               "url": "https://view.news.eu.nasdaq.com/view?id=bbbbfd9a99e79610f00d82eacc6538472&lang=en",
               "kind": "issuer_interim_report_announcement"
+            }
+          ]
+        },
+        {
+          "text": "Værskadene var relativt lave hos Fremtind dette kvartalet, men selskapet fremhever storm, kraftig nedbør og flom som vesentlige risikofaktorer inn mot høst og vinter. Bildet understreker forskjellen mellom en gunstig skadeperiode og den underliggende eksponeringen for alvorlige værhendelser.",
+          "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+          "source_urls": [
+            "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122"
+          ],
+          "companies": [
+            "Fremtind"
+          ],
+          "period": "Q3 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "weather",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Fremtind",
+              "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+              "kind": "official_company_release"
             }
           ]
         },
@@ -417,29 +417,6 @@
           ]
         },
         {
-          "text": "Fremtind peker på værhendelser, skadeinflasjon, renteutvikling og uføreutvikling som forhold selskapet følger tett. Dette er risikofaktorer, ikke dokumentasjon på at alle har gitt høyere skadekostnader i kvartalet.",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-          "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
-          ],
-          "companies": [
-            "Fremtind"
-          ],
-          "period": "Q2 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "inflation",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Fremtind",
-              "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
-              "kind": "official_quarterly_report",
-              "page": 9,
-              "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
-            }
-          ]
-        },
-        {
           "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
@@ -463,6 +440,29 @@
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
           "theme": "diverging_underwriting"
+        },
+        {
+          "text": "Fremtind peker på værhendelser, skadeinflasjon, renteutvikling og uføreutvikling som forhold selskapet følger tett. Dette er risikofaktorer, ikke dokumentasjon på at alle har gitt høyere skadekostnader i kvartalet.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf"
+          ],
+          "companies": [
+            "Fremtind"
+          ],
+          "period": "Q2 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "inflation",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Fremtind",
+              "url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+              "kind": "official_quarterly_report",
+              "page": 9,
+              "sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190"
+            }
+          ]
         },
         {
           "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
@@ -632,52 +632,6 @@
           ]
         },
         {
-          "text": "Sampo viser til at tidligere premieøkninger slår gjennom samtidig med vekst i antall kunder. Det gjør det viktig å skille mellom prisvirkning og reell volumvekst når markedet sammenlignes.",
-          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-          "source_urls": [
-            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
-          ],
-          "companies": [
-            "Sampo"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "growth",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Sampo",
-              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-              "kind": "official_quarterly_report",
-              "page": 11,
-              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-            }
-          ]
-        },
-        {
-          "text": "Sampo beskriver lavere reassuransepriser, både som følge av gunstige markedsforhold og tiltak for å redusere eksponeringen mot store eiendomsskader. Det illustrerer hvordan risikoavlastning kan påvirke forsikringsøkonomien.",
-          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-          "source_urls": [
-            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
-          ],
-          "companies": [
-            "Sampo"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "reinsurance",
-          "basis": "issuer_commentary",
-          "sources": [
-            {
-              "company": "Sampo",
-              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
-              "kind": "official_quarterly_report",
-              "page": 4,
-              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
-            }
-          ]
-        },
-        {
           "text": "Gjensidige knytter forbedringen i combined ratio til disiplinert prising og kostnadseffektivitet. Dermed er utviklingen ikke bare et spørsmål om skadefrekvens, men også gjennomføringen av tidligere prisingstiltak.",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "source_urls": [
@@ -697,6 +651,42 @@
               "kind": "official_quarterly_report",
               "page": 5,
               "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
+            }
+          ]
+        },
+        {
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
+          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
+          "source_urls": [
+            "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
+          ],
+          "companies": [
+            "Frende"
+          ],
+          "period": "Q1 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "underwriting_pressure"
+        },
+        {
+          "text": "Sampo viser til at tidligere premieøkninger slår gjennom samtidig med vekst i antall kunder. Det gjør det viktig å skille mellom prisvirkning og reell volumvekst når markedet sammenlignes.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
+          "source_urls": [
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf"
+          ],
+          "companies": [
+            "Sampo"
+          ],
+          "period": "Q1 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "growth",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Sampo",
+              "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
+              "kind": "official_quarterly_report",
+              "page": 11,
+              "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
             }
           ]
         }
@@ -815,7 +805,7 @@
         "Gjensidige": "featured",
         "Tryg": "awaiting_curated_commentary",
         "Sampo": "featured",
-        "Frende": "awaiting_curated_commentary",
+        "Frende": "featured",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
