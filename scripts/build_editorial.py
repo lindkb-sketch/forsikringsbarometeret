@@ -6,6 +6,7 @@ the cause of a movement or infer an unpublished report from a calendar date.
 """
 import json
 from pathlib import Path
+from synthesize_report_commentary import synthesize
 
 ROOT=Path(__file__).resolve().parents[1]
 COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand')
@@ -93,7 +94,11 @@ def documented_report_insights(label, available_companies):
  result=[]
  for row in rows:
   # Literal extracted PDF fragments are evidence, not publish-ready analysis.
-  if row.get('basis')=='issuer_pdf_verbatim' or ' omtaler i kvartalsrapporten:' in row.get('text',''):continue
+  if row.get('basis')=='issuer_pdf_verbatim':
+   converted=synthesize(row)
+   if not converted:continue
+   row={**converted,'period':label}
+  elif ' omtaler i kvartalsrapporten:' in row.get('text',''):continue
   linked=[x for x in row.get('sources',[]) if x.get('company') in available_companies and
           x.get('url','').startswith('https://') and x.get('kind') in ('official_company_release','issuer_interim_report_announcement','official_quarterly_report')]
   if not linked or not row.get('text') or not row.get('companies'):continue
@@ -101,7 +106,7 @@ def documented_report_insights(label, available_companies):
   result.append({'text':row['text'],'source_url':linked[0]['url'],
        'source_urls':[x['url'] for x in linked], 'companies':row['companies'],
        'period':label,'type':'qualitative_quarter_theme','theme':row.get('theme','report_commentary'),
-       'basis':'issuer_commentary','sources':linked})
+       'basis':row.get('basis','issuer_commentary'),'sources':linked})
  return result or None
 
 def concise_brief(items, limit=220, max_paragraphs=4):
@@ -111,7 +116,7 @@ def concise_brief(items, limit=220, max_paragraphs=4):
            'underwriting_pressure':3,'growth':4,'revenue_direction':4,
            'revenue_decline':4,'strategy':5,'reinsurance':5,'competition':5,
            'inflation':5,'additional_insurers':2,'operations':6,'investment':6,'regulation':6}
- order=sorted(enumerate(items),key=lambda e:(0 if e[1].get('basis')=='issuer_commentary' else 1,
+ order=sorted(enumerate(items),key=lambda e:(0 if e[1].get('basis') in ('issuer_commentary','rule_verified_issuer_narrative') else 1,
    priority.get(e[1].get('theme'),7),e[0]))
  selected=[];total=0;themes=set();featured=set()
  pending=list(order)
@@ -127,7 +132,7 @@ def concise_brief(items, limit=220, max_paragraphs=4):
    # replace repetitive coverage of already-featured companies.
    idx,item=min(eligible,key=lambda pair:(
     -len(set(pair[1].get('companies',[]))-featured),
-    0 if pair[1].get('basis')=='issuer_commentary' else 1,
+    0 if pair[1].get('basis') in ('issuer_commentary','rule_verified_issuer_narrative') else 1,
     priority.get(pair[1].get('theme'),7), pair[0]))
   selected.append(item)
   total+=len(item['text'].split());themes.add(item.get('theme'))
