@@ -115,7 +115,7 @@ def concise_brief(items, limit=220, max_paragraphs=4):
            'diverging_underwriting':3,'underwriting_improvement':3,
            'underwriting_pressure':3,'growth':4,'revenue_direction':4,
            'revenue_decline':4,'strategy':5,'reinsurance':5,'competition':5,
-           'inflation':5,'additional_insurers':2,'operations':6,'investment':6,'regulation':6}
+           'inflation':5,'operations':6,'investment':6,'regulation':6}
  order=sorted(enumerate(items),key=lambda e:(0 if e[1].get('basis') in ('issuer_commentary','rule_verified_issuer_narrative') else 1,
    priority.get(e[1].get('theme'),7),e[0]))
  selected=[];total=0;themes=set();featured=set()
@@ -228,34 +228,8 @@ def build(feed,news):
    if category not in covered and documented and item.get('theme')!='insufficient_comparatives':
     brief.append(item)
   if not documented:brief=baseline
-  # Use only same-basis verified underwriting changes for currently unfeatured
-  # insurers; this creates no unsupported explanation of the movement.
-  if year>=2026 and len(by_company)>=4:
-   already={name for item in documented for name in item.get('companies',[])}
-   changes={'better':[],'worse':[],'same':[]}
-   references=[]
-   old_q=4 if q==1 else q-1
-   old_year=year-1 if q==1 else year
-   for name in COMPANIES:
-    if name not in by_company or name in already:continue
-    current=get(name,year,q,'quarter','combined_ratio')
-    previous=get(name,old_year,old_q,'quarter','combined_ratio')
-    if not current or not previous or current.get('unit')!=previous.get('unit'):continue
-    delta=current['value']-previous['value']
-    kind='better' if delta < -0.25 else 'worse' if delta > 0.25 else 'same'
-    changes[kind].append(name)
-    references.append(current)
-   parts=[]
-   if changes['better']:parts.append(', '.join(changes['better'])+' har forbedret forsikringslønnsomheten fra foregående kvartal')
-   if changes['worse']:parts.append(', '.join(changes['worse'])+' har svakere forsikringslønnsomhet')
-   if changes['same']:parts.append(', '.join(changes['same'])+' viser omtrent uendret forsikringslønnsomhet')
-   links=list(dict.fromkeys(x['source_url'] for x in references if x.get('source_url')))
-   if parts and links:
-    brief.append({'text':'; '.join(parts)+'. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.',
-                  'source_url':links[0],'source_urls':links,
-                  'companies':changes['better']+changes['worse']+changes['same'],
-                  'period':label,'type':'qualitative_quarter_theme',
-                  'theme':'additional_insurers','basis':'verified_financial_comparison'})
+  # Editorial selection is based on concrete source-backed events and
+  # explanations, never insurer name coverage or a restatement of KPIs.
   brief=concise_brief(brief)
   # Diagnostic coverage is separate from editorial selection: do not force
   # every issuer into a finite-size cross-market synthesis.
