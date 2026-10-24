@@ -186,6 +186,14 @@
       "has_comparative": true
     }
   },
+  "issuer_brief_status": {
+    "Fremtind": "featured",
+    "Gjensidige": "featured",
+    "Tryg": "featured",
+    "Protector": "awaiting_curated_commentary",
+    "Storebrand": "awaiting_curated_commentary"
+  },
+  "reported_company_count": 5,
   "periods": {
     "Q3 2026": {
       "brief": [
@@ -373,7 +381,15 @@
           "period": "Q3 2026",
           "has_comparative": true
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "featured",
+        "Gjensidige": "featured",
+        "Tryg": "featured",
+        "Protector": "awaiting_curated_commentary",
+        "Storebrand": "awaiting_curated_commentary"
+      },
+      "reported_company_count": 5
     },
     "Q2 2026": {
       "brief": [
@@ -578,7 +594,17 @@
           "period": "Q2 2026",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "featured",
+        "Gjensidige": "featured",
+        "Tryg": "featured",
+        "Sampo": "featured",
+        "Frende": "featured",
+        "Protector": "featured",
+        "Storebrand": "featured"
+      },
+      "reported_company_count": 7
     },
     "Q1 2026": {
       "brief": [
@@ -783,7 +809,17 @@
           "period": "Q1 2026",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "awaiting_curated_commentary",
+        "Gjensidige": "featured",
+        "Tryg": "awaiting_curated_commentary",
+        "Sampo": "featured",
+        "Frende": "awaiting_curated_commentary",
+        "Protector": "awaiting_curated_commentary",
+        "Storebrand": "awaiting_curated_commentary"
+      },
+      "reported_company_count": 7
     },
     "Q4 2025": {
       "brief": [
@@ -832,7 +868,11 @@
           "period": "Q4 2025",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Frende": "featured"
+      },
+      "reported_company_count": 1
     },
     "Q3 2025": {
       "brief": [
@@ -964,7 +1004,15 @@
           "period": "Q3 2025",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "featured",
+        "Gjensidige": "featured",
+        "Tryg": "featured",
+        "Frende": "featured",
+        "Storebrand": "awaiting_curated_commentary"
+      },
+      "reported_company_count": 5
     },
     "Q2 2025": {
       "brief": [
@@ -1081,7 +1129,14 @@
           "period": "Q2 2025",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "featured",
+        "Gjensidige": "featured",
+        "Tryg": "featured",
+        "Frende": "featured"
+      },
+      "reported_company_count": 4
     },
     "Q1 2025": {
       "brief": [
@@ -1168,7 +1223,14 @@
           "period": "Q1 2025",
           "has_comparative": false
         }
-      }
+      },
+      "issuer_brief_status": {
+        "Fremtind": "featured",
+        "Gjensidige": "featured",
+        "Tryg": "featured",
+        "Frende": "featured"
+      },
+      "reported_company_count": 4
     }
   },
   "news": [
