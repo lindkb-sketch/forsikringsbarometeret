@@ -30,22 +30,6 @@
       ]
     },
     {
-      "text": "Protector har svakere forsikringslønnsomhet; storebrand viser omtrent uendret forsikringslønnsomhet. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-      "source_urls": [
-        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
-      ],
-      "companies": [
-        "Protector",
-        "Storebrand"
-      ],
-      "period": "Q3 2026",
-      "type": "qualitative_quarter_theme",
-      "theme": "additional_insurers",
-      "basis": "verified_financial_comparison"
-    },
-    {
       "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
       "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
       "source_urls": [
@@ -97,6 +81,27 @@
         {
           "company": "Fremtind",
           "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+          "kind": "official_company_release"
+        }
+      ]
+    },
+    {
+      "text": "Pristiltak er fortsatt en sentral drivkraft bak inntektsveksten. Gjensidige trekker særlig frem prisendringer på tvers av privat- og bedriftsmarkedet, kombinert med volumvekst i utvalgte forsikringsområder. Dette gjør det viktig å skille prisdrevet vekst fra økt kundetilfang når selskapene vurderes.",
+      "source_url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
+      "source_urls": [
+        "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
+      ],
+      "companies": [
+        "Gjensidige"
+      ],
+      "period": "Q3 2026",
+      "type": "qualitative_quarter_theme",
+      "theme": "growth",
+      "basis": "issuer_commentary",
+      "sources": [
+        {
+          "company": "Gjensidige",
+          "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
           "kind": "official_company_release"
         }
       ]
@@ -185,8 +190,8 @@
     "Fremtind": "featured",
     "Gjensidige": "featured",
     "Tryg": "featured",
-    "Protector": "featured",
-    "Storebrand": "featured"
+    "Protector": "awaiting_curated_commentary",
+    "Storebrand": "awaiting_curated_commentary"
   },
   "reported_company_count": 5,
   "periods": {
@@ -219,22 +224,6 @@
               "kind": "official_company_release"
             }
           ]
-        },
-        {
-          "text": "Protector har svakere forsikringslønnsomhet; storebrand viser omtrent uendret forsikringslønnsomhet. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.",
-          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-          "source_urls": [
-            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
-            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
-          ],
-          "companies": [
-            "Protector",
-            "Storebrand"
-          ],
-          "period": "Q3 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "additional_insurers",
-          "basis": "verified_financial_comparison"
         },
         {
           "text": "Lønnsomheten i skadeforsikring styrkes hos flere av de største aktørene. Fremtind peker på færre skader på bil og næringsbygg og effekten av tidligere prisjusteringer. Gjensidige viser til gunstig skadeutvikling og bedre underliggende drift, mens Tryg beskriver forbedringer i den underliggende skadeprosenten, også i Norge.",
@@ -288,6 +277,27 @@
             {
               "company": "Fremtind",
               "url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+              "kind": "official_company_release"
+            }
+          ]
+        },
+        {
+          "text": "Pristiltak er fortsatt en sentral drivkraft bak inntektsveksten. Gjensidige trekker særlig frem prisendringer på tvers av privat- og bedriftsmarkedet, kombinert med volumvekst i utvalgte forsikringsområder. Dette gjør det viktig å skille prisdrevet vekst fra økt kundetilfang når selskapene vurderes.",
+          "source_url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
+          "source_urls": [
+            "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q3 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "growth",
+          "basis": "issuer_commentary",
+          "sources": [
+            {
+              "company": "Gjensidige",
+              "url": "https://news.cision.com/no/gjensidige-forsikring-asa/r/gjensidige-q3-2026--hoyere-lonnsomhet-drevet-av-et-forbedret-forsikringsresultat,c4414213",
               "kind": "official_company_release"
             }
           ]
@@ -376,8 +386,8 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
-        "Protector": "featured",
-        "Storebrand": "featured"
+        "Protector": "awaiting_curated_commentary",
+        "Storebrand": "awaiting_curated_commentary"
       },
       "reported_company_count": 5
     },
@@ -407,17 +417,19 @@
           ]
         },
         {
-          "text": "Gjensidige, sampo, frende, protector, storebrand har forbedret forsikringslønnsomheten fra foregående kvartal; tryg har svakere forsikringslønnsomhet. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.",
-          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
             "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
             "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
             "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
-            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf"
           ],
           "companies": [
+            "Fremtind",
             "Gjensidige",
             "Sampo",
             "Frende",
@@ -427,8 +439,7 @@
           ],
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "additional_insurers",
-          "basis": "verified_financial_comparison"
+          "theme": "diverging_underwriting"
         },
         {
           "text": "Fremtind peker på værhendelser, skadeinflasjon, renteutvikling og uføreutvikling som forhold selskapet følger tett. Dette er risikofaktorer, ikke dokumentasjon på at alle har gitt høyere skadekostnader i kvartalet.",
@@ -454,29 +465,25 @@
           ]
         },
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind, Gjensidige, Sampo, Frende, Protector, Storebrand forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
           "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
             "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
-            "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
             "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
-            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
-            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf"
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
           ],
           "companies": [
-            "Fremtind",
             "Gjensidige",
+            "Tryg",
             "Sampo",
-            "Frende",
             "Protector",
-            "Storebrand",
-            "Tryg"
+            "Storebrand"
           ],
           "period": "Q2 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "diverging_underwriting"
+          "theme": "revenue_direction"
         }
       ],
       "implications": [
@@ -648,7 +655,7 @@
           ]
         },
         {
-          "text": "Frende har svakere forsikringslønnsomhet. Utviklingen er basert på sammenlignbare rapporterte måltall, uten påstander om årsaker.",
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
           "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
           "source_urls": [
             "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
@@ -658,8 +665,7 @@
           ],
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "additional_insurers",
-          "basis": "verified_financial_comparison"
+          "theme": "underwriting_pressure"
         },
         {
           "text": "Sampo viser til at tidligere premieøkninger slår gjennom samtidig med vekst i antall kunder. Det gjør det viktig å skille mellom prisvirkning og reell volumvekst når markedet sammenlignes.",
