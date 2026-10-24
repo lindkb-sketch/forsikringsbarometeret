@@ -1225,12 +1225,6 @@
   },
   "news": [
     {
-      "headline": "AI-stup, rentefall, høyere oljepris, Scatec-krakk, Hydro skuffer, Gjensidige imponerer",
-      "published_at": "2026-10-24T09:11:02+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNc0QxV0trZzBIUmJrRF8tQXNaUHhRWDNqNXloVFVZZ204bUlNbjNraFJjSEl4N052cU5rczd4aGZPNHNCelltWVR5YTdxczFfLXA5LTlhWms2Q0FtLXh5aTdQZ1RNOThrVmM1VlBXNk5yV3kwR19WVmhfY1dka2VOcWVLT1ptSGROQW1IWU9tV01sX1FfczdfVUlrckJnTk1rYlZzaW5aZkMyWEpwaDJubUt0cGUxN255bkdHOGxKWkY1RVpjbmVZQkoxWDNySVB4?oc=5",
-      "publisher": "Finansavisen"
-    },
-    {
       "headline": "GJENSIDIGE FORSIKRING (GJF)",
       "published_at": "2026-10-23T14:28:59+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE9jMG5sMER1ejIxS2tJVVN4eHFUT21xNTBWNzJ2YjVWUDd5a19vUDFySEIzLVg5Mk5VcWxIUTYzT0NDOF90eTBsQzdzYVNoRUYyRGRfdTdKN09CVkt4SW1MT1lMZVNRV3ZoUlM1QkxXc2RjRWEzcEJlYzduZw?oc=5",
@@ -1243,10 +1237,22 @@
       "publisher": "Nettavisen"
     },
     {
+      "headline": "STOREBRAND ASA: Notice of transaction by PDMR",
+      "published_at": "2026-10-23T08:12:58+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPT2JVMldtNWZIamVObC1taDdsczFURFN0ZXp0YUswa0FwRjVyTEYtWDcxbHRzQ0NKU2JDYXNSUXdjRTVlSnlNZW1nZEp3VGdVT1ZSb2MwcFVTMG1SSW91S25sdHFkcjN2MC1ubVY3cm9laEUxTVZkZnpXaktfSFpPOTlJMmQ5OUtyc2liSTV5S3FTOUI5Q1pMNkV0QXYxSEpvZzdZLWxZUFdCN09DUnQ2WWM2YzluNkE0WXA3aEpXQ2FWXzJQUFFCczdhaEJKN0E?oc=5",
+      "publisher": "Finansavisen"
+    },
+    {
       "headline": "Brannen i Krokstadelva kosta Gjensidige 100 millionar kroner",
       "published_at": "2026-10-23T07:35:44+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNSEJuNi1NdFVVWnZEVmJCOHlVaW5sNE1wbGZBRDgwWHVFNUJMbnJJd1lxRjd5Yno4MEZYOG9YbDd6RGNVeERIVGk3TEp4MGdOQUtsZHdnTGZTYnpXTFdFMTJ2dkh1V3B1Mktqa2FUNXpqcmRZbGhmUVJid3FKUzU5ckxJTm9rbGlQaTVLYTNDTkZaa01Hei1ueThPdWlnWDVl?oc=5",
       "publisher": "NRK"
+    },
+    {
+      "headline": "AI-stup, rentefall, høyere oljepris, Scatec-krakk, Hydro skuffer, Gjensidige imponerer",
+      "published_at": "2026-10-23T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNc0QxV0trZzBIUmJrRF8tQXNaUHhRWDNqNXloVFVZZ204bUlNbjNraFJjSEl4N052cU5rczd4aGZPNHNCelltWVR5YTdxczFfLXA5LTlhWms2Q0FtLXh5aTdQZ1RNOThrVmM1VlBXNk5yV3kwR19WVmhfY1dka2VOcWVLT1ptSGROQW1IWU9tV01sX1FfczdfVUlrckJnTk1rYlZzaW5aZkMyWEpwaDJubUt0cGUxN255bkdHOGxKWkY1RVpjbmVZQkoxWDNySVB4?oc=5",
+      "publisher": "Finansavisen"
     },
     {
       "headline": "Storbrannen i Drammen koster Gjensidige 100 millioner",
