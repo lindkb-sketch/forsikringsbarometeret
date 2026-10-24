@@ -98,7 +98,7 @@ async function main(){
       view.brief.slice(0,900));
     check('Q3 brief is concise and free from raw PDF excerpts',
       (editorial.brief||[]).length<=4 &&
-      (editorial.brief||[]).reduce((sum,x)=>sum+x.text.split(/\\s+/).length,0)<=220 &&
+      (editorial.brief||[]).reduce((sum,x)=>sum+x.text.trim().split(' ').length,0)<=220 &&
       !view.brief.includes('omtaler i kvartalsrapporten:'),
       view.brief.slice(0,550));
   }
