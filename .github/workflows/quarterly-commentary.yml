@@ -6,7 +6,7 @@ on:
     paths:
       - 'scripts/refresh_report_commentary.py'
       - 'scripts/build_editorial.py'
-      - 'scripts/generate_ai_quarterly_brief.py'
+      - 'scripts/synthesize_report_commentary.py'
       - '.github/workflows/quarterly-commentary.yml'
   schedule:
     - cron: '25 3,9,15,21 * * *'
@@ -33,11 +33,8 @@ jobs:
       - name: Verify narrative extraction safety
         run: python -m unittest discover -s tests -p 'test_quarterly_narrative_extraction.py' -v
       - name: Check four historical or newly published issuer PDFs and rebuild brief
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           QUARTER_COMMENTARY_BATCH=25 python scripts/refresh_report_commentary.py
-          python scripts/generate_ai_quarterly_brief.py
           python scripts/build_editorial.py
           python scripts/check_quarterly_brief.py
       - name: Commit validated incremental backfill
