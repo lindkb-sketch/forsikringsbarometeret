@@ -56,43 +56,19 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertNotIn('strategicPattern.test(r.headline)',html)
 
- def test_strategy_blends_issuer_sources_with_distinct_media(self):
+ def test_unified_media_and_verified_market_insight(self):
   html=HTML.read_text()
-  self.assertIn("strategicEvidence?.periods?.[selectedQuarter]",html)
-  self.assertIn("r?.basis==='rule_verified_issuer_narrative'",html)
-  self.assertIn('const cards=officialCards;',html)
-  self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
-  self.assertIn('Strategisk kilde',html)
-  self.assertIn('const other=all.slice(0,4);',html)
-  self.assertIn('return {strategic:[],official:selectedOfficial,other};',html)
-
- def test_strategy_rejects_media_only_unverified_cards(self):
-  html=HTML.read_text()
-  self.assertIn('const cards=officialCards;',html)
-  self.assertIn('Ingen nye dokumenterte strategiske bevegelser',html)
-  self.assertNotIn('const mediaCards=groups.strategic.map',html)
+  self.assertIn("quarterChanges=function(){return '';};",html)
+  self.assertIn('const strategic=groups.official.map(x=>',html)
+  self.assertIn('const articles=groups.other.map(x=>',html)
+  self.assertIn('Nyheter og kildeverifisert innsikt i konkurransebildet',html)
+  self.assertIn('Les primærkilden',html)
   self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
-  self.assertIn('Kildeovervåkingen fortsetter automatisk',html)
-
- def test_strategy_is_not_the_quarterly_brief(self):
-  html=HTML.read_text()
-  self.assertIn('strategicEvidence?.periods?.[selectedQuarter]',html)
+  self.assertIn('const other=all.slice(0,4);',html)
   self.assertIn("r?.basis==='rule_verified_issuer_narrative'",html)
-  self.assertIn('data/strategic_market.json', (ROOT/'.github/workflows/update.yml').read_text())
-  self.assertIn('Markedsanalyse · ',html)
   self.assertNotIn('const official=(currentEditorial()?.brief||[]).filter',html)
 
- def test_strategy_uses_standalone_verified_editorial(self):
-  html=HTML.read_text()
-  generator=(ROOT/'scripts/build_strategic_market.py').read_text()
-  self.assertIn("strategic_market.json",html)
-  self.assertIn("rule_verified_issuer_narrative",html)
-  self.assertIn("vetted=synthesize(raw)",generator)
-  self.assertIn("source_sha256",generator)
-  self.assertNotIn("editorialStrategyText",html)
-  self.assertIn("build_strategic_market.py",(ROOT/'scripts/run_pipeline.py').read_text())
-
- def test_automatic_strategy_refresh_and_source_integrity(self):
+ def test_unified_media_automatic_refresh_and_free_sources(self):
   html=HTML.read_text()
   main=(ROOT/'.github/workflows/update.yml').read_text()
   commentary=(ROOT/'.github/workflows/quarterly-commentary.yml').read_text()
@@ -101,12 +77,10 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn("cron: '25 3,9,15,21 * * *'",commentary)
   self.assertIn('python scripts/ingest_media_news.py',main)
   self.assertIn('refresh_report_commentary.py',pipeline)
-  self.assertIn('build_editorial.py',pipeline)
-  self.assertIn('data/quarterly_editorial.json',main)
-  self.assertIn('data/official_news.json',main)
+  self.assertIn('build_strategic_market.py',pipeline)
   self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json','strategic_market.json']",html)
   self.assertIn('setInterval(refresh,300000)',html)
-  self.assertIn('const cards=officialCards;',html)
+  self.assertNotIn('python scripts/ai_strategic_editor.py',main)
 
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
