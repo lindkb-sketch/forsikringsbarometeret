@@ -70,12 +70,12 @@ class FremtindImporterTests(unittest.TestCase):
             def extract_text(self):return self.t
         class PDF:
             pages=[Page("Kvartalsrapport Q3 2026 Fremtind Holding"),Page("Innhold"),
-              Page("Resultatutvikling og nøkkeltall\\nMNOK Q3 2026\\n"
-                   "Inntekter fra forsikringstjenester 6 305 6 047 18 373 17 376 23 510\\n"
-                   "Resultat fra forsikringstjenester 1 704 1 411 4 280 3 111 4 520\\n"
-                   "Skadeprosent, netto etter gjenforsikring (%) 52,5 % 55,2 % 55,1 % 60,1 % 58,8 %\\n"
-                   "Kostnadsprosent (%) 20,5 % 21,4 % 21,6 % 22,0 % 21,9 %\\n"
-                   "Combined ratio, netto etter gjenforsikring (%) 73,0 % 76,7 % 76,7 % 82,1 % 80,8 %\\n"
+              Page("Resultatutvikling og nøkkeltall\nMNOK Q3 2026\n"
+                   "Inntekter fra forsikringstjenester 6 305 6 047 18 373 17 376 23 510\n"
+                   "Resultat fra forsikringstjenester 1 704 1 411 4 280 3 111 4 520\n"
+                   "Skadeprosent, netto etter gjenforsikring (%) 52,5 % 55,2 % 55,1 % 60,1 % 58,8 %\n"
+                   "Kostnadsprosent (%) 20,5 % 21,4 % 21,6 % 22,0 % 21,9 %\n"
+                   "Combined ratio, netto etter gjenforsikring (%) 73,0 % 76,7 % 76,7 % 82,1 % 80,8 %\n"
                    "Solvensmargin Fremtind Forsikring konsern 189 % 180 % 174 %"),
               Page("Noter")]
             def __enter__(self):return self
