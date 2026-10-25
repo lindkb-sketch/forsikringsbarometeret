@@ -70,6 +70,11 @@
       derived_ytd:true,calculation:'premium_weighted_issued_quarter_ratios'};
   }
   function quote(company,type,year,quarter,metric){
+    // Solvency is an as-of-date balance-sheet measurement, not a flow.
+    // Reuse the same verified reporting-date value for Quarter and YTD.
+    if(metric==='solvency_ratio')
+      return lookup(company,type,year,quarter,metric)||
+        lookup(company,type==='quarter'?'ytd':'quarter',year,quarter,metric);
     return lookup(company,type,year,quarter,metric)||
       (type==='ytd'?addYtd(company,year,quarter,metric):
        addQuarter(company,year,quarter,metric));
