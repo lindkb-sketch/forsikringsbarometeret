@@ -1142,7 +1142,12 @@ returnCard=c=>{
  const prior=d.returnPrev||'—';
  return `<div class="metric fremtind"><div class="name">${c==='Tryg'?'ROOF (rapportert)':c==='Fremtind'?'Justert EK-avkastning':'Avkastning'}</div><div class="value">${d.return}</div><div class="prior">Q3 2025: ${prior}</div>${d.returnPrev?`<div class="delta ${parseFloat(d.return.replace(',','.'))>=parseFloat(d.returnPrev.replace(',','.'))?'better':'worse'}">${parseFloat(d.return.replace(',','.'))>=parseFloat(d.returnPrev.replace(',','.'))?'▲ +':'▼ −'}${Math.abs(parseFloat(d.return.replace(',','.'))-parseFloat(d.returnPrev.replace(',','.'))).toFixed(1).replace('.',',')} pp</div>`:`<div class="delta neutral">Sammenligning ikke registrert</div>`}</div>`;
 };
-solvencyCard=c=>MON_QUARTER==='Q2'?MON_ORIG.solvencyCard(c):MON_CARD(c,'solvency',MON_ORIG.solvencyCard(c));
+solvencyCard=c=>{
+ if(MON_QUARTER==='Q2'&&!window.FBActivePeriod)return MON_ORIG.solvencyCard(c);
+ const card='<div class="metric fremtind solvency-card"><div class="name">Solvensgrad</div>'+
+   '<div class="value">—</div><div class="prior">Foregående år: —</div><div class="delta neutral"></div></div>';
+ return MON_CARD(c,'solvency',card);
+};
 marketCard=c=>MON_ORIG.marketCard(c); // Latest published market-share period is independent of earnings quarter
 serviceResultCell=c=>{if(MON_QUARTER==='Q2')return MON_ORIG.serviceResultCell(c);const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{};return d.result?d.result+' '+(d.resultUnit||'MNOK'):'—';};
 table=()=>{const original=MON_ORIG.table();if(MON_QUARTER==='Q2')return original;const e=document.createElement('div');e.innerHTML=original;for(const tr of e.querySelectorAll('tbody tr')){const name=(tr.cells[0]?.textContent||'').trim();const c=name==='Frende Holding'?'Frende':name;const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{};const keys=['growth','cr','loss','cost'];keys.forEach((key,i)=>{if(tr.cells[i+1])tr.cells[i+1].innerHTML=d[key]?comparisonCell(c,key,d[key],d[key+'Prev']):'—'});if(tr.cells[5])tr.cells[5].innerHTML=shareCell(c);}return e.innerHTML;};
