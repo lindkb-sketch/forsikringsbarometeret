@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/refresh_report_commentary.py'
       - 'scripts/build_editorial.py'
+      - 'scripts/build_strategic_market.py'
       - 'scripts/synthesize_report_commentary.py'
       - '.github/workflows/quarterly-commentary.yml'
   schedule:
@@ -36,6 +37,7 @@ jobs:
         run: |
           QUARTER_COMMENTARY_BATCH=25 python scripts/refresh_report_commentary.py
           python scripts/build_editorial.py
+          python scripts/build_strategic_market.py
           python scripts/check_quarterly_brief.py
       - name: Commit validated incremental backfill
         run: |
@@ -44,7 +46,7 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --mixed origin/main
-            git add data/quarterly_insights.json data/quarterly_editorial.json
+            git add data/quarterly_insights.json data/quarterly_editorial.json data/strategic_market.json
             if git diff --cached --quiet; then
               echo 'No new verified narrative evidence'
               break
