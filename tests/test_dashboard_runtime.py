@@ -48,6 +48,13 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('const selected=window.FBQuarterly?.period;',html)
   self.assertIn("selected.year!==latest.year||selected.quarter!==latest.quarter)return '';",html)
 
+ def test_publication_dates_heading_is_visible_in_active_calendar(self):
+  html=HTML.read_text()
+  self.assertIn('Publiseringsdatoer for kvartalsrapporter · ',html)
+  self.assertIn('class="mon-calendar-top"',html)
+  self.assertIn('const selected=window.FBQuarterly?.period;',html)
+  self.assertNotIn('.mon-calendar-top h2{display:none',html)
+
  def test_strategic_headlines_require_concrete_events(self):
   html=HTML.read_text()
   self.assertIn('strategicCategories',html)
