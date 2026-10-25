@@ -52,7 +52,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   html=HTML.read_text()
   self.assertIn('strategicCategories',html)
   self.assertIn('strategicNoise',html)
-  self.assertIn('all.filter(r=>strategicCategory(r)).slice(0,3)',html)
+  self.assertIn('all.filter(r=>strategicCategory(r))',html)
   self.assertIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertNotIn('strategicPattern.test(r.headline)',html)
 
@@ -64,6 +64,22 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
   self.assertIn('Selskapets primærkilde',html)
   self.assertIn("!selectedMedia.some(x=>equivalent(x,r))",html)
+
+ def test_automatic_strategy_refresh_and_source_integrity(self):
+  html=HTML.read_text()
+  main=(ROOT/'.github/workflows/update.yml').read_text()
+  commentary=(ROOT/'.github/workflows/quarterly-commentary.yml').read_text()
+  pipeline=(ROOT/'scripts/run_pipeline.py').read_text()
+  self.assertIn("cron: '17,47 * * * *'",main)
+  self.assertIn("cron: '25 3,9,15,21 * * *'",commentary)
+  self.assertIn('python scripts/ingest_media_news.py',main)
+  self.assertIn('refresh_report_commentary.py',pipeline)
+  self.assertIn('build_editorial.py',pipeline)
+  self.assertIn('data/quarterly_editorial.json',main)
+  self.assertIn('data/official_news.json',main)
+  self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json']",html)
+  self.assertIn('setInterval(refresh,300000)',html)
+  self.assertIn('const cards=officialCards+mediaCards;',html)
 
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
