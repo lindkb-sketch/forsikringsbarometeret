@@ -41,6 +41,12 @@ class MediaTests(unittest.TestCase):
   b={'id':'b','headline':'Gjensidige aukar forsikringsprisane etter storbrannen',
      'published_at':'2026-10-23T08:00:00+00:00','source_url':'https://example.org/2'}
   self.assertEqual(len(merge({'items':[a]},[b])['items']),1)
+ def test_same_fire_loss_with_different_wording_not_duplicated(self):
+  a={'id':'fire1','headline':'Storbrannen i Drammen koster Gjensidige 100 millioner',
+     'published_at':'2026-10-23T09:00:00+00:00','source_url':'https://example.org/1'}
+  b={'id':'fire2','headline':'Sommerens storbrann: Gjensidige tar kostnad på 100 millioner',
+     'published_at':'2026-10-23T08:00:00+00:00','source_url':'https://example.org/2'}
+  self.assertEqual(len(merge({'items':[a]},[b])['items']),1)
  def test_old_irrelevant_stories_removed_on_merge(self):
   old={'items':[{'id':'bad','headline':'STOREBRAND ASA: Notice of transaction by PDMR',
                   'published_at':'2026-10-23T08:00:00+00:00','source_url':'https://example.org/bad'}]}
