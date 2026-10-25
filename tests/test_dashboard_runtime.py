@@ -52,18 +52,27 @@ class DashboardRuntimeTests(unittest.TestCase):
   html=HTML.read_text()
   self.assertIn('strategicCategories',html)
   self.assertIn('strategicNoise',html)
-  self.assertIn('all.filter(r=>strategicCategory(r))',html)
-  self.assertIn('Mulig strategisk hendelse basert på overskrift.',html)
+  self.assertNotIn('const mediaCards=groups.strategic.map',html)
+  self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertNotIn('strategicPattern.test(r.headline)',html)
 
  def test_strategy_blends_issuer_sources_with_distinct_media(self):
   html=HTML.read_text()
   self.assertIn("strategicEvidence?.periods?.[selectedQuarter]",html)
   self.assertIn("r?.basis==='rule_verified_issuer_narrative'",html)
-  self.assertIn('const cards=officialCards+mediaCards;',html)
+  self.assertIn('const cards=officialCards;',html)
   self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
   self.assertIn('Strategisk kilde',html)
-  self.assertIn("!selectedMedia.some(x=>equivalent(x,r))",html)
+  self.assertIn('const other=all.slice(0,4);',html)
+  self.assertIn('return {strategic:[],official:selectedOfficial,other};',html)
+
+ def test_strategy_rejects_media_only_unverified_cards(self):
+  html=HTML.read_text()
+  self.assertIn('const cards=officialCards;',html)
+  self.assertIn('Ingen nye dokumenterte strategiske bevegelser',html)
+  self.assertNotIn('const mediaCards=groups.strategic.map',html)
+  self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
+  self.assertIn('Kildeovervåkingen fortsetter automatisk',html)
 
  def test_strategy_is_not_the_quarterly_brief(self):
   html=HTML.read_text()
@@ -97,7 +106,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('data/official_news.json',main)
   self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json','strategic_market.json']",html)
   self.assertIn('setInterval(refresh,300000)',html)
-  self.assertIn('const cards=officialCards+mediaCards;',html)
+  self.assertIn('const cards=officialCards;',html)
 
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
