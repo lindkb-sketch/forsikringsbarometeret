@@ -51,6 +51,10 @@ jobs:
         run: python scripts/update_stock_prices.py
       - name: Integrated quarterly pipeline (fail closed)
         run: python scripts/run_pipeline.py
+      - name: Draft and independently verify optional AI market strategy editorial
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python scripts/ai_strategic_editor.py
       - name: Require current qualitative quarterly brief
         run: python scripts/check_quarterly_brief.py
       - name: Verify all seven insurers reach generated website feed
