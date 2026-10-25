@@ -1597,7 +1597,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       '<p class="mon-cal-empty">Ingen selskaper i denne gruppen.</p>')+'</div></div>';
     return '<section class="mon-calendar" aria-label="Rapportstatus og kommende kvartalsrapporter">'+
       '<div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER · OPPDATERT '+
-      esc((live.updated_at||'').slice(0,10))+'</div><h2>Neste rapporter · '+esc(current)+'</h2></div>'+
+      esc((live.updated_at||'').slice(0,10))+'</div><h2>Publiseringsdatoer for kvartalsrapporter · '+esc(current)+'</h2></div>'+
       '<span class="pill">'+entries.length+' selskaper</span></div>'+
       '<div class="mon-cal-split">'+
       column('Avventer kvartalstall','Har ennå ikke publisert verifiserte '+esc(current)+'-tall.',outstanding,'pending')+
