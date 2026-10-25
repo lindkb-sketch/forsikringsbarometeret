@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from ingest_media_news import parse_rss,merge,relevant
 NOW=dt.datetime(2026,10,20,tzinfo=dt.timezone.utc)
-XML=b"""<rss><channel><item><title>Gjensidige øker forsikringsprisene - E24</title><link>https://news.google.com/rss/articles/abc</link><pubDate>Mon, 19 Oct 2026 10:00:00 GMT</pubDate><source url="https://e24.no">E24</source></item><item><title>Gjensidige</title><link>https://other.com/x</link><pubDate>Mon, 19 Oct 2026 10:00:00 GMT</pubDate><source url="https://unknown.com">Unknown</source></item></channel></rss>"""
+XML="""<rss><channel><item><title>Gjensidige øker forsikringsprisene - E24</title><link>https://news.google.com/rss/articles/abc</link><pubDate>Mon, 19 Oct 2026 10:00:00 GMT</pubDate><source url="https://e24.no">E24</source></item><item><title>Gjensidige</title><link>https://other.com/x</link><pubDate>Mon, 19 Oct 2026 10:00:00 GMT</pubDate><source url="https://unknown.com">Unknown</source></item></channel></rss>""".encode("utf-8")
 class MediaTests(unittest.TestCase):
  def test_trusted_media_only(self):
   rows=parse_rss(XML,NOW);self.assertEqual(len(rows),1);self.assertEqual(rows[0]['publisher'],'E24')
@@ -46,4 +46,4 @@ class MediaTests(unittest.TestCase):
                   'published_at':'2026-10-23T08:00:00+00:00','source_url':'https://example.org/bad'}]}
   self.assertEqual(merge(old,[])['items'],[])
  def test_no_unrelated(self):
-  self.assertEqual(parse_rss(XML.replace(b'Gjensidige øker forsikringsprisene',b'Brod og mat'),NOW),[])
+  self.assertEqual(parse_rss(XML.replace('Gjensidige øker forsikringsprisene'.encode('utf-8'),b'Brod og mat'),NOW),[])
