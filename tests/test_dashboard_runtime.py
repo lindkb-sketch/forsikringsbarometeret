@@ -56,6 +56,15 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertNotIn('strategicPattern.test(r.headline)',html)
 
+ def test_strategy_blends_issuer_sources_with_distinct_media(self):
+  html=HTML.read_text()
+  self.assertIn("currentEditorial()?.brief||[]",html)
+  self.assertIn("r?.basis==='issuer_commentary'",html)
+  self.assertIn('const cards=officialCards+mediaCards;',html)
+  self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
+  self.assertIn('Selskapets primærkilde',html)
+  self.assertIn("!selectedMedia.some(x=>equivalent(x,r))",html)
+
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
   self.assertGreater(len(d['observations']),0)
