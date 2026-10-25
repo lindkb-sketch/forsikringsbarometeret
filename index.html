@@ -1762,7 +1762,12 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    }
    return out;
  };
- const selectedNews=()=>unique(news?.items||[]);
+ // Show only current insurance-sector developments, even before the next
+ // scheduled RSS refresh removes previously saved finance-market noise.
+ const mediaNoise=/aksj|børs|ticker|kursmål|primærinnsider|styremedlem|pd?mr\\b|meldepliktig|notice of transaction|transaction by|kvartalsrapport|kvartalsresultat|utbytte|analytiker|stock|share price/i;
+ const materialNews=/oppkjøp|oppkjøper|kjøper opp|fusjon|sammenslå|overtar|acquisition|merger|takeover|partnerskap|distribusjonsavtale|samarbeidsavtale|bankavtale|strategisk sats|markedsandel|konkurrans|kundeflukt|kundevekst|prisøk|prishopp|prisvekst|forsikringspris|forsikringspremi|premieøk|naturskad|flom|storbrann|ekstremvær|rekordskad|svindel|cyberangrep|dataangrep|store skader|store skade|insurance rates|market share|major claim/i;
+ const selectedNews=()=>unique((news?.items||[]).filter(r=>
+   materialNews.test(r.headline||'')&&!mediaNoise.test(r.headline||'')));
  function newsGroups(){
   const all=selectedNews();
   // Market strategy is independent of quarterly reporting summaries.
