@@ -1765,7 +1765,6 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const selectedNews=()=>unique(news?.items||[]);
  function newsGroups(){
   const all=selectedNews();
-  const mediaSignals=all.filter(r=>strategicCategory(r));
   // Market strategy is independent of quarterly reporting summaries.
   // Only explicitly strategic issuer evidence qualifies, never generic revenue,
   // profitability, claims or pricing commentary copied from the quarterly brief.
@@ -1776,11 +1775,10 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   const selectedOfficial=official.slice(0,2).map(r=>({
     text:r.summary,theme:r.theme,companies:[r.company],period:r.period,source_url:r.source_url,title:r.title
   }));
-  const selectedMedia=mediaSignals.slice(0,Math.max(0,3-selectedOfficial.length));
-  // Strategy and the media panel are separate editorial products. Media not
-  // selected as strategic remains in the media feed, without duplicate cards.
-  const other=all.filter(r=>!selectedMedia.some(x=>equivalent(x,r))).slice(0,4);
-  return {strategic:selectedMedia,official:selectedOfficial,other};
+  // Headlines alone cannot establish strategic consequences.
+  // Keep media coverage in its own feed, never in the strategy cards.
+  const other=all.slice(0,4);
+  return {strategic:[],official:selectedOfficial,other};
  }
  const oldChanges=quarterChanges,oldMedia=mediaNews,oldCompanyNews=companyMediaNews;
  const oldStocks=stockMarketSection;
@@ -1793,18 +1791,12 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     '</span><strong>'+esc(x.title||'Strategisk markedsutvikling')+
     '</strong><p>'+esc(x.text)+'</p><small><a href="'+safeUrl(x.source_url)+
     '" target="_blank" rel="noopener noreferrer">Strategisk kilde ↗</a></small></div>').join('');
-  const mediaCards=groups.strategic.map(x=>
-    '<div class="quarter-changes-item"><span class="qchange-label">Mediesignal · '+
-    esc(x.publisher||'Nyhetskilde')+' · '+esc((x.published_at||'').slice(0,10))+
-    '</span><strong>'+esc(x.headline)+
-    '</strong><p>Mulig strategisk hendelse basert på overskrift. Virkningene er ikke verifisert.</p><small><a href="'+
-    safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les hos utgiver ↗</a></small></div>').join('');
-  const cards=officialCards+mediaCards;
+  const cards=officialCards;
   return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet">'+
    '<div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2>'+
-   '<span class="quarter-changes-sub">Konkurransebildet · dokumenterte strategiske hendelser og mediesignaler</span></div>'+
+   '<span class="quarter-changes-sub">Konkurransebildet · kildebasert markedsanalyse</span></div>'+
    '<div class="quarter-changes-grid strategic-grid">'+
-   (cards||'<div class="quarter-changes-item"><strong>Ingen nye strategiske nyheter</strong><p>Rapport- og nyhetsovervåkingen fortsetter.</p></div>')+
+   (cards||'<div class="quarter-changes-item"><strong>Ingen nye dokumenterte strategiske bevegelser</strong><p>Kildeovervåkingen fortsetter automatisk. Nye analyser publiseres først når grunnlaget er verifisert.</p></div>')+
    '</div></section>';
  };
  mediaNews=function(){
