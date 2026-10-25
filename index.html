@@ -1782,26 +1782,20 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  }
  const oldChanges=quarterChanges,oldMedia=mediaNews,oldCompanyNews=companyMediaNews;
  const oldStocks=stockMarketSection;
- quarterChanges=function(){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldChanges();
-  const groups=newsGroups();
-  const officialCards=groups.official.map(x=>
-    '<div class="quarter-changes-item"><span class="qchange-label">Markedsanalyse · '+
-    esc(x.period||selectedLabel())+' · '+esc((x.companies||[]).join(', '))+
-    '</span><strong>'+esc(x.title||'Strategisk markedsutvikling')+
-    '</strong><p>'+esc(x.text)+'</p><small><a href="'+safeUrl(x.source_url)+
-    '" target="_blank" rel="noopener noreferrer">Strategisk kilde ↗</a></small></div>').join('');
-  const cards=officialCards;
-  return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet">'+
-   '<div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2>'+
-   '<span class="quarter-changes-sub">Konkurransebildet · kildebasert markedsanalyse</span></div>'+
-   '<div class="quarter-changes-grid strategic-grid">'+
-   (cards||'<div class="quarter-changes-item"><strong>Ingen nye dokumenterte strategiske bevegelser</strong><p>Kildeovervåkingen fortsetter automatisk. Nye analyser publiseres først når grunnlaget er verifisert.</p></div>')+
-   '</div></section>';
- };
+ // Unified editorial surface: no separate strategy panel for any quarter.
+ quarterChanges=function(){return '';};
  mediaNews=function(){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldMedia();
-  const cards=newsGroups().other.map(x=>'<a class="media-news-card" href="'+safeUrl(x.source_url)+
+  const groups=newsGroups();
+  const strategic=groups.official.map(x=>
+    '<article class="media-news-card"><div class="media-news-body">'+
+    '<div class="media-news-meta">Markedsinnsikt · '+esc(x.period||selectedLabel())+
+    ' · '+esc((x.companies||[]).join(', '))+'</div>'+
+    '<div class="media-news-title">'+esc(x.title||'Utvikling i markedet')+'</div>'+
+    '<p class="media-news-summary">'+esc(x.text)+'</p>'+
+    '<p><a href="'+safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les primærkilden ↗</a></p>'+
+    '</div></article>').join('');
+  const articles=groups.other.map(x=>
+    '<a class="media-news-card" href="'+safeUrl(x.source_url)+
     '" target="_blank" rel="noopener noreferrer"><div class="media-news-thumb media-editorial-preview">'+
     '<div class="media-preview-publisher">'+esc(x.publisher||'Utgiver')+'</div>'+
     '<div class="media-preview-headline">'+esc(x.headline)+'</div>'+
@@ -1810,9 +1804,10 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     ' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+
     esc(x.headline)+' ↗</div></div></a>').join('');
   return '<section class="panel media-news" id="media-news"><div class="section-head">'+
-   '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Utvalgte nyheter uten gjentatte saker</p></div>'+
-   '</div><div class="media-news-grid">'+
-   (cards||'<p>Ingen flere aktuelle nyheter.</p>')+'</div></section>';
+    '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Nyheter og kildeverifisert innsikt i konkurransebildet</p></div></div>'+
+    '<div class="media-news-grid">'+(strategic+articles||
+    '<p>Ingen aktuelle nyheter eller dokumenterte markedsoppdateringer.</p>')+
+    '</div></section>';
  };
  companyMediaNews=function(c){
   if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldCompanyNews(c);
