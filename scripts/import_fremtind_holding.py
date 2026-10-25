@@ -111,7 +111,7 @@ def extract(blob, url):
         # The issuer prints three date values: this year, last year, year-end.
         solvency=[]
         for line in text.splitlines():
-            match=re.search(r"Solvensmargin\\s+Fremtind\\s+Forsikring\\s+konsern\\s+(.+)$",line,re.I)
+            match=re.search(r"Solvensmargin\s+Fremtind\s+Forsikring\s+konsern\s+(.+)$",line,re.I)
             if not match:continue
             values=re.findall(r"[0-9]{2,3}(?:,[0-9]+)?[ ]*%",match.group(1))
             if len(values)!=3:
