@@ -4,10 +4,19 @@ import datetime as dt,email.utils,hashlib,json,re,unicodedata,urllib.parse,urlli
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'data/official_news.json'
 PUBLISHERS={'dn.no':'DN','e24.no':'E24','finansavisen.no':'Finansavisen','vg.no':'VG','nrk.no':'NRK','nettavisen.no':'Nettavisen','aftenposten.no':'Aftenposten','reuters.com':'Reuters'}
-KEYWORDS=re.compile(r'forsikr|insurance|gjensidige|fremtind|frende|protector|storebrand|tryg|sampo|naturskade|premie',re.I)
+KEYWORDS=re.compile(r'forsikr|insurance|gjensidige|fremtind|frende|protector|storebrand|tryg|sampo|if forsikring|naturskade|premie',re.I)
+# Headlines are signals, not verified article content. Reject equity-market
+# transactions, untitled company pages and earnings-only headlines.
+NOISE=re.compile(r'(?i)aksj|børs|ticker|kursmål|kjøpsanbefal|primærinnsider|pd?mr\\b|meldepliktig|styremedlem|innsidehandel|notice of transaction|transaction by|rapportkalender|kvartalsresultat|kvartalsrapport|resultatfremleggelse|utbytte|stock|share price|analytiker')
+EVENTS=re.compile(r'(?i)oppkjøp|oppkjøper|kjøper opp|fusjon|sammenslå|overtar|oppkjøpsbud|acquisition|merger|takeover|m&a|partnerskap|samarbeidsavtale|distribusjonsavtale|bankavtale|partneravtale|avtale med|strategisk samarbeid|strategisk sats|lanserer|markedsandel|konkurrans|kundeflukt|kundetap|kundevekst|prisøk|prishopp|prisvekst|øker forsikringspris|forsikringspremi|premieøk|naturskad|flom|storbrann|brannskad|ekstremvær|rekordskad|svindel|cyberangrep|dataangrep|erstatningskrav|store skader|store skade|millioner i skade|millionar i skade|insurance rates|market share|distribution deal|major claim|catastroph')
+def relevant(title):
+ return bool(KEYWORDS.search(title) and EVENTS.search(title) and not NOISE.search(title))
 def feed_urls():
- q=' OR '.join('"'+x+'"' for x in ['Gjensidige','Tryg forsikring','Fremtind','Frende','Protector Forsikring','Storebrand','If forsikring','Sampo'])
- return ['https://news.google.com/rss/search?'+urllib.parse.urlencode({'q':'('+q+') when:14d','hl':'no','gl':'NO','ceid':'NO:no'})]
+ queries=[
+  '("Gjensidige" OR "Tryg forsikring" OR "Fremtind" OR "Frende" OR "Protector Forsikring" OR "Storebrand" OR "If forsikring" OR "Sampo") (oppkjøp OR fusjon OR samarbeid OR konkurranse OR markedsandel OR prisøkning OR forsikring) when:7d',
+  '("forsikring" OR "forsikringsbransjen" OR "insurance") (oppkjøp OR partnerskap OR distribusjon OR naturskade OR storbrann OR premieøkning OR konkurranse) when:7d',
+ ]
+ return ['https://news.google.com/rss/search?'+urllib.parse.urlencode({'q':q,'hl':'no','gl':'NO','ceid':'NO:no'}) for q in queries]
 def fetch(url):
  req=urllib.request.Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'})
  with urllib.request.urlopen(req,timeout=30) as resp:
@@ -21,13 +30,14 @@ def parse_rss(payload,now=None):
   title=(item.findtext('title') or '').strip(); src=item.find('source')
   domain=urllib.parse.urlsplit(src.attrib.get('url','')).hostname if src is not None else None
   domain=(domain or '').lower().removeprefix('www.')
-  if domain not in PUBLISHERS or not KEYWORDS.search(title):continue
+  if domain not in PUBLISHERS:continue
   url=(item.findtext('link') or '').strip()
   if not url.startswith('https://'):continue
   try:published=email.utils.parsedate_to_datetime(item.findtext('pubDate')).astimezone(dt.timezone.utc)
   except (ValueError,TypeError,AttributeError):continue
   if not dt.timedelta(0)<=now-published<=dt.timedelta(days=21):continue
   title=re.sub(r'\s+-\s+'+re.escape((src.text or '').strip())+r'$','',title,flags=re.I).strip()
+  if not relevant(title):continue
   key=hashlib.sha256((domain+'|'+re.sub(r'\W+','',title.casefold())).encode()).hexdigest()[:20]
   rows.append({'id':key,'headline':title[:300],'publisher':PUBLISHERS[domain],'published_at':published.isoformat(),'source_url':url,'approved':True,'provenance':'Google News RSS, attributed publisher headline only; full article not verified'})
  return rows
@@ -35,7 +45,7 @@ STOPWORDS={'med','for','til','som','har','fra','etter','det','den','og','nye','s
 def tokens(title):
  text=unicodedata.normalize('NFKD',title.casefold())
  text=''.join(c for c in text if not unicodedata.combining(c))
- text=text.replace('storbrannen','brann').replace('brannen','brann').replace('millionar','millioner')
+ text=text.replace('storbrannen','brann').replace('brannen','brann').replace('millionar','millioner').replace('kosta','kostet').replace('aukar','øker').replace('auka','økte').replace('prisane','prisene').replace('oppkjøpet','oppkjøp').replace('kjøper opp','oppkjøp')
  return set(t for t in re.split(r'[^a-z0-9æøå]+',text) if len(t)>2 and t not in STOPWORDS)
 def issuers(title):
  text=title.casefold()
@@ -52,6 +62,7 @@ def same_story(a,b):
 def merge(existing,new):
  items={x['id']:x for x in existing.get('items',[]) if x.get('id')}
  for x in new:items[x['id']]=x
+ items={k:v for k,v in items.items() if relevant(v.get('headline',''))}
  approved=sorted(items.values(),key=lambda x:x['published_at'],reverse=True)
  distinct=[]
  for row in approved:
