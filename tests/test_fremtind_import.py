@@ -64,6 +64,30 @@ class FremtindImporterTests(unittest.TestCase):
                     self.assertEqual(len(rows), 20)
                 else:
                     self.assertEqual(len(rows), 10)
+    def test_solvens_as_of_date_is_displayable_in_quarter_and_ytd(self):
+        class Page:
+            def __init__(self,t):self.t=t
+            def extract_text(self):return self.t
+        class PDF:
+            pages=[Page("Kvartalsrapport Q3 2026 Fremtind Holding"),Page("Innhold"),
+              Page("Resultatutvikling og nøkkeltall\\nMNOK Q3 2026\\n"
+                   "Inntekter fra forsikringstjenester 6 305 6 047 18 373 17 376 23 510\\n"
+                   "Resultat fra forsikringstjenester 1 704 1 411 4 280 3 111 4 520\\n"
+                   "Skadeprosent, netto etter gjenforsikring (%) 52,5 % 55,2 % 55,1 % 60,1 % 58,8 %\\n"
+                   "Kostnadsprosent (%) 20,5 % 21,4 % 21,6 % 22,0 % 21,9 %\\n"
+                   "Combined ratio, netto etter gjenforsikring (%) 73,0 % 76,7 % 76,7 % 82,1 % 80,8 %\\n"
+                   "Solvensmargin Fremtind Forsikring konsern 189 % 180 % 174 %"),
+              Page("Noter")]
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+        with patch("import_fremtind_holding.pdfplumber.open",return_value=PDF()):
+            rows=extract(b"%PDF-test","https://cdn.sanity.io/files/report.pdf")
+        ratios=[r for r in rows if r["metric"]=="solvency_ratio"]
+        self.assertEqual(len(ratios),4)
+        for period in ("quarter","ytd"):
+            self.assertEqual(next(r["value"] for r in ratios if r["year"]==2026 and r["period_type"]==period),189)
+            self.assertEqual(next(r["value"] for r in ratios if r["year"]==2025 and r["period_type"]==period),180)
+            self.assertTrue(all(r["source_entity"]=="Fremtind Forsikring konsern" for r in ratios))
     def test_non_pdf_rejected(self):
         with self.assertRaises(Exception):
             extract(b"not a pdf", "https://cdn.sanity.io/files/test.pdf")
