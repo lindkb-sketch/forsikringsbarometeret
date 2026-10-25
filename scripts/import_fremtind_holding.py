@@ -26,7 +26,6 @@ FIELDS = {
     "Combined ratio, netto etter gjenforsikring (%)": ("combined_ratio", "percent"),
     # Solvency is imported only if a uniquely labeled row belongs to the same
     # Fremtind Holding key-figures table and verified comparison columns.
-    "Solvensmargin": ("solvency_ratio", "percent"),
 }
 NUM = re.compile(r"^-?\d+(?:[ .,]\d+)*\s*%?$")
 
@@ -107,7 +106,20 @@ def extract(blob, url):
                     rows[metric] = (next(iter(matches)), unit, label)
                 elif len(matches) > 1:
                     raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
-        mandatory={metric for label,(metric,unit) in FIELDS.items() if metric != "solvency_ratio"}
+        # Solvency is a point-in-time ratio in the YTD/date columns, not
+        # an isolated-quarter flow. Its legal entity is Fremtind Forsikring.
+        # The issuer prints three date values: this year, last year, year-end.
+        solvency=[]
+        for line in text.splitlines():
+            match=re.search(r"Solvensmargin\\s+Fremtind\\s+Forsikring\\s+konsern\\s+(.+)$",line,re.I)
+            if not match:continue
+            values=re.findall(r"(?<!\\d)\\d{2,3}(?:,\\d+)?\\s*%",match.group(1))
+            if len(values)!=3:
+                raise ValueError("Ambiguous Fremtind Forsikring solvency date columns")
+            solvency.append([number(v) for v in values])
+        if len(solvency)>1:
+            raise ValueError("Duplicate Fremtind solvency source rows")
+        mandatory={metric for label,(metric,unit) in FIELDS.items()}
         if not mandatory.issubset(rows):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # Verify every comparison column too. The issuer's standard table
@@ -141,6 +153,20 @@ def extract(blob, url):
                         if observation_year != year else ""),
                     "source_sha256": digest,
                 })
+        if solvency:
+            for period in ("quarter","ytd"):
+                for obs_year,value in ((year,solvency[0][0]),(year-1,solvency[0][1])):
+                    result.append({
+                        "company":"Fremtind","year":obs_year,"quarter":q,
+                        "scope":"group","period_type":period,
+                        "metric":"solvency_ratio","value":value,"unit":"percent",
+                        "status":"reported","source_type":"official_quarterly_report",
+                        "source_url":url,"source_page":page_index+1,
+                        "source_entity":"Fremtind Forsikring konsern",
+                        "source_document_period":f"Q{q} {year}",
+                        "source_definition":"Solvensmargin per rapporteringsdato (identisk i kvartals- og HIÅ-visning)",
+                        "source_sha256":digest,
+                    })
         return result
 
 def run():
