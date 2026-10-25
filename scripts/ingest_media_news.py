@@ -61,7 +61,7 @@ def same_story(a,b):
  if overlap>=3 and overlap/min(len(x),len(y))>=0.7:return True
  # Different editorial wording about the same insurer, insured event and
  # monetary impact must not occupy two cards (including Bokmål/Nynorsk).
- important=lambda t:set(re.findall(r'\\b\\d+(?:[.,]\\d+)?\\b',t))
+ important=lambda t:set(re.findall(r'[0-9]+(?:[.,][0-9]+)?',t))
  numbers_a,numbers_b=important(a['headline']),important(b['headline'])
  event_a=bool(re.search(r'brann|skad|flom|storm',a['headline'],re.I))
  event_b=bool(re.search(r'brann|skad|flom|storm',b['headline'],re.I))
