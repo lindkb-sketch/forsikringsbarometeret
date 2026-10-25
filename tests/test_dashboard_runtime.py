@@ -59,7 +59,7 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_strategy_blends_issuer_sources_with_distinct_media(self):
   html=HTML.read_text()
   self.assertIn("strategicEvidence?.periods?.[selectedQuarter]",html)
-  self.assertIn("!briefTexts.has(r.text.trim())",html)
+  self.assertIn("r?.basis==='rule_verified_issuer_narrative'",html)
   self.assertIn('const cards=officialCards+mediaCards;',html)
   self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
   self.assertIn('Strategisk kilde',html)
@@ -69,17 +69,19 @@ class DashboardRuntimeTests(unittest.TestCase):
   html=HTML.read_text()
   self.assertIn('strategicEvidence?.periods?.[selectedQuarter]',html)
   self.assertIn('!briefTexts.has(r.text.trim())',html)
-  self.assertIn('competition|strategy|distribution|market_share|partnership|acquisition',html)
+  self.assertIn('data/strategic_market.json', (ROOT/'.github/workflows/update.yml').read_text())
   self.assertIn('Markedsanalyse · ',html)
   self.assertNotIn('const official=(currentEditorial()?.brief||[]).filter',html)
 
- def test_strategy_rewrites_source_excerpts_as_editorial_prose(self):
+ def test_strategy_uses_standalone_verified_editorial(self):
   html=HTML.read_text()
-  self.assertIn('const editorialStrategyText=r=>',html)
-  self.assertIn('Sterk konkurranse og fortsatt lønnsomhetsfokus',html)
-  self.assertIn('editorialStrategyText(r)&&',html)
-  self.assertIn('text:editorialStrategyText(r)',html)
-  self.assertIn('Source excerpts are evidence, not reader-facing copy',html)
+  generator=(ROOT/'scripts/build_strategic_market.py').read_text()
+  self.assertIn("strategic_market.json",html)
+  self.assertIn("rule_verified_issuer_narrative",html)
+  self.assertIn("vetted=synthesize(raw)",generator)
+  self.assertIn("source_sha256",generator)
+  self.assertNotIn("editorialStrategyText",html)
+  self.assertIn("build_strategic_market.py",(ROOT/'scripts/run_pipeline.py').read_text())
 
  def test_automatic_strategy_refresh_and_source_integrity(self):
   html=HTML.read_text()
@@ -93,7 +95,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('build_editorial.py',pipeline)
   self.assertIn('data/quarterly_editorial.json',main)
   self.assertIn('data/official_news.json',main)
-  self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json','quarterly_insights.json']",html)
+  self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json','strategic_market.json']",html)
   self.assertIn('setInterval(refresh,300000)',html)
   self.assertIn('const cards=officialCards+mediaCards;',html)
 
