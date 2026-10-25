@@ -26,7 +26,7 @@ FIELDS = {
     "Combined ratio, netto etter gjenforsikring (%)": ("combined_ratio", "percent"),
     # Solvency is imported only if a uniquely labeled row belongs to the same
     # Fremtind Holding key-figures table and verified comparison columns.
-    "Solvensmargin (%)": ("solvency_ratio", "percent"),
+    "Solvensmargin": ("solvency_ratio", "percent"),
 }
 NUM = re.compile(r"^-?\d+(?:[ .,]\d+)*\s*%?$")
 
@@ -78,6 +78,9 @@ def extract(blob, url):
                 if at < 0 or (at > 0 and line[at-1].isalnum()):
                     continue
                 rest = line[at + len(label):].strip()
+                if metric == "solvency_ratio":
+                    # Issuer captions may include a percent sign after the name.
+                    rest = re.sub(r"^\\s*(?:\\(%\\)|%|:)", "", rest).strip()
                 rest = re.split(r"(?<=\d)\s+(?=[A-Za-zÆØÅæøå])", rest, maxsplit=1)[0]
                 tokens = rest.replace("\u00a0", " ").replace(" %", "%").split()
                 def partitions(start, values):
@@ -94,11 +97,16 @@ def extract(blob, url):
                             continue
                         yield from partitions(stop, values + [value])
                 matches = set(partitions(0, []))
+                if metric == "solvency_ratio" and not matches:
+                    # Some report layouts show just current and comparable year.
+                    # Never infer intervening quarters from these two figures.
+                    solvens_numbers = [number(t.strip("%")) for t in rest.split() if re.fullmatch(r"-?\\d+(?:,\\d+)?%?", t)]
+                    if len(solvens_numbers) == 2:
+                        matches = {tuple(solvens_numbers)}
                 if len(matches) == 1:
                     rows[metric] = (next(iter(matches)), unit, label)
                 elif len(matches) > 1:
                     raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
-        required=set(FIELDS.values())  # parse all known issuer rows, but solvency may be elsewhere in older PDFs
         mandatory=set(FIELDS)-{"Solvensmargin (%)"}
         if not mandatory.issubset(rows):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
@@ -118,6 +126,8 @@ def extract(blob, url):
         result = []
         for column, period, observation_year in selected_columns:
             for metric, (values, unit, label) in rows.items():
+                if metric == "solvency_ratio" and len(values) == 2 and column >= 2:
+                    continue
                 result.append({
                     "company": "Fremtind", "year": observation_year, "quarter": q,
                     "scope": "group", "period_type": period,
