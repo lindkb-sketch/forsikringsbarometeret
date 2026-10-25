@@ -116,11 +116,29 @@
             data[k+'Prev']=fmt(prior.value,PERCENT.has(k));
           }
         }
+        // Growth is a year-over-year rate for the selected reporting period.
+        // Prefer explicitly reported growth if an issuer supplied a validated
+        // observation; otherwise compute from same-scope comparable revenue.
+        const reportedGrowth=quote(name,type,year,quarter,'insurance_revenue_growth');
+        const priorGrowth=quote(name,type,year-1,quarter,'insurance_revenue_growth');
+        if(reportedGrowth){
+          data.growth=fmt(reportedGrowth.value,true);
+          data.growthBasis='Rapportert i selskapets kvartalsrapport';
+        }
+        if(priorGrowth)data.growthPrev=fmt(priorGrowth.value,true);
         const income=quote(name,type,year,quarter,'insurance_revenue');
         const previous=quote(name,type,year-1,quarter,'insurance_revenue');
-        if(income&&previous&&previous.value>0&&isSameBasis(income,previous)){
+        if(!reportedGrowth&&income&&previous&&previous.value>0&&isSameBasis(income,previous)){
           data.growth=fmt((income.value/previous.value-1)*100,true);
           data.growthBasis='Beregnet fra kildeverifiserte, sammenlignbare inntekter';
+        }
+        if(!data.growthPrev){
+          const last=quote(name,type,year-1,quarter,'insurance_revenue');
+          const beforeLast=quote(name,type,year-2,quarter,'insurance_revenue');
+          if(last&&beforeLast&&beforeLast.value>0&&isSameBasis(last,beforeLast))
+            data.growthPrev=fmt((last.value/beforeLast.value-1)*100,true);
+        }
+        if(false){
         }
         if(Object.keys(data).length)bucket[name]=data;
       }
