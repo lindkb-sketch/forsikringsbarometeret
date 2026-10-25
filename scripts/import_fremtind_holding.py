@@ -107,7 +107,7 @@ def extract(blob, url):
                     rows[metric] = (next(iter(matches)), unit, label)
                 elif len(matches) > 1:
                     raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
-        mandatory=set(FIELDS)-{"Solvensmargin (%)"}
+        mandatory=set(FIELDS)-{"Solvensmargin"}
         if not mandatory.issubset(rows):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # Verify every comparison column too. The issuer's standard table
