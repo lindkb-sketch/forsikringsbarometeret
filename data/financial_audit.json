@@ -123,24 +123,8 @@
     {
       "company": "Fremtind",
       "scope": "group",
-      "period_type": "quarter",
-      "metric": "solvency_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Fremtind",
-      "scope": "group",
       "period_type": "ytd",
       "metric": "return_on_equity",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Fremtind",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "solvency_ratio",
       "year": 2026,
       "quarter": 2
     },
@@ -899,7 +883,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 406,
+  "observation_count": 418,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1385,7 +1369,7 @@
           "loss_ratio": "reported",
           "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
-          "solvency_ratio": "missing_or_not_applicable"
+          "solvency_ratio": "reported"
         },
         "ytd": {
           "insurance_revenue": "reported",
@@ -1394,7 +1378,7 @@
           "loss_ratio": "reported",
           "expense_ratio": "reported",
           "return_on_equity": "missing_or_not_applicable",
-          "solvency_ratio": "missing_or_not_applicable"
+          "solvency_ratio": "reported"
         }
       }
     },
