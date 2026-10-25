@@ -1753,7 +1753,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   const wa=words(a.headline),wb=words(b.headline);
   const n=wa.filter(w=>wb.includes(w)).length;
   if(n>=3&&n/Math.min(wa.length||1,wb.length||1)>=.7)return true;
-  const amounts=t=>[...t.matchAll(/\\b\\d+(?:[.,]\\d+)?\\b/g)].map(m=>m[0]).sort().join(',');
+  const amounts=t=>[...t.matchAll(/[0-9]+(?:[.,][0-9]+)?/g)].map(m=>m[0]).sort().join(',');
   const sameEvent=/brann|skad|flom|storm/i.test(a.headline)&&/brann|skad|flom|storm/i.test(b.headline);
   return left.size>0&&left.size===right.size&&[...left].every(x=>right.has(x))&&
     sameEvent&&!!amounts(a.headline)&&amounts(a.headline)===amounts(b.headline);
