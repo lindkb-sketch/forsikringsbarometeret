@@ -70,8 +70,16 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('strategicEvidence?.periods?.[selectedQuarter]',html)
   self.assertIn('!briefTexts.has(r.text.trim())',html)
   self.assertIn('competition|strategy|distribution|market_share|partnership|acquisition',html)
-  self.assertIn('Strategisk selskapsuttalelse',html)
+  self.assertIn('Markedsanalyse · ',html)
   self.assertNotIn('const official=(currentEditorial()?.brief||[]).filter',html)
+
+ def test_strategy_rewrites_source_excerpts_as_editorial_prose(self):
+  html=HTML.read_text()
+  self.assertIn('const editorialStrategyText=r=>',html)
+  self.assertIn('Sterk konkurranse og fortsatt lønnsomhetsfokus',html)
+  self.assertIn('editorialStrategyText(r)&&',html)
+  self.assertIn('text:editorialStrategyText(r)',html)
+  self.assertIn('Source excerpts are evidence, not reader-facing copy',html)
 
  def test_automatic_strategy_refresh_and_source_integrity(self):
   html=HTML.read_text()
