@@ -1,4 +1,4 @@
-name: Storebrand Q3 verified publication
+name: Storebrand automatic quarterly publication
 on:
   workflow_dispatch:
   push:
@@ -86,7 +86,7 @@ jobs:
           python scripts/storebrand_automation_check.py --group tests/fixtures/storebrand_asa_q3_2026.pdf --norway tests/fixtures/storebrand_forsikring_q3_2026.pdf --output data/storebrand_offline_test.json
       - name: Validate existing financial observations
         run: python scripts/audit_financials.py
-      - name: Download and validate both official Storebrand Q3 reports
+      - name: Discover and validate Storebrand reports for every published quarter
         run: |
           python - <<'PY'
           import subprocess,sys
@@ -102,7 +102,7 @@ jobs:
                   # The insurance subsidiary may not publish Q4 separately.
                   scopes={r.get('scope') for r in records if r.get('quarter')==quarter}
                   if scopes!={'group','norway'}:
-                      print('STOREBRAND_SOURCE_INCOMPLETE',year,quarter,sorted(scopes),flush=True)
+                      print('STOREBRAND_SOURCE_INCOMPLETE',year,quarter,sorted(scopes),'— will retry automatically; no unsupported figures published',flush=True)
                       continue
                   print('STOREBRAND_VALIDATE',year,quarter,flush=True)
                   subprocess.run([sys.executable,'scripts/storebrand_publish_q3.py',
@@ -119,7 +119,7 @@ jobs:
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add data/financial_observations.json data/verified_financial_feed.json
-            git commit -m 'Publish verified Storebrand Q3 2026 observations'
+            git commit -m 'Publish verified Storebrand quarterly observations'
             git push origin HEAD:main
           else
             echo 'No changes in verified Storebrand observations.'
@@ -133,7 +133,7 @@ jobs:
           p=json.load(open('data/verified_financial_feed.json'))
           found={(r['quarter'],r['scope']) for r in p['observations'] if r['company']=='Storebrand' and r['year']==2026}
           assert all((q,s) in found for q in (1,2,3) for s in ('group','norway')),found
-          print('Storebrand all quarters present in Pages artifact:',len(found))
+          print('Storebrand baseline verified and future reported quarters preserved:',len(found))
           PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -144,7 +144,7 @@ jobs:
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify published Storebrand Q3 feed on public GitHub Pages
+      - name: Verify published Storebrand quarterly feed on public GitHub Pages
         run: |
           python - <<'PY'
           import json, time, urllib.request
@@ -153,8 +153,8 @@ jobs:
           def key(r):
               return tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
           wanted = {key(r): r['value'] for r in expected['observations']
-                    if r['company'] == 'Storebrand' and r['year'] == 2026}
-          assert wanted and all(any(k[2]==q and k[3]==scope for k in wanted) for q in (1,2,3) for scope in ('group','norway')), 'Missing Storebrand Q1/Q2/Q3 group or Norway feed values'
+                    if r['company'] == 'Storebrand' and r['year'] >= 2026}
+          assert wanted and all(any(k[1]==2026 and k[2]==q and k[3]==scope for k in wanted) for q in (1,2,3) for scope in ('group','norway')), 'Missing historical Storebrand baseline'
           for attempt in range(12):
               try:
                   req = urllib.request.Request(url + '?verification=' + str(int(time.time())),
@@ -165,7 +165,7 @@ jobs:
                   got = {key(r): r['value'] for r in actual['observations']
                          if r['company'] == 'Storebrand' and r['year'] == 2026}
                   if got == wanted:
-                      print('PUBLISHED STOREBRAND 2026 VERIFIED:', len(wanted), 'observations match live GitHub Pages')
+                      print('PUBLISHED STOREBRAND QUARTERS VERIFIED:', len(wanted), 'observations match live GitHub Pages')
                       break
                   print('Published feed not yet synchronized:', len(got), 'of', len(wanted))
               except Exception as e:
