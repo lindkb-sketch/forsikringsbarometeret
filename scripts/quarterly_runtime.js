@@ -138,8 +138,6 @@
           if(last&&beforeLast&&beforeLast.value>0&&isSameBasis(last,beforeLast))
             data.growthPrev=fmt((last.value/beforeLast.value-1)*100,true);
         }
-        if(false){
-        }
         if(Object.keys(data).length)bucket[name]=data;
       }
       const group=financialRows.filter(r=>r.company===name&&r.period_type==='quarter');
