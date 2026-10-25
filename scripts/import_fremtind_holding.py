@@ -113,7 +113,7 @@ def extract(blob, url):
         for line in text.splitlines():
             match=re.search(r"Solvensmargin\\s+Fremtind\\s+Forsikring\\s+konsern\\s+(.+)$",line,re.I)
             if not match:continue
-            values=re.findall(r"(?<!\\d)\\d{2,3}(?:,\\d+)?\\s*%",match.group(1))
+            values=re.findall(r"[0-9]{2,3}(?:,[0-9]+)?[ ]*%",match.group(1))
             if len(values)!=3:
                 raise ValueError("Ambiguous Fremtind Forsikring solvency date columns")
             solvency.append([number(v) for v in values])
