@@ -1721,7 +1721,20 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const currentEditorial=()=>editorial?.periods?.[selectedLabel()]||
     (editorial?.period===selectedLabel()?editorial:null);
  const src=r=>r?.source_url?'<a href="'+safeUrl(r.source_url)+'" target="_blank" rel="noopener noreferrer">Rapport ↗</a>':'';
- const strategicPattern=/partner|samarbeid|oppkjøp|fusjon|distribusjon|avtale|markedsandel|strategi|forsikringspris|premie|konkurran|overtar|acquisition|partnership/i;
+ // Headline-only strategic signal screening. Neither article text nor consequences are verified.
+ const strategicCategories=[
+  ['Oppkjøp og konsolidering',/oppkjøp|oppkjøper|kjøper opp|overtakelse|overtar|fusjon|sammenslåing|porteføljeovertak|acquisition|merger/i],
+  ['Distribusjon og partnerskap',/partneravtale|partnerskap|samarbeidsavtale|distribusjonsavtale|bankavtale|forhandleravtale|inngår avtale|fornyer avtale|strategisk samarbeid|partnership/i],
+  ['Markedsandeler og konkurranse',/markedsandel|kundevekst|kundebestand|kundeflukt|netto tilvekst|prisstrategi|premieøkning|øker forsikringsprisene|konkurranseposisjon/i],
+  ['Strategiske satsinger',/lanserer|nytt forsikringsprodukt|ny forsikringsløsning|digital satsing|strategisk satsing|omorganisering|restrukturering/i]
+ ];
+ const strategicNoise=/meldepliktig handel|primærinnsider|styremedlem.*aksj|børskommentar|aksjekurs|kursmål|analytiker|teknisk analyse|oppgang i vente|aksjer å kjøpe|utbytte|kvartalsresultat|kvartalsrapport|resultatfremleggelse/i;
+ const strategicCategory=r=>{
+   const headline=String(r?.headline||'');
+   if(!r?.approved||strategicNoise.test(headline)||
+      !/gjensidige|fremtind|frende|protector|storebrand|tryg|sampo|forsikr|insurance/i.test(headline))return null;
+   return strategicCategories.find(([name,pattern])=>pattern.test(headline))?.[0]||null;
+ };
  const insignificant=new Set('i på til og med for av etter fra som har det den de en et er om nye ny seg sine i år forsikring forsikrings'.split(' '));
  const words=title=>[...new Set(String(title||'').toLowerCase()
    .normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
@@ -1752,7 +1765,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const selectedNews=()=>unique(news?.items||[]);
  function newsGroups(){
   const all=selectedNews();
-  const strategic=all.filter(r=>strategicPattern.test(r.headline)).slice(0,3);
+  const strategic=all.filter(r=>strategicCategory(r)).slice(0,3);
   const other=all.filter(r=>!strategic.some(x=>equivalent(x,r))).slice(0,4);
   return {strategic,other};
  }
@@ -1762,8 +1775,8 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldChanges();
   const cards=newsGroups().strategic.map(x=>
     '<div class="quarter-changes-item"><span class="qchange-label">'+esc(x.publisher||'Nyhetskilde')+
-    ' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+esc(x.headline)+
-    '</strong><p>Strategisk relevant nyhet fra uavhengig utgiver.</p><small><a href="'+
+    ' · '+esc((x.published_at||'').slice(0,10))+' · '+esc(strategicCategory(x))+'</span><strong>'+esc(x.headline)+
+    '</strong><p>Mulig strategisk hendelse basert på overskrift. Virkningene er ikke verifisert.</p><small><a href="'+
     safeUrl(x.source_url)+'" target="_blank" rel="noopener noreferrer">Les hos utgiver ↗</a></small></div>').join('');
   return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet">'+
    '<div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2>'+
