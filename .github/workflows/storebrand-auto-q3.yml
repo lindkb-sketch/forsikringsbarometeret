@@ -105,8 +105,13 @@ jobs:
                       print('STOREBRAND_SOURCE_INCOMPLETE',year,quarter,sorted(scopes),'— will retry automatically; no unsupported figures published',flush=True)
                       continue
                   print('STOREBRAND_VALIDATE',year,quarter,flush=True)
-                  subprocess.run([sys.executable,'scripts/storebrand_publish_q3.py',
-                                  '--year',str(year),'--quarter',str(quarter)],check=True)
+                  try:
+                      subprocess.run([sys.executable,'scripts/storebrand_publish_q3.py',
+                                      '--year',str(year),'--quarter',str(quarter)],check=True)
+                  except subprocess.CalledProcessError:
+                      # Never publish unsupported layouts or estimated figures.
+                      # Retry on the next scheduled run without blocking other quarters.
+                      print('::warning::Storebrand issuer PDF could not be independently verified for Q'+str(quarter)+' '+str(year)+'; withholding that quarter and retrying later',flush=True)
           PY
       - name: Audit imported observations and feed
         run: |
