@@ -24,6 +24,9 @@ FIELDS = {
     "Skadeprosent, netto etter gjenforsikring (%)": ("loss_ratio", "percent"),
     "Kostnadsprosent (%)": ("expense_ratio", "percent"),
     "Combined ratio, netto etter gjenforsikring (%)": ("combined_ratio", "percent"),
+    # Solvency is imported only if a uniquely labeled row belongs to the same
+    # Fremtind Holding key-figures table and verified comparison columns.
+    "Solvensmargin (%)": ("solvency_ratio", "percent"),
 }
 NUM = re.compile(r"^-?\d+(?:[ .,]\d+)*\s*%?$")
 
@@ -95,7 +98,9 @@ def extract(blob, url):
                     rows[metric] = (next(iter(matches)), unit, label)
                 elif len(matches) > 1:
                     raise ValueError(f"Ambiguous financial columns for {metric}: {sorted(matches)}")
-        if len(rows) != len(FIELDS):
+        required=set(FIELDS.values())  # parse all known issuer rows, but solvency may be elsewhere in older PDFs
+        mandatory=set(FIELDS)-{"Solvensmargin (%)"}
+        if not mandatory.issubset(rows):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # Verify every comparison column too. The issuer's standard table
         # order is current quarter, prior-year quarter, current YTD,
