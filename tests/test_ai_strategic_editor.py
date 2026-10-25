@@ -26,6 +26,7 @@ class StrategyHybridTests(unittest.TestCase):
    self.assertEqual(ai.run(Path('/nonexistent'),Path('/nonexistent')),0)
  def test_workflow_wires_ai(self):
   workflow=(Path(__file__).resolve().parents[1]/'.github/workflows/update.yml').read_text()
-  self.assertIn('python scripts/ai_strategic_editor.py',workflow)
-  self.assertIn('secrets.OPENAI_API_KEY',workflow)
+  self.assertNotIn('python scripts/ai_strategic_editor.py',workflow)
+  self.assertNotIn('secrets.OPENAI_API_KEY',workflow)
+  self.assertIn('build_strategic_market.py',(Path(__file__).resolve().parents[1]/'scripts/run_pipeline.py').read_text())
 if __name__=='__main__':unittest.main()
