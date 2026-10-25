@@ -244,7 +244,7 @@ async function main(){
     const next=current?.quarter===4?'Q1 '+(current.year+1):
       'Q'+(current.quarter+1)+' '+current.year;
     return {next,heading:html.includes('Neste rapporter · '+next),
-      currentHeading:html.includes('Neste rapporter · Q'+current.quarter+' '+current.year),
+      currentHeading:html.includes('Publiseringsdatoer for kvartalsrapporter · Q'+current.quarter+' '+current.year),
       columns:html.includes('data-calendar-group="pending"')&&
         html.includes('data-calendar-group="reported"')};
   });
