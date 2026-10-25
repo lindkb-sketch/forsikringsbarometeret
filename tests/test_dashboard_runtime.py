@@ -48,6 +48,14 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('const selected=window.FBQuarterly?.period;',html)
   self.assertIn("selected.year!==latest.year||selected.quarter!==latest.quarter)return '';",html)
 
+ def test_strategic_headlines_require_concrete_events(self):
+  html=HTML.read_text()
+  self.assertIn('strategicCategories',html)
+  self.assertIn('strategicNoise',html)
+  self.assertIn('all.filter(r=>strategicCategory(r)).slice(0,3)',html)
+  self.assertIn('Mulig strategisk hendelse basert på overskrift.',html)
+  self.assertNotIn('strategicPattern.test(r.headline)',html)
+
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
   self.assertGreater(len(d['observations']),0)
