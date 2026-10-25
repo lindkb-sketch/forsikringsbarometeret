@@ -1725,7 +1725,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const strategicCategories=[
   ['Oppkjøp og konsolidering',/oppkjøp|oppkjøper|kjøper opp|overtakelse|overtar|fusjon|sammenslåing|porteføljeovertak|acquisition|merger/i],
   ['Distribusjon og partnerskap',/partneravtale|partnerskap|samarbeidsavtale|distribusjonsavtale|bankavtale|forhandleravtale|inngår avtale|fornyer avtale|strategisk samarbeid|partnership/i],
-  ['Markedsandeler og konkurranse',/markedsandel|kundevekst|kundebestand|kundeflukt|netto tilvekst|prisstrategi|premieøkning|øker forsikringsprisene|konkurranseposisjon/i],
+  ['Kundeutvikling og priskonkurranse',/markedsandel|kundevekst|kundebestand|kundeantall|antall kunder|kundeflukt|kundetap|netto.?tilvekst|nytegning|avgang|fornyelsesgrad|prisstrategi|premieøkning|prisøkning|prisstigning|prisvekst|prisjustering|prispress|priskonkurranse|lavere priser|øker forsikringsprisene|konkurranseposisjon/i],
   ['Strategiske satsinger',/lanserer|nytt forsikringsprodukt|ny forsikringsløsning|digital satsing|strategisk satsing|omorganisering|restrukturering/i]
  ];
  const strategicNoise=/meldepliktig handel|primærinnsider|styremedlem.*aksj|børskommentar|aksjekurs|kursmål|analytiker|teknisk analyse|oppgang i vente|aksjer å kjøpe|utbytte|kvartalsresultat|kvartalsrapport|resultatfremleggelse/i;
@@ -1769,8 +1769,10 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   // Official issuer commentary takes priority: the RSS feed remains independent.
   const official=(currentEditorial()?.brief||[]).filter(r=>
     r?.basis==='issuer_commentary'&&r.source_url&&/^https:\/\//.test(r.source_url)&&
-    /growth|strategy|competition|distribution|market.share|pricing|partnership|acquisition/i.test(r.theme||''));
-  const selectedOfficial=official.slice(0,2);
+    /growth|strategy|competition|distribution|market.share|pricing|partnership|acquisition|customer|retention|churn|volume/i.test(r.theme||''));
+  // Give sourced customer-count, retention and pricing commentary priority, without inferring volumes from premium revenue.
+  const customerPricing=/kundeantall|antall kunder|kundebestand|kundetilvekst|netto.?tilvekst|nytegning|fornyelse|kundeflukt|kundetap|prisvekst|prisøkning|prisjustering|pristiltak|prispress|prising|premieøkning|customer|retention|churn|pricing/i;
+  const selectedOfficial=official.slice().sort((a,b)=>Number(customerPricing.test(b.text||''))-Number(customerPricing.test(a.text||''))).slice(0,2);
   const selectedMedia=mediaSignals.slice(0,Math.max(0,3-selectedOfficial.length));
   // Strategy and the media panel are separate editorial products. Media not
   // selected as strategic remains in the media feed, without duplicate cards.
@@ -1786,7 +1788,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     '<div class="quarter-changes-item"><span class="qchange-label">Kvartalskommentar · '+
     esc(x.period||selectedLabel())+' · '+esc((x.companies||[]).join(', '))+
     '</span><strong>'+esc(({growth:'Prising og vekst',strategy:'Strategi',
-      competition:'Konkurranse',distribution:'Distribusjon',pricing:'Prising',
+      competition:'Konkurranse',distribution:'Distribusjon',pricing:'Prising',customer:'Kundeutvikling',retention:'Kundebevaring',
       market_share:'Markedsandeler'})[x.theme]||'Strategisk kvartalsutvikling')+
     '</strong><p>'+esc(x.text)+'</p><small><a href="'+safeUrl(x.source_url)+
     '" target="_blank" rel="noopener noreferrer">Selskapets primærkilde ↗</a></small></div>').join('');
@@ -1799,7 +1801,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   const cards=officialCards+mediaCards;
   return '<section class="quarter-changes" aria-label="Strategiske bevegelser i markedet">'+
    '<div class="quarter-changes-header"><h2>Strategiske bevegelser i markedet</h2>'+
-   '<span class="quarter-changes-sub">Kvartalskommentarer og utvalgte markedsnyheter · kildebasert</span></div>'+
+   '<span class="quarter-changes-sub">Kundeutvikling, prising og konkurranse · kildebasert</span></div>'+
    '<div class="quarter-changes-grid strategic-grid">'+
    (cards||'<div class="quarter-changes-item"><strong>Ingen nye strategiske nyheter</strong><p>Rapport- og nyhetsovervåkingen fortsetter.</p></div>')+
    '</div></section>';
