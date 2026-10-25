@@ -68,7 +68,7 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_strategy_is_not_the_quarterly_brief(self):
   html=HTML.read_text()
   self.assertIn('strategicEvidence?.periods?.[selectedQuarter]',html)
-  self.assertIn('!briefTexts.has(r.text.trim())',html)
+  self.assertIn("r?.basis==='rule_verified_issuer_narrative'",html)
   self.assertIn('data/strategic_market.json', (ROOT/'.github/workflows/update.yml').read_text())
   self.assertIn('Markedsanalyse · ',html)
   self.assertNotIn('const official=(currentEditorial()?.brief||[]).filter',html)
