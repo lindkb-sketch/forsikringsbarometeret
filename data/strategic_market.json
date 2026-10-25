@@ -1,0 +1,32 @@
+{
+  "periods": {
+    "Q3 2026": [
+      {
+        "title": "Konkurransebildet",
+        "summary": "Sterk konkurranse og fortsatt lønnsomhetsfokus ventes å prege det norske forsikringsmarkedet. Dette er Fremtinds vurdering av konkurransebildet, ikke en bekreftet prognose for hele markedet.",
+        "company": "Fremtind",
+        "period": "Q3 2026",
+        "theme": "competition",
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_page": 11,
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+        "basis": "rule_verified_issuer_narrative"
+      }
+    ],
+    "Q2 2026": [
+      {
+        "title": "Konkurransebildet",
+        "summary": "Sterk konkurranse og fortsatt lønnsomhetsfokus ventes å prege det norske forsikringsmarkedet. Dette er Fremtinds vurdering av konkurransebildet, ikke en bekreftet prognose for hele markedet.",
+        "company": "Fremtind",
+        "period": "Q2 2026",
+        "theme": "competition",
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+        "source_page": 10,
+        "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+        "basis": "rule_verified_issuer_narrative"
+      }
+    ],
+    "Q1 2026": []
+  },
+  "policy": "Exact source-verified issuer excerpts only; no copied quarterly briefing and no inferred outcomes"
+}
