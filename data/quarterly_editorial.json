@@ -1357,6 +1357,12 @@
       "publisher": "Finansavisen"
     },
     {
+      "headline": "Storebrand: Konsernresultat før amortisering 1.517M i 3.KV (ventet 1.593)",
+      "published_at": "2026-10-21T07:10:41+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPVFIwMG1kdzNWLVlCLTU2d1I2eHpsOVhSU21BY1JKR0FFT09xQkdPQlFZTFdoZGQwRmJFSWk2SVlYb2doeVNMaXhEV1ZoWnNGMUg3M3ZVZzU1dWlxa1oyb21vWFRFVGtRcE1TaDBzNDRjYmJPSEZ4dVhXcGh5YTlvNThiQUJyUUdhNmpNTjhMbGxYZ0UzbjgxcnJxTHZpNWI5U0RDdGJpbnljYkdGejRxSmtKNDFsYkNmcEtkWGJiOA?oc=5",
+      "publisher": "Finansavisen"
+    },
+    {
       "headline": "Storebrand tjente 1,1 milliarder i tredje kvartal",
       "published_at": "2026-10-21T05:37:31+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQM0xxZjVOU0xzblJ1TVJVeWtUZndidmVrZElZcU5QdzhDOHJNZlg5MjE1Y1Axakhmdm45RWVrdExWOFk0bExWR2F1c0VrYmlFYTlLY2g2RkNldDFaZFotb2NPcmt0RDdRdmRRUnY1cElwYkxHSVVyam04U1pWdjc1RlNBbWx5Q00zSFNmVFFPSTRxOW92MThxaVM2WnFPVWc?oc=5",
@@ -1372,12 +1378,6 @@
       "headline": "STOREBRAND: SOLVENSMARGINEN VAR 200% PR 3.KV (VENTET 197%)",
       "published_at": "2026-10-21T05:06:16+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQNG1hYzlfSjdkQUcxWmVLbDdWeF8tQzU3MUk5UEprdUlaNXpVRzYxUE9rVjZ5b2Roc0ZQQVlBbldsam4wT082enpKckc5aHlXU2sxZWl6bDRrVDcwRE8zV2JlX2xHU3FNUkVsYmJqcVRwYWg1amRQZ244cFlMdTFGdDlJOGV3LWdqcnVHcGpyN1lVQ2NaZ3JORTRHU1J2S0VEVVM2bFZQS24?oc=5",
-      "publisher": "Finansavisen"
-    },
-    {
-      "headline": "STOREBRAND: KONSERNRESULTAT FØR AMORTISERING 1.517M I 3.KV (VENTET 1.593)",
-      "published_at": "2026-10-21T05:05:31+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNdWZ4RWF5Nms4amlNMVpWUnNJZHF3ZUYxOWxubGl1TVRMclV4YzFsYVBqUVJYMjBiRnh6c3ZXUWp5TGc1VXJ3N1dfVGllTnZBcWItSm5IdUlnenc5REZ2dW11bE1adURvTHhyNTFadW1Ud05WQURSZFpFLVdVd09DY21rdFRTNU5EcXpBNEJkeGhTeUVtYzJROGFHYnpCWkI1a1JQNkRsUDA4RERyTDllRHFlZ1pFb0N4amNUR2dWdw?oc=5",
       "publisher": "Finansavisen"
     },
     {
@@ -1459,15 +1459,15 @@
       "publisher": "Finansavisen"
     },
     {
-      "headline": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
-      "published_at": "2026-10-19T06:30:00+00:00",
-      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQTjNvTW9XVmNuVXM0T1RuV08wTkh2b2trUG5adGRfem1lQWJFdHJIdFREaHZES2dYLXhhODJ2YlA5S29NcjRFbFhxOUItekZRRzd0Y1lkWjJ3eWNjMFVwT0Y1ZnJmMG9kZk1Gbmt5V3RWcUszSW9IREw1VXptQTdIX1ExaUc0UXJ5RjF5V0tXeHhHU2FFVkU4UXJ3NW1UR2FEelNOeVd5dEFMLWVQWEpTam5yMDN1RXBDXzVCNDJDcHNGLURUVFhTYlZBRThQTkktRUpSNA?oc=5",
-      "publisher": "Finansavisen"
-    },
-    {
       "headline": "STOREBRAND: GJENNOMFØRER KNIF-TRANSAKSJONEN",
       "published_at": "2026-10-16T06:24:38+00:00",
       "source_url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxOTmltbGV1Ul9TOUExMGhiWXJTaWtiS1hCN0s1LWl0N21OQmx5MlhLNGdFNFljQVZIUzlsQWhDbjlFWXdkSzZZQTU5X0o2bnFpYktYX0dvZzRvYnV1X3Z2UGdidVFaYWlaVzJ0TDlkc09UMHA2SFBVVmxwakV3UTZaLV9JUWRDSWp4dHhqSDBHSy1ZdGZlTThvNXBn?oc=5",
+      "publisher": "Finansavisen"
+    },
+    {
+      "headline": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
+      "published_at": "2026-10-12T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPek1LV09Ram5HSVY1OXJNLUdlaGRrd3BUYzl1OE5DelBHQWlCRW9COGpCS2NyRmRPVmVVNHdXZmJIMzlkS0JlMFpaNVhiMUh4SXg3OXo0d3BxTklZenctLTVSSHd6YzNQamJpYW0tOEg4ei00NkMwNGZPdE9oYU14UnBTemliRWZvb0xmRDZjYllZbjBWdDZIc0tCYmt5YUNieVBQbnlFU1NQTjlaYUk5eEZxVldZb0dkY05ESDNjWHBKRFpJQ0YtVERENkFwemVvaFlPRA?oc=5",
       "publisher": "Finansavisen"
     },
     {
