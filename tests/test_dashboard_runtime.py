@@ -58,12 +58,20 @@ class DashboardRuntimeTests(unittest.TestCase):
 
  def test_strategy_blends_issuer_sources_with_distinct_media(self):
   html=HTML.read_text()
-  self.assertIn("currentEditorial()?.brief||[]",html)
-  self.assertIn("r?.basis==='issuer_commentary'",html)
+  self.assertIn("strategicEvidence?.periods?.[selectedQuarter]",html)
+  self.assertIn("!briefTexts.has(r.text.trim())",html)
   self.assertIn('const cards=officialCards+mediaCards;',html)
   self.assertIn("Math.max(0,3-selectedOfficial.length)",html)
-  self.assertIn('Selskapets primærkilde',html)
+  self.assertIn('Strategisk kilde',html)
   self.assertIn("!selectedMedia.some(x=>equivalent(x,r))",html)
+
+ def test_strategy_is_not_the_quarterly_brief(self):
+  html=HTML.read_text()
+  self.assertIn('strategicEvidence?.periods?.[selectedQuarter]',html)
+  self.assertIn('!briefTexts.has(r.text.trim())',html)
+  self.assertIn('competition|strategy|distribution|market_share|partnership|acquisition',html)
+  self.assertIn('Strategisk selskapsuttalelse',html)
+  self.assertNotIn('const official=(currentEditorial()?.brief||[]).filter',html)
 
  def test_automatic_strategy_refresh_and_source_integrity(self):
   html=HTML.read_text()
@@ -77,7 +85,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('build_editorial.py',pipeline)
   self.assertIn('data/quarterly_editorial.json',main)
   self.assertIn('data/official_news.json',main)
-  self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json']",html)
+  self.assertIn("['quarterly_editorial.json','official_news.json','stock_prices.json','quarterly_insights.json']",html)
   self.assertIn('setInterval(refresh,300000)',html)
   self.assertIn('const cards=officialCards+mediaCards;',html)
 
