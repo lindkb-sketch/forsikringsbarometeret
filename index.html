@@ -1770,24 +1770,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   // Only explicitly strategic issuer evidence qualifies, never generic revenue,
   // profitability, claims or pricing commentary copied from the quarterly brief.
   const selectedQuarter=selectedLabel();
-  const insights=strategicEvidence?.periods?.[selectedQuarter]||[];
-  const briefTexts=new Set((currentEditorial()?.brief||[]).map(x=>(x.text||'').trim()));
-  const editorialStrategyText=r=>{
-    const t=String(r.text||'').trim();
-    // Source excerpts are evidence, not reader-facing copy. Most extracted PDF
-    // snippets mix columns or languages and must never be published as analysis.
-    if(/^Fremtind omtaler i kvartalsrapporten:/.test(t)&&
-       t.includes('sterk konkurranse')&&t.includes('fokus på lønnsomhet'))
-      return 'Sterk konkurranse og fortsatt lønnsomhetsfokus ventes å prege det norske forsikringsmarkedet. Fremtinds forventning peker mot en krevende balanse mellom vekst og lønnsomhet.';
-    if(/omtaler i kvartalsrapporten:|[«»]|\\b(the|and|customer retention|board of|acquisition of)\\b/i.test(t))return '';
-    return t;
-  };
-  const official=insights.filter(r=>
-    /^(competition|strategy|distribution|market_share|partnership|acquisition|customer_retention|pricing_strategy)$/.test(r.theme||'')&&
-    r.text&&!briefTexts.has(r.text.trim())&&editorialStrategyText(r)&&
-    (r.sources||[]).some(x=>/^https:\/\//.test(x.url||'')));
+  // Strategy is a separate verified editorial artifact, never the quarterly brief.
+  const official=(strategicEvidence?.periods?.[selectedQuarter]||[]).filter(r=>
+    r?.basis==='rule_verified_issuer_narrative'&&r.summary&&/^https:\/\//.test(r.source_url||''));
   const selectedOfficial=official.slice(0,2).map(r=>({
-    ...r,text:editorialStrategyText(r),period:selectedQuarter,source_url:r.sources.find(x=>/^https:\/\//.test(x.url||''))?.url
+    text:r.summary,theme:r.theme,companies:[r.company],period:r.period,source_url:r.source_url,title:r.title
   }));
   const selectedMedia=mediaSignals.slice(0,Math.max(0,3-selectedOfficial.length));
   // Strategy and the media panel are separate editorial products. Media not
@@ -1803,9 +1790,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   const officialCards=groups.official.map(x=>
     '<div class="quarter-changes-item"><span class="qchange-label">Markedsanalyse · '+
     esc(x.period||selectedLabel())+' · '+esc((x.companies||[]).join(', '))+
-    '</span><strong>'+esc(({growth:'Prising og vekst',strategy:'Strategi',
-      competition:'Konkurranse',distribution:'Distribusjon',pricing:'Prising',customer:'Kundeutvikling',retention:'Kundebevaring',
-      market_share:'Markedsandeler'})[x.theme]||'Strategisk kvartalsutvikling')+
+    '</span><strong>'+esc(x.title||'Strategisk markedsutvikling')+
     '</strong><p>'+esc(x.text)+'</p><small><a href="'+safeUrl(x.source_url)+
     '" target="_blank" rel="noopener noreferrer">Strategisk kilde ↗</a></small></div>').join('');
   const mediaCards=groups.strategic.map(x=>
@@ -1895,7 +1880,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const prevHome=home;
  home=()=>prevHome();
  async function refresh(){
-  const names=['quarterly_editorial.json','official_news.json','stock_prices.json','quarterly_insights.json'];
+  const names=['quarterly_editorial.json','official_news.json','stock_prices.json','strategic_market.json'];
   const updates=await Promise.allSettled(names.map(async file=>{
    const r=await fetch('data/'+file+'?refresh='+Date.now(),{cache:'no-store'});
    if(!r.ok)throw Error('HTTP '+r.status+' '+file);
