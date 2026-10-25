@@ -1752,7 +1752,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   if(a.source_url===b.source_url)return true;
   const wa=words(a.headline),wb=words(b.headline);
   const n=wa.filter(w=>wb.includes(w)).length;
-  return n>=3&&n/Math.min(wa.length||1,wb.length||1)>=.7;
+  if(n>=3&&n/Math.min(wa.length||1,wb.length||1)>=.7)return true;
+  const amounts=t=>[...t.matchAll(/\\b\\d+(?:[.,]\\d+)?\\b/g)].map(m=>m[0]).sort().join(',');
+  const sameEvent=/brann|skad|flom|storm/i.test(a.headline)&&/brann|skad|flom|storm/i.test(b.headline);
+  return left.size>0&&left.size===right.size&&[...left].every(x=>right.has(x))&&
+    sameEvent&&!!amounts(a.headline)&&amounts(a.headline)===amounts(b.headline);
  };
  const unique=items=>{
    const out=[];
@@ -1777,7 +1781,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   // Strategy is a separate verified editorial artifact, never the quarterly brief.
   const official=(strategicEvidence?.periods?.[selectedQuarter]||[]).filter(r=>
     r?.basis==='rule_verified_issuer_narrative'&&r.summary&&/^https:\/\//.test(r.source_url||''));
-  const selectedOfficial=official.slice(0,2).map(r=>({
+  // Do not display vague evergreen observations as if they were new news.
+  const newsworthy=official.filter(r=>
+    !/^(konkurransebildet|strategiske endringer|strategisk markedsutvikling)$/i.test((r.title||'').trim()) &&
+    !/ventes å prege|ikke en bekreftet prognose|generelt konkurransebilde/i.test(r.summary||''));
+  const selectedOfficial=newsworthy.slice(0,2).map(r=>({
     text:r.summary,theme:r.theme,companies:[r.company],period:r.period,source_url:r.source_url,title:r.title
   }));
   // Headlines alone cannot establish strategic consequences.
