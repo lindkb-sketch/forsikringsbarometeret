@@ -89,7 +89,7 @@ async function main(){
   }
   check('Five chronological quarters on chart',view.graph.length===5&&view.graph[4]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
   check('Quarter labels never disappear when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
-  check('Strategic original cards present',view.strategic.includes('Strategiske bevegelser')&&view.media.includes('Forsikring i mediebildet'),view.strategic.slice(0,150));
+  check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og kildeverifisert innsikt'),view.media.slice(0,200));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
      ['Protector','Storebrand'].every(c=>editorial.periods?.['Q3 2026']?.by_company?.[c])){
@@ -120,12 +120,11 @@ async function main(){
     calendarColumns.dates.every(x=>x&&x.length>0),
     JSON.stringify(calendarColumns.dates));
   check('Technical duplicate sections removed',!view.technical);
-  check('Strategic news visible in original cards',view.newsGroups.strategic.length===0||
-     view.newsGroups.strategic.some(n=>view.strategic.includes(n.headline)),view.strategic.slice(0,280));
+  check('Source-backed market insight appears only in unified media section',view.newsGroups.official.length===0||
+     view.newsGroups.official.some(n=>view.media.includes(n.text)),view.media.slice(0,280));
   check('News visible in original media cards',view.newsGroups.other.length===0||
      view.newsGroups.other.some(n=>view.media.includes(n.headline)),view.media.slice(0,280));
-  check('No repeated headlines across news sections',!view.newsGroups.strategic.some(a=>
-     view.newsGroups.other.some(b=>a.source_url===b.source_url||a.headline===b.headline)));
+  check('No separate strategic headline cards',view.newsGroups.strategic.length===0&&!view.strategic);
   const missing=companies.filter(c=>['combined_ratio','insurance_revenue'].some(metric=>
     !feed.observations.some(r=>r.company===c&&r.scope==='group'&&
       r.year===year&&r.quarter===quarter&&r.period_type==='quarter'&&
