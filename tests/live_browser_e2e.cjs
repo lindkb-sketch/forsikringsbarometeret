@@ -252,6 +252,30 @@ async function main(){
   check('Calendar right heading follows future verified quarter and year rollover',
     futureCalendar.heading&&futureCalendar.currentHeading&&futureCalendar.columns,
     JSON.stringify(futureCalendar));
+  // A closed historical quarter must never inherit the active reporting calendar.
+  // Exercise navigation after the synthetic Q1 year rollover, not just string matching.
+  const historical=await page.evaluate(()=>{
+    const active=FBQuarterly.available[0],old=FBQuarterly.available.find(
+      p=>p.year!==active.year||p.quarter!==active.quarter);
+    if(!old)return {error:'No earlier verified quarter in selector'};
+    monSetQuarter(old.year+'-'+old.quarter);
+    return {selected:FBQuarterly.period,calendarCount:document.querySelectorAll('.mon-calendar').length,
+      html:monCalendar(),old};
+  });
+  check('Historical quarter hides financial calendar after year rollover',
+    !historical.error&&historical.selected?.year===historical.old.year&&
+    historical.selected?.quarter===historical.old.quarter&&
+    historical.calendarCount===0&&historical.html==='',JSON.stringify(historical).slice(0,500));
+  const restored=await page.evaluate(()=>{
+    const latest=FBQuarterly.available[0];
+    monSetQuarter(latest.year+'-'+latest.quarter);
+    return {selected:FBQuarterly.period,calendarCount:document.querySelectorAll('.mon-calendar').length,
+      html:monCalendar()};
+  });
+  check('Returning to active quarter restores financial calendar',
+    restored.selected?.year===year+1&&restored.selected?.quarter===1&&
+    restored.calendarCount===1&&restored.html.includes('Neste rapporter'),
+    JSON.stringify(restored).slice(0,500));
   check('Rolling graph includes next-year Q1',future.quarters.includes('Q1 '+(year+1)),future.quarters.join(','));
   check('Next quarter and year in dropdown',future.options.some(x=>x.includes('Q1 '+(year+1))),future.options.join(','));
   check('Original design survives future publication',future.kpis>=6&&!future.hasReplacement,future.kpis);
