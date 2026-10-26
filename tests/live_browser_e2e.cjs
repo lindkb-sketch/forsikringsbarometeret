@@ -27,6 +27,38 @@ async function main(){
    return r.json();
   }));
   const [feed,editorial,news,stocks,calendarFeed,readiness]=files;
+  // Verify every dynamically rendered insurer number against the EXACT published
+  // official-source observation; synthetic future-quarter fixtures are not used here.
+  await page.waitForFunction(()=>Array.isArray(window.officialQuarterObservations),null,{timeout:20000});
+  for(const company of ['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']){
+    const eligible=(feed.observations||[]).filter(r=>r.company===company&&
+      r.period_type==='quarter'&&['group','norway','reported_segment'].includes(r.scope)&&
+      ['reported','calculated'].includes(r.status||'reported')&&
+      ['official_quarterly_report','official_investor_tables'].includes(r.source_type)&&
+      r.source_url&&Number.isFinite(r.value)&&
+      ['insurance_revenue','insurance_service_result','combined_ratio','loss_ratio',
+       'expense_ratio','return_on_equity','return_on_operating_funds'].includes(r.metric));
+    if(!eligible.length){check(company+' has official quarterly data',false,'No eligible source observations');continue;}
+    const latest=Math.max(...eligible.map(r=>r.year*4+r.quarter));
+    const expected=eligible.filter(r=>r.year*4+r.quarter===latest);
+    await page.evaluate(c=>show(c),company);
+    const rows=await page.locator('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').allTextContents();
+    check(company+' all official numbers rendered',rows.length===expected.length,
+      'rows '+rows.length+' expected '+expected.length);
+    const pageCells=await page.locator('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').evaluateAll(nodes=>
+      nodes.map(node=>({label:node.children[0]?.textContent,value:node.children[2]?.textContent,
+        link:node.querySelector('a')?.getAttribute('href')})));
+    for(let i=0;i<expected.length;i++){
+      const obs=expected[i],numeric=nf(obs.value);
+      check(company+' '+obs.year+'Q'+obs.quarter+' '+obs.scope+'/'+(obs.segment||'')+' '+obs.metric,
+        pageCells.some(cell=>norm(cell.value).includes(numeric)&&
+          cell.link===(obs.source_document_url||obs.source_url)&&
+          norm(cell.label)===(obs.segment||({group:'Konsern',norway:'Norge',reported_segment:'Rapportert segment'}[obs.scope]))),
+        numeric+' from official '+obs.source_url);
+    }
+  }
+  await page.evaluate(()=>show('home'));
+
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
