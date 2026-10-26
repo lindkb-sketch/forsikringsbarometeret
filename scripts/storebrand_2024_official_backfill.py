@@ -28,20 +28,41 @@ def parse(pages):
             if len(vals)!=8:continue
             if vals[0]!=2475 or vals[5]!=7140:continue
             matches.append((page,vals))
-    if len(matches)!=1:
-        excerpts=[]
-        for page,text in pages:
-            if re.search(r'insurance premiums f.o.a|Table 23',text,re.I):
-                for line in text.splitlines():
-                    if re.search(r'premiums f.o.a|Table 23',line,re.I):
-                        excerpts.append((page,line[:240]))
-        print('SOURCE_PDF_TABLE_DIAGNOSTIC',repr(excerpts[:15]),flush=True)
-        for page,text in pages:
-            if page in (11,12):print('SOURCE_PDF_PAGE',page,repr(text[:5500]),flush=True)
-        raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(matches)))
-    page,v=matches[0]
-    return page,{(2025,'quarter'):v[0],(2024,'quarter'):v[4],
-                 (2025,'ytd'):v[5],(2024,'ytd'):v[6]}
+    if len(matches)==1:
+        page,v=matches[0]
+        return page,{(2025,'quarter'):v[0],(2024,'quarter'):v[4],
+                     (2025,'ytd'):v[5],(2024,'ytd'):v[6]}
+    # Storebrand's actual issuer PDF uses a second layout: on the Insurance
+    # summary page, pdfplumber extracts wide columns as space-separated glyphs
+    # beneath their column headings. Parse them by the headings and the number
+    # of columns, not by the first matching revenue line or fixed page index.
+    spaced=[]
+    for page,text in pages:
+        compact=re.sub(r'\\s+','',text.lower())
+        if 'table23:insurance' not in compact or 'insurancepremiums' not in compact:
+            continue
+        def column_row(header,n):
+            match=re.search(re.escape(header)+r'\\n([^\\n]+)',text)
+            if not match:raise ValueError('Missing Storebrand Insurance source header: '+header)
+            raw=match.group(1).strip()
+            if not re.fullmatch(r'\\d(?: \\d)+',raw):
+                raise ValueError('Unrecognised Storebrand Insurance numeric layout: '+raw[:70])
+            chars=raw.split()
+            if len(chars)%n:raise ValueError('Ambiguous source column boundaries')
+            width=len(chars)//n
+            if not 3<=width<=6:raise ValueError('Unrecognised source column width')
+            return [int(''.join(chars[i*width:(i+1)*width])) for i in range(n)]
+        this_q=column_row('2 0 2 5\\nQ 3 Q 2',2)
+        old_q=column_row('2 0 2 4\\nQ 1 Q 4 Q 3',3)
+        ytd=column_row('2 0 2 5 2 0 2 4',2)
+        values={(2025,'quarter'):this_q[0],(2024,'quarter'):old_q[2],
+                (2025,'ytd'):ytd[0],(2024,'ytd'):ytd[1]}
+        if values[(2025,'quarter')]!=2475 or values[(2025,'ytd')]!=7140:
+            raise ValueError('Storebrand PDF comparatives do not reconcile with verified baseline')
+        spaced.append((page,values))
+    if len(spaced)!=1:
+        raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(spaced)))
+    return spaced[0]
 
 def run(target=DATA,fetch=None):
     if fetch is None:
