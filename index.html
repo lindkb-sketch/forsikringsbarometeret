@@ -1091,12 +1091,12 @@ const MON_Q2_SEGMENTS=Object.fromEntries(Object.entries(segmentData).map(([k,v])
 const MON_EMPTY='—';
 // Quarterly data adapter: Q2 and Q3 use the SAME original card/table markup.
 let MON_CARD=(c,key,originalHtml)=>{
- if(!originalHtml)return '';const d=MON_Q3[c]||{}, doc=document.createElement('div');doc.innerHTML=originalHtml;
+ if(!originalHtml)return '';const d=(period==='H3'?MON_YTD_Q3[c]:MON_Q3[c])||{}, doc=document.createElement('div');doc.innerHTML=originalHtml;
  const card=doc.querySelector('.metric');if(!card)return originalHtml||'';
  const v=card.querySelector('.value'),prior=card.querySelector('.prior'),delta=card.querySelector('.delta');
  const val=d[key]||'—',prev=d[key+'Prev']||'—';
  if(v)v.textContent=val+(key==='result'&&d[key]?' '+(d.resultUnit||'MNOK'):'');
- if(prior)prior.textContent='Q3 2025: '+prev+(key==='result'&&d[key+'Prev']?' '+(d.resultUnit||'MNOK'):'');
+ if(prior)prior.textContent=(period==='H3'?'HIÅ ':'Q')+(window.FBActivePeriod?.quarter||3)+' '+((window.FBActivePeriod?.year||2026)-1)+': '+prev+(key==='result'&&d[key+'Prev']?' '+(d.resultUnit||'MNOK'):'');
  if(delta){
    const parse=n=>{const x=String(n||'').replace(/\s/g,'').replace(/−/g,'-').replace(',','.').match(/-?\d+(?:\.\d+)?/);return x?Number(x[0]):NaN;};
    const a=parse(val),b=parse(prev);
