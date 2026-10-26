@@ -72,10 +72,14 @@ def download(url):
 
 def merge(existing,new):
  keys=('company','year','quarter','scope','period_type','metric')
- index={tuple(r[k] for k in keys):r for r in existing['observations']}
+ # Segment observations have the same scope and metric but different entities.
+ # Keep each issuer-reported segment separate; never silently collapse them.
+ def identity(row):
+  return tuple(row[k] for k in keys)+(row.get('segment') if row.get('scope')=='reported_segment' else None,)
+ index={identity(r):r for r in existing['observations']}
  added=0
  for r in new:
-  key=tuple(r[k] for k in keys)
+  key=identity(r)
   if key in index:
    old=index[key]
    if abs(old['value']-r['value'])>0.001:raise ValueError('Conflicting published figure: '+str(key))
