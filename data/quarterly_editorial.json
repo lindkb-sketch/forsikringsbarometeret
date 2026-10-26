@@ -714,7 +714,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Sampo: combined ratio 84.4 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "text": "Sampo: combined ratio 84.4 % i Q1 2026, svekket med 0.1 prosentpoeng fra Q4 2025 (84.3 %).",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
           "company": "Sampo",
           "period": "Q1 2026",
@@ -769,7 +769,7 @@
         },
         "Sampo": {
           "summary": "Sampo: forsikringsinntekter 2363 EURm, forsikringsresultat 368 EURm, combined ratio 84.4 % i Q1 2026.",
-          "comment": "Sampo: combined ratio 84.4 % i Q1 2026. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "comment": "Sampo: combined ratio 84.4 % i Q1 2026, svekket med 0.1 prosentpoeng fra Q4 2025 (84.3 %).",
           "ytd": "",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
           "period": "Q1 2026",
@@ -842,6 +842,13 @@
       ],
       "implications": [
         {
+          "text": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
+          "company": "Sampo",
+          "period": "Q4 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Frende: combined ratio 90.8 % i Q4 2025, svekket med 5.5 prosentpoeng fra Q3 2025 (85.3 %).",
           "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
           "company": "Frende",
@@ -850,6 +857,14 @@
         }
       ],
       "by_company": {
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2322 EURm, forsikringsresultat 364 EURm, combined ratio 84.3 % i Q4 2025.",
+          "comment": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
+          "period": "Q4 2025",
+          "has_comparative": false
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 878.037 NOKm (+21.8 % mot Q4 2024), forsikringsresultat 99.279 NOKm, combined ratio 90.8 % i Q4 2025.",
           "comment": "Frende: combined ratio 90.8 % i Q4 2025, svekket med 5.5 prosentpoeng fra Q3 2025 (85.3 %).",
@@ -860,9 +875,10 @@
         }
       },
       "issuer_brief_status": {
+        "Sampo": "awaiting_curated_commentary",
         "Frende": "featured"
       },
-      "reported_company_count": 1
+      "reported_company_count": 2
     },
     "Q3 2025": {
       "brief": [
