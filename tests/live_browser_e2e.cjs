@@ -47,16 +47,27 @@ async function main(){
       'rows '+rows.length+' expected '+expected.length);
     const pageCells=await page.locator('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').evaluateAll(nodes=>
       nodes.map(node=>({label:node.children[0]?.textContent,value:node.children[2]?.textContent,
-        link:node.querySelector('a')?.getAttribute('href')})));
+        link:node.querySelector('a')?.getAttribute('href'),raw:node.getAttribute('data-observation-value'),metric:node.getAttribute('data-observation-metric')})));
     for(let i=0;i<expected.length;i++){
       const obs=expected[i],numeric=nf(obs.value);
       check(company+' '+obs.year+'Q'+obs.quarter+' '+obs.scope+'/'+(obs.segment||'')+' '+obs.metric,
-        pageCells.some(cell=>norm(cell.value).includes(numeric)&&
+        pageCells.some(cell=>Number(cell.raw)===obs.value&&cell.metric===obs.metric&&
           cell.link===(obs.source_document_url||obs.source_url)&&
           norm(cell.label)===(obs.segment||({group:'Konsern',norway:'Norge',reported_segment:'Rapportert segment'}[obs.scope]))),
         numeric+' from official '+obs.source_url);
     }
   }
+  await page.evaluate(()=>show('Sampo'));
+  const sampoQ4=await page.evaluate(()=>{
+    const sel=document.querySelector('#official-quarter-picker');
+    const item=sel&&[...sel.options].find(x=>x.textContent.trim()==='Q4 2025');
+    if(!item)return {found:false};
+    sel.value=item.value;sel.dispatchEvent(new Event('change',{bubbles:true}));
+    return {found:true,heading:document.querySelector('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] h2')?.textContent,
+      count:document.querySelectorAll('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').length};
+  });
+  check('Sampo Q4 2025 historical official observations',sampoQ4.found&&
+    sampoQ4.heading.includes('Q4 2025')&&sampoQ4.count===15,JSON.stringify(sampoQ4));
   await page.evaluate(()=>show('home'));
 
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
