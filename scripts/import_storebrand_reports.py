@@ -76,7 +76,13 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
         result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
     # Insurance segment result, distinct from total Storebrand Group earnings.
-    operating=row(t,'Cash equivalent earnings from operations',column_count,english)
+    # The source reports the named operating subtotal, but PDF text extraction
+    # may split its long label. Reconstruct from the three reported lines.
+    premiums=row(t,'Insurance premiums f.o.a.',column_count,english)
+    claims=row(t,'Claims f.o.a.',column_count,english)
+    costs=row(t,'Operational cost',column_count,english)
+    operating=[round(a+b+c,5) for a,b,c in zip(premiums,claims,costs)]
+
     operating_q=([(quarter,operating[0]),(quarter-1,operating[1]),(quarter-2,operating[2])]
                  if quarter==3 else [(4,operating[0]),(3,operating[1]),(2,operating[2]),(1,operating[3])])
     for q,v in operating_q:
@@ -175,7 +181,10 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     for metric,(label,definition) in metrics.items():
         vals=row(section,label,count,english)
         result.append(obs('group',year,quarter,'quarter',metric,vals[0],page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
-    earnings=row(section,'Cash equivalent earnings from operations',count,english)[0]
+    p=row(section,'Insurance premiums f.o.a.',count,english)
+    c=row(section,'Claims f.o.a.',count,english)
+    o=row(section,'Operational cost',count,english)
+    earnings=round(p[0]+c[0]+o[0],5)
     result.append(obs('group',year,quarter,'quarter','insurance_service_result',
         earnings,page+1,url,sha,'Insurance segment Cash equivalent earnings from operations',
         'Storebrand ASA / Insurance segment',year,quarter))
