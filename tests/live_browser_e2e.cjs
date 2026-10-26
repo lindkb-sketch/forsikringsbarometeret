@@ -62,7 +62,9 @@ async function main(){
     const sel=document.querySelector('#official-quarter-picker');
     const item=sel&&[...sel.options].find(x=>x.textContent.trim()==='Q4 2025');
     if(!item)return {found:false};
-    sel.value=item.value;sel.dispatchEvent(new Event('change',{bubbles:true}));
+    window.officialQuarterSelection=window.officialQuarterSelection||{};
+    window.officialQuarterSelection.Sampo=Number(item.value);
+    show('Sampo',true);
     return {found:true,heading:document.querySelector('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] h2')?.textContent,
       count:document.querySelectorAll('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').length};
   });
