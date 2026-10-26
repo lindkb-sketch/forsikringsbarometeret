@@ -33,6 +33,8 @@ REFERENCE_QUARTER = {
 
 # Official PDF URLs independently verified from Gjensidige's investor-relations page.
 APPROVED_PDFS = {
+    # Issuer-hosted Gjensidige Q4 2025 interim report, with isolated Q4 columns.
+    (2025, 4): 'https://www.gjensidige.se/_/attachment/inline/701e28b8-4fab-4097-a90e-754694c336bf%3Ab4c09d359a8ee01854ace8d5011c897bdbad9c39/Resultatrapport%20Q4%202025.pdf',
     # Official Gjensidige Q3 2025 interim report (hosted on the issuer's Swedish domain).
     # Contains the Group highlights Q3/YTD 2024 comparison columns.
     (2025, 3): 'https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf',
