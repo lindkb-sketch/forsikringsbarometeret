@@ -90,14 +90,21 @@
       (type==='ytd'?addYtd(company,year,quarter,metric):
        addQuarter(company,year,quarter,metric));
   }
-  function quarterTimeline({year,quarter}){
+  function quarterTimeline({year,quarter},count=4){
     const result=[];
-    for(let i=4;i>=0;i--){
+    for(let i=count-1;i>=0;i--){
       const code=year*4+(quarter-1)-i;
       const y=Math.floor(code/4),q=(code%4)+1;
       result.push('Q'+q+' '+y);
     }
     return result;
+  }
+  // Profitability is issuer-specific. Every issuer always has four fixed
+  // chronological slots ending at the selected reporting quarter. Missing
+  // quarters stay open, never filled from older static data or other issuers.
+  function issuerProfitabilityTimeline(name){
+    if(!selection)return [];
+    return quarterTimeline(selection,4);
   }
   function populate(){
     if(!selection)return;
@@ -171,7 +178,10 @@
           label:'Rapportert avkastningsmål fra rapport',value:roe};
       }
     }
-    profitabilityQuarters.splice(0,profitabilityQuarters.length,...quarterTimeline(selection));
+    profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(profitabilityCompany));
+    // The chart reads the selected issuer's last four timeline positions.
+    // Restore the older Q4/Q1/Q2 values only when they exist in the verified feed;
+    // the latest reporting quarter remains an empty slot until issuer publication.
     window.FBActivePeriod={...selection,label:label(selection),priorLabel:'Q'+quarter+' '+(year-1)};
     // Clear old Q2-only company segment figures rather than masquerade them as current.
     for(const [name,oldRows] of Object.entries(MON_Q2_SEGMENTS)){
@@ -500,6 +510,15 @@
       window.FBReportCalendar?.reconcile?.();
     }catch(e){console.error('[Forsikringsbarometeret] Kunne ikke oppdatere kvartalsvisning',e);}
   }
+  // Recompute the window on issuer change as well as on quarter selection.
+  const originalSetProfitabilityCompany=setProfitabilityCompany;
+  setProfitabilityCompany=name=>{
+    originalSetProfitabilityCompany(name);
+    if(selection) {
+      profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(name));
+      document.getElementById('profitability-panel').innerHTML=profitabilityChart();
+    }
+  };
   window.FBQuarterly={refresh,get period(){return selection&&{...selection};},
     get available(){return periodList.map(p=>({...p}));},get verified(){return verified;},
     get selectedData(){return {quarter:MON_Q3,ytd:MON_YTD_Q3};},
