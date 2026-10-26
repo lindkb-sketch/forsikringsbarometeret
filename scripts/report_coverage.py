@@ -24,11 +24,37 @@ def build(root=ROOT):
         periods={f"{r['year']}-Q{r['quarter']}" for r in group}
         byperiod={p:{r['metric'] for r in group if f"{r['year']}-Q{r['quarter']}"==p} for p in periods}
         complete=[p for p,metrics in byperiod.items() if set(REQUIRED)<=metrics]
+        # Last-year growth requires matching 2025/2024 source data, separately
+        # for isolated quarter and cumulative YTD. Do not certify missing years.
+        def historical_growth_status(kind):
+            latest=max(((r['year'],r['quarter']) for r in observations
+                        if r.get('company')==company and r.get('scope')=='group'
+                        and r.get('period_type')==kind and r.get('metric')=='insurance_revenue'),
+                       default=None)
+            if latest is None:return {'available':False,'reason':'no verified revenue period'}
+            year,quarter=latest
+            def lookup(y,metric):
+                return next((r for r in observations if r.get('company')==company
+                             and r.get('scope')=='group' and r.get('period_type')==kind
+                             and r.get('year')==y and r.get('quarter')==quarter
+                             and r.get('metric')==metric
+                             and r.get('status','reported') in ('reported','calculated')),None)
+            reported=lookup(year-1,'insurance_revenue_growth')
+            previous=lookup(year-1,'insurance_revenue')
+            old=lookup(year-2,'insurance_revenue')
+            available=bool(reported or previous and old and previous.get('unit')==old.get('unit') and old.get('value',0)>0)
+            return {'available':available,'year':year-1,'quarter':quarter,
+                    'reason':'reported growth' if reported else
+                             'verified comparable revenue years' if available else
+                             'missing verified revenue for prior-prior year'}
+
         result.append({'company':company,'official_archive_registered':any(s.get('index_url') for s in sources),
           'direct_pdf_registered':sum(bool(s.get('document_url')) for s in sources),
           'official_report_candidates':sum(c.get('company')==company for c in candidate_rows),
           'candidate_discovery_verified':bool(candidate_data.get('complete')) if company in ('Frende','Fremtind') else False,
           'group_quarter_observations':len(group),'group_quarters_with_required_metrics':sorted(complete),
+          'prior_year_growth_quarter':historical_growth_status('quarter'),
+          'prior_year_growth_ytd':historical_growth_status('ytd'),
           'automatic_complete':False,
           'reason':'End-to-end automatic discovery, source parsing and publication not yet verified for this issuer'})
     return {'all_seven_automatic':all(x['automatic_complete'] for x in result),'companies':result,
