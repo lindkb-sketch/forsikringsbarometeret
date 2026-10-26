@@ -137,9 +137,9 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_storebrand_explanation_below_table_and_frende_ifrs4_label(self):
   runtime=RUNTIME.read_text()
   html=HTML.read_text()
-  self.assertIn("name!=='Storebrand'",runtime)
-  self.assertIn("fragment.appendChild(note)",runtime)
-  self.assertIn("note.className='notice storebrand-revenue-note'",runtime)
+  self.assertIn("const basis='';",runtime)
+  self.assertIn("notesRow.appendChild(note)",runtime)
+  self.assertIn("notesRow.className='revenue-basis-notes'",runtime)
   self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",runtime)
   self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",html)
 

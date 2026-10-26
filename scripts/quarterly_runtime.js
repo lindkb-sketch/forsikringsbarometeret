@@ -282,7 +282,7 @@
       const td=document.createElement('td');
       if(d.revenue){
         const title=escape(d.revenue)+' <small>'+escape(d.revenueUnit||'')+'</small>';
-        const basis=d.revenueBasis&&name!=='Storebrand'?'<div class="table-prior">'+escape(d.revenueBasis)+'</div>':'';
+        const basis='';
         const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
         const prior=d.revenuePrev
           ?'<span class="table-prior">'+lastYear+': '+escape(d.revenuePrev)+'</span>'
@@ -307,7 +307,7 @@
               ' · <a href="'+escape(local.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></div>';
           }
         }
-        td.innerHTML='<strong>'+title+'</strong>'+basis+subsidiary+prior+delta;
+        td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
       }else td.innerHTML='<span class="muted">Ikke rapportert</span>';
       tr.insertBefore(td,tr.cells[1]||null);
       // Explicit, source-derived last-year growth: 2025 vs 2024 for Q3 2026.
@@ -316,22 +316,58 @@
       // half-year figures, and never substitute current-year growth.
       const growthCell=tr.cells[2];
       if(growthCell){
-        const currentLabel=(isYtd?'HIÅ ':'Q'+q+' ')+year+' mot '+(year-1);
-        const previousLabel=(isYtd?'HIÅ ':'Q'+q+' ')+(year-1)+' mot '+(year-2);
-        const currentGrowth=d.growth||'Ikke verifisert';
-        const previousGrowth=d.growthPrev||'Ikke verifisert (mangler sammenlignbart '+(year-2)+'-grunnlag)';
-        growthCell.innerHTML='<strong>'+escape(currentGrowth)+'</strong>'+
-          '<div class="table-prior">'+escape(currentLabel)+'</div>'+
-          '<div class="table-prior"><strong>Fjorårets inntektsvekst: '+escape(previousGrowth)+'</strong></div>'+
-          '<div class="table-prior">'+escape(previousLabel)+'</div>';
+        const currentGrowth=d.growth;
+        const previousGrowth=d.growthPrev;
+        // Match other comparison columns: main value, prior value in
+        // parentheses, and a direction arrow indicating acceleration.
+        // If Q3 2026 is unreleased for an issuer, retain its verified 2025
+        // comparison without pretending the current year was reported.
+        const parseGrowth=value=>{
+          const match=String(value||'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);
+          return match?Number(match[0]):null;
+        };
+        const now=parseGrowth(currentGrowth),before=parseGrowth(previousGrowth);
+        const direction=now!==null&&before!==null
+          ?'<span class="qoq '+(now>before?'good':now<before?'bad':'flat')+
+            '" aria-label="Endring i vekst mot foregående år">'+
+            (now>before?'▲':now<before?'▼':'→')+'</span>':'';
+        growthCell.innerHTML=(currentGrowth
+          ?'<strong>'+escape(currentGrowth)+'</strong>'
+          :'<span class="muted">—</span>')+
+          (previousGrowth
+            ?'<div class="table-prior">('+escape(previousGrowth)+')</div>'
+            :'<div class="table-prior">(—)</div>')+direction;
       }
     }
-    const storebrand=(isYtd?MON_YTD_Q3:MON_Q3).Storebrand;
-    if(storebrand?.revenueBasis){
-      const note=document.createElement('p');
-      note.className='notice storebrand-revenue-note';
-      note.textContent='Storebrand – inntektsgrunnlag: '+storebrand.revenueBasis;
-      fragment.appendChild(note);
+    // Preserve the verifiable local IFRS 17 disclosure, outside the group
+    // income cell, where it cannot be mistaken for group APM revenue.
+    const localStorebrand=(verified?.observations||[]).find(r=>
+      r.company==='Storebrand'&&r.scope==='norway'&&
+      r.source_entity==='Storebrand Forsikring AS'&&
+      r.year===year&&r.quarter===q&&r.period_type===(isYtd?'ytd':'quarter')&&
+      r.metric==='insurance_revenue'&&valid(r)&&
+      /IFRS\s*17/i.test(r.source_definition||''));
+    const bucket=(isYtd?MON_YTD_Q3:MON_Q3);
+    const notes=[];
+    for(const company of ['Storebrand','Frende']){
+      if(bucket[company]?.revenueBasis)
+        notes.push(company+' – '+bucket[company].revenueBasis);
+    }
+    if(localStorebrand){
+      notes.push('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+fmt(localStorebrand.value)+' '+(localStorebrand.unit||'MNOK'));
+    }
+    if(notes.length){
+      const notesRow=document.createElement('div');
+      notesRow.className='revenue-basis-notes';
+      notesRow.style.cssText='display:flex;flex-wrap:wrap;gap:12px;margin-top:12px';
+      for(const value of notes){
+        const note=document.createElement('p');
+        note.className='notice';
+        note.style.cssText='flex:1 1 290px;margin:0';
+        note.textContent=value;
+        notesRow.appendChild(note);
+      }
+      fragment.appendChild(notesRow);
     }
     return fragment.innerHTML;
   }
