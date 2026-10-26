@@ -50,7 +50,7 @@ def parse_group(blob,year,quarter,url):
         if len(candidates)!=1:raise ValueError('Tryg group income overview missing or ambiguous')
         page_no,lines=candidates[0]
         # Q1 has 3 columns (current/prior/year); Q2-Q4 have 5 (quarter and YTD).
-        column_count=5 if re.search(r'Q1-Q[234]|H1|Q1-Q3',lines[0],re.I) else 3
+        column_count=5 if quarter==4 or re.search(r'Q1-Q[234]|H1|Q1-Q3',lines[0],re.I) else 3
         if quarter>1 and column_count!=5:raise ValueError('Tryg YTD columns missing')
         if not re.search(r'Q\s*'+str(quarter)+r'\b',lines[0],re.I):raise ValueError('Quarter mismatch')
         if not re.search(r'\b'+str(year)+r'\b',lines[1]):raise ValueError('Year mismatch')
