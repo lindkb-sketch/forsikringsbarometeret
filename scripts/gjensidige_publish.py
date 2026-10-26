@@ -33,6 +33,7 @@ REFERENCE_QUARTER = {
 
 # Official PDF URLs independently verified from Gjensidige's investor-relations page.
 APPROVED_PDFS = {
+    (2025, 3): 'https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf',
     (2026, 1): 'https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf',
     (2026, 2): 'https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf',
 }
