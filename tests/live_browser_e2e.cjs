@@ -190,8 +190,8 @@ async function main(){
   const ytdText=norm(await page.locator('body').innerText());
   const ytd=feed.observations.filter(x=>x.scope==='group'&&x.year===year&&x.quarter===quarter&&x.period_type==='ytd');
   for(const c of companies){
-   const metric=ytd.find(x=>x.company===c&&x.metric==='insurance_revenue');
-   if(metric)check(c+' HIÅ revenue visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
+   const metric=ytd.find(x=>x.company===c&&x.metric==='insurance_service_result');
+   if(metric)check(c+' HIÅ insurance result visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
   }
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
   const subsidiaryYTD=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
