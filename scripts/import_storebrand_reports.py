@@ -175,6 +175,10 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     for metric,(label,definition) in metrics.items():
         vals=row(section,label,count,english)
         result.append(obs('group',year,quarter,'quarter',metric,vals[0],page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+    earnings=row(section,'Cash equivalent earnings from operations',count,english)[0]
+    result.append(obs('group',year,quarter,'quarter','insurance_service_result',
+        earnings,page+1,url,sha,'Insurance segment Cash equivalent earnings from operations',
+        'Storebrand ASA / Insurance segment',year,quarter))
     keypage,keytext=_unique_table(texts,'Group - Key figures')
     keysection=keytext.split('Group - Key figures',1)[1].split('Financial metrics',1)[0]
     for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
