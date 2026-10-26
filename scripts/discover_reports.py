@@ -48,7 +48,8 @@ def scan(fetcher=None):
    if len(blob)>4*1024*1024:raise ValueError("Index too large")
    return blob.decode("utf-8",errors="replace")
  sources=json.loads(REGISTRY.read_text())["sources"]
- pages={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
+ primary={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
+ pages=set(primary)
  # Include official year/quarter archive pages. This scans both missing
  # historical quarters and newly published periods on EVERY scheduled run.
  # Issuer-specific layouts still require their own strict numeric parsers.
@@ -61,14 +62,26 @@ def scan(fetcher=None):
    pages.add(("Sampo",f"https://www.sampo.com/investors/quarterly-reporting/q{quarter}-{year}/"))
  # The Sampo issuer archive, not its corporate homepage, is the index.
  pages.discard(("Sampo","https://www.sampo.com/"))
- candidates=[];errors=[]
+ candidates=[];errors=[];warnings=[]
  for company,url in sorted(pages):
   try:candidates+=discover(fetcher(url),url,company)
-  except Exception as e:errors.append(f"{company}: {type(e).__name__}: {e}")
- return {"candidates":candidates,"errors":errors,"complete":not errors}
+  except Exception as e:
+   message=f"{company} {url}: {type(e).__name__}: {e}"
+   (errors if (company,url) in primary else warnings).append(message)
+ # Historical archive pages can be absent without invalidating healthy issuer
+ # index checks. Keep all verified old candidates when a source is unavailable.
+ if OUTPUT.exists():
+  try:
+   prior=json.loads(OUTPUT.read_text(encoding="utf-8"))
+   candidates+=prior.get("candidates",[])
+  except (OSError,ValueError):pass
+ candidates=list({(x["company"],x["document_url"]):x for x in candidates}.values())
+ return {"candidates":candidates,"errors":errors,"warnings":warnings,
+         "complete":not errors,"publication_authorized":False}
 if __name__=="__main__":
  result=scan()
- # Never overwrite previous results on failure
- if result["complete"]:OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
- print(json.dumps({"candidates":len(result["candidates"]),"errors":result["errors"]},ensure_ascii=False))
+ # Candidate discovery is informational and never publishes numbers.
+ # Preserve previous candidates across transient issuer outages.
+ OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
+ print(json.dumps({"candidates":len(result["candidates"]),"errors":result["errors"],"warnings":len(result["warnings"])},ensure_ascii=False))
  sys.exit(bool(result["errors"]))
