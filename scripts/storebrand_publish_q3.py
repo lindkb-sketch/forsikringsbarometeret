@@ -58,7 +58,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if (args.group is None) != (args.norway is None):
         parser.error('Supply both offline PDFs or neither')
-    if args.quarter not in range(1,5) or args.year < 2026 or (args.year,args.quarter)>(date.today().year,(date.today().month-1)//3+1):
+    if args.quarter not in range(1,5) or args.year < 2025 or (args.year,args.quarter)>(date.today().year,(date.today().month-1)//3+1):
         raise ValueError('Invalid or future Storebrand reporting period')
     baseline = json.loads(args.data.read_text(encoding='utf-8'))
     # Do not allow a Storebrand import to bypass a pre-existing broken dataset.
