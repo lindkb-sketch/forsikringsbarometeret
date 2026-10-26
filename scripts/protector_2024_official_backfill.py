@@ -17,12 +17,12 @@ def parse(pages):
     choices=[]
     for page,text in pages:
         if not (re.search(r'Income overview',text,re.I)
-                and re.search(r'Q3\\s*2025\\s+Q3\\s*2024\\s+Q1.Q3\\s*2025\\s+Q1.Q3\\s*2024',text,re.I)):
+                and re.search(r'Q3\s*2025\s+Q3\s*2024\s+Q1.Q3\s*2025\s+Q1.Q3\s*2024',text,re.I)):
             continue
         for line in text.splitlines():
-            match=re.match(r'^\\s*Insurance revenue\\s+((?:\\d[\\d, ]*\\s+){4}\\d[\\d, ]*)$',line,re.I)
+            match=re.match(r'^\s*Insurance revenue\s+((?:\d[\d, ]*\s+){4}\d[\d, ]*)$',line,re.I)
             if not match:continue
-            values=re.findall(r'(?<!\\d)\\d{1,3}(?:,\\d{3})*(?!\\d)',match.group(1))
+            values=re.findall(r'(?<!\d)\d{1,3}(?:,\d{3})*(?!\d)',match.group(1))
             if len(values)!=5:continue
             numbers=[int(v.replace(',','')) for v in values]
             choices.append((page,dict(zip(COLUMNS,numbers))))
