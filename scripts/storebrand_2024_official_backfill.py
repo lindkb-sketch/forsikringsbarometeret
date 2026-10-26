@@ -37,7 +37,7 @@ def parse(pages):
                         excerpts.append((page,line[:240]))
         print('SOURCE_PDF_TABLE_DIAGNOSTIC',repr(excerpts[:15]),flush=True)
         for page,text in pages:
-            if page==13:print('SOURCE_PDF_PAGE_13',repr(text[:3500]),flush=True)
+            if page in (11,12):print('SOURCE_PDF_PAGE',page,repr(text[:5500]),flush=True)
         raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(matches)))
     page,v=matches[0]
     return page,{(2025,'quarter'):v[0],(2024,'quarter'):v[4],
