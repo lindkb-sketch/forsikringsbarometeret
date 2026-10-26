@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Auditable four-quarter profitability coverage for every insurer.
+"""Auditable five-quarter profitability coverage for every insurer.
 
 No estimate or archived JavaScript value is allowed to fill source-data gaps.
 This report is regenerated before every GitHub Pages publication.
@@ -13,7 +13,7 @@ METRICS = ('combined_ratio', 'loss_ratio', 'expense_ratio')
 
 def window(year, quarter):
     index = year * 4 + quarter - 1
-    return [(int((index - i) // 4), int((index - i) % 4) + 1) for i in (3, 2, 1, 0)]
+    return [(int((index - i) // 4), int((index - i) % 4) + 1) for i in (4, 3, 2, 1, 0)]
 
 def audit(observations, year=None, quarter=None):
     valid = [r for r in observations if r.get('scope') == 'group' and
