@@ -125,6 +125,9 @@ jobs:
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add data/financial_observations.json data/verified_financial_feed.json
             git commit -m 'Publish verified Storebrand quarterly observations'
+            # Keep generated nonfinancial artifacts out of the rebase worktree.
+            # Their contents are not part of the audited financial commit.
+            git stash push --include-untracked -m storebrand-publish-temporary-worktree || true
             # Another scheduled issuer may update main while PDFs are parsed.
             # Rebase the verified financial-only commit; never force-push.
             for attempt in 1 2 3 4; do
