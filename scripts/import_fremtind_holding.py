@@ -60,7 +60,7 @@ def extract(blob, url):
             r"(?:delårsrapport|kvartalsrapport)\s+([1-4])\.?\s*kvartal\s+(20\d{2})",
             heading, re.I))
         if len(periods) != 1 or "Fremtind Holding" not in heading:
-            raise ValueError("Holding entity or report quarter not verified")
+            raise ValueError("Holding entity or report quarter not verified; found periods="+repr(sorted(periods))+"; PDF opening="+repr(heading[:350]))
         q, year = next(iter(periods))
         q, year = int(q), int(year)
         # Require a labeled key-figures table and a header with the correct quarter.
