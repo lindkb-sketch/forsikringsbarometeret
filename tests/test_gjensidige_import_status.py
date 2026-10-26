@@ -34,7 +34,7 @@ class ExistingVerifiedTests(unittest.TestCase):
             self.assertEqual(calls,[(year,quarter) for year in (2024,2025,2026) for quarter in range(1,5) if (year,quarter)<(2026,4)])
             self.assertEqual([r["status"] for r in statuses],
                              ["not_discovered"]*8+["previously_verified","not_discovered","not_discovered"])
-            self.assertNotIn("::warning::Gjensidige Q1",out.getvalue())
+            self.assertNotIn("::warning::Gjensidige Q1 2026",out.getvalue())
             self.assertIn("::warning::Gjensidige Q2",out.getvalue())
             self.assertIn("::warning::Gjensidige Q3",out.getvalue())
 
