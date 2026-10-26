@@ -190,7 +190,11 @@ def run():
     for url in links[:30]:
         try:
             rows = extract(read_pdf(url), url)
-            # Check the reporting-document period, not the first observation:\n            # a Q3 2025 PDF can begin with its Q3 2024 comparison column.\n            document_year=max(r['year'] for r in rows)\n            if document_year < 2025:\n                continue
+            # Process 2024 and all later official Holding reports, including
+            # the comparator columns printed in subsequent issuer PDFs.
+            document_year = max(r['year'] for r in rows)
+            if document_year < 2024:
+                continue
             for r in rows:
                 key = (r["year"], r["quarter"], r["period_type"], r["metric"])
                 if key not in existing_keys:
