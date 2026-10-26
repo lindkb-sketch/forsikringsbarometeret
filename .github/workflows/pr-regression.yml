@@ -43,6 +43,22 @@ jobs:
         run: |
           python scripts/import_frende_holding.py
           python scripts/audit_financials.py
+      - name: Require official Fremtind 2024 Q3 comparative after historical import
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for period in ('quarter','ytd'):
+              samples=[r for r in rows if r.get('company')=='Fremtind'
+                       and r.get('year')==2024 and r.get('quarter')==3
+                       and r.get('scope')=='group' and r.get('period_type')==period
+                       and r.get('metric')=='insurance_revenue'
+                       and str(r.get('source_url','')).startswith('https://')]
+              if len(samples)!=1:
+                  raise AssertionError(f'Fremtind 2024 Q3 {period}: expected one official comparable, found {len(samples)}')
+              print('FREMTIND_2024_SOURCE_PASS',period,samples[0]['value'],samples[0]['source_url'])
+          PY
       - name: Show verified Fremtind and Frende quarterly coverage
         run: |
           python - <<'PY'
