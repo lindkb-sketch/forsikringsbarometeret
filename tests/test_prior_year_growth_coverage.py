@@ -38,6 +38,20 @@ class PriorYearEvidenceTests(unittest.TestCase):
     rows.append({**row('Fremtind',2027,'quarter',0),'quarter':1,'metric':'combined_ratio'})
     self.assertEqual(active_period(rows),(2027,1))
 
+ def test_2027_uses_2026_and_2025_for_both_quarter_and_ytd(self):
+    rows=[row('Tryg',2025,'quarter',100),row('Tryg',2026,'quarter',115),
+          row('Tryg',2025,'ytd',300),row('Tryg',2026,'ytd',330)]
+    result=next(x for x in evidence(rows,2027,3)['companies'] if x['company']=='Tryg')
+    self.assertEqual(result['quarter']['growth_percent'],15.0)
+    self.assertEqual(result['ytd']['growth_percent'],10.0)
+    self.assertEqual(result['quarter']['reference'],'2026-Q3 vs 2025-Q3')
+
+ def test_2028_rolls_to_2027_vs_2026(self):
+    rows=[row('Tryg',2026,'quarter',115),row('Tryg',2027,'quarter',138)]
+    result=next(x for x in evidence(rows,2028,3)['companies'] if x['company']=='Tryg')
+    self.assertEqual(result['quarter']['growth_percent'],20.0)
+    self.assertEqual(result['quarter']['reference'],'2027-Q3 vs 2026-Q3')
+
  def test_does_not_cross_quarters_or_scopes(self):
     rows=[row('Fremtind',2024,'quarter',100),row('Fremtind',2025,'quarter',120)]
     rows[0]['quarter']=2
