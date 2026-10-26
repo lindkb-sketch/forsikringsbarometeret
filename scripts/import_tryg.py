@@ -71,7 +71,17 @@ def run(pairs=None):
     existing=json.loads(DATA.read_text())
     for spec in sorted(pairs,key=lambda x:(x['year'],x['quarter'])):
         year,quarter=spec['year'],spec['quarter']
-        if year<2026:continue
+        if year<2025:continue
+        # Source-verified 2025 reports contain 2024 comparative columns.
+        # Historical extraction remains optional if an old layout differs.
+        if year==2025:
+            try:
+                pdf=download_pdf(spec['report_pdf_url'])
+                group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
+                existing,_=merge(existing,group)
+            except Exception as exc:
+                print('::warning::Tryg historical 2024 comparison unavailable:',year,quarter,type(exc).__name__,str(exc)[:180],flush=True)
+            continue
         pdf=download_pdf(spec['report_pdf_url'])
         group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
         existing,_=merge(existing,group)
