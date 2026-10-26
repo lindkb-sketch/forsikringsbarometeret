@@ -267,13 +267,14 @@
       ['HIÅ i fjor',h.growthPrev,Boolean(h.revenuePrev),'ytd-prior']
     ];
   }
-  function trendArrow(now,prior){
+  function trendArrow(now,prior,lowerIsBetter=false){
     const parse=s=>{const m=String(s??'').replace(/\\s/g,'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);return m?Number(m[0]):null;};
     const a=parse(now),b=parse(prior);
     if(a===null||b===null)return '';
     const diff=a-b,dir=diff>0.00001?'up':diff< -0.00001?'down':'flat';
     const sign=dir==='up'?'▲':dir==='down'?'▼':'→';
-    return '<span class="qoq '+(dir==='up'?'good':dir==='down'?'bad':'flat')+
+    const favourable=lowerIsBetter?dir==='down':dir==='up';
+    return '<span class="qoq '+(dir==='flat'?'flat':favourable?'good':'bad')+
       '" aria-label="'+(dir==='up'?'Opp':dir==='down'?'Ned':'Uendret')+
       ' mot tilsvarende periode i fjor" title="Sammenlignet med tilsvarende periode i fjor">'+sign+'</span>';
   }
@@ -316,6 +317,22 @@
       build(cardNodes[1],c==='Storebrand'?'Forsikringsresultat · Cash equivalent earnings':
           c==='Frende'?'Forsikringsdriftsresultat':'Forsikringsresultat',
         d.result,d.resultPrev,d.resultUnit||'');
+    }
+    // All company KPI cards get arrows inside the value cell, based on the
+    // same current/prior official observations, including adverse ratio rises.
+    const financialKeys=['cr','loss','cost'];
+    for(const [i,key] of financialKeys.entries()){
+      const card=cardNodes[i+2],value=card?.querySelector('.value');
+      if(!card||!value)continue;
+      const present=Boolean(d.revenue)&&Boolean(d[key]);
+      value.innerHTML=present
+        ?String(d[key]).replace(/&/g,'&amp;').replace(/</g,'&lt;')+
+          trendArrow(d[key],d[key+'Prev'],true)
+        :'—';
+      const prior=card.querySelector('.prior');
+      if(prior)prior.textContent=d[key+'Prev']?'('+d[key+'Prev']+')':'(—)';
+      card.querySelector('.delta')?.remove();
+      card.setAttribute('data-financial-source','verified-quarterly-feed');
     }
     // Replace the legacy Q2 label with the actual selected quarter.
     const heading=fragment.querySelector('.section-head h2');
@@ -406,6 +423,22 @@
           (previousGrowth
             ?'<div class="table-prior">('+escape(previousGrowth)+')</div>'
             :'<div class="table-prior">(—)</div>')+direction;
+      }
+    }
+    // Standardized arrow direction in every numeric financial comparison
+    // cell. A higher combined/loss/expense ratio is red, not green.
+    for(const tr of fragment.querySelectorAll('tbody tr')){
+      const raw=(tr.cells[0]?.textContent||'').trim();
+      const company=raw==='Frende Holding'?'Frende':raw;
+      const d=(isYtd?MON_YTD_Q3:MON_Q3)[company]||{};
+      for(const [column,key] of [[1,'growth'],[3,'cr'],[4,'loss'],[5,'cost']]){
+        const cell=tr.cells[column];
+        if(!cell)continue;
+        if(!d.revenue||!d[key]){cell.innerHTML='<span class="muted">—</span>';continue;}
+        const current=escape(d[key]),prior=d[key+'Prev'];
+        cell.innerHTML='<strong>'+current+'</strong>'+
+          (prior?'<div class="table-prior">('+escape(prior)+')</div>':'<div class="table-prior">(—)</div>')+
+          trendArrow(d[key],prior,['cr','loss','cost'].includes(key));
       }
     }
     // Preserve the verifiable local IFRS 17 disclosure, outside the group
