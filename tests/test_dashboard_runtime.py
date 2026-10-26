@@ -36,10 +36,42 @@ class DashboardRuntimeTests(unittest.TestCase):
                 'quarterly_editorial.json','official_news.json','stock_prices.json'):
    self.assertIn(token,html)
   for token in ('verified_financial_feed.json?t=','periodList=calcPeriods()',
-                'quarterTimeline(selection)','year-1,quarter','MON_SELECT=()=>',
+                'issuerProfitabilityTimeline(profitabilityCompany)','year-1,quarter','MON_SELECT=()=>',
                 'isSameBasis','setInterval(refresh,300000)'):
    self.assertIn(token,js)
-  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
+  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-4)',html)
+
+ def test_four_rolling_profitability_quarters_for_seven_issuers(self):
+  runtime=RUNTIME.read_text()
+  html=HTML.read_text()
+  self.assertIn('function quarterTimeline({year,quarter},count=4)',runtime)
+  self.assertIn('quarterTimeline(selection,4)',runtime)
+  self.assertIn('profitabilityVerified[name]={};profitabilityReturns[name]={}',runtime)
+  self.assertIn('if([loss,cost,cr].every(Number.isFinite))profitabilityVerified[name][l]=[loss,cost,cr]',runtime)
+  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-4)',html)
+  self.assertIn('av 4 kvartaler med dokumentert annualisert verdi',html)
+  # Every issuer's selected Q3 window is Q4 2025 through Q3 2026.
+  for name in ('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'):
+   self.assertIn(name,html)
+  script="""
+function quarterTimeline({year,quarter},count=4){
+ const result=[];
+ for(let i=count-1;i>=0;i--){
+  const code=year*4+(quarter-1)-i;
+  const y=Math.floor(code/4),q=(code%4)+1;
+  result.push('Q'+q+' '+y);
+ }
+ return result;
+}
+const expected=['Q4 2025','Q1 2026','Q2 2026','Q3 2026'];
+if(JSON.stringify(quarterTimeline({year:2026,quarter:3}))!==JSON.stringify(expected))
+ throw Error('Incorrect current 4-slot window');
+if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
+ JSON.stringify(['Q1 2026','Q2 2026','Q3 2026','Q4 2026']))
+ throw Error('Q4 rollover failed');
+"""
+  result=subprocess.run(['node','-e',script],text=True,capture_output=True)
+  self.assertEqual(result.returncode,0,result.stderr)
 
  def test_calendar_hidden_for_historical_quarter(self):
   html=HTML.read_text()
