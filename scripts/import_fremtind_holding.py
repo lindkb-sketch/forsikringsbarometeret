@@ -121,7 +121,12 @@ def extract(blob, url):
             if not match:continue
             values=re.findall(r"[0-9]{2,3}(?:,[0-9]+)?[ ]*%",match.group(1))
             if len(values)!=3:
-                raise ValueError("Ambiguous Fremtind Forsikring solvency date columns")
+                # Solvency belongs to a different legal entity. A changing
+                # solvency footnote layout must NOT discard the fully verified
+                # Fremtind Holding income and profitability observations.
+                # Never import ambiguous solvency figures.
+                solvency=[]
+                break
             solvency.append([number(v) for v in values])
         if len(solvency)>1:
             raise ValueError("Duplicate Fremtind solvency source rows")
