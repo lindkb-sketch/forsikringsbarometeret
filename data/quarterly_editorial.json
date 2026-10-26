@@ -170,12 +170,12 @@
       "has_comparative": true
     },
     "Protector": {
-      "summary": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+      "summary": "Protector: forsikringsinntekter 3864 MNOK (+9.5 % mot Q3 2025), forsikringsresultat 670 MNOK, combined ratio 82.7 % (Q3 2025: 83.1 %) i Q3 2026.",
       "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
       "ytd": "",
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
       "period": "Q3 2026",
-      "has_comparative": false
+      "has_comparative": true
     },
     "Storebrand": {
       "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
@@ -366,12 +366,12 @@
           "has_comparative": true
         },
         "Protector": {
-          "summary": "Protector: forsikringsinntekter 3864 MNOK, forsikringsresultat 670 MNOK, combined ratio 82.7 % i Q3 2026.",
+          "summary": "Protector: forsikringsinntekter 3864 MNOK (+9.5 % mot Q3 2025), forsikringsresultat 670 MNOK, combined ratio 82.7 % (Q3 2025: 83.1 %) i Q3 2026.",
           "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
           "ytd": "",
           "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
           "period": "Q3 2026",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Storebrand": {
           "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2896 MNOK (+17.0 % mot Q3 2025), combined ratio 87 % (Q3 2025: 89 %) i Q3 2026.",
@@ -946,6 +946,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Protector: combined ratio 83.1 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "company": "Protector",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Storebrand: combined ratio 89 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
           "company": "Storebrand",
@@ -986,6 +993,14 @@
           "period": "Q3 2025",
           "has_comparative": false
         },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3529 MNOK, forsikringsresultat 598 MNOK, combined ratio 83.1 % i Q3 2025.",
+          "comment": "Protector: combined ratio 83.1 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "period": "Q3 2025",
+          "has_comparative": false
+        },
         "Storebrand": {
           "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2475 MNOK, combined ratio 89 % i Q3 2025.",
           "comment": "Storebrand: combined ratio 89 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
@@ -1000,9 +1015,10 @@
         "Gjensidige": "featured",
         "Tryg": "featured",
         "Frende": "featured",
+        "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 5
+      "reported_company_count": 6
     },
     "Q2 2025": {
       "brief": [

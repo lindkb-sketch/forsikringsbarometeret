@@ -883,7 +883,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 418,
+  "observation_count": 428,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1017,6 +1017,36 @@
       "inputs": [
         "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
         "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Protector",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 9.492774156984973,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Protector",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 19.999999999999996,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },
