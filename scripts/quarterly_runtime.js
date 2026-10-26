@@ -308,7 +308,7 @@
           }
         }
         td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
-      }else td.innerHTML='<span class="muted">Ikke rapportert</span>';
+      }else td.innerHTML='<span class="muted">Ikke publisert</span>';
       tr.insertBefore(td,tr.cells[1]||null);
       // Explicit, source-derived last-year growth: 2025 vs 2024 for Q3 2026.
       // The original comparison cell obscured whether its second percentage
