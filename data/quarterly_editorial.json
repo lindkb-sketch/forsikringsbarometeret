@@ -978,12 +978,12 @@
           "has_comparative": false
         },
         "Tryg": {
-          "summary": "Tryg: forsikringsinntekter 10175 MDKK, forsikringsresultat 2181 MDKK, combined ratio 78.6 % i Q3 2025.",
+          "summary": "Tryg: forsikringsinntekter 10175 MDKK (+4.0 % mot Q3 2024), forsikringsresultat 2181 MDKK, combined ratio 78.6 % (Q3 2024: 79.1 %) i Q3 2025.",
           "comment": "Tryg: combined ratio 78.6 % i Q3 2025, svekket med 1.4 prosentpoeng fra Q2 2025 (77.2 %).",
-          "ytd": "HIÅ: forsikringsinntekter 30063 MDKK.",
+          "ytd": "HIÅ: forsikringsinntekter 30063 MDKK (+4.2 % mot HIÅ 2024).",
           "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
           "period": "Q3 2025",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 818.27 NOKm, combined ratio 85.3 % i Q3 2025.",
@@ -1237,6 +1237,46 @@
         "Frende": "featured"
       },
       "reported_company_count": 4
+    },
+    "Q3 2024": {
+      "brief": [
+        {
+          "text": "Kvartalsrapportene er registrert, men det finnes foreløpig ikke tilstrekkelig sammenlignbare opplysninger til å trekke dokumenterte fellestrekk eller forklare utviklingen. Les selskapenes rapporter for den kvalitative ledelsesgjennomgangen.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "source_urls": [
+            "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+          ],
+          "companies": [
+            "Tryg"
+          ],
+          "period": "Q3 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "insufficient_comparatives"
+        }
+      ],
+      "implications": [
+        {
+          "text": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q3 2024",
+          "type": "rule_based_interpretation"
+        }
+      ],
+      "by_company": {
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 9786 MDKK, forsikringsresultat 2048 MDKK, combined ratio 79.1 % i Q3 2024.",
+          "comment": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 28862 MDKK.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "period": "Q3 2024",
+          "has_comparative": false
+        }
+      },
+      "issuer_brief_status": {
+        "Tryg": "featured"
+      },
+      "reported_company_count": 1
     }
   },
   "news": [
