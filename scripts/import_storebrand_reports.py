@@ -104,7 +104,11 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
         result.append(obs('group',year,quarter,'ytd',metric,vals[5],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
         result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
-    for item in result:item['source_document_period']=f'Q{quarter} {year}'
+    for item in result:
+        item['source_document_period']=f'Q{quarter} {year}'
+        if item['metric']=='insurance_service_result' and item['scope']=='group':
+            item['status']='calculated'
+            item['calculation']='premiums f.o.a. + signed claims f.o.a. + signed operational cost'
     return result
 
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
@@ -193,6 +197,10 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
         vals=row(keysection,label,count,english)
         result.append(obs('group',year,quarter,'quarter',metric,vals[0],keypage+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+    for item in result:
+        if item['metric']=='insurance_service_result':
+            item['status']='calculated'
+            item['calculation']='premiums f.o.a. + signed claims f.o.a. + signed operational cost'
     return result
 
 def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
