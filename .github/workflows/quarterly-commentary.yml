@@ -16,7 +16,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: quarterly-commentary-archive
+  group: forsikringsbarometeret-publish
   cancel-in-progress: false
 jobs:
   editorial:

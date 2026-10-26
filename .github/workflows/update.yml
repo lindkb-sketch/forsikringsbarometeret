@@ -10,7 +10,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: forsikringsbarometeret-publish-v2
+  group: forsikringsbarometeret-publish
   cancel-in-progress: false
 jobs:
   validate-and-deploy:
