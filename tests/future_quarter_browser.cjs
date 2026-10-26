@@ -13,7 +13,7 @@ const info=await page.evaluate(()=>({period:FBQuarterly.period,companies:JSON.pa
 const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
 const assert=(condition,message)=>{if(!condition)throw Error(message)};
 assert(info.period.year===2026&&info.period.quarter===4,'Wrong selected quarter: '+JSON.stringify(info.period));
-assert(info.graph.length===5&&info.graph.at(-1)==='Q4 2026','Graph period mismatch: '+info.graph);
+assert(info.graph.length===4&&info.graph.join(',')==='Q1 2026,Q2 2026,Q3 2026,Q4 2026','Graph period mismatch: '+info.graph);
 assert(info.brief==='Q4 2026','Editorial period mismatch: '+info.brief);
 for(let i=0;i<companies.length;i++){
 const c=companies[i],view=info.companies[c];
