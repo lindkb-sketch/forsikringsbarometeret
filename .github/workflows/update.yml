@@ -102,6 +102,21 @@ jobs:
                       lines.append(f"- Investorstatus: {data.get('status', 'ikke bekreftet')}")
               except (OSError, ValueError) as exc:
                   lines.append(f"- {filename}: kunne ikke leses: {type(exc).__name__}")
+          coverage_path=root/"report_coverage.json"
+          if coverage_path.exists():
+              try:
+                  coverage=json.loads(coverage_path.read_text(encoding="utf-8"))
+                  lines.extend(["", "### Status per forsikringsselskap", "", "| Selskap | Siste komplette gruppekvartal | Automatisk ende-til-ende |", "| --- | --- | --- |"])
+                  for company in coverage.get("companies", []):
+                      periods=company.get("group_quarters_with_required_metrics") or []
+                      latest=max(periods) if periods else "Mangler"
+                      verified="Ja" if company.get("automatic_complete") is True else "Ikke dokumentert"
+                      lines.append(f"| {company.get('company', 'Ukjent')} | {latest} | {verified} |")
+                  if coverage.get("all_seven_automatic") is not True:
+                      lines.append("")
+                      lines.append("**Merk:** Grønn CI betyr ikke at full automatisk rapportimport er bevist for alle sju selskapene.")
+              except (OSError, ValueError, TypeError) as exc:
+                  lines.append(f"- Dekningsdetaljer kunne ikke leses: {type(exc).__name__}")
           lines.append("- Rapporter som ennå ikke er offentliggjort, er forventet og skal ikke erstattes med beregnede verdier.")
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as out:
               out.write("\n".join(lines)+"\n")
