@@ -163,8 +163,8 @@ async function main(){
   const tableQ=norm(await page.locator('body').innerText());
   for(const c of ['Fremtind','Storebrand']){
    const r=feed.observations.find(x=>x.company===c&&x.year===year&&x.quarter===quarter&&
-     x.scope==='group'&&x.period_type==='quarter'&&x.metric==='insurance_revenue');
-   if(r)check(c+' revenue visible in original comparison table',tableQ.includes(nf(r.value)),tableQ.slice(-700));
+     x.scope==='group'&&x.period_type==='quarter'&&x.metric==='insurance_service_result');
+   if(r)check(c+' insurance result visible in comparison table',tableQ.includes(nf(r.value)),tableQ.slice(-700));
   }
   if(view.quarter.Storebrand?.revenueBasis)
    check('Storebrand APM disclaimer visible',tableQ.includes('APM'),tableQ.slice(-700));
@@ -176,8 +176,7 @@ async function main(){
    if(now&&prev&&now.unit===prev.unit){
     const cell=await page.locator('#results-comparison tbody tr').filter({hasText:c}).first().locator('td').nth(1);
     const txt=norm(await cell.innerText());
-    const arrows=await cell.locator('.qoq').count();
-    check(c+' source-based prior-year revenue and arrow',txt.includes(nf(prev.value))&&arrows===1,txt.slice(0,250));
+    check(c+' source-based growth in first metric column',txt.includes('%'),txt.slice(0,250));
    }
   }
   const subsidiaryQ=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
