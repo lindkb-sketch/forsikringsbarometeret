@@ -74,7 +74,7 @@ def extract(blob, url):
         if target is None:
             raise ValueError("Missing expected Holding key figures table")
         page_index, text = target
-        columns = 3 if q == 1 else 5
+        columns = 3 if q == 1 else (4 if q == 4 else 5)
         rows = {}
         amount = re.compile(r"-?(?:\d{1,3}(?: \d{3})+|\d+)(?:,\d+)?%?")
         for line in text.splitlines():
@@ -135,7 +135,7 @@ def extract(blob, url):
             raise ValueError("Missing or ambiguous Holding key figures: " + repr(sorted(rows)) + "; table rows: " + repr([line[:180] for line in text.splitlines() if any(label in line for label in FIELDS)][:8]))
         # Verify every comparison column too. The issuer's standard table
         # order is current quarter, prior-year quarter, current YTD,
-        # prior-year YTD, previous financial year (Q2-Q4).
+        # prior-year YTD, previous financial year (Q2-Q3); Q4 reports have four explicit columns.
         selected_columns = (
             [(0, "quarter", year), (1, "quarter", year-1)]
             if q == 1 else
