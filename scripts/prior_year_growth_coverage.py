@@ -53,9 +53,21 @@ def evidence(observations, current_year=2026, quarter=3):
     return {'period':f'Q{quarter} {current_year}','companies':out,
             'definition':'Prior-year growth equals prior-year revenue / prior-prior-year revenue - 1. Only matching official quarter/YTD company, scope, unit and revenue basis.'}
 
+def active_period(rows):
+    """Use latest genuinely imported current-year group quarter with core metrics."""
+    grouped={}
+    for row in rows:
+        if row.get('scope')=='group' and row.get('period_type')=='quarter' and row.get('company') in COMPANIES and row.get('status','reported') in ('reported','calculated'):
+            grouped.setdefault((row['year'],row['quarter'],row['company']),set()).add(row['metric'])
+    candidates=[(year,q) for (year,q,company),metrics in grouped.items()
+                if {'insurance_revenue','combined_ratio'}<=metrics]
+    if not candidates:raise ValueError('No verified published quarter')
+    return max(candidates)
+
 def main():
     rows=json.loads((ROOT/'data/financial_observations.json').read_text(encoding='utf-8'))['observations']
-    result=evidence(rows)
+    year,quarter=active_period(rows)
+    result=evidence(rows,year,quarter)
     target=ROOT/'data/prior_year_growth_coverage.json'
     target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     for row in result['companies']:
