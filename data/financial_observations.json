@@ -9673,726 +9673,6 @@
       "source_section": "Income overview / prior-year comparative column"
     },
     {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "value": 2310.335601,
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "source_cell": "D24",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "value": 144.43033630000002,
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "source_cell": "D25",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "value": 93.74851272,
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "source_cell": "D33",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "value": 81.87943003,
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "source_cell": "D31",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "value": 11.86908269,
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "source_cell": "D32",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "value": 2448.567883,
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D24",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "value": 555.5257177999999,
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D25",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "value": 77.31221904,
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D33",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "value": 65.57625089,
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D31",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "value": 11.73596815,
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D32",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 3,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_revenue",
-      "value": 2512.549395,
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D24",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 3,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "value": 601.4943248999999,
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D25",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 3,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "combined_ratio",
-      "value": 76.06039802,
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D33",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 3,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "loss_ratio",
-      "value": 64.06486026,
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D31",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "quarter": 3,
-      "scope": "norway",
-      "period_type": "quarter",
-      "metric": "expense_ratio",
-      "value": 11.99553775,
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "source_cell": "D32",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "combined_ratio",
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
-      "quarter": 1,
-      "value": 93.748513,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D33",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 93.74851272,
-          "source_cell": "D33"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "expense_ratio",
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
-      "quarter": 1,
-      "value": 11.869083,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D32",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 11.86908269,
-          "source_cell": "D32"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_revenue",
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
-      "quarter": 1,
-      "value": 2310.335601,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D24",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 2310.335601,
-          "source_cell": "D24"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
-      "quarter": 1,
-      "value": 144.430336,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D25",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 144.43033630000002,
-          "source_cell": "D25"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "loss_ratio",
-      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
-      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical -Quarterly Outline",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
-      "quarter": 1,
-      "value": 81.87943,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D31",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 81.87943003,
-          "source_cell": "D31"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "combined_ratio",
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
-      "quarter": 2,
-      "value": 85.291653,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D33,D33",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 93.74851272,
-          "source_cell": "D33"
-        },
-        {
-          "quarter": 2,
-          "value": 77.31221904,
-          "source_cell": "D33"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "expense_ratio",
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
-      "quarter": 2,
-      "value": 11.800592,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D32,D32",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 11.86908269,
-          "source_cell": "D32"
-        },
-        {
-          "quarter": 2,
-          "value": 11.73596815,
-          "source_cell": "D32"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_revenue",
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
-      "quarter": 2,
-      "value": 4758.903484,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D24,D24",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 2310.335601,
-          "source_cell": "D24"
-        },
-        {
-          "quarter": 2,
-          "value": 2448.567883,
-          "source_cell": "D24"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
-      "quarter": 2,
-      "value": 699.956054,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D25,D25",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 144.43033630000002,
-          "source_cell": "D25"
-        },
-        {
-          "quarter": 2,
-          "value": 555.5257177999999,
-          "source_cell": "D25"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "loss_ratio",
-      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
-      "quarter": 2,
-      "value": 73.491061,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D31,D31",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 81.87943003,
-          "source_cell": "D31"
-        },
-        {
-          "quarter": 2,
-          "value": 65.57625089,
-          "source_cell": "D31"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "combined_ratio",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
-      "quarter": 3,
-      "value": 82.101921,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D33,D33,D33",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 93.74851272,
-          "source_cell": "D33"
-        },
-        {
-          "quarter": 2,
-          "value": 77.31221904,
-          "source_cell": "D33"
-        },
-        {
-          "quarter": 3,
-          "value": 76.06039802,
-          "source_cell": "D33"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "expense_ratio",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
-      "quarter": 3,
-      "value": 11.867953,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D32,D32,D32",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 11.86908269,
-          "source_cell": "D32"
-        },
-        {
-          "quarter": 2,
-          "value": 11.73596815,
-          "source_cell": "D32"
-        },
-        {
-          "quarter": 3,
-          "value": 11.99553775,
-          "source_cell": "D32"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_revenue",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
-      "quarter": 3,
-      "value": 7271.452879,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D24,D24,D24",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 2310.335601,
-          "source_cell": "D24"
-        },
-        {
-          "quarter": 2,
-          "value": 2448.567883,
-          "source_cell": "D24"
-        },
-        {
-          "quarter": 3,
-          "value": 2512.549395,
-          "source_cell": "D24"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
-      "quarter": 3,
-      "value": 1301.450379,
-      "unit": null,
-      "calculation": "sum_of_isolated_quarters",
-      "source_cell": "D25,D25,D25",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 144.43033630000002,
-          "source_cell": "D25"
-        },
-        {
-          "quarter": 2,
-          "value": 555.5257177999999,
-          "source_cell": "D25"
-        },
-        {
-          "quarter": 3,
-          "value": 601.4943248999999,
-          "source_cell": "D25"
-        }
-      ]
-    },
-    {
-      "company": "Tryg",
-      "year": 2026,
-      "scope": "norway",
-      "period_type": "ytd",
-      "metric": "loss_ratio",
-      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
-      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
-      "source_type": "official_investor_tables",
-      "source_sheet": "Geographical - Quarterly Outlin",
-      "status": "reported",
-      "source_scope": "norway",
-      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
-      "quarter": 3,
-      "value": 70.233968,
-      "unit": null,
-      "calculation": "insurance_revenue_weighted_ratio",
-      "source_cell": "D31,D31,D31",
-      "inputs": [
-        {
-          "quarter": 1,
-          "value": 81.87943003,
-          "source_cell": "D31"
-        },
-        {
-          "quarter": 2,
-          "value": 65.57625089,
-          "source_cell": "D31"
-        },
-        {
-          "quarter": 3,
-          "value": 64.06486026,
-          "source_cell": "D31"
-        }
-      ]
-    },
-    {
       "company": "Fremtind",
       "year": 2025,
       "quarter": 4,
@@ -11718,6 +10998,726 @@
       "source_document_period": "Q4 2025",
       "source_entity": "Storebrand ASA",
       "source_definition": "Group key figures; Solvency II ratio (%)"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 2310.335601,
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "source_cell": "D24",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 144.43033630000002,
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "source_cell": "D25",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 93.74851272,
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "source_cell": "D33",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 81.87943003,
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "source_cell": "D31",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 11.86908269,
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "source_cell": "D32",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 2448.567883,
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D24",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 555.5257177999999,
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D25",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 77.31221904,
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D33",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 65.57625089,
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D31",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 11.73596815,
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D32",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 2512.549395,
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D24",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 601.4943248999999,
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D25",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 76.06039802,
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D33",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 64.06486026,
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D31",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 11.99553775,
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "source_cell": "D32",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "combined_ratio",
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
+      "quarter": 1,
+      "value": 93.748513,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D33",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 93.74851272,
+          "source_cell": "D33"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "expense_ratio",
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
+      "quarter": 1,
+      "value": 11.869083,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D32",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 11.86908269,
+          "source_cell": "D32"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_revenue",
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
+      "quarter": 1,
+      "value": 2310.335601,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D24",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 2310.335601,
+          "source_cell": "D24"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
+      "quarter": 1,
+      "value": 144.430336,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D25",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 144.43033630000002,
+          "source_cell": "D25"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "loss_ratio",
+      "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Tryg%20Group%20-%20Q1%202026%20-%20Investor%20tables_5oropr2k.xlsx",
+      "source_document_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical -Quarterly Outline",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "b6e555d3edb7c4a839292b1bd825d393d83db0eaedbf79054c701d81dbb25ac9",
+      "quarter": 1,
+      "value": 81.87943,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D31",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 81.87943003,
+          "source_cell": "D31"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "combined_ratio",
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
+      "quarter": 2,
+      "value": 85.291653,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D33,D33",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 93.74851272,
+          "source_cell": "D33"
+        },
+        {
+          "quarter": 2,
+          "value": 77.31221904,
+          "source_cell": "D33"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "expense_ratio",
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
+      "quarter": 2,
+      "value": 11.800592,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D32,D32",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 11.86908269,
+          "source_cell": "D32"
+        },
+        {
+          "quarter": 2,
+          "value": 11.73596815,
+          "source_cell": "D32"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_revenue",
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
+      "quarter": 2,
+      "value": 4758.903484,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D24,D24",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 2310.335601,
+          "source_cell": "D24"
+        },
+        {
+          "quarter": 2,
+          "value": 2448.567883,
+          "source_cell": "D24"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
+      "quarter": 2,
+      "value": 699.956054,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D25,D25",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 144.43033630000002,
+          "source_cell": "D25"
+        },
+        {
+          "quarter": 2,
+          "value": 555.5257177999999,
+          "source_cell": "D25"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "loss_ratio",
+      "source_url": "https://tryg.com/system/files/2026-07/Tryg%20Group%20-%20Q2%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "6410e0b5809bd5d43437cc01746a929e22a3952a9150eb070ad9ccc84294f03c",
+      "quarter": 2,
+      "value": 73.491061,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D31,D31",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 81.87943003,
+          "source_cell": "D31"
+        },
+        {
+          "quarter": 2,
+          "value": 65.57625089,
+          "source_cell": "D31"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "combined_ratio",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
+      "quarter": 3,
+      "value": 82.101921,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D33,D33,D33",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 93.74851272,
+          "source_cell": "D33"
+        },
+        {
+          "quarter": 2,
+          "value": 77.31221904,
+          "source_cell": "D33"
+        },
+        {
+          "quarter": 3,
+          "value": 76.06039802,
+          "source_cell": "D33"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "expense_ratio",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
+      "quarter": 3,
+      "value": 11.867953,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D32,D32,D32",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 11.86908269,
+          "source_cell": "D32"
+        },
+        {
+          "quarter": 2,
+          "value": 11.73596815,
+          "source_cell": "D32"
+        },
+        {
+          "quarter": 3,
+          "value": 11.99553775,
+          "source_cell": "D32"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_revenue",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
+      "quarter": 3,
+      "value": 7271.452879,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D24,D24,D24",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 2310.335601,
+          "source_cell": "D24"
+        },
+        {
+          "quarter": 2,
+          "value": 2448.567883,
+          "source_cell": "D24"
+        },
+        {
+          "quarter": 3,
+          "value": 2512.549395,
+          "source_cell": "D24"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
+      "quarter": 3,
+      "value": 1301.450379,
+      "unit": null,
+      "calculation": "sum_of_isolated_quarters",
+      "source_cell": "D25,D25,D25",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 144.43033630000002,
+          "source_cell": "D25"
+        },
+        {
+          "quarter": 2,
+          "value": 555.5257177999999,
+          "source_cell": "D25"
+        },
+        {
+          "quarter": 3,
+          "value": 601.4943248999999,
+          "source_cell": "D25"
+        }
+      ]
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "scope": "norway",
+      "period_type": "ytd",
+      "metric": "loss_ratio",
+      "source_url": "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
+      "source_document_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_type": "official_investor_tables",
+      "source_sheet": "Geographical - Quarterly Outlin",
+      "status": "reported",
+      "source_scope": "norway",
+      "source_sha256": "05b0d7f116d166c9f5557776bed3193efb1e3ee3bd1228796862ed85d65f1c9c",
+      "quarter": 3,
+      "value": 70.233968,
+      "unit": null,
+      "calculation": "insurance_revenue_weighted_ratio",
+      "source_cell": "D31,D31,D31",
+      "inputs": [
+        {
+          "quarter": 1,
+          "value": 81.87943003,
+          "source_cell": "D31"
+        },
+        {
+          "quarter": 2,
+          "value": 65.57625089,
+          "source_cell": "D31"
+        },
+        {
+          "quarter": 3,
+          "value": 64.06486026,
+          "source_cell": "D31"
+        }
+      ]
     }
   ],
   "market_share": {
