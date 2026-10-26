@@ -108,6 +108,46 @@ def extract_revenue(section_html,url,year,quarter):
             'source_sha256':digest})
     return result
 
+def extract_historical_revenue(section_html,url,year,quarter):
+    """Historical same-quarter/YTD comparisons from issuer-labelled columns.
+
+    A Q3 2025 report is the official source for Q3 2024. Do not mistake
+    annual YTD for isolated quarter, or premiums for group operating income.
+    """
+    t=TableReader()
+    t.feed(section_html)
+    if not t.rows or t.rows[0][0]!='Resultatregnskap':
+        raise ValueError('Historical Frende income source not verified')
+    header=t.rows[0]
+    if f'{quarter}. kv {year}' not in header or f'{quarter}. kv {year-1}' not in header:
+        return []
+    records={r[0]:r for r in t.rows[1:] if r}
+    if 'Sum driftsinntekter' not in records:
+        raise ValueError('Historical Frende group operating revenue missing')
+    values=[('quarter',header.index(f'{quarter}. kv {year-1}'))]
+    if quarter>1:
+        date={2:'30.06.',3:'30.09.',4:'31.12.'}[quarter]+str(year-1)[2:]
+        matches=[i for i,h in enumerate(header) if h in (date,'01.01-'+date)]
+        if len(matches)==1:
+            values.append(('ytd',matches[0]))
+        elif len(matches)>1:
+            raise ValueError('Ambiguous historical Frende YTD source column')
+    elif quarter==1:
+        values.append(('ytd',values[0][1]))
+    digest=hashlib.sha256(section_html.encode('utf-8')).hexdigest()
+    result=[]
+    for period,column in values:
+        amount=number(records['Sum driftsinntekter'][column])/1000
+        result.append({'company':'Frende','year':year-1,'quarter':quarter,
+            'scope':'group','period_type':period,'metric':'insurance_revenue',
+            'value':round(amount,3),'unit':'NOKm','status':'reported',
+            'source_type':'official_quarterly_report','source_url':url,'source_page':7,
+            'source_entity':'Frende Holding AS konsern',
+            'source_document_period':f'Q{quarter} {year}',
+            'source_definition':'Sum driftsinntekter (group operating revenue, not insurance-only revenue); prior-year comparative column',
+            'source_sha256':digest})
+    return result
+
 def read(url,section=6):
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme!='https' or parsed.hostname!='frende.wrep.it' or not re.fullmatch(r'/q[1-4]-20\d{2}-frende-holding-as',parsed.path):
@@ -137,10 +177,12 @@ def run():
             quarter,year=map(int,match.groups())
             if (year,quarter)!=(item['year'],item['quarter']):raise ValueError('Discovery and publisher period mismatch')
             rows=extract(read(url),url+'/sec/6',year,quarter)
-            rows+=extract_revenue(read(url,7),url+'/sec/7',year,quarter)
+            income=read(url,7)
+            rows+=extract_revenue(income,url+'/sec/7',year,quarter)
+            rows+=extract_historical_revenue(income,url+'/sec/7',year,quarter)
             verified.append([year,quarter])
             for row in rows:
-                key=(year,quarter,row['period_type'],row['metric'])
+                key=(row['year'],row['quarter'],row['period_type'],row['metric'])
                 if key not in seen:imported.append(row);seen.add(key)
         except Exception as exc:errors.append({'url':url,'reason':str(exc)})
     if not verified:raise ValueError('No verified Frende issuer tables: '+json.dumps(errors[:4]))

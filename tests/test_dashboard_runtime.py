@@ -105,8 +105,8 @@ class DashboardRuntimeTests(unittest.TestCase):
   js=RUNTIME.read_text()
   importer=(ROOT/'scripts/import_frende_holding.py').read_text()
   self.assertIn("if(key==='growth'&&c==='Frende')",html)
-  self.assertIn("label.textContent='Vekst i driftsinntekter'",html)
-  self.assertIn("data.growthMetricLabel='Vekst i driftsinntekter'",js)
+  self.assertIn("label.textContent='Vekst i forsikringsinntekter (IFRS 4)'",html)
+  self.assertIn("data.growthMetricLabel='Vekst i forsikringsinntekter (IFRS 4)'",js)
   self.assertIn("name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter'",js)
   self.assertIn("label='Sum driftsinntekter'",importer)
   self.assertIn("header[1]!=f'{quarter}. kv {year}'",importer)
@@ -133,6 +133,15 @@ class DashboardRuntimeTests(unittest.TestCase):
    rows=[r for r in d['observations'] if r['company']==company and r['year']==2026
          and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter']
    self.assertIn('combined_ratio',{r['metric'] for r in rows},company)
+
+ def test_storebrand_explanation_below_table_and_frende_ifrs4_label(self):
+  runtime=RUNTIME.read_text()
+  html=HTML.read_text()
+  self.assertIn("name!=='Storebrand'",runtime)
+  self.assertIn("fragment.appendChild(note)",runtime)
+  self.assertIn("note.className='notice storebrand-revenue-note'",runtime)
+  self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",runtime)
+  self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",html)
 
  def test_no_hardcoded_active_financial_series(self):
   js=RUNTIME.read_text()

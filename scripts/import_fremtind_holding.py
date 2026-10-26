@@ -55,6 +55,10 @@ def extract(blob, url):
         pages = [p.extract_text() or "" for p in pdf.pages[:4]]
         heading = " ".join(pages[:2])
         periods = set(re.findall(r"Kvartalsrapport\s+Q([1-4])\s+(20\d{2})", heading, re.I))
+        # Historical issuer PDFs use "Delårsrapport 3. kvartal 2025".
+        periods.update(re.findall(
+            r"(?:delårsrapport|kvartalsrapport)\s+([1-4])\.?\s*kvartal\s+(20\d{2})",
+            heading, re.I))
         if len(periods) != 1 or "Fremtind Holding" not in heading:
             raise ValueError("Holding entity or report quarter not verified")
         q, year = next(iter(periods))
@@ -186,8 +190,7 @@ def run():
     for url in links[:30]:
         try:
             rows = extract(read_pdf(url), url)
-            if rows[0]["year"] < 2025:
-                continue
+            # Check the reporting-document period, not the first observation:\n            # a Q3 2025 PDF can begin with its Q3 2024 comparison column.\n            document_year=max(r['year'] for r in rows)\n            if document_year < 2025:\n                continue
             for r in rows:
                 key = (r["year"], r["quarter"], r["period_type"], r["metric"])
                 if key not in existing_keys:

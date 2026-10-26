@@ -36,6 +36,13 @@ class Tests(unittest.TestCase):
   pages=[overview(year,header_q or q),segment('Private Nordic'),segment('Nordic Commercial')]
   with patch.object(s.pdfplumber,'open',return_value=PDF(pages)):
    return s.parse(b'%PDF-synthetic','https://www.sampo.com/test.pdf',year,q)
+ def test_official_q3_2025_comparative_backfill(self):
+  rows=self.parse(2025,3)
+  prior=[x for x in rows if x['year']==2024]
+  self.assertEqual(len(prior),1)
+  self.assertEqual(prior[0]['metric'],'insurance_revenue')
+  self.assertEqual(prior[0]['period_type'],'quarter')
+
  def test_q3_2026(self):
   rows=self.parse(2026,3)
   self.assertEqual(len(rows),15)

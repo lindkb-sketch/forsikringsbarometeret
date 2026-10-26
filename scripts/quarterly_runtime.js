@@ -119,7 +119,7 @@
             if(current.calculation)data[k+'Method']=current.calculation;
             if(k==='revenue'){
               data.revenueUnit=current.unit||'';
-              if(name==='Frende')data.revenueBasis='Sum driftsinntekter (Frende Holding AS konsern) – ikke rene forsikringsinntekter';
+              if(name==='Frende')data.revenueBasis='IFRS 4: premieinntekter fra skade- og livsforsikring (rapportert som sum driftsinntekter for Frende Holding AS konsern)';
               else if(basis(current)==='apm')data.revenueBasis='Insurance premiums f.o.a. (APM) – ikke IFRS 17-forsikringsinntekter';
               if(current.derived_ytd)data.revenueBasis=(data.revenueBasis||'')+
                 ' Beregnet HIÅ fra verifiserte kvartaler.';
@@ -156,7 +156,7 @@
           data.growthPrevBasis=lastGrowth.method;
         }
         data.growthComparisonPeriod=type;
-        if(name==='Frende')data.growthMetricLabel='Vekst i driftsinntekter';
+        if(name==='Frende')data.growthMetricLabel='Vekst i forsikringsinntekter (IFRS 4)';
         if(Object.keys(data).length)bucket[name]=data;
       }
       const group=financialRows.filter(r=>r.company===name&&r.period_type==='quarter');
@@ -282,7 +282,7 @@
       const td=document.createElement('td');
       if(d.revenue){
         const title=escape(d.revenue)+' <small>'+escape(d.revenueUnit||'')+'</small>';
-        const basis=d.revenueBasis?'<div class="table-prior">'+escape(d.revenueBasis)+'</div>':'';
+        const basis=d.revenueBasis&&name!=='Storebrand'?'<div class="table-prior">'+escape(d.revenueBasis)+'</div>':'';
         const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
         const prior=d.revenuePrev
           ?'<span class="table-prior">'+lastYear+': '+escape(d.revenuePrev)+'</span>'
@@ -325,6 +325,13 @@
           '<div class="table-prior"><strong>Fjorårets inntektsvekst: '+escape(previousGrowth)+'</strong></div>'+
           '<div class="table-prior">'+escape(previousLabel)+'</div>';
       }
+    }
+    const storebrand=(isYtd?MON_YTD_Q3:MON_Q3).Storebrand;
+    if(storebrand?.revenueBasis){
+      const note=document.createElement('p');
+      note.className='notice storebrand-revenue-note';
+      note.textContent='Storebrand – inntektsgrunnlag: '+storebrand.revenueBasis;
+      fragment.appendChild(note);
     }
     return fragment.innerHTML;
   }
