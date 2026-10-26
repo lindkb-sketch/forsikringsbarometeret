@@ -27,9 +27,20 @@
     const pts=new Map();
     for(const r of rows()) {
       if(r.period_type!=='quarter'||!METRICS.includes(r.metric))continue;
-      pts.set(r.year+'-'+r.quarter,{year:r.year,quarter:r.quarter});
+      const key=r.year+'-'+r.quarter;
+      if(!pts.has(key))pts.set(key,{year:r.year,quarter:r.quarter,issuers:new Map()});
+      const period=pts.get(key);
+      if(!period.issuers.has(r.company))period.issuers.set(r.company,new Set());
+      period.issuers.get(r.company).add(r.metric);
     }
-    return [...pts.values()].sort((a,b)=>b.year-a.year||b.quarter-a.quarter);
+    // A solitary comparator, ratio or partial import must not switch the
+    // entire homepage to a nearly empty future quarter. One issuer must
+    // have BOTH verified revenue and a combined ratio for that quarter.
+    return [...pts.values()]
+      .filter(p=>[...p.issuers.values()].some(metrics=>
+        metrics.has('insurance_revenue')&&metrics.has('combined_ratio')))
+      .map(({year,quarter})=>({year,quarter}))
+      .sort((a,b)=>b.year-a.year||b.quarter-a.quarter);
   }
   function lookup(company,type,year,quarter,metric){
     return rows().find(r=>r.company===company&&r.year===year&&r.quarter===quarter&&
