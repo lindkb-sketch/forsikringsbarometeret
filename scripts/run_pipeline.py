@@ -32,6 +32,11 @@ def run(offline=False):
   print('RUN protector_publish.py (official KPI and PDF-verified prior-year comparisons)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'protector_publish.py')],cwd=ROOT,check=True)
  if not offline:
+  print('RUN protector_2024_official_backfill.py (official historical quarter and HIÅ)',flush=True)
+  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'protector_2024_official_backfill.py')],cwd=ROOT)
+  if attempt.returncode:
+   print('::warning::Protector historical source unavailable or invalid; preserving verified baseline',flush=True)
+ if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
  if not offline:
