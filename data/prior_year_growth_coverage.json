@@ -5,19 +5,33 @@
       "company": "Fremtind",
       "quarter": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 11.1,
+        "unit": "NOKm",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
+        ],
+        "observation_values": {
+          "2025": 6047.0,
+          "2024": 5445.0
+        }
       },
       "ytd": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 26.4,
+        "unit": "NOKm",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
+        ],
+        "observation_values": {
+          "2025": 17376.0,
+          "2024": 13745.0
+        }
       }
     },
     {

@@ -859,7 +859,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 487,
+  "observation_count": 507,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1473,6 +1473,66 @@
       "inputs": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
         "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 38.72255489021956,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 36.48192771084338,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 11.056014692378335,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 26.416878865041827,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },

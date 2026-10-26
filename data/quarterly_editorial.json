@@ -962,12 +962,12 @@
       ],
       "by_company": {
         "Fremtind": {
-          "summary": "Fremtind: forsikringsinntekter 6047 NOKm, forsikringsresultat 1411 NOKm, combined ratio 76.7 % i Q3 2025.",
+          "summary": "Fremtind: forsikringsinntekter 6047 NOKm (+11.1 % mot Q3 2024), forsikringsresultat 1411 NOKm, combined ratio 76.7 % (Q3 2024: 82.6 %) i Q3 2025.",
           "comment": "Fremtind: combined ratio 76.7 % i Q3 2025, forbedret med 7.9 prosentpoeng fra Q2 2025 (84.6 %).",
-          "ytd": "HIÅ: forsikringsinntekter 17376 NOKm.",
+          "ytd": "HIÅ: forsikringsinntekter 17376 NOKm (+26.4 % mot HIÅ 2024).",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "period": "Q3 2025",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Gjensidige": {
           "summary": "Gjensidige: forsikringsinntekter 11201.9 MNOK (+13.3 % mot Q3 2024), forsikringsresultat 2270.6 MNOK, combined ratio 79.7 % (Q3 2024: 83.9 %) i Q3 2025.",
@@ -1104,12 +1104,12 @@
       ],
       "by_company": {
         "Fremtind": {
-          "summary": "Fremtind: forsikringsinntekter 5560 NOKm, forsikringsresultat 856 NOKm, combined ratio 84.6 % i Q2 2025.",
+          "summary": "Fremtind: forsikringsinntekter 5560 NOKm (+38.7 % mot Q2 2024), forsikringsresultat 856 NOKm, combined ratio 84.6 % (Q2 2024: 92.6 %) i Q2 2025.",
           "comment": "Fremtind: combined ratio 84.6 % i Q2 2025, forbedret med 0.8 prosentpoeng fra Q1 2025 (85.4 %).",
-          "ytd": "HIÅ: forsikringsinntekter 11328 NOKm.",
+          "ytd": "HIÅ: forsikringsinntekter 11328 NOKm (+36.5 % mot HIÅ 2024).",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "period": "Q2 2025",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Gjensidige": {
           "summary": "Gjensidige: forsikringsinntekter 10493.2 MNOK, forsikringsresultat 2200.5 MNOK, combined ratio 79 % i Q2 2025.",
@@ -1267,12 +1267,27 @@
     "Q3 2024": {
       "brief": [
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
-          "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
           "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
+          ],
+          "companies": [
+            "Fremtind"
+          ],
+          "period": "Q3 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "underwriting_improvement"
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
             "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
           ],
           "companies": [
+            "Fremtind",
             "Frende"
           ],
           "period": "Q3 2024",
@@ -1281,6 +1296,13 @@
         }
       ],
       "implications": [
+        {
+          "text": "Fremtind: combined ratio 82.6 % i Q3 2024, forbedret med 10 prosentpoeng fra Q2 2024 (92.6 %).",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+          "company": "Fremtind",
+          "period": "Q3 2024",
+          "type": "rule_based_interpretation"
+        },
         {
           "text": "Gjensidige: combined ratio 83.9 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf",
@@ -1297,6 +1319,14 @@
         }
       ],
       "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 5445 NOKm, forsikringsresultat 950 NOKm, combined ratio 82.6 % i Q3 2024.",
+          "comment": "Fremtind: combined ratio 82.6 % i Q3 2024, forbedret med 10 prosentpoeng fra Q2 2024 (92.6 %).",
+          "ytd": "HIÅ: forsikringsinntekter 13745 NOKm.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+          "period": "Q3 2024",
+          "has_comparative": false
+        },
         "Gjensidige": {
           "summary": "Gjensidige: forsikringsinntekter 9888.8 MNOK, forsikringsresultat 1590 MNOK, combined ratio 83.9 % i Q3 2024.",
           "comment": "Gjensidige: combined ratio 83.9 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
@@ -1339,13 +1369,14 @@
         }
       },
       "issuer_brief_status": {
+        "Fremtind": "featured",
         "Gjensidige": "awaiting_curated_commentary",
         "Tryg": "awaiting_curated_commentary",
         "Frende": "featured",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 5
+      "reported_company_count": 6
     },
     "Q2 2024": {
       "brief": [
@@ -1363,8 +1394,24 @@
           "theme": "revenue_decline"
         }
       ],
-      "implications": [],
+      "implications": [
+        {
+          "text": "Fremtind: combined ratio 92.6 % i Q2 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf",
+          "company": "Fremtind",
+          "period": "Q2 2024",
+          "type": "rule_based_interpretation"
+        }
+      ],
       "by_company": {
+        "Fremtind": {
+          "summary": "Fremtind: forsikringsinntekter 4008 NOKm, forsikringsresultat 300 NOKm, combined ratio 92.6 % i Q2 2024.",
+          "comment": "Fremtind: combined ratio 92.6 % i Q2 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 8300 NOKm.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf",
+          "period": "Q2 2024",
+          "has_comparative": false
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 656.381 NOKm, forsikringsresultat 94.478 NOKm i Q2 2024.",
           "comment": "Frende: forsikringsinntekter 656.381 NOKm, forsikringsresultat 94.478 NOKm i Q2 2024.",
@@ -1375,9 +1422,10 @@
         }
       },
       "issuer_brief_status": {
+        "Fremtind": "awaiting_curated_commentary",
         "Frende": "featured"
       },
-      "reported_company_count": 1
+      "reported_company_count": 2
     },
     "Q1 2024": {
       "brief": [
