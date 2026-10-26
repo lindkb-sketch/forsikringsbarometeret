@@ -37,6 +37,15 @@ def run(offline=False):
   if attempt.returncode:
    print('::warning::Protector historical source unavailable or invalid; preserving verified baseline',flush=True)
  if not offline:
+  # Sampo and Storebrand must be part of the scheduled ingestion path, not
+  # only diagnostic workflows. Failures keep previously audited observations.
+  # The profitability coverage report marks missing quarters explicitly.
+  for filename in ['sampo_publish.py', 'storebrand_publish_q3.py']:
+   print('RUN',filename,'(official report import; preserves audited baseline if unavailable)',flush=True)
+   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/filename)],cwd=ROOT)
+   if attempt.returncode:
+    print('::warning::'+filename+' blocked by missing/changed official report; no invented figures published',flush=True)
+ if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
  if not offline:
