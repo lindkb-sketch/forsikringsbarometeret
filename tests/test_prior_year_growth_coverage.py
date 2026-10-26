@@ -29,7 +29,7 @@ class PriorYearEvidenceTests(unittest.TestCase):
     importer=(Path(__file__).resolve().parents[1]/'scripts/import_fremtind_holding.py').read_text()
     self.assertIn('delårsrapport|kvartalsrapport',importer)
     import re
-    pattern=r"(?:delårsrapport|kvartalsrapport)\\s+([1-4])\\.?\\s*kvartal\\s+(20\\d{2})"
+    pattern=r"(?:delårsrapport|kvartalsrapport)\s+([1-4])\.?\s*kvartal\s+(20\d{2})"
     self.assertEqual(re.findall(pattern,'Fremtind Holding delårsrapport 3. kvartal 2025',re.I),[('3','2025')])
 
  def test_auto_rollover_follows_latest_qualified_issuer_quarter(self):
