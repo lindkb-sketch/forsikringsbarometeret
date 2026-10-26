@@ -47,6 +47,18 @@ def scan(fetcher=None):
    return blob.decode("utf-8",errors="replace")
  sources=json.loads(REGISTRY.read_text())["sources"]
  pages={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
+ # Include official year/quarter archive pages. This scans both missing
+ # historical quarters and newly published periods on EVERY scheduled run.
+ # Issuer-specific layouts still require their own strict numeric parsers.
+ from datetime import date
+ current=date.today()
+ for year in range(2024,current.year+1):
+  pages.add(("Tryg",f"https://tryg.com/en/downloads-{year}"))
+  for quarter in range(1,5):
+   if (year,quarter)>(current.year,(current.month-1)//3+1):continue
+   pages.add(("Sampo",f"https://www.sampo.com/investors/quarterly-reporting/q{quarter}-{year}/"))
+ # The Sampo issuer archive, not its corporate homepage, is the index.
+ pages.discard(("Sampo","https://www.sampo.com/"))
  candidates=[];errors=[]
  for company,url in sorted(pages):
   try:candidates+=discover(fetcher(url),url,company)
