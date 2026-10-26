@@ -339,11 +339,22 @@
             :'<div class="table-prior">(—)</div>')+direction;
       }
     }
+    // Preserve the verifiable local IFRS 17 disclosure, outside the group
+    // income cell, where it cannot be mistaken for group APM revenue.
+    const localStorebrand=(verified?.observations||[]).find(r=>
+      r.company==='Storebrand'&&r.scope==='norway'&&
+      r.source_entity==='Storebrand Forsikring AS'&&
+      r.year===year&&r.quarter===q&&r.period_type===(isYtd?'ytd':'quarter')&&
+      r.metric==='insurance_revenue'&&valid(r)&&
+      /IFRS\\s*17/i.test(r.source_definition||''));
     const bucket=(isYtd?MON_YTD_Q3:MON_Q3);
     const notes=[];
     for(const company of ['Storebrand','Frende']){
       if(bucket[company]?.revenueBasis)
         notes.push(company+' – '+bucket[company].revenueBasis);
+    }
+    if(localStorebrand){
+      notes.push('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+fmt(localStorebrand.value)+' '+(localStorebrand.unit||'MNOK'));
     }
     if(notes.length){
       const notesRow=document.createElement('div');
