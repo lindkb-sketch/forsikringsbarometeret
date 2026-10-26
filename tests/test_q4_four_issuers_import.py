@@ -1,12 +1,13 @@
 """Official Q4 report-format regressions across four previously missing issuers."""
-import io,sys,unittest
+import io,sys,unittest,tempfile,json
 from pathlib import Path
+from datetime import date
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from import_fremtind_holding import extract,read_pdf
 from protector_publish import discover_pdf,download as protector_download,parse_pdf as protector_parse,provenance as protector_provenance
-from storebrand_q4_group import find_group_q4,Q4_2025
+from storebrand_q4_group import find_group_q4,Q4_2025,run as storebrand_q4_run
 from import_tryg import download_tryg_report,parse_group as tryg_parse
 
 class IssuerQ4Tests(unittest.TestCase):
@@ -44,6 +45,21 @@ class IssuerQ4Tests(unittest.TestCase):
   self.assertEqual(find_group_q4(2026,lookup),'https://www.storebrand.no/q4.pdf')
   self.assertEqual(find_group_q4(2025,lambda year:{'reports':[]}),Q4_2025)
   self.assertIsNone(find_group_q4(2026,lambda year:{'reports':[]}))
+ def test_real_storebrand_q4_group_import_keeps_other_companies(self):
+  baseline=json.loads((ROOT/'data/financial_observations.json').read_text())
+  with tempfile.TemporaryDirectory() as td:
+   data=Path(td)/'data.json'
+   feed=Path(td)/'feed.json'
+   data.write_text(json.dumps(baseline))
+   result=storebrand_q4_run(today=date(2026,10,26),data=data,feed=feed)
+   after=json.loads(data.read_text())
+  self.assertIn(2025,result)
+  self.assertEqual([r for r in baseline['observations'] if r['company']!='Storebrand'],
+    [r for r in after['observations'] if r['company']!='Storebrand'])
+  values=[r['value'] for r in after['observations'] if
+    r['company']=='Storebrand' and r['scope']=='group' and r['year']==2025
+    and r['quarter']==4 and r['period_type']=='quarter' and r['metric']=='combined_ratio']
+  self.assertEqual(values,[93.0])
  def test_real_official_fremtind_q4_2025(self):
   url='https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf'
   data=extract(read_pdf(url),url)
