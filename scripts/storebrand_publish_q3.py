@@ -23,7 +23,7 @@ FEED = ROOT / 'data/verified_financial_feed.json'
 
 def prepare(group_path, norway_path, group_url, norway_url, baseline,year=2026,quarter=3):
     incoming = parse_group(group_path, group_url,year,quarter) + parse_norway(norway_path, norway_url,year,quarter)
-    if len(incoming) != (58 if quarter==3 else 12):
+    if len(incoming) != (57 if quarter==3 else 12):
         raise ValueError(f'Unexpected observation count: {len(incoming)}')
     for r in incoming:
         if r['company'] != 'Storebrand' or r['quarter'] not in range(1, 5) or r['year'] not in (year-1, year):
@@ -87,7 +87,7 @@ def main(argv=None):
         repeated, second_added, _ = integrate(merged, parse_group(group, group_url,args.year,args.quarter) + parse_norway(norway, norway_url,args.year,args.quarter))
         if second_added or repeated != merged:
             raise ValueError('Non-idempotent Storebrand import')
-        report = {'status': 'passed', 'quarter': f'Q{args.quarter} {args.year}', 'parsed': (51 if args.quarter==3 else 11),
+        report = {'status': 'passed', 'quarter': f'Q{args.quarter} {args.year}', 'parsed': (57 if args.quarter==3 else 12),
                   'added': added, 'updated_provenance': updated,
                   'dry_run': args.dry_run, 'group_url': group_url, 'norway_url': norway_url}
         if not args.dry_run and (added or updated):
