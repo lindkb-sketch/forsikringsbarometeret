@@ -31,10 +31,12 @@ def discover(html,base_url,company):
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Require interim-report context, and an explicit PDF file extension.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
-  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
-  if re.search(r"(presentation|presentasjon|press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}(?:report|presentation)|(?:report|presentation).{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
+  if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  is_presentation=bool(re.search(r"(presentation|presentasjon)",label,re.I))
+  if is_presentation and not re.search(r"(q[1-4]|quarter|kvartal|interim)",label,re.I):continue
   if url not in seen:
-   found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","link_text":link["text"].strip()})
+   found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","document_type":"official_quarterly_presentation_candidate" if is_presentation else "official_quarterly_report_candidate","link_text":link["text"].strip()})
    seen.add(url)
  return found
 def scan(fetcher=None):
@@ -46,15 +48,40 @@ def scan(fetcher=None):
    if len(blob)>4*1024*1024:raise ValueError("Index too large")
    return blob.decode("utf-8",errors="replace")
  sources=json.loads(REGISTRY.read_text())["sources"]
- pages={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
- candidates=[];errors=[]
+ primary={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
+ pages=set(primary)
+ # Include official year/quarter archive pages. This scans both missing
+ # historical quarters and newly published periods on EVERY scheduled run.
+ # Issuer-specific layouts still require their own strict numeric parsers.
+ from datetime import date
+ current=date.today()
+ for year in range(2024,current.year+1):
+  pages.add(("Tryg",f"https://tryg.com/en/downloads-{year}"))
+  for quarter in range(1,5):
+   if (year,quarter)>(current.year,(current.month-1)//3+1):continue
+   pages.add(("Sampo",f"https://www.sampo.com/investors/quarterly-reporting/q{quarter}-{year}/"))
+ # The Sampo issuer archive, not its corporate homepage, is the index.
+ pages.discard(("Sampo","https://www.sampo.com/"))
+ candidates=[];errors=[];warnings=[]
  for company,url in sorted(pages):
   try:candidates+=discover(fetcher(url),url,company)
-  except Exception as e:errors.append(f"{company}: {type(e).__name__}: {e}")
- return {"candidates":candidates,"errors":errors,"complete":not errors}
+  except Exception as e:
+   message=f"{company} {url}: {type(e).__name__}: {e}"
+   (errors if (company,url) in primary else warnings).append(message)
+ # Historical archive pages can be absent without invalidating healthy issuer
+ # index checks. Keep all verified old candidates when a source is unavailable.
+ if OUTPUT.exists():
+  try:
+   prior=json.loads(OUTPUT.read_text(encoding="utf-8"))
+   candidates+=prior.get("candidates",[])
+  except (OSError,ValueError):pass
+ candidates=list({(x["company"],x["document_url"]):x for x in candidates}.values())
+ return {"candidates":candidates,"errors":errors,"warnings":warnings,
+         "complete":not errors,"publication_authorized":False}
 if __name__=="__main__":
  result=scan()
- # Never overwrite previous results on failure
- if result["complete"]:OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
- print(json.dumps({"candidates":len(result["candidates"]),"errors":result["errors"]},ensure_ascii=False))
+ # Candidate discovery is informational and never publishes numbers.
+ # Preserve previous candidates across transient issuer outages.
+ OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n")
+ print(json.dumps({"candidates":len(result["candidates"]),"errors":result["errors"],"warnings":len(result["warnings"])},ensure_ascii=False))
  sys.exit(bool(result["errors"]))

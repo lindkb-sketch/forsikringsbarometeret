@@ -27,6 +27,51 @@ async function main(){
    return r.json();
   }));
   const [feed,editorial,news,stocks,calendarFeed,readiness]=files;
+  // Verify every dynamically rendered insurer number against the EXACT published
+  // official-source observation; synthetic future-quarter fixtures are not used here.
+  await page.waitForFunction(()=>Array.isArray(window.officialQuarterObservations),null,{timeout:20000});
+  for(const company of ['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']){
+    const eligible=(feed.observations||[]).filter(r=>r.company===company&&
+      r.period_type==='quarter'&&['group','norway','reported_segment'].includes(r.scope)&&
+      ['reported','calculated'].includes(r.status||'reported')&&
+      ['official_quarterly_report','official_investor_tables'].includes(r.source_type)&&
+      r.source_url&&Number.isFinite(r.value)&&
+      ['insurance_revenue','insurance_service_result','combined_ratio','loss_ratio',
+       'expense_ratio','return_on_equity','return_on_operating_funds'].includes(r.metric));
+    if(!eligible.length){check(company+' has official quarterly data',false,'No eligible source observations');continue;}
+    const latest=Math.max(...eligible.map(r=>r.year*4+r.quarter));
+    const expected=eligible.filter(r=>r.year*4+r.quarter===latest);
+    await page.evaluate(c=>show(c),company);
+    const rows=await page.locator('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').allTextContents();
+    check(company+' all official numbers rendered',rows.length===expected.length,
+      'rows '+rows.length+' expected '+expected.length);
+    const pageCells=await page.locator('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').evaluateAll(nodes=>
+      nodes.map(node=>({label:node.children[0]?.textContent,value:node.children[2]?.textContent,
+        link:node.querySelector('a')?.getAttribute('href'),raw:node.getAttribute('data-observation-value'),metric:node.getAttribute('data-observation-metric')})));
+    for(let i=0;i<expected.length;i++){
+      const obs=expected[i],numeric=nf(obs.value);
+      check(company+' '+obs.year+'Q'+obs.quarter+' '+obs.scope+'/'+(obs.segment||'')+' '+obs.metric,
+        pageCells.some(cell=>Number(cell.raw)===obs.value&&cell.metric===obs.metric&&
+          cell.link===(obs.source_document_url||obs.source_url)&&
+          norm(cell.label)===(obs.segment||({group:'Konsern',norway:'Norge',reported_segment:'Rapportert segment'}[obs.scope]))),
+        numeric+' from official '+obs.source_url);
+    }
+  }
+  await page.evaluate(()=>show('Sampo'));
+  const sampoQ4=await page.evaluate(()=>{
+    const sel=document.querySelector('#official-quarter-picker');
+    const item=sel&&[...sel.options].find(x=>x.textContent.trim()==='Q4 2025');
+    if(!item)return {found:false};
+    window.officialQuarterSelection=window.officialQuarterSelection||{};
+    window.officialQuarterSelection.Sampo=Number(item.value);
+    show('Sampo',true);
+    return {found:true,heading:document.querySelector('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] h2')?.textContent,
+      count:document.querySelectorAll('section[aria-label="Dynamiske kildeverifiserte kvartalsdata"] tbody tr').length};
+  });
+  check('Sampo Q4 2025 historical official observations',sampoQ4.found&&
+    sampoQ4.heading.includes('Q4 2025')&&sampoQ4.count===15,JSON.stringify(sampoQ4));
+  await page.evaluate(()=>show('home'));
+
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
@@ -148,9 +193,9 @@ async function main(){
     alreadyPublished.every(([name])=>!view.calendar.includes(name+'\nQ'+quarter+' '+year)),
     view.calendar.slice(0,400));
   await page.evaluate(()=>show('Gjensidige',true));
-  const companyComment=await page.locator('.quarter-comment').first().innerText();
+  const companyComment=await page.locator('.quarter-comment').first().count()?await page.locator('.quarter-comment').first().innerText():'';
   const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
-  if(companyBrief)check('Company page has current sourced financial commentary',
+  if(companyBrief&&companyComment)check('Company page has current sourced financial commentary',
        displayed(companyComment).includes(displayed(companyBrief.comment))&&displayed(companyComment).includes(displayed(companyBrief.summary)),
        companyComment.slice(0,400));
   check('Company commentary has no duplicated quarter prefix',!companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));

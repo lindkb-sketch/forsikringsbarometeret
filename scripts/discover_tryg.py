@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Discover exact Tryg A/S group PDF and investor XLSX pairs from official archive."""
-import json,re,urllib.request,urllib.parse
+import json,re,urllib.request,urllib.parse,urllib.error
 from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
@@ -53,9 +53,25 @@ def run(years=None):
     pairs=[]
     for year in years:
         req=urllib.request.Request(BASE+str(year),headers={'User-Agent':'Mozilla/5.0'})
-        with urllib.request.urlopen(req,timeout=30) as resp:
-            if urllib.parse.urlparse(resp.geturl()).hostname not in ('tryg.com','www.tryg.com'):raise ValueError('Untrusted archive redirect')
-            markup=resp.read(2_000_001)
+        try:
+            with urllib.request.urlopen(req,timeout=30) as resp:
+                if urllib.parse.urlparse(resp.geturl()).hostname not in ('tryg.com','www.tryg.com'):raise ValueError('Untrusted archive redirect')
+                markup=resp.read(2_000_001)
+        except (TimeoutError, urllib.error.URLError) as exc:
+            # A transient official-site outage cannot justify invented data or
+            # erasing previously verified issuer-linked PDF/XLSX pairs.
+            if not OUT.exists():
+                raise
+            cached=json.loads(OUT.read_text(encoding='utf-8'))
+            known=cached.get('pairs',[])
+            if not cached.get('complete') or not known or not all(
+                item.get('company')=='Tryg' and
+                all(urllib.parse.urlparse(item.get(field,'')).scheme=='https' and
+                    urllib.parse.urlparse(item.get(field,'')).hostname in ('tryg.com','www.tryg.com')
+                    for field in ('report_pdf_url','workbook_url')) for item in known):
+                raise ValueError('Tryg archived discovery unavailable and cached issuer sources invalid') from exc
+            print('::warning::Tryg archive temporarily unavailable; preserving validated issuer-linked cached pairs',flush=True)
+            return known
         if len(markup)>2_000_000:raise ValueError('Oversized archive')
         pairs.extend(parse(markup.decode('utf-8','replace'),year))
     if not pairs:raise ValueError('No issuer-linked Tryg PDF/XLSX pairs')

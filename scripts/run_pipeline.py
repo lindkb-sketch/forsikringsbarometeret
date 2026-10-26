@@ -17,9 +17,14 @@ def run(offline=False):
    print('WARNING: Official geographical XLSX unavailable; no workbook values imported; existing audited records preserved.',flush=True)
  if not offline:
   print('RUN discover_tryg.py (official Tryg group PDF and Norway XLSX)',flush=True)
-  subprocess.run([sys.executable,str(ROOT/'scripts'/'discover_tryg.py')],cwd=ROOT,check=True)
-  print('RUN import_tryg.py (fail-closed group and Norway)',flush=True)
-  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_tryg.py')],cwd=ROOT,check=True)
+  discovered=subprocess.run([sys.executable,str(ROOT/'scripts'/'discover_tryg.py')],cwd=ROOT)
+  if discovered.returncode:
+   # A temporary outage of the issuer's website must not erase already
+   # source-verified observations or prevent publication of unchanged data.
+   print('::warning::Tryg official archive unavailable; preserve audited existing observations',flush=True)
+  else:
+   print('RUN import_tryg.py (fail-closed group and Norway)',flush=True)
+   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_tryg.py')],cwd=ROOT,check=True)
  if not offline:
   print('RUN discover_frende_fremtind.py (refresh issuer-linked report URLs)',flush=True)
   discovery=subprocess.run([sys.executable,str(ROOT/'scripts'/'discover_frende_fremtind.py')],cwd=ROOT)
