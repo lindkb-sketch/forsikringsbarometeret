@@ -85,11 +85,11 @@
     {
       "company": "Storebrand",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 6,
+      "group_quarter_observations": 7,
       "official_source_urls": [
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
       ],
-      "observation_sha256": "4ceb57b78f2e9061bf9315d3de63dfe0f3ae7f4af9273c0d7729ff661a2b30da",
+      "observation_sha256": "8b42f8efe052b987a40e4049448ed68ec4c01a2c2c23587b606b44a763292587",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,

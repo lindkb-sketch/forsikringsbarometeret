@@ -121,16 +121,15 @@
       "company": "Storebrand",
       "quarter": "Q3 2026",
       "latest_source_located_quarter": "Q3 2026",
-      "status": "incomplete_quarter",
+      "status": "source_located_quarter",
       "source_located_metrics": [
         "combined_ratio",
         "expense_ratio",
         "insurance_revenue",
+        "insurance_service_result",
         "loss_ratio"
       ],
-      "missing_metrics": [
-        "insurance_service_result"
-      ],
+      "missing_metrics": [],
       "invalid_metrics": [],
       "expected_report_date": "2026-10-21",
       "revenue_not_ifrs_comparable": true,

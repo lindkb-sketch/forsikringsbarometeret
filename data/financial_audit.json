@@ -739,14 +739,6 @@
     {
       "company": "Storebrand",
       "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Storebrand",
-      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "year": 2026,
@@ -867,7 +859,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 481,
+  "observation_count": 487,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1828,7 +1820,7 @@
       "group": {
         "quarter": {
           "insurance_revenue": "reported",
-          "insurance_service_result": "missing_or_not_applicable",
+          "insurance_service_result": "reported",
           "combined_ratio": "reported",
           "loss_ratio": "reported",
           "expense_ratio": "reported",
