@@ -22,7 +22,7 @@ def verify(root=ROOT):
  root=Path(root)
  missing=[name for name in ESSENTIAL if not (root/name).is_file() or (root/name).stat().st_size==0]
  html=(root/'index.html').read_text(encoding='utf-8') if (root/'index.html').is_file() else ''
- for src in re.findall(r'<script[^>]*\\bsrc=[\\'"]([^\\'"]+)',html):
+ for src in re.findall(r"<script[^>]*\\bsrc=['\"]([^'\"]+)",html):
   if re.match(r'^https?://',src):continue
   path=src.split('?',1)[0].lstrip('/')
   if path and not (root/path).is_file():missing.append(path)
