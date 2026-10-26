@@ -883,7 +883,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 446,
+  "observation_count": 456,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1467,6 +1467,36 @@
       "inputs": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
         "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 13.278658684572452,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 11.815246731709038,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+        "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },

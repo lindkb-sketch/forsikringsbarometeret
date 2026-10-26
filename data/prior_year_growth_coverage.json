@@ -24,19 +24,33 @@
       "company": "Gjensidige",
       "quarter": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 13.3,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf"
+        ],
+        "observation_values": {
+          "2025": 11201.9,
+          "2024": 9888.8
+        }
       },
       "ytd": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 11.8,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf"
+        ],
+        "observation_values": {
+          "2025": 31689.0,
+          "2024": 28340.5
+        }
       }
     },
     {

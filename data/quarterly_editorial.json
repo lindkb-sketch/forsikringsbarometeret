@@ -970,12 +970,12 @@
           "has_comparative": false
         },
         "Gjensidige": {
-          "summary": "Gjensidige: forsikringsinntekter 11201.9 MNOK, forsikringsresultat 2270.6 MNOK, combined ratio 79.7 % i Q3 2025.",
+          "summary": "Gjensidige: forsikringsinntekter 11201.9 MNOK (+13.3 % mot Q3 2024), forsikringsresultat 2270.6 MNOK, combined ratio 79.7 % (Q3 2024: 83.9 %) i Q3 2025.",
           "comment": "Gjensidige: combined ratio 79.7 % i Q3 2025, svekket med 0.7 prosentpoeng fra Q2 2025 (79 %).",
-          "ytd": "HIÅ: forsikringsinntekter 31689 MNOK.",
+          "ytd": "HIÅ: forsikringsinntekter 31689 MNOK (+11.8 % mot HIÅ 2024).",
           "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
           "period": "Q3 2025",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Tryg": {
           "summary": "Tryg: forsikringsinntekter 10175 MDKK (+4.0 % mot Q3 2024), forsikringsresultat 2181 MDKK, combined ratio 78.6 % (Q3 2024: 79.1 %) i Q3 2025.",
@@ -1282,6 +1282,13 @@
       ],
       "implications": [
         {
+          "text": "Gjensidige: combined ratio 83.9 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf",
+          "company": "Gjensidige",
+          "period": "Q3 2024",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
           "company": "Tryg",
@@ -1290,6 +1297,14 @@
         }
       ],
       "by_company": {
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 9888.8 MNOK, forsikringsresultat 1590 MNOK, combined ratio 83.9 % i Q3 2024.",
+          "comment": "Gjensidige: combined ratio 83.9 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 28340.5 MNOK.",
+          "source_url": "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf",
+          "period": "Q3 2024",
+          "has_comparative": false
+        },
         "Tryg": {
           "summary": "Tryg: forsikringsinntekter 9786 MDKK, forsikringsresultat 2048 MDKK, combined ratio 79.1 % i Q3 2024.",
           "comment": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
@@ -1308,10 +1323,11 @@
         }
       },
       "issuer_brief_status": {
+        "Gjensidige": "awaiting_curated_commentary",
         "Tryg": "awaiting_curated_commentary",
         "Frende": "featured"
       },
-      "reported_company_count": 2
+      "reported_company_count": 3
     },
     "Q2 2024": {
       "brief": [
