@@ -45,7 +45,7 @@ def run(offline=False):
   latest_completed=today.year*4+(today.month-1)//3-1
   latest_year,latest_quarter=divmod(latest_completed,4)
   latest_quarter+=1
-  for filename in ['sampo_publish.py', 'storebrand_publish_q3.py']:
+  # Recheck Q4 2025 even after rolling into a new year. Storebrand's\n  # annual source must explicitly contain an isolated Q4 column.\n  if (latest_year,latest_quarter)>=(2025,4):\n   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'storebrand_publish_q3.py'),\n      '--year','2025','--quarter','4'],cwd=ROOT)\n   if attempt.returncode:\n    print('::warning::Storebrand Q4 2025 requires an independently verified isolated quarter column',flush=True)\n  for filename in ['sampo_publish.py', 'storebrand_publish_q3.py']:
    print('RUN',filename,'(official report import; preserves audited baseline if unavailable)',flush=True)
    command=[sys.executable,str(ROOT/'scripts'/filename)]
    if filename=='storebrand_publish_q3.py' and (latest_year,latest_quarter)>=(2026,3):
