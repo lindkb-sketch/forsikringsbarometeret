@@ -84,11 +84,17 @@ def run():
  before=audit(existing)
  if not before['ok']:raise ValueError('Baseline audit failed')
  incoming=[]
- for year,quarter in sorted({(y,q) for scope,y,q,metric in values if y>=2026}):
+ for year,quarter in sorted({(y,q) for scope,y,q,metric in values if y>=2026 or (y==2025 and q==4)}):
   # No KPI observations enter production without issuer-linked PDF provenance.
-  url=discover_pdf(year,quarter)
-  blob=download(url)
-  pages=parse_pdf(blob,year,quarter)
+  try:
+   url=discover_pdf(year,quarter)
+   blob=download(url)
+   pages=parse_pdf(blob,year,quarter)
+  except Exception as exc:
+   if (year,quarter)==(2025,4):
+    print('::warning::Protector Q4 2025 PDF source not yet verified:',str(exc),flush=True)
+    continue
+   raise
   sha=hashlib.sha256(blob).hexdigest()
   for (scope,y,q,metric),value in values.items():
    if (y,q)!=(year,quarter) and not (year==2026 and quarter==3 and y==2025 and q==3):continue
