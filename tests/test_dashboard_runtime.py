@@ -99,7 +99,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn("name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter'",js)
   self.assertIn("label='Sum driftsinntekter'",importer)
   self.assertIn("header[1]!=f'{quarter}. kv {year}'",importer)
-  self.assertIn("quote(name,type,year-1,quarter,'insurance_revenue')",js)
+  self.assertIn("growthFor(year-1)",js)
   self.assertNotIn("if(year===2026&&quarter===3)",js)
  def test_prior_year_values_are_visible_in_quarter_and_ytd(self):
   html=HTML.read_text()
