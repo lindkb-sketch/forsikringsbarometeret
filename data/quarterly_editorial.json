@@ -994,12 +994,12 @@
           "has_comparative": true
         },
         "Protector": {
-          "summary": "Protector: forsikringsinntekter 3529 MNOK, forsikringsresultat 598 MNOK, combined ratio 83.1 % i Q3 2025.",
+          "summary": "Protector: forsikringsinntekter 3529 MNOK (+17.6 % mot Q3 2024), forsikringsresultat 598 MNOK, combined ratio 83.1 % i Q3 2025.",
           "comment": "Protector: combined ratio 83.1 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
-          "ytd": "",
+          "ytd": "HIÅ: forsikringsinntekter 10197 MNOK (+18.6 % mot HIÅ 2024).",
           "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
           "period": "Q3 2025",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Storebrand": {
           "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2475 MNOK (+21.1 % mot Q3 2024), combined ratio 89 % i Q3 2025.",
@@ -1321,6 +1321,14 @@
           "period": "Q3 2024",
           "has_comparative": false
         },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3002 MNOK i Q3 2024.",
+          "comment": "Protector: forsikringsinntekter 3002 MNOK i Q3 2024.",
+          "ytd": "HIÅ: forsikringsinntekter 8601 MNOK.",
+          "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+          "period": "Q3 2024",
+          "has_comparative": false
+        },
         "Storebrand": {
           "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2044 MNOK i Q3 2024.",
           "comment": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2044 MNOK i Q3 2024.",
@@ -1334,9 +1342,10 @@
         "Gjensidige": "awaiting_curated_commentary",
         "Tryg": "awaiting_curated_commentary",
         "Frende": "featured",
+        "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 4
+      "reported_company_count": 5
     },
     "Q2 2024": {
       "brief": [

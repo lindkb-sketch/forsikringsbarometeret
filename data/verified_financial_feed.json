@@ -3664,6 +3664,42 @@
     },
     {
       "company": "Protector",
+      "year": 2024,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 3002,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+      "source_page": 5,
+      "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+      "source_entity": "Protector Forsikring ASA",
+      "source_document_period": "Q3 2025",
+      "source_definition": "IFRS insurance revenue; official Q3 2025 income overview comparison column"
+    },
+    {
+      "company": "Protector",
+      "year": 2024,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue",
+      "value": 8601,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+      "source_page": 5,
+      "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+      "source_entity": "Protector Forsikring ASA",
+      "source_document_period": "Q3 2025",
+      "source_definition": "IFRS insurance revenue; official Q3 2025 income overview comparison column"
+    },
+    {
+      "company": "Protector",
       "year": 2025,
       "quarter": 3,
       "scope": "group",
@@ -3751,6 +3787,24 @@
       "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
       "source_definition": "Protector issuer KPI table, cross-checked with interim report (prior-year comparative column)",
       "source_document_period": "Q3 2026"
+    },
+    {
+      "company": "Protector",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue",
+      "value": 10197,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+      "source_page": 5,
+      "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+      "source_entity": "Protector Forsikring ASA",
+      "source_document_period": "Q3 2025",
+      "source_definition": "IFRS insurance revenue; official Q3 2025 income overview comparison column"
     },
     {
       "company": "Protector",
@@ -8438,6 +8492,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 458,
+  "observation_count": 461,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }

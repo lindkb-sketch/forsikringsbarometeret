@@ -90,20 +90,32 @@
       "company": "Protector",
       "quarter": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 17.6,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+          "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+        ],
+        "observation_values": {
+          "2025": 3529.0,
+          "2024": 3002
+        }
       },
       "ytd": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2025,
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 18.6,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf"
+        ],
+        "observation_values": {
+          "2025": 10197,
+          "2024": 8601
+        }
       }
     },
     {
