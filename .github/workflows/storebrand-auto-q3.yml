@@ -75,7 +75,7 @@ jobs:
               download_pdf(selected['norway']['document_url'],np)
               rows=parse_group(gp,selected['group']['document_url'],2026,q)+parse_norway(np,selected['norway']['document_url'],2026,q)
               print('STOREBRAND EARLY VERIFIED',q,[(r['scope'],r['metric'],r['value']) for r in rows])
-              assert len(rows)==11 and all(r['quarter']==q and r['year']==2026 for r in rows)
+              assert len(rows)==12 and all(r['quarter']==q and r['year']==2026 for r in rows)
           PY
       - name: Verify required Storebrand files
         run: python scripts/storebrand_preflight.py

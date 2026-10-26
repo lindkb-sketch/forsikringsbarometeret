@@ -148,6 +148,27 @@ def extract_historical_revenue(section_html,url,year,quarter):
             'source_sha256':digest})
     return result
 
+def extract_insurance_result(section_html,url,year,quarter):
+    t=TableReader();t.feed(section_html)
+    if not t.rows or t.rows[0][0]!='Resultatregnskap':raise ValueError('Income statement missing')
+    header=t.rows[0]; data={row[0]:row for row in t.rows[1:] if row}
+    labels=('Sum driftsinntekter','Sum erstatningskostnader og endring forsikringstekniske avsetninger','Sum driftskostnader')
+    if any(k not in data for k in labels):raise ValueError('Insurance subtotals missing')
+    columns=[(year,'quarter',header.index(f'{quarter}. kv {year}'))]
+    if f'{quarter}. kv {year-1}' in header:columns.append((year-1,'quarter',header.index(f'{quarter}. kv {year-1}')))
+    for y in (year,year-1):
+        date={1:'31.03.',2:'30.06.',3:'30.09.',4:'31.12.'}[quarter]+str(y)[2:]
+        matches=[i for i,h in enumerate(header) if h in (date,'01.01-'+date)]
+        if len(matches)>1:raise ValueError('Ambiguous YTD')
+        if matches:columns.append((y,'ytd',matches[0]))
+        elif quarter==1:columns += [(yy,'ytd',i) for yy,p,i in columns if yy==y and p=='quarter']
+    result=[]
+    for y,period,col in columns:
+        a,c,e=[number(data[k][col]) for k in labels]
+        if a<=0 or c>0 or e>0:raise ValueError('Unexpected cost signs')
+        result.append(dict(company='Frende',year=y,quarter=quarter,scope='group',period_type=period,metric='insurance_service_result',value=round((a+c+e)/1000,3),unit='NOKm',status='calculated',source_type='official_quarterly_report',source_url=url,source_page=7,source_entity='Frende Holding AS konsern',source_document_period=f'Q{quarter} {year}',source_definition='Driftsresultat fra forsikring uten finansinntekter',calculation='operating revenue plus signed claims/reserve and operating expense subtotals',calculation_inputs={'revenue':a/1000,'claims_reserves':c/1000,'operating_costs':e/1000},source_sha256=hashlib.sha256(section_html.encode()).hexdigest()))
+    return result
+
 def read(url,section=6):
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme!='https' or parsed.hostname!='frende.wrep.it' or not re.fullmatch(r'/q[1-4]-20\d{2}-frende-holding-as',parsed.path):
@@ -180,6 +201,7 @@ def run():
             income=read(url,7)
             rows+=extract_revenue(income,url+'/sec/7',year,quarter)
             rows+=extract_historical_revenue(income,url+'/sec/7',year,quarter)
+            rows+=extract_insurance_result(income,url+'/sec/7',year,quarter)
             verified.append([year,quarter])
             for row in rows:
                 key=(row['year'],row['quarter'],row['period_type'],row['metric'])

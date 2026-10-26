@@ -75,6 +75,22 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
         result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
         result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+    # Insurance segment result, distinct from total Storebrand Group earnings.
+    # The source reports the named operating subtotal, but PDF text extraction
+    # may split its long label. Reconstruct from the three reported lines.
+    premiums=row(t,'Insurance premiums f.o.a.',column_count,english)
+    claims=row(t,'Claims f.o.a.',column_count,english)
+    costs=row(t,'Operational cost',column_count,english)
+    operating=[round(a+b+c,5) for a,b,c in zip(premiums,claims,costs)]
+
+    operating_q=([(quarter,operating[0]),(quarter-1,operating[1]),(quarter-2,operating[2])]
+                 if quarter==3 else [(4,operating[0]),(3,operating[1]),(2,operating[2]),(1,operating[3])])
+    for q,v in operating_q:
+        result.append(obs('group',year,q,'quarter','insurance_service_result',v,insurance_page+1,url,sha,
+            'Insurance segment Cash equivalent earnings from operations','Storebrand ASA / Insurance segment',year,quarter))
+    for y,p,v in [(year-1,'quarter',operating[4]),(year,'ytd',operating[5]),(year-1,'ytd',operating[6])]:
+        result.append(obs('group',y,quarter,p,'insurance_service_result',v,insurance_page+1,url,sha,
+            'Insurance segment Cash equivalent earnings from operations','Storebrand ASA / Insurance segment',year,quarter))
     key_candidates=[(i,text) for i,text in enumerate(texts) if 'Group - Key figures' in text]
     if len(key_candidates)!=1:raise ValueError('Expected exactly one Group key figures table')
     key_page,k=key_candidates[0]
@@ -88,7 +104,11 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
         result.append(obs('group',year,quarter,'ytd',metric,vals[5],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
         result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],key_page+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
-    for item in result:item['source_document_period']=f'Q{quarter} {year}'
+    for item in result:
+        item['source_document_period']=f'Q{quarter} {year}'
+        if item['metric']=='insurance_service_result' and item['scope']=='group':
+            item['status']='calculated'
+            item['calculation']='premiums f.o.a. + signed claims f.o.a. + signed operational cost'
     return result
 
 def parse_norway(path,url=NORWAY_ARCHIVE,year=2026,quarter=3):
@@ -165,11 +185,22 @@ def parse_group_early(path,url=GROUP_ARCHIVE,year=2026,quarter=1):
     for metric,(label,definition) in metrics.items():
         vals=row(section,label,count,english)
         result.append(obs('group',year,quarter,'quarter',metric,vals[0],page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+    p=row(section,'Insurance premiums f.o.a.',count,english)
+    c=row(section,'Claims f.o.a.',count,english)
+    o=row(section,'Operational cost',count,english)
+    earnings=round(p[0]+c[0]+o[0],5)
+    result.append(obs('group',year,quarter,'quarter','insurance_service_result',
+        earnings,page+1,url,sha,'Insurance segment Cash equivalent earnings from operations',
+        'Storebrand ASA / Insurance segment',year,quarter))
     keypage,keytext=_unique_table(texts,'Group - Key figures')
     keysection=keytext.split('Group - Key figures',1)[1].split('Financial metrics',1)[0]
     for metric,label in [('return_on_equity','Cash return on equity, annualised (%)'),('solvency_ratio','Solvency II ratio (%)')]:
         vals=row(keysection,label,count,english)
         result.append(obs('group',year,quarter,'quarter',metric,vals[0],keypage+1,url,sha,'Group key figures; '+label,'Storebrand ASA',year,quarter))
+    for item in result:
+        if item['metric']=='insurance_service_result':
+            item['status']='calculated'
+            item['calculation']='premiums f.o.a. + signed claims f.o.a. + signed operational cost'
     return result
 
 def parse_norway_early(path,url=NORWAY_ARCHIVE,year=2026,quarter=1):
