@@ -126,7 +126,7 @@ jobs:
             for attempt in 1 2 3; do
               git fetch origin main
               git reset --mixed origin/main
-              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/quarterly_insights.json data/strategic_market.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/prior_year_growth_coverage.json data/publication_provenance.json data/investor_readiness.json data/frende_fremtind_candidates.json; do
+              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/quarterly_insights.json data/strategic_market.json data/official_news.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/prior_year_growth_coverage.json data/profitability_coverage.json data/publication_provenance.json data/investor_readiness.json data/frende_fremtind_candidates.json; do
                 if [ -f "$file" ]; then git add -- "$file"; fi
               done
               if git diff --cached --quiet; then
@@ -151,6 +151,8 @@ jobs:
           # actual latest main HTML and the exact JSON committed above.
           git fetch origin main
           git reset --hard origin/main
+      - name: Confirm complete static site and source feeds before packaging
+        run: python scripts/verify_deployment_tree.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

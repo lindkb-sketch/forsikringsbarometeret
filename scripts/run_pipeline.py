@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unified ingestion, validation, editorial, calendar and publishable data generation."""
 import argparse,subprocess,sys
+from datetime import date
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def run(offline=False):
@@ -36,6 +37,22 @@ def run(offline=False):
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'protector_2024_official_backfill.py')],cwd=ROOT)
   if attempt.returncode:
    print('::warning::Protector historical source unavailable or invalid; preserving verified baseline',flush=True)
+ if not offline:
+  # Sampo and Storebrand must be part of the scheduled ingestion path, not
+  # only diagnostic workflows. Failures keep previously audited observations.
+  # The profitability coverage report marks missing quarters explicitly.
+  today=date.today()
+  latest_completed=today.year*4+(today.month-1)//3-1
+  latest_year,latest_quarter=divmod(latest_completed,4)
+  latest_quarter+=1
+  for filename in ['sampo_publish.py', 'storebrand_publish_q3.py']:
+   print('RUN',filename,'(official report import; preserves audited baseline if unavailable)',flush=True)
+   command=[sys.executable,str(ROOT/'scripts'/filename)]
+   if filename=='storebrand_publish_q3.py' and (latest_year,latest_quarter)>=(2026,3):
+    command+=['--year',str(latest_year),'--quarter',str(latest_quarter)]
+   attempt=subprocess.run(command,cwd=ROOT)
+   if attempt.returncode:
+    print('::warning::'+filename+' blocked by missing/changed official report; no invented figures published',flush=True)
  if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
