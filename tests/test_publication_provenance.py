@@ -1,5 +1,7 @@
 import unittest
-from scripts.publication_provenance import build, COMPANIES
+import json
+from pathlib import Path
+from scripts.publication_provenance import build, COMPANIES, ROOT
 
 class ProvenanceTests(unittest.TestCase):
     def rows(self):
@@ -17,6 +19,12 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(len(result['companies']), 7)
         self.assertTrue(all(row['source_to_feed_parity'] for row in result['companies']))
         self.assertTrue(all(not row['fully_automatic_certified'] for row in result['companies']))
+
+    def test_actual_repository_financial_feed(self):
+        source=json.loads((ROOT/'data/financial_observations.json').read_text())['observations']
+        feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text())['observations']
+        result=build(source,feed)
+        self.assertEqual({x['company'] for x in result['companies']},set(COMPANIES))
 
     def test_modified_publication_fails(self):
         source = self.rows()
