@@ -25,6 +25,10 @@ jobs:
         run: |
           python scripts/storebrand_2024_official_backfill.py
           python scripts/audit_financials.py
+      - name: Verify live Protector Q3 2025 official PDF Q3/YTD 2024 comparators
+        run: |
+          python scripts/protector_2024_official_backfill.py
+          python scripts/audit_financials.py
       - name: Audit committed financial observations
         run: python scripts/audit_financials.py
       - name: Validate dashboard
