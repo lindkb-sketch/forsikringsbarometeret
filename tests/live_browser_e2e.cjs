@@ -184,7 +184,7 @@ async function main(){
      r.source_entity==='Storebrand Forsikring AS'&&r.year===year&&r.quarter===quarter&&
      r.period_type==='quarter'&&r.metric==='insurance_revenue');
   if(subsidiaryQ)check('Storebrand Forsikring AS IFRS17 quarter revenue beside group APM',
-    tableQ.includes(nf(subsidiaryQ.value))&&tableQ.includes('Storebrand Forsikring AS')&&tableQ.includes('IFRS 17'),tableQ.slice(-900));
+    (await page.locator('#results-comparison').innerText()).includes(nf(subsidiaryQ.value))&&(await page.locator('#results-comparison').innerText()).includes('Storebrand Forsikring AS')&&(await page.locator('#results-comparison').innerText()).includes('IFRS 17'),tableQ.slice(-900));
   await page.screenshot({path:'data/browser_home_q3.png',fullPage:true});
   report.screenshots.push('data/browser_home_q3.png');
   await page.selectOption('#results-comparison select','H3');
