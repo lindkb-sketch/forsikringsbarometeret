@@ -90,14 +90,21 @@
       (type==='ytd'?addYtd(company,year,quarter,metric):
        addQuarter(company,year,quarter,metric));
   }
-  function quarterTimeline({year,quarter}){
+  function quarterTimeline({year,quarter},count=4){
     const result=[];
-    for(let i=4;i>=0;i--){
+    for(let i=count-1;i>=0;i--){
       const code=year*4+(quarter-1)-i;
       const y=Math.floor(code/4),q=(code%4)+1;
       result.push('Q'+q+' '+y);
     }
     return result;
+  }
+  // Profitability is issuer-specific. Every issuer always has four fixed
+  // chronological slots ending at the selected reporting quarter. Missing
+  // quarters stay open, never filled from older static data or other issuers.
+  function issuerProfitabilityTimeline(name){
+    if(!selection)return [];
+    return quarterTimeline(selection,4);
   }
   function populate(){
     if(!selection)return;
@@ -171,7 +178,10 @@
           label:'Rapportert avkastningsmål fra rapport',value:roe};
       }
     }
-    profitabilityQuarters.splice(0,profitabilityQuarters.length,...quarterTimeline(selection));
+    profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(profitabilityCompany));
+    // The chart reads the selected issuer's last four timeline positions.
+    // Restore the older Q4/Q1/Q2 values only when they exist in the verified feed;
+    // the latest reporting quarter remains an empty slot until issuer publication.
     window.FBActivePeriod={...selection,label:label(selection),priorLabel:'Q'+quarter+' '+(year-1)};
     // Clear old Q2-only company segment figures rather than masquerade them as current.
     for(const [name,oldRows] of Object.entries(MON_Q2_SEGMENTS)){
@@ -256,6 +266,42 @@
   home=()=>relabel(previousHome());
   // Individual company pages must use the SAME published quarter/YTD
   // observations as the group table; never display the static Q2 cards.
+  // Display all four independently verified revenue-growth rates. An absent
+  // comparator is unknown, never zero or a copied rate from another period.
+  function growthMatrix(c){
+    const q=MON_Q3[c]||{},h=MON_YTD_Q3[c]||{};
+    return [
+      ['Kvartal isolert',q.growth,Boolean(q.revenue),'quarter'],
+      ['Kvartal i fjor',q.growthPrev,Boolean(q.revenuePrev),'quarter-prior'],
+      ['HIÅ',h.growth,Boolean(h.revenue),'ytd'],
+      ['HIÅ i fjor',h.growthPrev,Boolean(h.revenuePrev),'ytd-prior']
+    ];
+  }
+  function trendArrow(now,prior,lowerIsBetter=false){
+    const parse=s=>{const m=String(s??'').replace(/\s/g,'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):null;};
+    const a=parse(now),b=parse(prior);
+    if(a===null||b===null)return '';
+    const diff=a-b,dir=diff>0.00001?'up':diff< -0.00001?'down':'flat';
+    const sign=dir==='up'?'▲':dir==='down'?'▼':'→';
+    const favourable=lowerIsBetter?dir==='down':dir==='up';
+    return '<span class="qoq '+(dir==='flat'?'flat':favourable?'good':'bad')+
+      '" aria-label="'+(dir==='up'?'Opp':dir==='down'?'Ned':'Uendret')+
+      ' mot tilsvarende periode i fjor" title="Sammenlignet med tilsvarende periode i fjor">'+sign+'</span>';
+  }
+  function growthMatrixHtml(c){
+    if(!selection)return '';
+    const esc=s=>String(s??'').replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]));
+    const q=MON_Q3[c]||{},h=MON_YTD_Q3[c]||{};
+    return '<section class="panel source-growth-matrix"><h2>Inntektsvekst · Q'+selection.quarter+' '+selection.year+'</h2>'+
+      '<div class="dynamic-kpis">'+growthMatrix(c).map(([label,value,available,key])=>
+        '<div class="metric" data-growth-period="'+key+'"><div class="name">'+esc(label)+'</div>'+
+        '<div class="value">'+(available&&value?esc(value):'—')+
+        (key==='quarter'&&available?trendArrow(q.growth,q.growthPrev):
+         key==='ytd'&&available?trendArrow(h.growth,h.growthPrev):'')+'</div>'+
+        '<div class="prior">'+(available&&value?'Kildeverifisert':'Mangler verifiserte sammenligningstall')+'</div></div>'
+      ).join('')+'</div>'+
+      '<p class="hint">Vekst sammenligner inntektene med samme periode året før. Pil opp/ned viser om vekstraten har økt eller falt fra fjoråret. Manglende data vises som —.</p></section>';
+  }
   function companyWithVerifiedKpis(c){
     const fragment=document.createElement('div');
     fragment.innerHTML=relabel(previousCompany(c));
@@ -269,8 +315,9 @@
       const build=(node,name,current,previous,unit)=>{
         const primary=currentPublished&&current?esc(current)+(unit?' '+esc(unit):''):'Ikke publisert';
         const reference=currentPublished&&previous?esc(previous)+(unit?' '+esc(unit):''):'—';
+        const arrow=currentPublished&&current&&previous?trendArrow(current,previous):'';
         node.innerHTML='<div class="name">'+name+'</div>'+
-          '<div class="value">'+primary+'</div>'+
+          '<div class="value">'+primary+arrow+'</div>'+
           '<div class="prior">('+reference+')</div>';
         node.setAttribute('data-financial-period',ytdMode()?'ytd':'quarter');
         node.setAttribute('data-financial-source','verified-quarterly-feed');
@@ -281,10 +328,27 @@
           c==='Frende'?'Forsikringsdriftsresultat':'Forsikringsresultat',
         d.result,d.resultPrev,d.resultUnit||'');
     }
+    // All company KPI cards get arrows inside the value cell, based on the
+    // same current/prior official observations, including adverse ratio rises.
+    const financialKeys=[['cr','Combined ratio'],['loss','Skadeprosent'],['cost','Kostnadsprosent']];
+    for(const [key,caption] of financialKeys){
+      const card=[...cardNodes].find(node=>node.querySelector('.name')?.textContent.trim()===caption);
+      const value=card?.querySelector('.value');
+      if(!card||!value)continue;
+      const present=Boolean(d.revenue)&&Boolean(d[key]);
+      value.innerHTML=present
+        ?String(d[key]).replace(/&/g,'&amp;').replace(/</g,'&lt;')+
+          trendArrow(d[key],d[key+'Prev'],true)
+        :'—';
+      const prior=card.querySelector('.prior');
+      if(prior)prior.textContent=d[key+'Prev']?'('+d[key+'Prev']+')':'(—)';
+      card.querySelector('.delta')?.remove();
+      card.setAttribute('data-financial-source','verified-quarterly-feed');
+    }
     // Replace the legacy Q2 label with the actual selected quarter.
     const heading=fragment.querySelector('.section-head h2');
     if(heading)heading.textContent=heading.textContent.replace(/Q2 2026/,label(selection));
-    return fragment.innerHTML;
+    return fragment.innerHTML+growthMatrixHtml(c);
   }
   company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
@@ -315,10 +379,11 @@
       if(d.revenue&&d.result){
         const title=escape(d.result)+' <small>'+escape(d.resultUnit||'')+'</small>';
         const basis='';
-        const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
+        // Only show the comparable prior-year figure in parentheses;
+        // the table header already identifies the selected reporting period.
         const prior=d.resultPrev
-          ?'<span class="table-prior">'+lastYear+': '+escape(d.resultPrev)+'</span>'
-          :'<span class="table-prior">'+lastYear+': ikke verifisert</span>';
+          ?'<span class="table-prior">('+escape(d.resultPrev)+')</span>'
+          :'<span class="table-prior">(—)</span>';
         const now=number(d.result),then=number(d.resultPrev);
         const delta=now!==null&&then!==null
           ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
@@ -370,6 +435,22 @@
           (previousGrowth
             ?'<div class="table-prior">('+escape(previousGrowth)+')</div>'
             :'<div class="table-prior">(—)</div>')+direction;
+      }
+    }
+    // Standardized arrow direction in every numeric financial comparison
+    // cell. A higher combined/loss/expense ratio is red, not green.
+    for(const tr of fragment.querySelectorAll('tbody tr')){
+      const raw=(tr.cells[0]?.textContent||'').trim();
+      const company=raw==='Frende Holding'?'Frende':raw;
+      const d=(isYtd?MON_YTD_Q3:MON_Q3)[company]||{};
+      for(const [column,key] of [[1,'growth'],[3,'cr'],[4,'loss'],[5,'cost']]){
+        const cell=tr.cells[column];
+        if(!cell)continue;
+        if(!d.revenue||!d[key]){cell.innerHTML='<span class="muted">—</span>';continue;}
+        const current=escape(d[key]),prior=d[key+'Prev'];
+        cell.innerHTML='<strong>'+current+'</strong>'+
+          (prior?'<div class="table-prior">('+escape(prior)+')</div>':'<div class="table-prior">(—)</div>')+
+          trendArrow(d[key],prior,['cr','loss','cost'].includes(key));
       }
     }
     // Preserve the verifiable local IFRS 17 disclosure, outside the group
@@ -429,6 +510,15 @@
       window.FBReportCalendar?.reconcile?.();
     }catch(e){console.error('[Forsikringsbarometeret] Kunne ikke oppdatere kvartalsvisning',e);}
   }
+  // Recompute the window on issuer change as well as on quarter selection.
+  const originalSetProfitabilityCompany=setProfitabilityCompany;
+  setProfitabilityCompany=name=>{
+    originalSetProfitabilityCompany(name);
+    if(selection) {
+      profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(name));
+      document.getElementById('profitability-panel').innerHTML=profitabilityChart();
+    }
+  };
   window.FBQuarterly={refresh,get period(){return selection&&{...selection};},
     get available(){return periodList.map(p=>({...p}));},get verified(){return verified;},
     get selectedData(){return {quarter:MON_Q3,ytd:MON_YTD_Q3};},
