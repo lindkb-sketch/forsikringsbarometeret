@@ -1,0 +1,255 @@
+{
+  "reference_period": "Q3 2026",
+  "window": [
+    "Q4 2025",
+    "Q1 2026",
+    "Q2 2026",
+    "Q3 2026"
+  ],
+  "companies": [
+    {
+      "company": "Fremtind",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Gjensidige",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Tryg",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Sampo",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Frende",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Protector",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        }
+      ],
+      "complete": false
+    },
+    {
+      "company": "Storebrand",
+      "quarters": [
+        {
+          "period": "Q4 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
+        {
+          "period": "Q1 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q2 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
+          "period": "Q3 2026",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        }
+      ],
+      "complete": false
+    }
+  ],
+  "fully_covered": false,
+  "rule": "No numeric fallback, synthetic value, or hardcoded chart history"
+}
