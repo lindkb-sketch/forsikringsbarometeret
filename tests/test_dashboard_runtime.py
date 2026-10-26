@@ -134,6 +134,14 @@ class DashboardRuntimeTests(unittest.TestCase):
          and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter']
    self.assertIn('combined_ratio',{r['metric'] for r in rows},company)
 
+ def test_unpublished_current_quarter_hides_prior_growth(self):
+  runtime=RUNTIME.read_text()
+  self.assertIn("const currentReported=Boolean(d.revenue)",runtime)
+  self.assertIn("const currentGrowth=currentReported?d.growth:null",runtime)
+  self.assertIn("const previousGrowth=currentReported?d.growthPrev:null",runtime)
+  self.assertIn("if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)",runtime)
+  self.assertIn("if(localStorebrand&&bucket.Storebrand?.revenue)",runtime)
+
  def test_storebrand_explanation_below_table_and_frende_ifrs4_label(self):
   runtime=RUNTIME.read_text()
   html=HTML.read_text()
