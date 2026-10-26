@@ -256,6 +256,41 @@
   home=()=>relabel(previousHome());
   // Individual company pages must use the SAME published quarter/YTD
   // observations as the group table; never display the static Q2 cards.
+  // Display all four independently verified revenue-growth rates. An absent
+  // comparator is unknown, never zero or a copied rate from another period.
+  function growthMatrix(c){
+    const q=MON_Q3[c]||{},h=MON_YTD_Q3[c]||{};
+    return [
+      ['Kvartal isolert',q.growth,Boolean(q.revenue),'quarter'],
+      ['Kvartal i fjor',q.growthPrev,Boolean(q.revenuePrev),'quarter-prior'],
+      ['HIÅ',h.growth,Boolean(h.revenue),'ytd'],
+      ['HIÅ i fjor',h.growthPrev,Boolean(h.revenuePrev),'ytd-prior']
+    ];
+  }
+  function trendArrow(now,prior){
+    const parse=s=>{const m=String(s??'').replace(/\\s/g,'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);return m?Number(m[0]):null;};
+    const a=parse(now),b=parse(prior);
+    if(a===null||b===null)return '';
+    const diff=a-b,dir=diff>0.00001?'up':diff< -0.00001?'down':'flat';
+    const sign=dir==='up'?'▲':dir==='down'?'▼':'→';
+    return '<span class="qoq '+(dir==='up'?'good':dir==='down'?'bad':'flat')+
+      '" aria-label="'+(dir==='up'?'Opp':dir==='down'?'Ned':'Uendret')+
+      ' mot tilsvarende periode i fjor" title="Sammenlignet med tilsvarende periode i fjor">'+sign+'</span>';
+  }
+  function growthMatrixHtml(c){
+    if(!selection)return '';
+    const esc=s=>String(s??'').replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]));
+    const q=MON_Q3[c]||{},h=MON_YTD_Q3[c]||{};
+    return '<section class="panel source-growth-matrix"><h2>Inntektsvekst · Q'+selection.quarter+' '+selection.year+'</h2>'+
+      '<div class="dynamic-kpis">'+growthMatrix(c).map(([label,value,available,key])=>
+        '<div class="metric" data-growth-period="'+key+'"><div class="name">'+esc(label)+'</div>'+
+        '<div class="value">'+(available&&value?esc(value):'—')+
+        (key==='quarter'&&available?trendArrow(q.growth,q.growthPrev):
+         key==='ytd'&&available?trendArrow(h.growth,h.growthPrev):'')+'</div>'+
+        '<div class="prior">'+(available&&value?'Kildeverifisert':'Mangler verifiserte sammenligningstall')+'</div></div>'
+      ).join('')+'</div>'+
+      '<p class="hint">Vekst sammenligner inntektene med samme periode året før. Pil opp/ned viser om vekstraten har økt eller falt fra fjoråret. Manglende data vises som —.</p></section>';
+  }
   function companyWithVerifiedKpis(c){
     const fragment=document.createElement('div');
     fragment.innerHTML=relabel(previousCompany(c));
@@ -269,8 +304,9 @@
       const build=(node,name,current,previous,unit)=>{
         const primary=currentPublished&&current?esc(current)+(unit?' '+esc(unit):''):'Ikke publisert';
         const reference=currentPublished&&previous?esc(previous)+(unit?' '+esc(unit):''):'—';
+        const arrow=currentPublished&&current&&previous?trendArrow(current,previous):'';
         node.innerHTML='<div class="name">'+name+'</div>'+
-          '<div class="value">'+primary+'</div>'+
+          '<div class="value">'+primary+arrow+'</div>'+
           '<div class="prior">('+reference+')</div>';
         node.setAttribute('data-financial-period',ytdMode()?'ytd':'quarter');
         node.setAttribute('data-financial-source','verified-quarterly-feed');
@@ -284,7 +320,7 @@
     // Replace the legacy Q2 label with the actual selected quarter.
     const heading=fragment.querySelector('.section-head h2');
     if(heading)heading.textContent=heading.textContent.replace(/Q2 2026/,label(selection));
-    return fragment.innerHTML;
+    return fragment.innerHTML+growthMatrixHtml(c);
   }
   company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
