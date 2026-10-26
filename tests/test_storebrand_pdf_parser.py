@@ -11,6 +11,8 @@ class TestStorebrandImporter(unittest.TestCase):
    return next(r['value'] for r in rows if r['company']=='Storebrand' and r['year']==2026 and r['quarter']==3 and r['scope']==scope and r['period_type']==period and r['metric']==metric)
   self.assertEqual(value('group','quarter','insurance_revenue'),2896)
   self.assertEqual(value('group','quarter','combined_ratio'),87)
+  self.assertEqual(value('group','quarter','insurance_service_result'),386)
+  self.assertEqual(value('group','ytd','insurance_service_result'),934)
   self.assertEqual(value('norway','quarter','insurance_revenue'),1550.3)
   self.assertEqual(value('norway','quarter','insurance_service_result'),313.3)
   self.assertEqual(value('norway','ytd','insurance_revenue'),4396.1)
