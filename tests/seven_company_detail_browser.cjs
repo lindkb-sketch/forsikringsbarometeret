@@ -59,6 +59,18 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
           throw Error('Fremtind HIÅ Q3 2025/2024 growth differs from audited issuer data: '+prior);
       }
     }
+    if(company==='Fremtind'&&state.model.revenue){
+      const expectedPrior=mode==='quarter'?'11,1 %':'26,4 %';
+      const homepage=await page.evaluate(({company})=>{
+        show('home');
+        const row=[...document.querySelectorAll('#results-comparison tbody tr')]
+           .find(tr=>tr.cells[0]?.textContent?.includes(company));
+        return row?.cells[1]?.textContent?.replace(/\\s+/g,' ').trim()||'';
+      },{company});
+      if(!homepage.includes(expectedPrior))
+        throw Error('Fremtind previous-year growth missing on homepage '+mode+': '+homepage);
+      console.log('FREMTIND_HISTORICAL_GROWTH_VERIFIED',mode,expectedPrior,homepage);
+    }
     checked++;
     console.log('SEVEN_COMPANY_DETAIL_PASS',company,mode,growth.value,result.value);
    }
