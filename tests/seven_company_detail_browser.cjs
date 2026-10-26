@@ -46,6 +46,19 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
       if(state.model.resultPrev&&!result.previous.includes(state.model.resultPrev))
        throw Error(company+' '+mode+' prior result mismatch: '+JSON.stringify(state));
     }
+    if(company==='Fremtind'){
+      // A generic seven-company green E2E must not hide missing 2024
+      // comparatives after Q3 2026 has been reported.
+      if(state.model.revenue){
+        const prior=state.model.growthPrev;
+        if(!prior || !growth.previous.includes(prior) || prior==='—')
+          throw Error('Fremtind prior-year growth absent for '+mode+': '+JSON.stringify(state));
+        if(mode==='quarter'&&prior!=='11,1 %')
+          throw Error('Fremtind Q3 2025/Q3 2024 growth differs from audited issuer data: '+prior);
+        if(mode==='ytd'&&prior!=='26,4 %')
+          throw Error('Fremtind HIÅ Q3 2025/2024 growth differs from audited issuer data: '+prior);
+      }
+    }
     checked++;
     console.log('SEVEN_COMPANY_DETAIL_PASS',company,mode,growth.value,result.value);
    }
