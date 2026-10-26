@@ -75,6 +75,16 @@ def parse_group(path,url=GROUP_ARCHIVE,year=2026,quarter=3):
         result.append(obs('group',year-1,quarter,'quarter',metric,vals[4],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
         result.append(obs('group',year,quarter,'ytd',metric,vals[5],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
         result.append(obs('group',year-1,quarter,'ytd',metric,vals[6],insurance_page+1,url,sha,definition,'Storebrand ASA / Insurance segment',year,quarter))
+    # Insurance segment result, distinct from total Storebrand Group earnings.
+    operating=row(t,'Cash equivalent earnings from operations',column_count,english)
+    operating_q=([(quarter,operating[0]),(quarter-1,operating[1]),(quarter-2,operating[2])]
+                 if quarter==3 else [(4,operating[0]),(3,operating[1]),(2,operating[2]),(1,operating[3])])
+    for q,v in operating_q:
+        result.append(obs('group',year,q,'quarter','insurance_service_result',v,insurance_page+1,url,sha,
+            'Insurance segment Cash equivalent earnings from operations','Storebrand ASA / Insurance segment',year,quarter))
+    for y,p,v in [(year-1,'quarter',operating[4]),(year,'ytd',operating[5]),(year-1,'ytd',operating[6])]:
+        result.append(obs('group',y,quarter,p,'insurance_service_result',v,insurance_page+1,url,sha,
+            'Insurance segment Cash equivalent earnings from operations','Storebrand ASA / Insurance segment',year,quarter))
     key_candidates=[(i,text) for i,text in enumerate(texts) if 'Group - Key figures' in text]
     if len(key_candidates)!=1:raise ValueError('Expected exactly one Group key figures table')
     key_page,k=key_candidates[0]
