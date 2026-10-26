@@ -10,7 +10,7 @@ class PriorGrowthDisplayTests(unittest.TestCase):
   js=(ROOT/'scripts/quarterly_runtime.js').read_text(encoding='utf-8')
   self.assertIn("const previousGrowth=currentReported?d.growthPrev:null;",js)
   self.assertIn("'<div class=\"table-prior\">('+escape(previousGrowth)+')</div>'",js)
-  self.assertIn("const growthCell=tr.cells[2]",js)
+  self.assertIn("const growthCell=tr.cells[1]",js)
   self.assertIn("const thisGrowth=growthFor(year),lastGrowth=growthFor(year-1)",js)
   self.assertIn("const currentGrowth=currentReported?d.growth:null;",js)
   self.assertIn("if(lastGrowth){",js)
