@@ -137,6 +137,7 @@ class DashboardRuntimeTests(unittest.TestCase):
  def test_unpublished_current_quarter_hides_prior_growth(self):
   runtime=RUNTIME.read_text()
   self.assertIn("const currentReported=Boolean(d.revenue)",runtime)
+  self.assertIn("Ikke publisert",runtime)
   self.assertIn("const currentGrowth=currentReported?d.growth:null",runtime)
   self.assertIn("const previousGrowth=currentReported?d.growthPrev:null",runtime)
   self.assertIn("if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)",runtime)
