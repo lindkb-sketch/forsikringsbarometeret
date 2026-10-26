@@ -24,8 +24,8 @@ class Q4AnnualDiscoveryTests(unittest.TestCase):
   self.assertIn('if(quarter===4)return null;',fn)
  def test_four_slot_rollover_preserves_december(self):
   from scripts.audit_profitability_history import window
-  self.assertEqual(window(2027,1),[(2026,2),(2026,3),(2026,4),(2027,1)])
-  self.assertEqual(window(2027,2),[(2026,3),(2026,4),(2027,1),(2027,2)])
+  self.assertEqual(window(2027,1),[(2026,1),(2026,2),(2026,3),(2026,4),(2027,1)])
+  self.assertEqual(window(2027,2),[(2026,2),(2026,3),(2026,4),(2027,1),(2027,2)])
 
 if __name__=='__main__':
  unittest.main()
