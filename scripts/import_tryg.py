@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed Tryg A/S group PDF and Norway XLSX import from paired issuer links."""
-import hashlib,io,json,re,tempfile
+import hashlib,io,json,re,tempfile,urllib.request,urllib.parse
 from pathlib import Path
 import pdfplumber
 from audit_financials import ROOT,audit
@@ -16,11 +16,29 @@ FIELDS={'insurance_revenue':r'Insurance revenue','insurance_service_result':r'In
         'combined_ratio':r'Combined ratio'}
 NUMBER=r'-?\d[\d,]*(?:\.\d+)?'
 
+def download_tryg_report(url,quarter):
+    # The official full-year/Q4 PDF is materially larger than interim reports.
+    # Keep a bounded, issuer-host-only exception; Q1-Q3 retain the normal limit.
+    if quarter != 4:
+        return download_pdf(url)
+    parsed=urllib.parse.urlparse(url)
+    if parsed.scheme!='https' or parsed.hostname not in ('tryg.com','www.tryg.com'):
+        raise ValueError('Tryg Q4 source must be official issuer HTTPS PDF')
+    req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
+    with urllib.request.urlopen(req,timeout=70) as response:
+        target=urllib.parse.urlparse(response.geturl())
+        if target.scheme!='https' or target.hostname not in ('tryg.com','www.tryg.com'):
+            raise ValueError('Untrusted Tryg annual report redirect')
+        blob=response.read(60_000_001)
+    if len(blob)>60_000_000 or not blob.startswith(b'%PDF-'):
+        raise ValueError('Invalid or oversized Tryg full-year PDF')
+    return blob
+
 def parse_group(blob,year,quarter,url):
-    if not blob.startswith(b'%PDF-') or len(blob)>35_000_000:raise ValueError('Invalid Tryg group PDF')
+    if not blob.startswith(b'%PDF-') or len(blob)>(60_000_000 if quarter==4 else 35_000_000):raise ValueError('Invalid Tryg group PDF')
     sha=hashlib.sha256(blob).hexdigest()
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
-        if len(pdf.pages)>250:raise ValueError('Oversized Tryg report')
+        if len(pdf.pages)>(400 if quarter==4 else 250):raise ValueError('Oversized Tryg report')
         candidates=[]
         for page_no,page in enumerate(pdf.pages,1):
             lines=(page.extract_text() or '').splitlines()
@@ -32,7 +50,7 @@ def parse_group(blob,year,quarter,url):
         if len(candidates)!=1:raise ValueError('Tryg group income overview missing or ambiguous')
         page_no,lines=candidates[0]
         # Q1 has 3 columns (current/prior/year); Q2-Q4 have 5 (quarter and YTD).
-        column_count=5 if re.search(r'Q1-Q[234]|H1|Q1-Q3',lines[0],re.I) else 3
+        column_count=5 if quarter==4 or re.search(r'Q1-Q[234]|H1|Q1-Q3',lines[0],re.I) else 3
         if quarter>1 and column_count!=5:raise ValueError('Tryg YTD columns missing')
         if not re.search(r'Q\s*'+str(quarter)+r'\b',lines[0],re.I):raise ValueError('Quarter mismatch')
         if not re.search(r'\b'+str(year)+r'\b',lines[1]):raise ValueError('Year mismatch')
@@ -76,7 +94,7 @@ def run(pairs=None):
         # Historical extraction remains optional if an old layout differs.
         if year==2025:
             try:
-                pdf=download_pdf(spec['report_pdf_url'])
+                pdf=download_tryg_report(spec['report_pdf_url'],quarter)
                 group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
                 existing,_=merge(existing,group)
             except Exception as exc:
