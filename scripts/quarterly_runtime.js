@@ -90,7 +90,7 @@
       (type==='ytd'?addYtd(company,year,quarter,metric):
        addQuarter(company,year,quarter,metric));
   }
-  function quarterTimeline({year,quarter},count=4){
+  function quarterTimeline({year,quarter},count=5){
     const result=[];
     for(let i=count-1;i>=0;i--){
       const code=year*4+(quarter-1)-i;
@@ -99,12 +99,12 @@
     }
     return result;
   }
-  // Profitability is issuer-specific. Every issuer always has four fixed
+  // Profitability is issuer-specific. Every issuer always has five fixed
   // chronological slots ending at the selected reporting quarter. Missing
   // quarters stay open, never filled from older static data or other issuers.
   function issuerProfitabilityTimeline(name){
     if(!selection)return [];
-    return quarterTimeline(selection,4);
+    return quarterTimeline(selection,5);
   }
   function populate(){
     if(!selection)return;
@@ -179,7 +179,7 @@
       }
     }
     profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(profitabilityCompany));
-    // The chart reads the selected issuer's last four timeline positions.
+    // The chart reads the selected issuer's last five timeline positions.
     // Restore the older Q4/Q1/Q2 values only when they exist in the verified feed;
     // the latest reporting quarter remains an empty slot until issuer publication.
     window.FBActivePeriod={...selection,label:label(selection),priorLabel:'Q'+quarter+' '+(year-1)};
