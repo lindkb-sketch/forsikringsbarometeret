@@ -19,7 +19,7 @@ class Text(HTMLParser):
         value = html.unescape(data).strip()
         if value: self.parts.append(value)
 
-def extract(markup):
+def extract(markup, include_history=False):
     parser = Text(); parser.feed(markup)
     tokens = parser.parts
     result = {}
@@ -47,11 +47,12 @@ def extract(markup):
             values = window[positions[0]+1:positions[0]+6]
             if len(values) != 5 or any(not re.fullmatch(r"-?\d+(?:[.,]\d+)?%?|\(-?\d+(?:[.,]\d+)?\)", v) for v in values):
                 raise ValueError(f"Invalid values for {scope} {label}: {values}")
-            for (year, q), value in zip(parsed_periods, values[:3]):
+            periods_to_read = [(2000+int(PERIOD_RE.fullmatch(t).group(2)), int(PERIOD_RE.fullmatch(t).group(1))) for t in window[:5]] if include_history else parsed_periods
+            for (year, q), value in zip(periods_to_read, values[:5] if include_history else values[:3]):
                 numeric = float(value.strip("()%").replace(",","."))
                 if value.startswith("("): numeric = -numeric
                 result[(scope,year,q,metric)] = numeric
-    if len(result) != 30: raise ValueError(f"Expected 30 KPI values, found {len(result)}")
+    if len(result) != (50 if include_history else 30): raise ValueError(f"Expected {50 if include_history else 30} KPI values, found {len(result)}")
     return result
 
 def main():
