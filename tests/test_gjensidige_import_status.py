@@ -31,7 +31,7 @@ class ExistingVerifiedTests(unittest.TestCase):
             out=io.StringIO()
             with contextlib.redirect_stdout(out):
                 statuses=import_due(date(2026,10,23),importer,target)
-            self.assertEqual(calls,[(2026,1),(2026,2),(2026,3)])
+            self.assertEqual(calls,[(year,quarter) for year in (2024,2025,2026) for quarter in range(1,5) if (year,quarter)<(2026,4)])
             self.assertEqual([r["status"] for r in statuses],
                              ["previously_verified","not_discovered","not_discovered"])
             self.assertNotIn("::warning::Gjensidige Q1",out.getvalue())
