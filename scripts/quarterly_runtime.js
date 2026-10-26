@@ -310,6 +310,21 @@
         td.innerHTML='<strong>'+title+'</strong>'+basis+subsidiary+prior+delta;
       }else td.innerHTML='<span class="muted">Ikke rapportert</span>';
       tr.insertBefore(td,tr.cells[1]||null);
+      // Explicit, source-derived last-year growth: 2025 vs 2024 for Q3 2026.
+      // The original comparison cell obscured whether its second percentage
+      // was last year's growth or last year's revenue. Do not use old static
+      // half-year figures, and never substitute current-year growth.
+      const growthCell=tr.cells[2];
+      if(growthCell){
+        const currentLabel=(isYtd?'HIÅ ':'Q'+q+' ')+year+' mot '+(year-1);
+        const previousLabel=(isYtd?'HIÅ ':'Q'+q+' ')+(year-1)+' mot '+(year-2);
+        const currentGrowth=d.growth||'Ikke verifisert';
+        const previousGrowth=d.growthPrev||'Ikke verifisert (mangler sammenlignbart '+(year-2)+'-grunnlag)';
+        growthCell.innerHTML='<strong>'+escape(currentGrowth)+'</strong>'+
+          '<div class="table-prior">'+escape(currentLabel)+'</div>'+
+          '<div class="table-prior"><strong>Fjorårets inntektsvekst: '+escape(previousGrowth)+'</strong></div>'+
+          '<div class="table-prior">'+escape(previousLabel)+'</div>';
+      }
     }
     return fragment.innerHTML;
   }
