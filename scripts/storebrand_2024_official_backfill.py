@@ -7,6 +7,8 @@ No standalone Storebrand Forsikring AS figures are used for this group segment.
 """
 import hashlib,io,json,re,urllib.request
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import pdfplumber
 from audit_financials import DATA,audit
 from publish_geographic_workbooks import atomic_write
