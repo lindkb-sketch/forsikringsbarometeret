@@ -16,6 +16,18 @@
         "2026-Q2",
         "2026-Q3"
       ],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -34,6 +46,18 @@
         "2026-Q2",
         "2026-Q3"
       ],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -52,6 +76,18 @@
         "2026-Q2",
         "2026-Q3"
       ],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -66,6 +102,16 @@
         "2026-Q1",
         "2026-Q2"
       ],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 2,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "reason": "no verified revenue period"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -77,6 +123,18 @@
       "candidate_discovery_verified": true,
       "group_quarter_observations": 24,
       "group_quarters_with_required_metrics": [],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 2,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "year": 2025,
+        "quarter": 2,
+        "reason": "missing verified revenue for prior-prior year"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -92,6 +150,16 @@
         "2026-Q2",
         "2026-Q3"
       ],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "reason": "no verified revenue period"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -103,6 +171,18 @@
       "candidate_discovery_verified": false,
       "group_quarter_observations": 26,
       "group_quarters_with_required_metrics": [],
+      "prior_year_growth_quarter": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
+      "prior_year_growth_ytd": {
+        "available": false,
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     }
