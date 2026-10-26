@@ -244,14 +244,6 @@
       "company": "Frende",
       "scope": "group",
       "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Frende",
-      "scope": "group",
-      "period_type": "quarter",
       "metric": "return_on_equity",
       "year": 2026,
       "quarter": 2
@@ -261,14 +253,6 @@
       "scope": "group",
       "period_type": "quarter",
       "metric": "solvency_ratio",
-      "year": 2026,
-      "quarter": 2
-    },
-    {
-      "company": "Frende",
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "insurance_service_result",
       "year": 2026,
       "quarter": 2
     },
@@ -883,7 +867,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 461,
+  "observation_count": 481,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1676,7 +1660,7 @@
       "group": {
         "quarter": {
           "insurance_revenue": "reported",
-          "insurance_service_result": "missing_or_not_applicable",
+          "insurance_service_result": "reported",
           "combined_ratio": "reported",
           "loss_ratio": "reported",
           "expense_ratio": "reported",
@@ -1685,7 +1669,7 @@
         },
         "ytd": {
           "insurance_revenue": "reported",
-          "insurance_service_result": "missing_or_not_applicable",
+          "insurance_service_result": "reported",
           "combined_ratio": "reported",
           "loss_ratio": "reported",
           "expense_ratio": "reported",

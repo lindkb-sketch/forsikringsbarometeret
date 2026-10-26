@@ -123,8 +123,15 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 46,
       "candidate_discovery_verified": true,
-      "group_quarter_observations": 28,
-      "group_quarters_with_required_metrics": [],
+      "group_quarter_observations": 38,
+      "group_quarters_with_required_metrics": [
+        "2025-Q1",
+        "2025-Q2",
+        "2025-Q3",
+        "2025-Q4",
+        "2026-Q1",
+        "2026-Q2"
+      ],
       "prior_year_growth_quarter": {
         "available": true,
         "year": 2025,

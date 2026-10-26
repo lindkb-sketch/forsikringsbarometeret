@@ -571,7 +571,7 @@
           "has_comparative": false
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 935.132 NOKm (+13.5 % mot Q2 2025), combined ratio 81.3 % (Q2 2025: 84.5 %) i Q2 2026.",
+          "summary": "Frende: forsikringsinntekter 935.132 NOKm (+13.5 % mot Q2 2025), forsikringsresultat 211.293 NOKm, combined ratio 81.3 % (Q2 2025: 84.5 %) i Q2 2026.",
           "comment": "Frende: combined ratio 81.3 % i Q2 2026, forbedret med 12.6 prosentpoeng fra Q1 2026 (93.9 %).",
           "ytd": "HIÅ: forsikringsinntekter 2758.45 NOKm (+12.7 % mot HIÅ 2025).",
           "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
@@ -776,7 +776,7 @@
           "has_comparative": false
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 1823.32 NOKm (+12.3 % mot Q1 2025), combined ratio 93.9 % (Q1 2025: 102.7 %) i Q1 2026.",
+          "summary": "Frende: forsikringsinntekter 1823.32 NOKm (+12.3 % mot Q1 2025), forsikringsresultat 62.915 NOKm, combined ratio 93.9 % (Q1 2025: 102.7 %) i Q1 2026.",
           "comment": "Frende: combined ratio 93.9 % i Q1 2026, svekket med 3.1 prosentpoeng fra Q4 2025 (90.8 %).",
           "ytd": "HIÅ: forsikringsinntekter 1823.32 NOKm (+12.3 % mot HIÅ 2025).",
           "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
@@ -851,7 +851,7 @@
       ],
       "by_company": {
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 878.037 NOKm (+21.8 % mot Q4 2024), combined ratio 90.8 % i Q4 2025.",
+          "summary": "Frende: forsikringsinntekter 878.037 NOKm (+21.8 % mot Q4 2024), forsikringsresultat 99.279 NOKm, combined ratio 90.8 % i Q4 2025.",
           "comment": "Frende: combined ratio 90.8 % i Q4 2025, svekket med 5.5 prosentpoeng fra Q3 2025 (85.3 %).",
           "ytd": "HIÅ: forsikringsinntekter 4144.31 NOKm (+19.8 % mot HIÅ 2024).",
           "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
@@ -986,7 +986,7 @@
           "has_comparative": true
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 818.27 NOKm (+19.0 % mot Q3 2024), combined ratio 85.3 % i Q3 2025.",
+          "summary": "Frende: forsikringsinntekter 818.27 NOKm (+19.0 % mot Q3 2024), forsikringsresultat 148.065 NOKm, combined ratio 85.3 % i Q3 2025.",
           "comment": "Frende: combined ratio 85.3 % i Q3 2025, svekket med 0.8 prosentpoeng fra Q2 2025 (84.5 %).",
           "ytd": "HIÅ: forsikringsinntekter 3266.27 NOKm (+19.3 % mot HIÅ 2024).",
           "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
@@ -1128,7 +1128,7 @@
           "has_comparative": false
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 823.863 NOKm (+25.5 % mot Q2 2024), combined ratio 84.5 % i Q2 2025.",
+          "summary": "Frende: forsikringsinntekter 823.863 NOKm (+25.5 % mot Q2 2024), forsikringsresultat 152.32 NOKm, combined ratio 84.5 % i Q2 2025.",
           "comment": "Frende: combined ratio 84.5 % i Q2 2025, forbedret med 18.2 prosentpoeng fra Q1 2025 (102.7 %).",
           "ytd": "HIÅ: forsikringsinntekter 2448 NOKm (+19.3 % mot HIÅ 2024).",
           "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
@@ -1216,7 +1216,7 @@
           "has_comparative": false
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 1624.14 NOKm (+16.4 % mot Q1 2024), combined ratio 102.7 % i Q1 2025.",
+          "summary": "Frende: forsikringsinntekter 1624.14 NOKm (+16.4 % mot Q1 2024), forsikringsresultat -31.569 NOKm, combined ratio 102.7 % i Q1 2025.",
           "comment": "Frende: combined ratio 102.7 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "ytd": "HIÅ: forsikringsinntekter 1624.14 NOKm (+16.4 % mot HIÅ 2024).",
           "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
@@ -1251,8 +1251,8 @@
       "implications": [],
       "by_company": {
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 720.61 NOKm i Q4 2024.",
-          "comment": "Frende: forsikringsinntekter 720.61 NOKm i Q4 2024.",
+          "summary": "Frende: forsikringsinntekter 720.61 NOKm, forsikringsresultat 79.151 NOKm i Q4 2024.",
+          "comment": "Frende: forsikringsinntekter 720.61 NOKm, forsikringsresultat 79.151 NOKm i Q4 2024.",
           "ytd": "HIÅ: forsikringsinntekter 3459.59 NOKm.",
           "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
           "period": "Q4 2024",
@@ -1314,8 +1314,8 @@
           "has_comparative": false
         },
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 687.578 NOKm i Q3 2024.",
-          "comment": "Frende: forsikringsinntekter 687.578 NOKm i Q3 2024.",
+          "summary": "Frende: forsikringsinntekter 687.578 NOKm, forsikringsresultat -0.995 NOKm i Q3 2024.",
+          "comment": "Frende: forsikringsinntekter 687.578 NOKm, forsikringsresultat -0.995 NOKm i Q3 2024.",
           "ytd": "HIÅ: forsikringsinntekter 2738.99 NOKm.",
           "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
           "period": "Q3 2024",
@@ -1366,8 +1366,8 @@
       "implications": [],
       "by_company": {
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 656.381 NOKm i Q2 2024.",
-          "comment": "Frende: forsikringsinntekter 656.381 NOKm i Q2 2024.",
+          "summary": "Frende: forsikringsinntekter 656.381 NOKm, forsikringsresultat 94.478 NOKm i Q2 2024.",
+          "comment": "Frende: forsikringsinntekter 656.381 NOKm, forsikringsresultat 94.478 NOKm i Q2 2024.",
           "ytd": "HIÅ: forsikringsinntekter 2051.41 NOKm.",
           "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
           "period": "Q2 2024",
@@ -1398,8 +1398,8 @@
       "implications": [],
       "by_company": {
         "Frende": {
-          "summary": "Frende: forsikringsinntekter 1395.03 NOKm i Q1 2024.",
-          "comment": "Frende: forsikringsinntekter 1395.03 NOKm i Q1 2024.",
+          "summary": "Frende: forsikringsinntekter 1395.03 NOKm, forsikringsresultat -115.865 NOKm i Q1 2024.",
+          "comment": "Frende: forsikringsinntekter 1395.03 NOKm, forsikringsresultat -115.865 NOKm i Q1 2024.",
           "ytd": "HIÅ: forsikringsinntekter 1395.03 NOKm.",
           "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
           "period": "Q1 2024",

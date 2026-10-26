@@ -1320,6 +1320,30 @@
       "year": 2024,
       "quarter": 1,
       "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": -115.865,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1395.026,
+        "claims_reserves": -1309.352,
+        "operating_costs": -201.539
+      },
+      "source_sha256": "7591a95904d675436f234398385922e1c68e6f0deef5e56ceca2c33434af2cda"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 1,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "value": 1395.026,
@@ -1332,6 +1356,30 @@
       "source_document_period": "Q1 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue); prior-year comparative column",
       "source_sha256": "423f26d70e2ee10704bf39b1c7e81e0e62803bc9a3f898972b0a6b2542e677af"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": -115.865,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1395.026,
+        "claims_reserves": -1309.352,
+        "operating_costs": -201.539
+      },
+      "source_sha256": "7591a95904d675436f234398385922e1c68e6f0deef5e56ceca2c33434af2cda"
     },
     {
       "company": "Frende",
@@ -1356,6 +1404,30 @@
       "year": 2024,
       "quarter": 2,
       "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 94.478,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 656.381,
+        "claims_reserves": -387.831,
+        "operating_costs": -174.072
+      },
+      "source_sha256": "8e7177f90138d8f2019463ef4c708581ace26c6f73dc3d2ef11bd4a750dc8a98"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 2,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "value": 2051.407,
@@ -1368,6 +1440,30 @@
       "source_document_period": "Q2 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue); prior-year comparative column",
       "source_sha256": "a16c5e1c4f3d81da959576b183fdf36ef20893ffb3c1da0c38352b89206c5cd4"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": -21.386,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 2051.407,
+        "claims_reserves": -1697.182,
+        "operating_costs": -375.611
+      },
+      "source_sha256": "8e7177f90138d8f2019463ef4c708581ace26c6f73dc3d2ef11bd4a750dc8a98"
     },
     {
       "company": "Frende",
@@ -1392,6 +1488,30 @@
       "year": 2024,
       "quarter": 3,
       "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": -0.995,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q3 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 687.578,
+        "claims_reserves": -486.844,
+        "operating_costs": -201.729
+      },
+      "source_sha256": "f664ae1c3e374fd58b0de7d208a28b0a23a822d70176dccb98d3f5678287c771"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 3,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "value": 2738.985,
@@ -1404,6 +1524,30 @@
       "source_document_period": "Q3 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue); prior-year comparative column",
       "source_sha256": "f9b6ce9b207ba765e05c0270bf92a431bb288f0d9102a0fcf78496a0215cbd3e"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": -22.381,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q3 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 2738.985,
+        "claims_reserves": -2184.026,
+        "operating_costs": -577.34
+      },
+      "source_sha256": "f664ae1c3e374fd58b0de7d208a28b0a23a822d70176dccb98d3f5678287c771"
     },
     {
       "company": "Frende",
@@ -1428,6 +1572,30 @@
       "year": 2024,
       "quarter": 4,
       "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 79.151,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q4 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 720.61,
+        "claims_reserves": -430.144,
+        "operating_costs": -211.315
+      },
+      "source_sha256": "6496ced67e520be8ddae64d1082320131ea94d56ad7ade228e1291b4604426e6"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 4,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "value": 3459.595,
@@ -1440,6 +1608,30 @@
       "source_document_period": "Q4 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue); prior-year comparative column",
       "source_sha256": "87cf6e3e4e1a8a41e6c1396cf6c92af88efef55c1c9b9d3b6a3805b90dfe93c9"
+    },
+    {
+      "company": "Frende",
+      "year": 2024,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 56.77,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q4 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 3459.595,
+        "claims_reserves": -2614.17,
+        "operating_costs": -788.655
+      },
+      "source_sha256": "6496ced67e520be8ddae64d1082320131ea94d56ad7ade228e1291b4604426e6"
     },
     {
       "company": "Frende",
@@ -1494,6 +1686,30 @@
       "source_document_period": "Q1 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "eb193cd0037996e2fdc7c8f477319f1fcf2221393695f955c94982de6d8df0a7"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": -31.569,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1624.14,
+        "claims_reserves": -1434.596,
+        "operating_costs": -221.113
+      },
+      "source_sha256": "fab613e9eb450b84d58297f9aa7d001d2ac55320056fdd4e77914848c325d277"
     },
     {
       "company": "Frende",
@@ -1566,6 +1782,30 @@
       "source_document_period": "Q1 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "eb193cd0037996e2fdc7c8f477319f1fcf2221393695f955c94982de6d8df0a7"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": -31.569,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1624.14,
+        "claims_reserves": -1434.596,
+        "operating_costs": -221.113
+      },
+      "source_sha256": "fab613e9eb450b84d58297f9aa7d001d2ac55320056fdd4e77914848c325d277"
     },
     {
       "company": "Frende",
@@ -1645,6 +1885,30 @@
       "quarter": 2,
       "scope": "group",
       "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 152.32,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 823.863,
+        "claims_reserves": -459.5,
+        "operating_costs": -212.043
+      },
+      "source_sha256": "78709f135847a64ab9280bdaae14d853a01de8d9f86fa20500d58be09da22135"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 64.1,
       "unit": "percent",
@@ -1710,6 +1974,30 @@
       "source_document_period": "Q2 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "5f85795e7fc3197f2bc1def666227e037b99bef34941bfac29f5f708221bc796"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 120.751,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 2448.003,
+        "claims_reserves": -1894.096,
+        "operating_costs": -433.156
+      },
+      "source_sha256": "78709f135847a64ab9280bdaae14d853a01de8d9f86fa20500d58be09da22135"
     },
     {
       "company": "Frende",
@@ -1789,6 +2077,30 @@
       "quarter": 3,
       "scope": "group",
       "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 148.065,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q3 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 818.27,
+        "claims_reserves": -438.199,
+        "operating_costs": -232.006
+      },
+      "source_sha256": "f664ae1c3e374fd58b0de7d208a28b0a23a822d70176dccb98d3f5678287c771"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 62.2,
       "unit": "percent",
@@ -1854,6 +2166,30 @@
       "source_document_period": "Q3 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "9bceb367fff00712dc4c0617813a4df592845e696afac126e9a37a613adcac5f"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 268.816,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q3 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 3266.273,
+        "claims_reserves": -2332.294,
+        "operating_costs": -665.163
+      },
+      "source_sha256": "f664ae1c3e374fd58b0de7d208a28b0a23a822d70176dccb98d3f5678287c771"
     },
     {
       "company": "Frende",
@@ -1934,6 +2270,30 @@
       "quarter": 4,
       "scope": "group",
       "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 99.279,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q4 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 878.037,
+        "claims_reserves": -478.847,
+        "operating_costs": -299.911
+      },
+      "source_sha256": "6496ced67e520be8ddae64d1082320131ea94d56ad7ade228e1291b4604426e6"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 62.8,
       "unit": "percent",
@@ -2000,6 +2360,30 @@
       "source_document_period": "Q4 2025",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "be9a5736c4c7508b26ffaa5ac52403be0c43a28effa8ae6ab0a439a97b048a0c"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 368.095,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q4 2025",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 4144.31,
+        "claims_reserves": -2811.141,
+        "operating_costs": -965.074
+      },
+      "source_sha256": "6496ced67e520be8ddae64d1082320131ea94d56ad7ade228e1291b4604426e6"
     },
     {
       "company": "Frende",
@@ -2079,6 +2463,30 @@
       "quarter": 1,
       "scope": "group",
       "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 62.915,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1823.321,
+        "claims_reserves": -1515.782,
+        "operating_costs": -244.624
+      },
+      "source_sha256": "fab613e9eb450b84d58297f9aa7d001d2ac55320056fdd4e77914848c325d277"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 72.2,
       "unit": "percent",
@@ -2144,6 +2552,30 @@
       "source_document_period": "Q1 2026",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "b9e6fdfd55fb13ce2ebacbd4078d13ced689cab122ef817f8abf1956b642ecd4"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 62.915,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q1 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 1823.321,
+        "claims_reserves": -1515.782,
+        "operating_costs": -244.624
+      },
+      "source_sha256": "fab613e9eb450b84d58297f9aa7d001d2ac55320056fdd4e77914848c325d277"
     },
     {
       "company": "Frende",
@@ -2223,6 +2655,30 @@
       "quarter": 2,
       "scope": "group",
       "period_type": "quarter",
+      "metric": "insurance_service_result",
+      "value": 211.293,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 935.132,
+        "claims_reserves": -507.148,
+        "operating_costs": -216.691
+      },
+      "source_sha256": "78709f135847a64ab9280bdaae14d853a01de8d9f86fa20500d58be09da22135"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 62.8,
       "unit": "percent",
@@ -2288,6 +2744,30 @@
       "source_document_period": "Q2 2026",
       "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
       "source_sha256": "5e71b44964ec284bce6825800537cc002fa38dacc6f7103844b32170b4b53f9b"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_service_result",
+      "value": 274.206,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7",
+      "source_page": 7,
+      "source_entity": "Frende Holding AS konsern",
+      "source_document_period": "Q2 2026",
+      "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+      "calculation": "operating revenue plus signed claims/reserve and operating expense subtotals",
+      "calculation_inputs": {
+        "revenue": 2758.452,
+        "claims_reserves": -2022.93,
+        "operating_costs": -461.316
+      },
+      "source_sha256": "78709f135847a64ab9280bdaae14d853a01de8d9f86fa20500d58be09da22135"
     },
     {
       "company": "Frende",
@@ -8492,6 +8972,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 461,
+  "observation_count": 481,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
