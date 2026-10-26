@@ -1,7 +1,7 @@
 import unittest,sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from import_frende_holding import extract,extract_revenue,extract_historical_revenue,number,read
+from import_frende_holding import extract,extract_revenue,extract_historical_revenue,extract_insurance_result,number,read
 
 def table(q):
     if q==1:
@@ -37,6 +37,21 @@ class FrendeTests(unittest.TestCase):
         markup='<h1>Resultatregnskap</h1><table><tr><th>Resultatregnskap</th><th>3. kv 2025</th><th>3. kv 2024</th><th>30.09.25</th><th>30.09.24</th></tr><tr><td>Sum driftsinntekter</td><td>818 270</td><td>735 000</td><td>3 266 273</td><td>2 900 000</td></tr></table>'
         rows=extract_historical_revenue(markup,'https://frende.wrep.it/q3-2025-frende-holding-as/sec/7',2025,3)
         self.assertEqual([(x['year'],x['period_type'],x['value']) for x in rows],[(2024,'quarter',735.0),(2024,'ytd',2900.0)])
+
+    def test_official_frende_income_operating_result_excludes_investments(self):
+        head=['Resultatregnskap','3. kv 2025','3. kv 2024','01.01-30.09.25','01.01-30.09.24']
+        lines=[['Sum driftsinntekter','818 270','687 578','3 266 273','2 738 985'],
+               ['Sum erstatningskostnader og endring forsikringstekniske avsetninger','-438 199','-486 844','-2 332 294','-2 184 026'],
+               ['Sum driftskostnader','-232 006','-201 729','-665 163','-577 340']]
+        markup='<h1>Resultatregnskap</h1><table>'+''.join('<tr>'+''.join('<td>'+x+'</td>' for x in row)+'</tr>' for row in [head]+lines)+'</table>'
+        rows=extract_insurance_result(markup,'https://frende.wrep.it/q3-2025-frende-holding-as/sec/7',2025,3)
+        by={(r['year'],r['period_type']):r for r in rows}
+        self.assertEqual(by[2025,'quarter']['value'],148.065)
+        self.assertEqual(by[2024,'quarter']['value'],-0.995)
+        self.assertEqual(by[2025,'ytd']['value'],268.816)
+        self.assertEqual(by[2024,'ytd']['value'],-22.381)
+        self.assertEqual(by[2025,'quarter']['status'],'calculated')
+        self.assertNotIn('investment',by[2025,'quarter']['calculation'])
 
     def test_future_q3_publisher_layout(self):
         q2=table(2)
