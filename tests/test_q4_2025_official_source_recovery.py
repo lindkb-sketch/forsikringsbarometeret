@@ -6,7 +6,7 @@ class OfficialQ4ImportTests(unittest.TestCase):
  def test_gjensidige_official_q4_document_is_registered(self):
   from scripts.gjensidige_publish import APPROVED_PDFS
   self.assertIn((2025,4),APPROVED_PDFS)
-  self.assertTrue(APPROVED_PDFS[(2025,4)].startswith('https://www.gjensidige.se/'))
+  self.assertTrue(APPROVED_PDFS[(2025,4)].startswith('https://live.euronext.com/'))
  def test_gjensidige_import_checks_every_completed_quarter(self):
   from scripts.import_gjensidige_latest import periods_due
   from datetime import date
