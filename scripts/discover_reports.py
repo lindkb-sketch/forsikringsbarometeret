@@ -31,10 +31,12 @@ def discover(html,base_url,company):
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Require interim-report context, and an explicit PDF file extension.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
-  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
-  if re.search(r"(presentation|presentasjon|press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}(?:report|presentation)|(?:report|presentation).{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
+  if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  is_presentation=bool(re.search(r"(presentation|presentasjon)",label,re.I))
+  if is_presentation and not re.search(r"(q[1-4]|quarter|kvartal|interim)",label,re.I):continue
   if url not in seen:
-   found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","link_text":link["text"].strip()})
+   found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","document_type":"official_quarterly_presentation_candidate" if is_presentation else "official_quarterly_report_candidate","link_text":link["text"].strip()})
    seen.add(url)
  return found
 def scan(fetcher=None):
