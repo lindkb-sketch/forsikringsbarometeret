@@ -883,7 +883,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 438,
+  "observation_count": 446,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1286,6 +1286,126 @@
       "calculation": "(current/prior-1)*100",
       "inputs": [
         "https://frende.wrep.it/q1-2026-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 21.846352395886814,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 19.791767533482975,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 19.007588957180133,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 19.251218973451834,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 25.51597319239893,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 2,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 19.33287738610623,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 16.423636548709485,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2025,
+      "quarter": 1,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 16.423636548709485,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
         "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7"
       ],
       "status": "calculated_from_quarterly_reports"

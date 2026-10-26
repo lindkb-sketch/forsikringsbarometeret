@@ -122,19 +122,19 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 46,
       "candidate_discovery_verified": true,
-      "group_quarter_observations": 24,
+      "group_quarter_observations": 28,
       "group_quarters_with_required_metrics": [],
       "prior_year_growth_quarter": {
-        "available": false,
+        "available": true,
         "year": 2025,
         "quarter": 2,
-        "reason": "missing verified revenue for prior-prior year"
+        "reason": "verified comparable revenue years"
       },
       "prior_year_growth_ytd": {
-        "available": false,
+        "available": true,
         "year": 2025,
         "quarter": 2,
-        "reason": "missing verified revenue for prior-prior year"
+        "reason": "verified comparable revenue years"
       },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"

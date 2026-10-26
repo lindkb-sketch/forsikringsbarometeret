@@ -1,0 +1,168 @@
+{
+  "period": "Q3 2026",
+  "companies": [
+    {
+      "company": "Fremtind",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      }
+    },
+    {
+      "company": "Gjensidige",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      }
+    },
+    {
+      "company": "Tryg",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "verified",
+        "growth_percent": 4.0,
+        "unit": "MDKK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+        ],
+        "observation_values": {
+          "2025": 10175.0,
+          "2024": 9786.0
+        }
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "verified",
+        "growth_percent": 4.2,
+        "unit": "MDKK",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+        ],
+        "observation_values": {
+          "2025": 30063.0,
+          "2024": 28862.0
+        }
+      }
+    },
+    {
+      "company": "Protector",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2025,
+          2024
+        ]
+      }
+    },
+    {
+      "company": "Storebrand",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2024
+        ]
+      }
+    },
+    {
+      "company": "Sampo",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2025,
+          2024
+        ]
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "missing_verified_comparable",
+        "growth_percent": null,
+        "missing_years": [
+          2025,
+          2024
+        ]
+      }
+    },
+    {
+      "company": "Frende",
+      "quarter": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "verified",
+        "growth_percent": 19.0,
+        "unit": "NOKm",
+        "revenue_basis": "operating_revenue",
+        "source_urls": [
+          "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
+        ],
+        "observation_values": {
+          "2025": 818.27,
+          "2024": 687.578
+        }
+      },
+      "ytd": {
+        "reference": "2025-Q3 vs 2024-Q3",
+        "status": "verified",
+        "growth_percent": 19.3,
+        "unit": "NOKm",
+        "revenue_basis": "operating_revenue",
+        "source_urls": [
+          "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
+        ],
+        "observation_values": {
+          "2025": 3266.273,
+          "2024": 2738.985
+        }
+      }
+    }
+  ],
+  "definition": "Prior-year growth equals prior-year revenue / prior-prior-year revenue - 1. Only matching official quarter/YTD company, scope, unit and revenue basis."
+}
