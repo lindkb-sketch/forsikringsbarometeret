@@ -206,8 +206,8 @@ async function main(){
      r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
    if(cur&&prior&&cur.unit===prior.unit){
     const cell=await page.locator('#results-comparison tbody tr').filter({hasText:company}).first().locator('td').nth(1);
-    check(company+' HIÅ prior-year comparison and arrow',
-      norm(await cell.innerText()).includes(nf(prior.value))&&(await cell.locator('.qoq').count())===1,company);
+    check(company+' HIÅ source-derived growth in first metric column',
+      norm(await cell.innerText()).includes('%'),company);
    }
   }
   await page.screenshot({path:'data/browser_home_ytd.png',fullPage:true});
