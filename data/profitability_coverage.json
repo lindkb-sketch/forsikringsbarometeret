@@ -1,6 +1,7 @@
 {
   "reference_period": "Q3 2026",
   "window": [
+    "Q3 2025",
     "Q4 2025",
     "Q1 2026",
     "Q2 2026",
@@ -10,6 +11,12 @@
     {
       "company": "Fremtind",
       "quarters": [
+        {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
         {
           "period": "Q4 2025",
           "verified": false,
@@ -45,6 +52,12 @@
       "company": "Gjensidige",
       "quarters": [
         {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
           "period": "Q4 2025",
           "verified": false,
           "missing_metrics": [
@@ -79,6 +92,12 @@
       "company": "Tryg",
       "quarters": [
         {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
           "period": "Q4 2025",
           "verified": false,
           "missing_metrics": [
@@ -112,6 +131,16 @@
     {
       "company": "Sampo",
       "quarters": [
+        {
+          "period": "Q3 2025",
+          "verified": false,
+          "missing_metrics": [
+            "combined_ratio",
+            "loss_ratio",
+            "expense_ratio"
+          ],
+          "status": "missing_verified_source"
+        },
         {
           "period": "Q4 2025",
           "verified": false,
@@ -151,6 +180,12 @@
       "company": "Frende",
       "quarters": [
         {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
           "period": "Q4 2025",
           "verified": true,
           "missing_metrics": [],
@@ -185,6 +220,12 @@
       "company": "Protector",
       "quarters": [
         {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
+        {
           "period": "Q4 2025",
           "verified": false,
           "missing_metrics": [
@@ -218,6 +259,12 @@
     {
       "company": "Storebrand",
       "quarters": [
+        {
+          "period": "Q3 2025",
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
+        },
         {
           "period": "Q4 2025",
           "verified": false,
