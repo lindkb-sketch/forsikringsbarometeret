@@ -23,7 +23,7 @@ FEED = ROOT / 'data/verified_financial_feed.json'
 
 def prepare(group_path, norway_path, group_url, norway_url, baseline,year=2026,quarter=3):
     incoming = parse_group(group_path, group_url,year,quarter) + parse_norway(norway_path, norway_url,year,quarter)
-    if len(incoming) != (51 if quarter==3 else 11):
+    if len(incoming) != (58 if quarter==3 else 12):
         raise ValueError(f'Unexpected observation count: {len(incoming)}')
     for r in incoming:
         if r['company'] != 'Storebrand' or r['quarter'] not in range(1, 5) or r['year'] not in (year-1, year):
