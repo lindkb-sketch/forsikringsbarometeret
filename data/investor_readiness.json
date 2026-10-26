@@ -158,14 +158,14 @@
     },
     {
       "company": "Tryg",
-      "trading_date": "2026-10-23",
-      "calendar_days_old": 3,
+      "trading_date": "2026-10-26",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     },
     {
       "company": "Sampo / If",
-      "trading_date": "2026-10-23",
-      "calendar_days_old": 3,
+      "trading_date": "2026-10-26",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     }
   ],
