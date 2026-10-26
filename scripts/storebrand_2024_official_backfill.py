@@ -8,12 +8,12 @@ No standalone Storebrand Forsikring AS figures are used for this group segment.
 import hashlib,io,json,re,urllib.request
 from pathlib import Path
 import pdfplumber
-if __package__:
-    from .audit_financials import DATA,audit
-    from .publish_geographic_workbooks import atomic_write
-else:
-    from audit_financials import DATA,audit
-    from publish_geographic_workbooks import atomic_write
+import sys
+SCRIPTS=Path(__file__).resolve().parent
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0,str(SCRIPTS))
+from audit_financials import DATA,audit
+from publish_geographic_workbooks import atomic_write
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE='https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/da62402f-d597-4d26-afc6-ad0ca6ab8039%3A0f32ecf07056118e0a078d4f6cd3a1de100f16e6/2025-3q-supplementary-information.pdf'
