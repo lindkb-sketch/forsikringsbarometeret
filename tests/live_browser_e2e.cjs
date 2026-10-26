@@ -160,7 +160,7 @@ async function main(){
        quotesOnCompany.includes(String(quote.close))&&quotesOnCompany.includes(quote.trading_date),
        quotesOnCompany.slice(0,420));
   await page.evaluate(()=>show('home',true));
-  const tableQ=normnorm(await page.locator('body').innerText());
+  const tableQ=norm(await page.locator('body').innerText());
   for(const c of ['Fremtind','Storebrand']){
    const r=feed.observations.find(x=>x.company===c&&x.year===year&&x.quarter===quarter&&
      x.scope==='group'&&x.period_type==='quarter'&&x.metric==='insurance_revenue');
@@ -188,7 +188,7 @@ async function main(){
   await page.screenshot({path:'data/browser_home_q3.png',fullPage:true});
   report.screenshots.push('data/browser_home_q3.png');
   await page.selectOption('#results-comparison select','H3');
-  const ytdText=normnorm(await page.locator('body').innerText());
+  const ytdText=norm(await page.locator('body').innerText());
   const ytd=feed.observations.filter(x=>x.scope==='group'&&x.year===year&&x.quarter===quarter&&x.period_type==='ytd');
   for(const c of companies){
    const metric=ytd.find(x=>x.company===c&&x.metric==='insurance_revenue');
