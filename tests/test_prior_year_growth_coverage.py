@@ -1,6 +1,6 @@
 import json
 import unittest
-from scripts.prior_year_growth_coverage import evidence, COMPANIES
+from scripts.prior_year_growth_coverage import evidence, COMPANIES, active_period
 
 def row(company,year,kind,value,unit='MNOK',description='Insurance revenue'):
     return {'company':company,'year':year,'quarter':3,'period_type':kind,'scope':'group',
@@ -24,6 +24,12 @@ class PriorYearEvidenceTests(unittest.TestCase):
           row('Storebrand',2025,'quarter',110,description='APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue')]
     result=next(r for r in evidence(rows)['companies'] if r['company']=='Storebrand')
     self.assertEqual(result['quarter']['status'],'incomparable_basis')
+ def test_auto_rollover_follows_latest_qualified_issuer_quarter(self):
+    rows=[row('Tryg',2025,'quarter',100),row('Tryg',2024,'quarter',90)]
+    rows.append({**row('Fremtind',2027,'quarter',130),'quarter':1})
+    rows.append({**row('Fremtind',2027,'quarter',0),'quarter':1,'metric':'combined_ratio'})
+    self.assertEqual(active_period(rows),(2027,1))
+
  def test_does_not_cross_quarters_or_scopes(self):
     rows=[row('Fremtind',2024,'quarter',100),row('Fremtind',2025,'quarter',120)]
     rows[0]['quarter']=2
