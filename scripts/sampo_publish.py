@@ -8,6 +8,7 @@ from audit_financials import DATA,audit
 from build_verified_feed import OUT,build
 from publish_geographic_workbooks import atomic_write
 SOURCES={
+ (2025,3):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf',
  (2026,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf',
  (2026,2):'https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969',
 }
@@ -88,6 +89,16 @@ def parse(blob,url,year,quarter):
    # The first numeric column is the current quarter, including Q2 and Q3.
    period='quarter'
    observations.append(dict(company='Sampo',year=year,quarter=quarter,scope='group' if segment=='Sampo Group' else 'reported_segment',segment=None if segment=='Sampo Group' else segment,source_scope='group' if segment=='Sampo Group' else 'reported_segment',period_type=period,metric=metric,value=number(vals[0]),unit='percent' if metric.endswith('ratio') else 'EURm',status='reported',source_url=url,source_page=page,source_type='official_quarterly_report',source_sha256=sha,source_definition='Sampo interim statement; '+segment+' reported financial table'))
+   # Q3 2025 financial overview includes the same-definition Q3 2024
+   # comparator; never use annual or brokerage-free IFRS rows instead.
+   if (year,quarter)==(2025,3) and segment=='Sampo Group' and metric=='insurance_revenue':
+    if len(vals)<2:raise ValueError('Sampo Q3 2024 comparative column missing')
+    observations.append(dict(company='Sampo',year=2024,quarter=3,scope='group',
+      segment=None,source_scope='group',period_type='quarter',metric=metric,
+      value=number(vals[1]),unit='EURm',status='reported',source_url=url,
+      source_page=page,source_type='official_quarterly_report',source_sha256=sha,
+      source_document_period='Q3 2025',
+      source_definition='Sampo interim statement; Sampo Group reported financial table (Q3 2024 comparative column)'))
  return observations
 def run():
  baseline=json.loads(DATA.read_text())
