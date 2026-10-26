@@ -25,6 +25,8 @@ jobs:
         run: |
           python scripts/storebrand_2024_official_backfill.py
           python scripts/audit_financials.py
+      - name: Storebrand historical importer isolated unittest
+        run: python -m unittest discover -s tests -p test_storebrand_2024_official_backfill.py -v
       - name: Audit committed financial observations
         run: python scripts/audit_financials.py
       - name: Validate dashboard
