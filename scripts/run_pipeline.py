@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unified ingestion, validation, editorial, calendar and publishable data generation."""
 import argparse,subprocess,sys
+from datetime import date
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def run(offline=False):
@@ -40,9 +41,16 @@ def run(offline=False):
   # Sampo and Storebrand must be part of the scheduled ingestion path, not
   # only diagnostic workflows. Failures keep previously audited observations.
   # The profitability coverage report marks missing quarters explicitly.
+  today=date.today()
+  latest_completed=today.year*4+(today.month-1)//3-1
+  latest_year,latest_quarter=divmod(latest_completed,4)
+  latest_quarter+=1
   for filename in ['sampo_publish.py', 'storebrand_publish_q3.py']:
    print('RUN',filename,'(official report import; preserves audited baseline if unavailable)',flush=True)
-   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/filename)],cwd=ROOT)
+   command=[sys.executable,str(ROOT/'scripts'/filename)]
+   if filename=='storebrand_publish_q3.py' and (latest_year,latest_quarter)>=(2026,3):
+    command+=['--year',str(latest_year),'--quarter',str(latest_quarter)]
+   attempt=subprocess.run(command,cwd=ROOT)
    if attempt.returncode:
     print('::warning::'+filename+' blocked by missing/changed official report; no invented figures published',flush=True)
  if not offline:
