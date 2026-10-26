@@ -110,19 +110,33 @@
       "company": "Storebrand",
       "quarter": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 21.1,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_premiums_apm",
+        "source_urls": [
+          "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/da62402f-d597-4d26-afc6-ad0ca6ab8039%3A0f32ecf07056118e0a078d4f6cd3a1de100f16e6/2025-3q-supplementary-information.pdf",
+          "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+        ],
+        "observation_values": {
+          "2025": 2475.0,
+          "2024": 2044
+        }
       },
       "ytd": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 21.6,
+        "unit": "MNOK",
+        "revenue_basis": "insurance_premiums_apm",
+        "source_urls": [
+          "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/da62402f-d597-4d26-afc6-ad0ca6ab8039%3A0f32ecf07056118e0a078d4f6cd3a1de100f16e6/2025-3q-supplementary-information.pdf",
+          "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+        ],
+        "observation_values": {
+          "2025": 7140.0,
+          "2024": 5874
+        }
       }
     },
     {
