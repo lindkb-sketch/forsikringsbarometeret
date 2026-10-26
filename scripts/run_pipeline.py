@@ -29,6 +29,9 @@ def run(offline=False):
   print('RUN import_frende_holding.py (verified official issuer publisher tables only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_frende_holding.py')],cwd=ROOT,check=True)
  if not offline:
+  print('RUN protector_publish.py (official KPI and PDF-verified prior-year comparisons)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'protector_publish.py')],cwd=ROOT,check=True)
+ if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
  for name in ['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','refresh_report_commentary.py','build_editorial.py','build_strategic_market.py','update.py','verify_feed_coverage.py']:
