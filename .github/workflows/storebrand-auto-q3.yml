@@ -125,7 +125,21 @@ jobs:
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add data/financial_observations.json data/verified_financial_feed.json
             git commit -m 'Publish verified Storebrand quarterly observations'
-            git push origin HEAD:main
+            # Another scheduled issuer may update main while PDFs are parsed.
+            # Rebase the verified financial-only commit; never force-push.
+            for attempt in 1 2 3 4; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then
+                echo "Verified Storebrand observations safely published."
+                break
+              fi
+              git rebase --abort 2>/dev/null || true
+              if [ "$attempt" -eq 4 ]; then
+                echo "::error::Concurrent financial write conflict; no overwrite performed"
+                exit 1
+              fi
+              sleep 3
+            done
           else
             echo 'No changes in verified Storebrand observations.'
           fi
