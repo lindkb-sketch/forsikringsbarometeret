@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_TO_FEED_VERIFIED_PUBLIC_PENDING",
+  "limitation": "Existing source metadata and feed parity do not prove autonomous discovery or fresh source download.",
+  "companies": [
+    {
+      "company": "Fremtind",
+      "latest_verified_period": "2026-Q3",
+      "group_quarter_observations": 6,
+      "official_source_urls": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
+      ],
+      "observation_sha256": "ae516dc6403765d22a97ca09d983d52e2293a83dce32802ed8179ba01a10330d",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Gjensidige",
+      "latest_verified_period": "2026-Q3",
+      "group_quarter_observations": 5,
+      "official_source_urls": [
+        "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+      ],
+      "observation_sha256": "a47881e5b4c3b3f192620aa6a4545cfe9c4f21355f0f3bfb1b2014e35ed27fec",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Tryg",
+      "latest_verified_period": "2026-Q3",
+      "group_quarter_observations": 5,
+      "official_source_urls": [
+        "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+      ],
+      "observation_sha256": "c6bf38139e92d55b3140a6977d97511ddd6ae5694840e1daf7e07943c6ceced2",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Sampo",
+      "latest_verified_period": "2026-Q2",
+      "group_quarter_observations": 5,
+      "official_source_urls": [
+        "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969"
+      ],
+      "observation_sha256": "5c29328fec606fcc13816e48dc4f6e4efe727df566083b7222c5b92ab0cd977a",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Frende",
+      "latest_verified_period": "2026-Q2",
+      "group_quarter_observations": 4,
+      "official_source_urls": [
+        "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
+        "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7"
+      ],
+      "observation_sha256": "4ad58ac58221aad46f0a8dd6ee2fbf0acff65df8353aaace82a248196edcb673",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Protector",
+      "latest_verified_period": "2026-Q3",
+      "group_quarter_observations": 5,
+      "official_source_urls": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
+      ],
+      "observation_sha256": "553e2e2ad4ddef2b39da6d632a6182d67841ce972b06c7e09f16b3496b273714",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    },
+    {
+      "company": "Storebrand",
+      "latest_verified_period": "2026-Q3",
+      "group_quarter_observations": 6,
+      "official_source_urls": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
+      ],
+      "observation_sha256": "4ceb57b78f2e9061bf9315d3de63dfe0f3ae7f4af9273c0d7729ff661a2b30da",
+      "source_to_feed_parity": true,
+      "public_pages_parity": "pending_deployment_check",
+      "new_report_discovery_proven": false,
+      "fully_automatic_certified": false
+    }
+  ]
+}
