@@ -28,7 +28,15 @@ def parse(pages):
             if len(vals)!=8:continue
             if vals[0]!=2475 or vals[5]!=7140:continue
             matches.append((page,vals))
-    if len(matches)!=1:raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(matches)))
+    if len(matches)!=1:
+        excerpts=[]
+        for page,text in pages:
+            if re.search(r'insurance premiums f.o.a|Table 23',text,re.I):
+                for line in text.splitlines():
+                    if re.search(r'premiums f.o.a|Table 23',line,re.I):
+                        excerpts.append((page,line[:240]))
+        print('SOURCE_PDF_TABLE_DIAGNOSTIC',repr(excerpts[:15]),flush=True)
+        raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(matches)))
     page,v=matches[0]
     return page,{(2025,'quarter'):v[0],(2024,'quarter'):v[4],
                  (2025,'ytd'):v[5],(2024,'ytd'):v[6]}
