@@ -108,7 +108,8 @@
             if(current.calculation)data[k+'Method']=current.calculation;
             if(k==='revenue'){
               data.revenueUnit=current.unit||'';
-              if(basis(current)==='apm')data.revenueBasis='Insurance premiums f.o.a. (APM) – ikke IFRS 17-forsikringsinntekter';
+              if(name==='Frende')data.revenueBasis='Sum driftsinntekter (Frende Holding AS konsern) – ikke rene forsikringsinntekter';
+              else if(basis(current)==='apm')data.revenueBasis='Insurance premiums f.o.a. (APM) – ikke IFRS 17-forsikringsinntekter';
               if(current.derived_ytd)data.revenueBasis=(data.revenueBasis||'')+
                 ' Beregnet HIÅ fra verifiserte kvartaler.';
               if(current.derived_quarter)data.revenueBasis=(data.revenueBasis||'')+
@@ -128,14 +129,14 @@
         const priorGrowth=quote(name,type,year-1,quarter,'insurance_revenue_growth');
         if(reportedGrowth){
           data.growth=fmt(reportedGrowth.value,true);
-          data.growthBasis='Rapportert i selskapets kvartalsrapport';
+          data.growthBasis=name==='Frende'?'Rapportert vekst i driftsinntekter':'Rapportert i selskapets kvartalsrapport';
         }
         if(priorGrowth)data.growthPrev=fmt(priorGrowth.value,true);
         const income=quote(name,type,year,quarter,'insurance_revenue');
         const previous=quote(name,type,year-1,quarter,'insurance_revenue');
         if(!reportedGrowth&&income&&previous&&previous.value>0&&isSameBasis(income,previous)){
           data.growth=fmt((income.value/previous.value-1)*100,true);
-          data.growthBasis='Beregnet fra kildeverifiserte, sammenlignbare inntekter';
+          data.growthBasis=name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter':'Beregnet fra kildeverifiserte, sammenlignbare forsikringsinntekter';
         }
         if(!data.growthPrev){
           const last=quote(name,type,year-1,quarter,'insurance_revenue');
@@ -143,6 +144,7 @@
           if(last&&beforeLast&&beforeLast.value>0&&isSameBasis(last,beforeLast))
             data.growthPrev=fmt((last.value/beforeLast.value-1)*100,true);
         }
+        if(name==='Frende')data.growthMetricLabel='Vekst i driftsinntekter';
         if(Object.keys(data).length)bucket[name]=data;
       }
       const group=financialRows.filter(r=>r.company===name&&r.period_type==='quarter');
