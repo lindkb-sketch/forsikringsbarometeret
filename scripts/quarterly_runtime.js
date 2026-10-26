@@ -268,7 +268,7 @@
     ];
   }
   function trendArrow(now,prior,lowerIsBetter=false){
-    const parse=s=>{const m=String(s??'').replace(/\\s/g,'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);return m?Number(m[0]):null;};
+    const parse=s=>{const m=String(s??'').replace(/\s/g,'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):null;};
     const a=parse(now),b=parse(prior);
     if(a===null||b===null)return '';
     const diff=a-b,dir=diff>0.00001?'up':diff< -0.00001?'down':'flat';
