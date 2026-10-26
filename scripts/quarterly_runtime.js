@@ -265,8 +265,8 @@
     if(!head)return html;
     const isYtd=ytdMode(), year=selection.year, q=selection.quarter;
     const heading=document.createElement('th');
-    heading.textContent=isYtd?'Forsikringsinntekter · HIÅ':'Forsikringsinntekter · Q'+q;
-    head.insertBefore(heading,head.children[1]||null);
+    heading.textContent=isYtd?'Forsikringsresultat · HIÅ':'Forsikringsresultat · Q'+q;
+    head.insertBefore(heading,head.children[2]||null);
     const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const number=s=>{
@@ -280,14 +280,14 @@
       const name=raw==='Frende Holding'?'Frende':raw;
       const d=(isYtd?MON_YTD_Q3:MON_Q3)[name]||{};
       const td=document.createElement('td');
-      if(d.revenue){
-        const title=escape(d.revenue)+' <small>'+escape(d.revenueUnit||'')+'</small>';
+      if(d.revenue&&d.result){
+        const title=escape(d.result)+' <small>'+escape(d.resultUnit||'')+'</small>';
         const basis='';
         const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
-        const prior=d.revenuePrev
-          ?'<span class="table-prior">'+lastYear+': '+escape(d.revenuePrev)+'</span>'
+        const prior=d.resultPrev
+          ?'<span class="table-prior">'+lastYear+': '+escape(d.resultPrev)+'</span>'
           :'<span class="table-prior">'+lastYear+': ikke verifisert</span>';
-        const now=number(d.revenue),then=number(d.revenuePrev);
+        const now=number(d.result),then=number(d.resultPrev);
         const delta=now!==null&&then!==null
           ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
            '" aria-label="Endring mot samme periode i fjor">'+
@@ -309,12 +309,12 @@
         }
         td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
       }else td.innerHTML='<span class="muted">Ikke publisert</span>';
-      tr.insertBefore(td,tr.cells[1]||null);
+      tr.insertBefore(td,tr.cells[2]||null);
       // Explicit, source-derived last-year growth: 2025 vs 2024 for Q3 2026.
       // The original comparison cell obscured whether its second percentage
       // was last year's growth or last year's revenue. Do not use old static
       // half-year figures, and never substitute current-year growth.
-      const growthCell=tr.cells[2];
+      const growthCell=tr.cells[1];
       if(growthCell){
         const currentReported=Boolean(d.revenue);
         const currentGrowth=currentReported?d.growth:null;
