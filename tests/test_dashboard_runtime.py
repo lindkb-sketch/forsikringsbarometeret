@@ -39,22 +39,22 @@ class DashboardRuntimeTests(unittest.TestCase):
                 'issuerProfitabilityTimeline(profitabilityCompany)','year-1,quarter','MON_SELECT=()=>',
                 'isSameBasis','setInterval(refresh,300000)'):
    self.assertIn(token,js)
-  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-4)',html)
+  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
 
- def test_four_rolling_profitability_quarters_for_seven_issuers(self):
+ def test_five_rolling_profitability_quarters_for_seven_issuers(self):
   runtime=RUNTIME.read_text()
   html=HTML.read_text()
-  self.assertIn('function quarterTimeline({year,quarter},count=4)',runtime)
-  self.assertIn('quarterTimeline(selection,4)',runtime)
+  self.assertIn('function quarterTimeline({year,quarter},count=5)',runtime)
+  self.assertIn('quarterTimeline(selection,5)',runtime)
   self.assertIn('profitabilityVerified[name]={};profitabilityReturns[name]={}',runtime)
   self.assertIn('if([loss,cost,cr].every(Number.isFinite))profitabilityVerified[name][l]=[loss,cost,cr]',runtime)
-  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-4)',html)
-  self.assertIn('av 4 kvartaler med dokumentert annualisert verdi',html)
-  # Every issuer's selected Q3 window is Q4 2025 through Q3 2026.
+  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
+  self.assertIn('av 5 kvartaler med dokumentert annualisert verdi',html)
+  # Every issuer's selected Q3 window is Q3 2025 through Q3 2026.
   for name in ('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'):
    self.assertIn(name,html)
   script="""
-function quarterTimeline({year,quarter},count=4){
+function quarterTimeline({year,quarter},count=5){
  const result=[];
  for(let i=count-1;i>=0;i--){
   const code=year*4+(quarter-1)-i;
@@ -63,11 +63,11 @@ function quarterTimeline({year,quarter},count=4){
  }
  return result;
 }
-const expected=['Q4 2025','Q1 2026','Q2 2026','Q3 2026'];
+const expected=['Q3 2025','Q4 2025','Q1 2026','Q2 2026','Q3 2026'];
 if(JSON.stringify(quarterTimeline({year:2026,quarter:3}))!==JSON.stringify(expected))
- throw Error('Incorrect current 4-slot window');
+ throw Error('Incorrect current 5-slot window');
 if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
- JSON.stringify(['Q1 2026','Q2 2026','Q3 2026','Q4 2026']))
+ JSON.stringify(['Q4 2025','Q1 2026','Q2 2026','Q3 2026','Q4 2026']))
  throw Error('Q4 rollover failed');
 """
   result=subprocess.run(['node','-e',script],text=True,capture_output=True)
