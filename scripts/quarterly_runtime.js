@@ -14,7 +14,7 @@
       maximumFractionDigits:pct?1:2,minimumFractionDigits:pct?1:0
     }).format(value)+(pct?' %':'');
   const ytdMode=()=>period==='H3';
-  const basis=row=>/not ifrs insurance revenue|segment premiums|premiums f\.o\.a\./i.test(row?.source_definition||'')?'apm':'ifrs_or_other';
+  const basis=row=>/sum driftsinntekter|group operating revenue/i.test(row?.source_definition||'')?'operating_revenue':/not ifrs insurance revenue|segment premiums|premiums f\.o\.a\./i.test(row?.source_definition||'')?'apm':'ifrs_or_other';
   const hasSource=r=>r&&r.source_url&&/^https:\/\//.test(r.source_url)&&
     (r.source_page||r.source_cell||r.source_sheet||r.source_type==='official_quarterly_report');
   const valid=r=>r&&['reported','calculated'].includes(r.status)&&Number.isFinite(r.value)&&hasSource(r);
