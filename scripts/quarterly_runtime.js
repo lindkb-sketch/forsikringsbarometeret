@@ -49,7 +49,7 @@
   function addQuarter(company,year,quarter,metric){
     // A standalone quarter may be reconstructed from two consecutive issuer
     // YTD columns. Only additive amounts, identical units and entity scopes.
-    if(!['insurance_revenue','insurance_service_result'].includes(metric))return null;
+    // Q4 must be explicitly reported as an isolated quarter in an official\n    // Q4, full-year or annual report; never derive Q4 by subtracting YTD.\n    if(quarter===4)return null;\n    if(!['insurance_revenue','insurance_service_result'].includes(metric))return null;
     const end=lookup(company,'ytd',year,quarter,metric);
     const before=quarter>1?lookup(company,'ytd',year,quarter-1,metric):null;
     if(!end||quarter>1&&!before||before&&!isSameBasis(end,before))return null;
