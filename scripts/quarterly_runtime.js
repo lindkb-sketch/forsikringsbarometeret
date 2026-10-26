@@ -369,10 +369,11 @@
       if(d.revenue&&d.result){
         const title=escape(d.result)+' <small>'+escape(d.resultUnit||'')+'</small>';
         const basis='';
-        const lastYear=isYtd?'HIÅ '+(year-1):'Q'+q+' '+(year-1);
+        // Only show the comparable prior-year figure in parentheses;
+        // the table header already identifies the selected reporting period.
         const prior=d.resultPrev
-          ?'<span class="table-prior">'+lastYear+': '+escape(d.resultPrev)+'</span>'
-          :'<span class="table-prior">'+lastYear+': ikke verifisert</span>';
+          ?'<span class="table-prior">('+escape(d.resultPrev)+')</span>'
+          :'<span class="table-prior">(—)</span>';
         const now=number(d.result),then=number(d.resultPrev);
         const delta=now!==null&&then!==null
           ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
