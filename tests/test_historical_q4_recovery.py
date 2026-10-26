@@ -10,7 +10,7 @@ class HistoricalQ4PipelineTests(unittest.TestCase):
   s=(ROOT/'scripts/storebrand_publish_q3.py').read_text()
   p=(ROOT/'scripts/run_pipeline.py').read_text()
   self.assertIn('args.year < 2025',s)
-  self.assertIn("'--year','2025','--quarter','4'",p)
+  self.assertIn("'storebrand_q4_group.py'",p)
  def test_incomplete_quarters_cannot_be_reported_as_complete(self):
   from scripts.audit_profitability_history import audit
   obs=[dict(company='Frende',scope='group',period_type='quarter',status='reported',
