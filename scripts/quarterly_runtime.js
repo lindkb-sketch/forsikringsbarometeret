@@ -316,8 +316,9 @@
       // half-year figures, and never substitute current-year growth.
       const growthCell=tr.cells[2];
       if(growthCell){
-        const currentGrowth=d.growth;
-        const previousGrowth=d.growthPrev;
+        const currentReported=Boolean(d.revenue);
+        const currentGrowth=currentReported?d.growth:null;
+        const previousGrowth=currentReported?d.growthPrev:null;
         // Match other comparison columns: main value, prior value in
         // parentheses, and a direction arrow indicating acceleration.
         // If Q3 2026 is unreleased for an issuer, retain its verified 2025
@@ -350,10 +351,10 @@
     const bucket=(isYtd?MON_YTD_Q3:MON_Q3);
     const notes=[];
     for(const company of ['Storebrand','Frende']){
-      if(bucket[company]?.revenueBasis)
+      if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)
         notes.push(company+' – '+bucket[company].revenueBasis);
     }
-    if(localStorebrand){
+    if(localStorebrand&&bucket.Storebrand?.revenue){
       notes.push('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+fmt(localStorebrand.value)+' '+(localStorebrand.unit||'MNOK'));
     }
     if(notes.length){
