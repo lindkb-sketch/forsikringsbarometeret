@@ -134,6 +134,15 @@ class DashboardRuntimeTests(unittest.TestCase):
          and r['quarter']==3 and r['scope']=='group' and r['period_type']=='quarter']
    self.assertIn('combined_ratio',{r['metric'] for r in rows},company)
 
+ def test_growth_precedes_insurance_result_not_revenue(self):
+  runtime=RUNTIME.read_text()
+  self.assertIn("heading.textContent=isYtd?'Forsikringsresultat · HIÅ':'Forsikringsresultat · Q'+q",runtime)
+  self.assertIn("head.insertBefore(heading,head.children[2]||null)",runtime)
+  self.assertIn("const title=escape(d.result)",runtime)
+  self.assertIn("const prior=d.resultPrev",runtime)
+  self.assertIn("const growthCell=tr.cells[1]",runtime)
+  self.assertIn("tr.insertBefore(td,tr.cells[2]||null)",runtime)
+
  def test_unpublished_current_quarter_hides_prior_growth(self):
   runtime=RUNTIME.read_text()
   self.assertIn("const currentReported=Boolean(d.revenue)",runtime)

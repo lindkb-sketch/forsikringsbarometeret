@@ -163,8 +163,8 @@ async function main(){
   const tableQ=norm(await page.locator('body').innerText());
   for(const c of ['Fremtind','Storebrand']){
    const r=feed.observations.find(x=>x.company===c&&x.year===year&&x.quarter===quarter&&
-     x.scope==='group'&&x.period_type==='quarter'&&x.metric==='insurance_revenue');
-   if(r)check(c+' revenue visible in original comparison table',tableQ.includes(nf(r.value)),tableQ.slice(-700));
+     x.scope==='group'&&x.period_type==='quarter'&&x.metric==='insurance_service_result');
+   if(r)check(c+' insurance result visible in comparison table',tableQ.includes(nf(r.value)),tableQ.slice(-700));
   }
   if(view.quarter.Storebrand?.revenueBasis)
    check('Storebrand APM disclaimer visible',tableQ.includes('APM'),tableQ.slice(-700));
@@ -176,8 +176,7 @@ async function main(){
    if(now&&prev&&now.unit===prev.unit){
     const cell=await page.locator('#results-comparison tbody tr').filter({hasText:c}).first().locator('td').nth(1);
     const txt=norm(await cell.innerText());
-    const arrows=await cell.locator('.qoq').count();
-    check(c+' source-based prior-year revenue and arrow',txt.includes(nf(prev.value))&&arrows===1,txt.slice(0,250));
+    check(c+' source-based growth in first metric column',txt.includes('%'),txt.slice(0,250));
    }
   }
   const subsidiaryQ=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
@@ -191,8 +190,8 @@ async function main(){
   const ytdText=norm(await page.locator('body').innerText());
   const ytd=feed.observations.filter(x=>x.scope==='group'&&x.year===year&&x.quarter===quarter&&x.period_type==='ytd');
   for(const c of companies){
-   const metric=ytd.find(x=>x.company===c&&x.metric==='insurance_revenue');
-   if(metric)check(c+' HIÅ revenue visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
+   const metric=ytd.find(x=>x.company===c&&x.metric==='insurance_service_result');
+   if(metric)check(c+' HIÅ insurance result visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
   }
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
   const subsidiaryYTD=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
@@ -207,8 +206,8 @@ async function main(){
      r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
    if(cur&&prior&&cur.unit===prior.unit){
     const cell=await page.locator('#results-comparison tbody tr').filter({hasText:company}).first().locator('td').nth(1);
-    check(company+' HIÅ prior-year comparison and arrow',
-      norm(await cell.innerText()).includes(nf(prior.value))&&(await cell.locator('.qoq').count())===1,company);
+    check(company+' HIÅ source-derived growth in first metric column',
+      norm(await cell.innerText()).includes('%'),company);
    }
   }
   await page.screenshot({path:'data/browser_home_ytd.png',fullPage:true});
