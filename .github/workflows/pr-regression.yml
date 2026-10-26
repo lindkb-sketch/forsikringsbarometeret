@@ -19,6 +19,8 @@ jobs:
         run: python -m compileall -q scripts tests
       - name: Run full unit regression suite
         run: python -m unittest discover -s tests -v
+      - name: Prove Q3 2024 Gjensidige comparatives from issuer PDF
+        run: python scripts/verify_gjensidige_2024_q3.py
       - name: Audit committed financial observations
         run: python scripts/audit_financials.py
       - name: Validate dashboard
