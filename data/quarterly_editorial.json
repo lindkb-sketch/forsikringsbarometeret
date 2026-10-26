@@ -632,40 +632,19 @@
           ]
         },
         {
-          "text": "Gjensidige peker på disiplinert prising og høy kostnadseffektivitet.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Gjensidige forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Frende har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "source_urls": [
-            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
-          ],
-          "companies": [
-            "Gjensidige"
-          ],
-          "period": "Q1 2026",
-          "type": "qualitative_quarter_theme",
-          "theme": "operations",
-          "basis": "rule_verified_issuer_narrative",
-          "sources": [
-            {
-              "company": "Gjensidige",
-              "url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-              "kind": "official_quarterly_report",
-              "page": 5,
-              "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
-            }
-          ]
-        },
-        {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
-          "source_url": "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6",
-          "source_urls": [
+            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
             "https://frende.wrep.it/q1-2026-frende-holding-as/sec/6"
           ],
           "companies": [
+            "Gjensidige",
             "Frende"
           ],
           "period": "Q1 2026",
           "type": "qualitative_quarter_theme",
-          "theme": "underwriting_pressure"
+          "theme": "diverging_underwriting"
         },
         {
           "text": "Sampo viser til både premieøkninger og vekst i antall kunder.",
@@ -689,6 +668,29 @@
               "sha256": "bc344b4d3baea853675c9de19ca97b72083fdc6fd046c57b54de7c3ec5b3ab89"
             }
           ]
+        },
+        {
+          "text": "Gjensidige peker på disiplinert prising og høy kostnadseffektivitet.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "source_urls": [
+            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q1 2026",
+          "type": "qualitative_quarter_theme",
+          "theme": "operations",
+          "basis": "rule_verified_issuer_narrative",
+          "sources": [
+            {
+              "company": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+              "kind": "official_quarterly_report",
+              "page": 5,
+              "sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab"
+            }
+          ]
         }
       ],
       "implications": [
@@ -700,7 +702,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Gjensidige: combined ratio 79.2 % i Q1 2026, 7.7 prosentpoeng lavere enn Q1 2025 (86.9 %).",
+          "text": "Gjensidige: combined ratio 79.2 % i Q1 2026, forbedret med 9.1 prosentpoeng fra Q4 2025 (88.3 %).",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "company": "Gjensidige",
           "period": "Q1 2026",
@@ -753,7 +755,7 @@
         },
         "Gjensidige": {
           "summary": "Gjensidige: forsikringsinntekter 11004.1 MNOK (+10.1 % mot Q1 2025), forsikringsresultat 2288.1 MNOK, combined ratio 79.2 % (Q1 2025: 86.9 %) i Q1 2026.",
-          "comment": "Gjensidige: combined ratio 79.2 % i Q1 2026, 7.7 prosentpoeng lavere enn Q1 2025 (86.9 %).",
+          "comment": "Gjensidige: combined ratio 79.2 % i Q1 2026, forbedret med 9.1 prosentpoeng fra Q4 2025 (88.3 %).",
           "ytd": "",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "period": "Q1 2026",
@@ -814,12 +816,14 @@
     "Q4 2025": {
       "brief": [
         {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
-          "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Gjensidige, Frende. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
           "source_urls": [
+            "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6"
           ],
           "companies": [
+            "Gjensidige",
             "Frende"
           ],
           "period": "Q4 2025",
@@ -838,9 +842,29 @@
           "period": "Q4 2025",
           "type": "qualitative_quarter_theme",
           "theme": "revenue_direction"
+        },
+        {
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Gjensidige. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "source_urls": [
+            "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q4 2025",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
+        {
+          "text": "Gjensidige: combined ratio 88.3 % i Q4 2025, svekket med 8.6 prosentpoeng fra Q3 2025 (79.7 %).",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "company": "Gjensidige",
+          "period": "Q4 2025",
+          "type": "rule_based_interpretation"
+        },
         {
           "text": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
@@ -857,6 +881,14 @@
         }
       ],
       "by_company": {
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 11080.5 MNOK (+10.6 % mot Q4 2024), forsikringsresultat 1296.7 MNOK, combined ratio 88.3 % (Q4 2024: 83.3 %) i Q4 2025.",
+          "comment": "Gjensidige: combined ratio 88.3 % i Q4 2025, svekket med 8.6 prosentpoeng fra Q3 2025 (79.7 %).",
+          "ytd": "HIÅ: forsikringsinntekter 42769.5 MNOK (+11.5 % mot HIÅ 2024).",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "period": "Q4 2025",
+          "has_comparative": true
+        },
         "Sampo": {
           "summary": "Sampo: forsikringsinntekter 2322 EURm, forsikringsresultat 364 EURm, combined ratio 84.3 % i Q4 2025.",
           "comment": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
@@ -875,10 +907,11 @@
         }
       },
       "issuer_brief_status": {
+        "Gjensidige": "featured",
         "Sampo": "awaiting_curated_commentary",
         "Frende": "featured"
       },
-      "reported_company_count": 2
+      "reported_company_count": 3
     },
     "Q3 2025": {
       "brief": [
@@ -1163,6 +1196,19 @@
     "Q1 2025": {
       "brief": [
         {
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Gjensidige. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "source_urls": [
+            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q1 2025",
+          "type": "qualitative_quarter_theme",
+          "theme": "underwriting_pressure"
+        },
+        {
           "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
           "source_urls": [
@@ -1174,6 +1220,19 @@
           "period": "Q1 2025",
           "type": "qualitative_quarter_theme",
           "theme": "revenue_direction"
+        },
+        {
+          "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Gjensidige. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
+          "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+          "source_urls": [
+            "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q1 2025",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_decline"
         }
       ],
       "implications": [
@@ -1185,7 +1244,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Gjensidige: combined ratio 86.9 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "text": "Gjensidige: combined ratio 86.9 % i Q1 2025, svekket med 3.6 prosentpoeng fra Q4 2024 (83.3 %).",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "company": "Gjensidige",
           "period": "Q1 2025",
@@ -1217,7 +1276,7 @@
         },
         "Gjensidige": {
           "summary": "Gjensidige: forsikringsinntekter 9993.9 MNOK, forsikringsresultat 1313.6 MNOK, combined ratio 86.9 % i Q1 2025.",
-          "comment": "Gjensidige: combined ratio 86.9 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "comment": "Gjensidige: combined ratio 86.9 % i Q1 2025, svekket med 3.6 prosentpoeng fra Q4 2024 (83.3 %).",
           "ytd": "",
           "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
           "period": "Q1 2025",
@@ -1242,7 +1301,7 @@
       },
       "issuer_brief_status": {
         "Fremtind": "awaiting_curated_commentary",
-        "Gjensidige": "awaiting_curated_commentary",
+        "Gjensidige": "featured",
         "Tryg": "awaiting_curated_commentary",
         "Frende": "featured"
       },
@@ -1251,12 +1310,27 @@
     "Q4 2024": {
       "brief": [
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
-          "source_url": "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7",
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Gjensidige. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
           "source_urls": [
+            "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
+          ],
+          "companies": [
+            "Gjensidige"
+          ],
+          "period": "Q4 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "underwriting_improvement"
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "source_urls": [
+            "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/7"
           ],
           "companies": [
+            "Gjensidige",
             "Frende"
           ],
           "period": "Q4 2024",
@@ -1264,8 +1338,24 @@
           "theme": "revenue_direction"
         }
       ],
-      "implications": [],
+      "implications": [
+        {
+          "text": "Gjensidige: combined ratio 83.3 % i Q4 2024, forbedret med 0.6 prosentpoeng fra Q3 2024 (83.9 %).",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "company": "Gjensidige",
+          "period": "Q4 2024",
+          "type": "rule_based_interpretation"
+        }
+      ],
       "by_company": {
+        "Gjensidige": {
+          "summary": "Gjensidige: forsikringsinntekter 10019 MNOK, forsikringsresultat 1669.9 MNOK, combined ratio 83.3 % i Q4 2024.",
+          "comment": "Gjensidige: combined ratio 83.3 % i Q4 2024, forbedret med 0.6 prosentpoeng fra Q3 2024 (83.9 %).",
+          "ytd": "HIÅ: forsikringsinntekter 38359.4 MNOK.",
+          "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+          "period": "Q4 2024",
+          "has_comparative": false
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 720.61 NOKm, forsikringsresultat 79.151 NOKm i Q4 2024.",
           "comment": "Frende: forsikringsinntekter 720.61 NOKm, forsikringsresultat 79.151 NOKm i Q4 2024.",
@@ -1276,9 +1366,10 @@
         }
       },
       "issuer_brief_status": {
+        "Gjensidige": "featured",
         "Frende": "featured"
       },
-      "reported_company_count": 1
+      "reported_company_count": 2
     },
     "Q3 2024": {
       "brief": [

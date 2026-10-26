@@ -39,12 +39,14 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 35,
+      "group_quarter_observations": 45,
       "group_quarters_with_required_metrics": [
         "2024-Q3",
+        "2024-Q4",
         "2025-Q1",
         "2025-Q2",
         "2025-Q3",
+        "2025-Q4",
         "2026-Q1",
         "2026-Q2",
         "2026-Q3"
@@ -101,8 +103,9 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 10,
+      "group_quarter_observations": 15,
       "group_quarters_with_required_metrics": [
+        "2025-Q4",
         "2026-Q1",
         "2026-Q2"
       ],

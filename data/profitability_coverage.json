@@ -59,13 +59,9 @@
         },
         {
           "period": "Q4 2025",
-          "verified": false,
-          "missing_metrics": [
-            "combined_ratio",
-            "loss_ratio",
-            "expense_ratio"
-          ],
-          "status": "missing_verified_source"
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
         },
         {
           "period": "Q1 2026",
@@ -86,7 +82,7 @@
           "status": "verified"
         }
       ],
-      "complete": false
+      "complete": true
     },
     {
       "company": "Tryg",
@@ -143,13 +139,9 @@
         },
         {
           "period": "Q4 2025",
-          "verified": false,
-          "missing_metrics": [
-            "combined_ratio",
-            "loss_ratio",
-            "expense_ratio"
-          ],
-          "status": "missing_verified_source"
+          "verified": true,
+          "missing_metrics": [],
+          "status": "verified"
         },
         {
           "period": "Q1 2026",
