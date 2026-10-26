@@ -46,6 +46,20 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
       if(state.model.resultPrev&&!result.previous.includes(state.model.resultPrev))
        throw Error(company+' '+mode+' prior result mismatch: '+JSON.stringify(state));
     }
+    if(company==='Fremtind'&&state.model.revenue){
+      const expectedPrior=mode==='quarter'?'11,1 %':'26,4 %';
+      if(!growth.previous.includes(expectedPrior))
+        throw Error('Fremtind missing sourced 2025-vs-2024 prior year growth '+expectedPrior+' in '+mode+': '+JSON.stringify(state));
+      const home=await page.evaluate(({company,mode})=>{
+       show('home');
+       const tr=[...document.querySelectorAll('#results-comparison tbody tr')]
+         .find(tr=>tr.cells[0]?.textContent?.includes(company));
+       return tr?.cells[1]?.textContent?.replace(/\\s+/g,' ').trim()||'';
+      },{company,mode});
+      if(!home.includes(expectedPrior))
+       throw Error('Fremtind missing prior growth in homepage '+mode+': '+home);
+      console.log('FREMTIND_HISTORICAL_GROWTH_VERIFIED',mode,expectedPrior,home);
+    }
     checked++;
     console.log('SEVEN_COMPANY_DETAIL_PASS',company,mode,growth.value,result.value);
    }
