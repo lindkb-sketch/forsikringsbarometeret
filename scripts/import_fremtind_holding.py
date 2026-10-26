@@ -55,6 +55,10 @@ def extract(blob, url):
         pages = [p.extract_text() or "" for p in pdf.pages[:4]]
         heading = " ".join(pages[:2])
         periods = set(re.findall(r"Kvartalsrapport\s+Q([1-4])\s+(20\d{2})", heading, re.I))
+        # Historical issuer PDFs use "Delårsrapport 3. kvartal 2025".
+        periods.update(re.findall(
+            r"(?:delårsrapport|kvartalsrapport)\\s+([1-4])\\.?\\s*kvartal\\s+(20\\d{2})",
+            heading, re.I))
         if len(periods) != 1 or "Fremtind Holding" not in heading:
             raise ValueError("Holding entity or report quarter not verified")
         q, year = next(iter(periods))
