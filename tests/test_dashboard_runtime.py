@@ -138,7 +138,7 @@ class DashboardRuntimeTests(unittest.TestCase):
   runtime=RUNTIME.read_text()
   html=HTML.read_text()
   self.assertIn("const basis='';",runtime)
-  self.assertIn("fragment.appendChild(note)",runtime)
+  self.assertIn("notesRow.appendChild(note)",runtime)
   self.assertIn("notesRow.className='revenue-basis-notes'",runtime)
   self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",runtime)
   self.assertIn("Vekst i forsikringsinntekter (IFRS 4)",html)
