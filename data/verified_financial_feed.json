@@ -5731,26 +5731,6 @@
       "scope": "group",
       "source_scope": "group",
       "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "value": 177.0,
-      "unit": "MNOK",
-      "status": "calculated",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/b85b858b-c02c-4733-a8af-00c630698c60:4dcb0e8d1a50704ab7b09ce3478ab40d940f1f2a/2026-q1-interim-report-storebrand-asa.pdf",
-      "source_page": 7,
-      "source_type": "official_quarterly_report",
-      "source_sha256": "c4b16a979bbdbf9c9ffe8449c0256bf47cd1bd7e0794f73bced6e686c092ffbb",
-      "source_document_period": "Q1 2026",
-      "source_entity": "Storebrand ASA / Insurance segment",
-      "source_definition": "Insurance segment Cash equivalent earnings from operations",
-      "calculation": "premiums f.o.a. + signed claims f.o.a. + signed operational cost"
-    },
-    {
-      "company": "Storebrand",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "group",
-      "source_scope": "group",
-      "period_type": "quarter",
       "metric": "loss_ratio",
       "value": 75.0,
       "unit": "percent",
@@ -5959,26 +5939,6 @@
       "source_document_period": "Q3 2026",
       "source_entity": "Storebrand ASA / Insurance segment",
       "source_definition": "APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue"
-    },
-    {
-      "company": "Storebrand",
-      "year": 2026,
-      "quarter": 2,
-      "scope": "group",
-      "source_scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_service_result",
-      "value": 371.0,
-      "unit": "MNOK",
-      "status": "calculated",
-      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/4237d035-d763-4991-b204-bc1f67cf23ea:d3110f016fb66573dd897fa09fdf013b05a792df/2026-q2-interim-report-storebrand-asa.pdf",
-      "source_page": 8,
-      "source_type": "official_quarterly_report",
-      "source_sha256": "e42cfc9f0b3dd81cb58afc1d8be36040dc3f4f5430d9e06f4cdc3d8cda9ffd81",
-      "source_document_period": "Q2 2026",
-      "source_entity": "Storebrand ASA / Insurance segment",
-      "source_definition": "Insurance segment Cash equivalent earnings from operations",
-      "calculation": "premiums f.o.a. + signed claims f.o.a. + signed operational cost"
     },
     {
       "company": "Storebrand",
@@ -9012,6 +8972,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 483,
+  "observation_count": 481,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
