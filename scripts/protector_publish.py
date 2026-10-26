@@ -79,21 +79,21 @@ def provenance(pages,scope,metric,value):
  raise ValueError(f'PDF cannot independently substantiate {scope} {metric} {value}')
 def run():
  page=download(KPI_URL,4000000)
- values=extract(page.decode('utf-8'))
+ values=extract(page.decode('utf-8'),include_history=True)
  existing=json.loads(DATA.read_text())
  before=audit(existing)
  if not before['ok']:raise ValueError('Baseline audit failed')
  incoming=[]
- for year,quarter in sorted({(y,q) for scope,y,q,metric in values}):
+ for year,quarter in sorted({(y,q) for scope,y,q,metric in values if y>=2026}):
   # No KPI observations enter production without issuer-linked PDF provenance.
   url=discover_pdf(year,quarter)
   blob=download(url)
   pages=parse_pdf(blob,year,quarter)
   sha=hashlib.sha256(blob).hexdigest()
   for (scope,y,q,metric),value in values.items():
-   if (y,q)!=(year,quarter):continue
+   if (y,q)!=(year,quarter) and not (year==2026 and quarter==3 and y==2025 and q==3):continue
    page_no=provenance(pages,scope,metric,value)
-   incoming.append(dict(company='Protector',year=year,quarter=quarter,scope=scope,source_scope=scope,period_type='quarter',metric=metric,value=value,unit='percent' if metric.endswith('ratio') else 'MNOK',status='reported',source_url=url,source_type='official_quarterly_report',source_page=page_no,source_sha256=sha,source_definition='Protector issuer KPI table, cross-checked with interim report'))
+   incoming.append(dict(company='Protector',year=year,quarter=quarter,scope=scope,source_scope=scope,period_type='quarter',metric=metric,value=value,unit='percent' if metric.endswith('ratio') else 'MNOK',status='reported',source_url=url,source_type='official_quarterly_report',source_page=page_no,source_sha256=sha,source_definition='Protector issuer KPI table, cross-checked with interim report'+(' (prior-year comparative column)' if y<year else ''),source_document_period=f'Q{quarter} {year}'))
  index={tuple(r[k] for k in KEYS):r for r in existing['observations']}
  added=0
  for r in incoming:
