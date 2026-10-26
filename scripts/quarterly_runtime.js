@@ -320,9 +320,10 @@
     }
     // All company KPI cards get arrows inside the value cell, based on the
     // same current/prior official observations, including adverse ratio rises.
-    const financialKeys=['cr','loss','cost'];
-    for(const [i,key] of financialKeys.entries()){
-      const card=cardNodes[i+2],value=card?.querySelector('.value');
+    const financialKeys=[['cr','Combined ratio'],['loss','Skadeprosent'],['cost','Kostnadsprosent']];
+    for(const [key,caption] of financialKeys){
+      const card=[...cardNodes].find(node=>node.querySelector('.name')?.textContent.trim()===caption);
+      const value=card?.querySelector('.value');
       if(!card||!value)continue;
       const present=Boolean(d.revenue)&&Boolean(d[key]);
       value.innerHTML=present
