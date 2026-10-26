@@ -11,7 +11,7 @@ from import_gjensidige_latest import import_period, periods_due, import_due
 class GjensidigeLatestTests(unittest.TestCase):
     def test_future_years_are_discovered_without_hardcoded_quarter(self):
         self.assertEqual(periods_due(date(2026,10,23)),[(y,q) for y in (2024,2025,2026) for q in range(1,5) if (y,q)<(2026,4)])
-        self.assertEqual(periods_due(date(2027,1,7)),[(2026,1),(2026,2),(2026,3),(2026,4)])
+        self.assertEqual(periods_due(date(2027,1,7)),[(y,q) for y in (2024,2025,2026) for q in range(1,5)])
         self.assertEqual(periods_due(date(2027,4,2))[-1],(2027,1))
         self.assertEqual(periods_due(date(2028,1,2))[-1],(2027,4))
 
