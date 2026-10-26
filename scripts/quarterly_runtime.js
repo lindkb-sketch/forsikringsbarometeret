@@ -346,7 +346,7 @@
       r.source_entity==='Storebrand Forsikring AS'&&
       r.year===year&&r.quarter===q&&r.period_type===(isYtd?'ytd':'quarter')&&
       r.metric==='insurance_revenue'&&valid(r)&&
-      /IFRS\\s*17/i.test(r.source_definition||''));
+      /IFRS\s*17/i.test(r.source_definition||''));
     const bucket=(isYtd?MON_YTD_Q3:MON_Q3);
     const notes=[];
     for(const company of ['Storebrand','Frende']){
