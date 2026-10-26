@@ -122,28 +122,29 @@
             data[k+'Prev']=fmt(prior.value,PERCENT.has(k));
           }
         }
-        // Growth is a year-over-year rate for the selected reporting period.
-        // Prefer explicitly reported growth if an issuer supplied a validated
-        // observation; otherwise compute from same-scope comparable revenue.
-        const reportedGrowth=quote(name,type,year,quarter,'insurance_revenue_growth');
-        const priorGrowth=quote(name,type,year-1,quarter,'insurance_revenue_growth');
-        if(reportedGrowth){
-          data.growth=fmt(reportedGrowth.value,true);
-          data.growthBasis=name==='Frende'?'Rapportert vekst i driftsinntekter':'Rapportert i selskapets kvartalsrapport';
+        // Isolated quarter and year-to-date growth use their OWN reporting periods.
+        // 2026 vs 2025 gives this year's rate; 2025 vs 2024 gives last year's.
+        // Never substitute current-year growth for missing historical growth.
+        function growthFor(targetYear){
+          const stated=quote(name,type,targetYear,quarter,'insurance_revenue_growth');
+          if(stated&&Number.isFinite(stated.value))return {value:stated.value,method:'reported'};
+          const now=quote(name,type,targetYear,quarter,'insurance_revenue');
+          const before=quote(name,type,targetYear-1,quarter,'insurance_revenue');
+          if(!now||!before||before.value<=0||!isSameBasis(now,before))return null;
+          return {value:(now.value/before.value-1)*100,method:'calculated'};
         }
-        if(priorGrowth)data.growthPrev=fmt(priorGrowth.value,true);
-        const income=quote(name,type,year,quarter,'insurance_revenue');
-        const previous=quote(name,type,year-1,quarter,'insurance_revenue');
-        if(!reportedGrowth&&income&&previous&&previous.value>0&&isSameBasis(income,previous)){
-          data.growth=fmt((income.value/previous.value-1)*100,true);
-          data.growthBasis=name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter':'Beregnet fra kildeverifiserte, sammenlignbare forsikringsinntekter';
+        const thisGrowth=growthFor(year),lastGrowth=growthFor(year-1);
+        if(thisGrowth){
+          data.growth=fmt(thisGrowth.value,true);
+          data.growthBasis=thisGrowth.method==='reported'
+            ?(name==='Frende'?'Rapportert vekst i driftsinntekter':'Rapportert i selskapets kvartalsrapport')
+            :(name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter':'Beregnet fra kildeverifiserte, sammenlignbare forsikringsinntekter');
         }
-        if(!data.growthPrev){
-          const last=quote(name,type,year-1,quarter,'insurance_revenue');
-          const beforeLast=quote(name,type,year-2,quarter,'insurance_revenue');
-          if(last&&beforeLast&&beforeLast.value>0&&isSameBasis(last,beforeLast))
-            data.growthPrev=fmt((last.value/beforeLast.value-1)*100,true);
+        if(lastGrowth){
+          data.growthPrev=fmt(lastGrowth.value,true);
+          data.growthPrevBasis=lastGrowth.method;
         }
+        data.growthComparisonPeriod=type;
         if(name==='Frende')data.growthMetricLabel='Vekst i driftsinntekter';
         if(Object.keys(data).length)bucket[name]=data;
       }
