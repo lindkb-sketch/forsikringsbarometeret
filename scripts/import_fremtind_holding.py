@@ -54,13 +54,15 @@ def extract(blob, url):
             raise ValueError("Report too short")
         pages = [p.extract_text() or "" for p in pdf.pages[:4]]
         heading = " ".join(pages[:2])
-        periods = set(re.findall(r"Kvartalsrapport\s+Q([1-4])\s+(20\d{2})", heading, re.I))
+        # Official Q3 2025 covers split "Kvartalsrapport", "Q3",
+        # and "konsern Q3 2025" over multiple lines.
+        periods = set(re.findall(r"\bQ([1-4])\s+(20\d{2})\b", heading, re.I))
         # Historical issuer PDFs use "Delårsrapport 3. kvartal 2025".
         periods.update(re.findall(
             r"(?:delårsrapport|kvartalsrapport)\s+([1-4])\.?\s*kvartal\s+(20\d{2})",
             heading, re.I))
         if len(periods) != 1 or "Fremtind Holding" not in heading:
-            raise ValueError("Holding entity or report quarter not verified")
+            raise ValueError("Holding entity or report quarter not verified; found periods="+repr(sorted(periods))+"; PDF opening="+repr(heading[:350]))
         q, year = next(iter(periods))
         q, year = int(q), int(year)
         # Require a labeled key-figures table and a header with the correct quarter.
@@ -119,7 +121,12 @@ def extract(blob, url):
             if not match:continue
             values=re.findall(r"[0-9]{2,3}(?:,[0-9]+)?[ ]*%",match.group(1))
             if len(values)!=3:
-                raise ValueError("Ambiguous Fremtind Forsikring solvency date columns")
+                # Solvency belongs to a different legal entity. A changing
+                # solvency footnote layout must NOT discard the fully verified
+                # Fremtind Holding income and profitability observations.
+                # Never import ambiguous solvency figures.
+                solvency=[]
+                break
             solvency.append([number(v) for v in values])
         if len(solvency)>1:
             raise ValueError("Duplicate Fremtind solvency source rows")
@@ -190,7 +197,11 @@ def run():
     for url in links[:30]:
         try:
             rows = extract(read_pdf(url), url)
-            # Check the reporting-document period, not the first observation:\n            # a Q3 2025 PDF can begin with its Q3 2024 comparison column.\n            document_year=max(r['year'] for r in rows)\n            if document_year < 2025:\n                continue
+            # Process 2024 and all later official Holding reports, including
+            # the comparator columns printed in subsequent issuer PDFs.
+            document_year = max(r['year'] for r in rows)
+            if document_year < 2024:
+                continue
             for r in rows:
                 key = (r["year"], r["quarter"], r["period_type"], r["metric"])
                 if key not in existing_keys:
