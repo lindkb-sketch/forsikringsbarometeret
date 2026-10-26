@@ -10,9 +10,12 @@ class DiscoveryTests(unittest.TestCase):
  def test_press_release_not_report(self):
   h='<a href="/q2-press-release.pdf">Q2 report press release</a>'
   self.assertEqual(discover(h,BASE,"Storebrand"),[])
- def test_presentation_not_report(self):
+ def test_presentation_is_discovery_only(self):
   h='<a href="/q2-report-presentation.pdf">Q2 report presentation</a>'
-  self.assertEqual(discover(h,BASE,"Storebrand"),[])
+  found=discover(h,BASE,"Storebrand")
+  self.assertEqual(len(found),1)
+  self.assertEqual(found[0]["document_type"],"official_quarterly_presentation_candidate")
+  self.assertIn("candidate",found[0]["status"])
  def test_external_not_accepted(self):
   h='<a href="https://example.org/q2-interim-report.pdf">Q2 report</a>'
   self.assertEqual(discover(h,BASE,"Storebrand"),[])
