@@ -89,6 +89,20 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('setInterval(refresh,300000)',html)
   self.assertNotIn('python scripts/ai_strategic_editor.py',main)
 
+ def test_prior_year_values_are_visible_in_quarter_and_ytd(self):
+  html=HTML.read_text()
+  js=RUNTIME.read_text()
+  self.assertIn("period==='H3'?MON_YTD_Q3[c]:MON_Q3[c]",html)
+  self.assertIn("data[k+'Prev']=fmt(prior.value",js)
+  d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
+  rows=d['observations']
+  for q in (1,2,3):
+   for period in ('quarter','ytd'):
+    for metric in ('insurance_revenue','solvency_ratio'):
+     current=[r for r in rows if r['company']=='Fremtind' and r['year']==2026 and r['quarter']==q and r['scope']=='group' and r['period_type']==period and r['metric']==metric]
+     prior=[r for r in rows if r['company']=='Fremtind' and r['year']==2025 and r['quarter']==q and r['scope']=='group' and r['period_type']==period and r['metric']==metric]
+     self.assertEqual(len(current),1,(q,period,metric,'current'))
+     self.assertEqual(len(prior),1,(q,period,metric,'previous'))
  def test_q3_feed_is_verified_and_has_metrics(self):
   d=json.loads((ROOT/'data/verified_financial_feed.json').read_text())
   self.assertGreater(len(d['observations']),0)
