@@ -36,6 +36,8 @@ def parse(pages):
                     if re.search(r'premiums f.o.a|Table 23',line,re.I):
                         excerpts.append((page,line[:240]))
         print('SOURCE_PDF_TABLE_DIAGNOSTIC',repr(excerpts[:15]),flush=True)
+        for page,text in pages:
+            if page==13:print('SOURCE_PDF_PAGE_13',repr(text[:3500]),flush=True)
         raise ValueError('Official Storebrand Insurance Table 23 missing or ambiguous: '+str(len(matches)))
     page,v=matches[0]
     return page,{(2025,'quarter'):v[0],(2024,'quarter'):v[4],
