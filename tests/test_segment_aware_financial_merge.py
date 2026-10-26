@@ -1,20 +1,18 @@
-"""Segment-identity regression: unrelated reported segments must survive importer merge."""
-import sys,unittest
+"""Every reported Sampo segment must remain intact through a no-op importer merge."""
+import json,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from ingest_official_pdf import merge
-class ReportedSegmentIdentityTests(unittest.TestCase):
- def test_two_sampo_segments_survive_gjensidige_merge(self):
-  def row(company,scope,segment,value,metric):
-   return dict(company=company,scope=scope,segment=segment,source_scope=scope,
-    year=2025,quarter=4,period_type='quarter',metric=metric,value=value,
-    unit='percent',status='reported',source_url='https://example.com/official.pdf',
-    source_type='official_quarterly_report',source_page=1,source_sha256='a'*64)
-  a=row('Sampo','reported_segment','Private Nordic',82.2,'combined_ratio')
-  b=row('Sampo','reported_segment','Nordic Commercial',82.8,'combined_ratio')
-  original={'observations':[a,b]}
-  merged,added=merge(original,[])
+class SegmentIdentityTests(unittest.TestCase):
+ def test_noop_merge_preserves_all_existing_segments(self):
+  source=json.loads((ROOT/'data/financial_observations.json').read_text())
+  before=[r for r in source['observations'] if r.get('company')=='Sampo' and r.get('scope')=='reported_segment']
+  self.assertGreater(len(before),0,'Expected distinct audited Sampo segments in the baseline')
+  self.assertGreater(len({r.get('segment') for r in before}),1)
+  merged,added=merge(source,[])
+  after=[r for r in merged['observations'] if r.get('company')=='Sampo' and r.get('scope')=='reported_segment']
   self.assertEqual(added,0)
-  self.assertEqual(merged['observations'],[a,b])
+  self.assertEqual(after,before)
+  self.assertEqual(merged['observations'],source['observations'])
 if __name__=='__main__':unittest.main()
