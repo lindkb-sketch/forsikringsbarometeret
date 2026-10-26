@@ -21,6 +21,10 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Prove Q3 2024 Gjensidige comparatives from issuer PDF
         run: python scripts/verify_gjensidige_2024_q3.py
+      - name: Live official Storebrand Q3 2025 Insurance supplement backfill check
+        run: |
+          python scripts/storebrand_2024_official_backfill.py
+          python scripts/audit_financials.py
       - name: Audit committed financial observations
         run: python scripts/audit_financials.py
       - name: Validate dashboard
