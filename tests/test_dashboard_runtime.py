@@ -89,6 +89,18 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('setInterval(refresh,300000)',html)
   self.assertNotIn('python scripts/ai_strategic_editor.py',main)
 
+ def test_frende_operating_revenue_rolls_without_hardcoded_values(self):
+  html=HTML.read_text()
+  js=RUNTIME.read_text()
+  importer=(ROOT/'scripts/import_frende_holding.py').read_text()
+  self.assertIn("if(key==='growth'&&c==='Frende')",html)
+  self.assertIn("label.textContent='Vekst i driftsinntekter'",html)
+  self.assertIn("data.growthMetricLabel='Vekst i driftsinntekter'",js)
+  self.assertIn("name==='Frende'?'Beregnet fra kildeverifiserte, sammenlignbare driftsinntekter'",js)
+  self.assertIn("label='Sum driftsinntekter'",importer)
+  self.assertIn("header[1]!=f'{quarter}. kv {year}'",importer)
+  self.assertIn("quote(name,type,year-1,quarter,'insurance_revenue')",js)
+  self.assertNotIn("if(year===2026&&quarter===3)",js)
  def test_prior_year_values_are_visible_in_quarter_and_ytd(self):
   html=HTML.read_text()
   js=RUNTIME.read_text()
