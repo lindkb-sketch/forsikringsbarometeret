@@ -23,6 +23,36 @@ assert(Math.abs(parse(view.cr)-(80+i))<0.15,c+' CR mismatch: '+view.cr);
 assert(Math.abs(parse(view.revenue)-(1000+110*i))<0.6,c+' revenue mismatch: '+view.revenue);
 assert(view.source?.includes('simulation.invalid'),c+' missing isolated synthetic source');
 }
-console.log('FUTURE_BROWSER PASS 7/7 company prices, 2026 Q4 selected, graph and editorial period');
+for(const mode of ['quarter','ytd']){
+ for(const company of companies){
+  const detail=await page.evaluate(({mode,company})=>{
+   period=mode==='ytd'?'H3':'Q3';
+   show(company);
+   const expected=FBQuarterly.selectedData[mode][company]||{};
+   const cards=Array.from(document.querySelectorAll('.dynamic-kpis > .metric')).slice(0,2)
+     .map(el=>({value:el.querySelector('.value')?.textContent?.trim(),
+       previous:el.querySelector('.prior')?.textContent?.trim(),
+       period:el.getAttribute('data-financial-period'),
+       source:el.getAttribute('data-financial-source')}));
+   return {expected,cards};
+  },{company,mode});
+  assert(detail.cards.length===2,company+' '+mode+' detail cards missing');
+  for(const card of detail.cards)
+   assert(card.source==='verified-quarterly-feed'&&card.period===mode,
+     company+' '+mode+' has stale/fixed company card');
+  if(detail.expected.revenue){
+   assert(detail.cards[0].value?.includes(detail.expected.growth||'') && detail.cards[1].value?.includes(detail.expected.result||''),
+     company+' '+mode+' figures do not match source model');
+   if(detail.expected.growthPrev)
+    assert(detail.cards[0].previous.includes(detail.expected.growthPrev),company+' '+mode+' wrong prior growth');
+   if(detail.expected.resultPrev)
+    assert(detail.cards[1].previous.includes(detail.expected.resultPrev),company+' '+mode+' wrong prior result');
+  }else{
+   assert(detail.cards.every(c=>c.value==='Ikke publisert'),company+' '+mode+' leaked unreleased report');
+  }
+ }
+}
+await page.evaluate(()=>{period='Q3';show('home')});
+console.log('FUTURE_BROWSER PASS 7/7 Q4 group figures + 14 issuer Q4 quarter/HIÅ detail views, graph and editorial');
 }finally{await browser.close()}
 })().catch(err=>{console.error('FUTURE_BROWSER FAIL',err.message);process.exit(1)});

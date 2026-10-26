@@ -254,7 +254,39 @@
     choose(value,true);
   };
   home=()=>relabel(previousHome());
-  company=c=>relabel(previousCompany(c));
+  // Individual company pages must use the SAME published quarter/YTD
+  // observations as the group table; never display the static Q2 cards.
+  function companyWithVerifiedKpis(c){
+    const fragment=document.createElement('div');
+    fragment.innerHTML=relabel(previousCompany(c));
+    const cardNodes=fragment.querySelectorAll('.dynamic-kpis > .metric');
+    const d=(ytdMode()?MON_YTD_Q3:MON_Q3)[c]||{};
+    if(cardNodes.length>=2){
+      const esc=x=>String(x??'').replace(/[&<>"']/g,ch=>({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const currentPublished=Boolean(d.revenue);
+      const priorLabel=ytdMode()?'HIÅ '+(selection.year-1):'Q'+selection.quarter+' '+(selection.year-1);
+      const build=(node,name,current,previous,unit)=>{
+        const primary=currentPublished&&current?esc(current)+(unit?' '+esc(unit):''):'Ikke publisert';
+        const reference=currentPublished&&previous?esc(previous)+(unit?' '+esc(unit):''):'—';
+        node.innerHTML='<div class="name">'+name+'</div>'+
+          '<div class="value">'+primary+'</div>'+
+          '<div class="prior">('+reference+')</div>';
+        node.setAttribute('data-financial-period',ytdMode()?'ytd':'quarter');
+        node.setAttribute('data-financial-source','verified-quarterly-feed');
+      };
+      build(cardNodes[0],c==='Frende'?'Inntektsvekst (IFRS 4)':'Inntektsvekst',
+        d.growth,d.growthPrev,'');
+      build(cardNodes[1],c==='Storebrand'?'Forsikringsresultat · Cash equivalent earnings':
+          c==='Frende'?'Forsikringsdriftsresultat':'Forsikringsresultat',
+        d.result,d.resultPrev,d.resultUnit||'');
+    }
+    // Replace the legacy Q2 label with the actual selected quarter.
+    const heading=fragment.querySelector('.section-head h2');
+    if(heading)heading.textContent=heading.textContent.replace(/Q2 2026/,label(selection));
+    return fragment.innerHTML;
+  }
+  company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
   function normalizeRevenueTable(html){
     // Extend the EXISTING table; do not add a replacement dashboard.
