@@ -5,8 +5,12 @@ A historical 2025 report exposes both Q3 2024 and Q1-Q3 2024 IFRS
 insurance-revenue comparison columns. This backfill is source-verified and
 idempotent, and it never substitutes gross written premiums.
 """
-import hashlib,json,re
+import hashlib,json,re,sys
 from pathlib import Path
+# Support both `python scripts/...py` and `python -m unittest ...`.
+SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
 from audit_financials import audit,DATA
 from publish_geographic_workbooks import atomic_write
 from protector_publish import download,parse_pdf
