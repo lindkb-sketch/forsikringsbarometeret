@@ -18,11 +18,11 @@ class IssuerQ4Tests(unittest.TestCase):
    pages=[
     Page('Kvartalsrapport Q4 2025 Fremtind Holding'),
     Page('Innhold'),
-    Page('Resultatutvikling og nøkkeltall\\nMNOK Q4 2025\\n'
-         'Inntekter fra forsikringstjenester 6 134 5 531 23 510 19 276 Vekst\\n'
-         'Resultat fra forsikringstjenester 1 100 900 4 400 3 200\\n'
-         'Skadeprosent, netto etter gjenforsikring (%) 63,2 % 65,0 % 58,8 % 60,5 %\\n'
-         'Kostnadsprosent (%) 20,1 % 20,0 % 21,9 % 21,2 %\\n'
+    Page('Resultatutvikling og nøkkeltall\nMNOK Q4 2025\n'
+         'Inntekter fra forsikringstjenester 6 134 5 531 23 510 19 276 Vekst\n'
+         'Resultat fra forsikringstjenester 1 100 900 4 400 3 200\n'
+         'Skadeprosent, netto etter gjenforsikring (%) 63,2 % 65,0 % 58,8 % 60,5 %\n'
+         'Kostnadsprosent (%) 20,1 % 20,0 % 21,9 % 21,2 %\n'
          'Combined ratio, netto etter gjenforsikring (%) 83,3 % 85,0 % 80,7 % 81,7 %'),
     Page('Noter')]
    def __enter__(self):return self
