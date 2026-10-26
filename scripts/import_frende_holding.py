@@ -149,6 +149,13 @@ def run():
     latest=max((r['year'],r['quarter']) for r in candidates)
     if list(latest) not in verified:
         raise ValueError('Latest Frende Holding quarter could not be verified: '+str(latest)+'; '+json.dumps(errors[:5]))
+    # A newly indexed official PDF cannot be ignored merely because the
+    # current validated parser supports the publisher HTML representation.
+    all_periods=[(r['year'],r['quarter']) for r in snapshot.get('candidates',[])
+                 if r.get('company')=='Frende' and r.get('year',0)>=2025
+                 and isinstance(r.get('quarter'),int)]
+    if all_periods and max(all_periods)>max(map(tuple,verified)):
+        raise ValueError('Newer official Frende quarter discovered but not verified/imported: '+str(max(all_periods)))
     if imported:
         merged={**existing,'observations':existing['observations']+imported}
         check=audit(merged)
