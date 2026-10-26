@@ -109,7 +109,7 @@ def run():
  from datetime import date
  today=date.today()
  targets=dict(SOURCES)
- for year in range(2026,today.year+1):
+ for year in range(2025,today.year+1):
   for q in range(1,5):
    if (year,q) in targets:continue
    if (year,q)>(today.year,(today.month-1)//3+1):continue
