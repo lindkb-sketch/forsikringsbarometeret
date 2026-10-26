@@ -1095,6 +1095,7 @@ let MON_CARD=(c,key,originalHtml)=>{
  const card=doc.querySelector('.metric');if(!card)return originalHtml||'';
  const v=card.querySelector('.value'),prior=card.querySelector('.prior'),delta=card.querySelector('.delta');
  const val=d[key]||'—',prev=d[key+'Prev']||'—';
+ if(key==='growth'&&c==='Frende'){const label=card.querySelector('.name');if(label)label.textContent='Vekst i driftsinntekter';}
  if(v)v.textContent=val+(key==='result'&&d[key]?' '+(d.resultUnit||'MNOK'):'');
  if(prior)prior.textContent=(period==='H3'?'HIÅ ':'Q')+(window.FBActivePeriod?.quarter||3)+' '+((window.FBActivePeriod?.year||2026)-1)+': '+prev+(key==='result'&&d[key+'Prev']?' '+(d.resultUnit||'MNOK'):'');
  if(delta){
