@@ -54,7 +54,9 @@ def extract(blob, url):
             raise ValueError("Report too short")
         pages = [p.extract_text() or "" for p in pdf.pages[:4]]
         heading = " ".join(pages[:2])
-        periods = set(re.findall(r"Kvartalsrapport\s+Q([1-4])\s+(20\d{2})", heading, re.I))
+        # Official Q3 2025 covers split "Kvartalsrapport", "Q3",
+        # and "konsern Q3 2025" over multiple lines.
+        periods = set(re.findall(r"\bQ([1-4])\s+(20\d{2})\b", heading, re.I))
         # Historical issuer PDFs use "Delårsrapport 3. kvartal 2025".
         periods.update(re.findall(
             r"(?:delårsrapport|kvartalsrapport)\s+([1-4])\.?\s*kvartal\s+(20\d{2})",
