@@ -55,6 +55,10 @@ def discover_pdf(year,quarter,fetch=download):
   links=['https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf']
  if (year,quarter)==(2026,2) and not links:
   links=['https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf']
+ if (year,quarter)==(2025,4) and not links:
+  # Official Q4 2025 interim PDF attached to Protector's MFN release.
+  # The issuer KPI values are still matched to their source PDF pages.
+  links=['https://storage.mfn.se/1bc26b42-d94f-4e91-a87f-6c3cc87478d8/interim-report-q4-2025-prot.pdf']
  links=list(dict.fromkeys(links))
  if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}')
  return links[0]
