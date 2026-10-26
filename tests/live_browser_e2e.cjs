@@ -87,8 +87,8 @@ async function main(){
    }
    if(!current.length)check(c+' no invented current figures',!view.quarter[c]?.cr&&!view.quarter[c]?.revenue);
   }
-  check('Five chronological quarters on chart',view.graph.length===5&&view.graph[4]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
-  check('Quarter labels never disappear when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
+  check('Four chronological quarters on chart',view.graph.length===4&&view.graph[3]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
+  check('Four quarter labels remain when data are missing',view.plotLabels.length===4,view.plotLabels.join(','));
   check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og kildeverifisert innsikt'),view.media.slice(0,200));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
@@ -277,7 +277,7 @@ async function main(){
   check('Rolling graph includes next-year Q1',future.quarters.includes('Q1 '+(year+1)),future.quarters.join(','));
   check('Next quarter and year in dropdown',future.options.some(x=>x.includes('Q1 '+(year+1))),future.options.join(','));
   check('Original design survives future publication',future.kpis>=6&&!future.hasReplacement,future.kpis);
-  check('Five graph quarter labels survive rollover',future.chart.length===5,future.chart.join(','));
+  check('Four graph quarter labels survive rollover',future.chart.length===4,future.chart.join(','));
   check('No JavaScript runtime errors',pageErrors.length===0,pageErrors.join(' | ').slice(0,600));
  }catch(e){report.errors.push('FATAL: '+(e?.stack||e));}
  finally{
