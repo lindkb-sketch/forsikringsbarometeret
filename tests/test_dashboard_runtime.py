@@ -89,6 +89,17 @@ class DashboardRuntimeTests(unittest.TestCase):
   self.assertIn('setInterval(refresh,300000)',html)
   self.assertNotIn('python scripts/ai_strategic_editor.py',main)
 
+ def test_current_and_prior_year_growth_cover_quarter_and_ytd(self):
+  js=RUNTIME.read_text()
+  self.assertIn("for(const [type,bucket] of [['quarter',MON_Q3],['ytd',MON_YTD_Q3]])",js)
+  self.assertIn("const thisGrowth=growthFor(year),lastGrowth=growthFor(year-1)",js)
+  self.assertIn("quote(name,type,targetYear-1,quarter,'insurance_revenue')",js)
+  self.assertIn("if(lastGrowth){",js)
+  self.assertIn("data.growthPrev=fmt(lastGrowth.value,true)",js)
+  self.assertIn("data.growthComparisonPeriod=type",js)
+  self.assertIn("!isSameBasis(now,before)",js)
+  html=HTML.read_text()
+  self.assertIn("period==='H3'?MON_YTD_Q3[c]:MON_Q3[c]",html)
  def test_frende_operating_revenue_rolls_without_hardcoded_values(self):
   html=HTML.read_text()
   js=RUNTIME.read_text()
