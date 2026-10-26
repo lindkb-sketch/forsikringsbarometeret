@@ -2,6 +2,66 @@
   "candidates": [
     {
       "company": "Frende",
+      "document_url": "https://www.frende.no/documents/285/Arsrapport_Frende_Holding_AS_2023.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2023"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/249/Arsberetning_og_revisjon_Frende_Holding_AS_uten_signering.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2022"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/186/%C3%85rsrapport_Frende_Holding_AS_2021.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2021"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/145/Frende_Holding_%C3%85rsberetning_2020_wUzybeW.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2020"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/132/Frende_Holding_%C3%A5rsberetning_2019.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2019"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/109/%C3%85rsberetning_Frende_Holding_AS_2018.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2018"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/94/%C3%85rsberetning_2017_Frende_Holding_AS_f6RWzDh.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2017"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/66/%C3%85rsrapport_2016_Frende_Holding.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2016"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/60/%C3%85rsregnskap_Frende_Holding_AS_2015.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2015"
+    },
+    {
+      "company": "Frende",
+      "document_url": "https://www.frende.no/documents/59/%C3%85rsregnskap_Frende_Holding_AS_2014.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Frende Holding AS 2014"
+    },
+    {
+      "company": "Frende",
       "document_url": "https://www.frende.no/documents/306/Frende_Holding_AS_Kvartalsrapport_Q3_2024.pdf",
       "status": "candidate_requires_quarterly_report_verification",
       "link_text": "3. kvartal Frende Holding AS 2024"
