@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Discover potential official interim-report PDFs on registered issuer pages.
-Candidates are NOT approved financial data and never update the dashboard.
+Candidates are NOT approved financial data and never update the dashboard.\nQ4 annual/full-year files are discovery candidates only: a validated importer must\nfind a separately labelled fourth-quarter column before publishing any KPI.
 """
 import json,re,urllib.request,urllib.parse,html.parser,sys
 from pathlib import Path
@@ -31,7 +31,7 @@ def discover(html,base_url,company):
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Require interim-report context, and an explicit PDF file extension.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
-  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller)",label,re.I):continue
+  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
   if re.search(r"(presentation|presentasjon|press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
   if url not in seen:
    found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","link_text":link["text"].strip()})
