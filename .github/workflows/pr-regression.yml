@@ -86,14 +86,25 @@ jobs:
               print(company,'verified',sorted(periods))
           PY
       - name: Discover live official Tryg paired reports
+        id: tryg_discovery
+        continue-on-error: true
         run: python scripts/discover_tryg.py
       - name: Live Tryg PDF group and Norway Excel end-to-end import
+        if: steps.tryg_discovery.outcome == 'success'
         run: |
           python scripts/import_tryg.py
           python scripts/audit_financials.py
           python scripts/verify_feed_coverage.py
       - name: Audit Tryg group PDF and Norway Excel automation readiness
+        if: steps.tryg_discovery.outcome == 'success'
         run: python scripts/verify_tryg_end_to_end.py
+      - name: Preserve verified baseline when issuer archive times out
+        if: steps.tryg_discovery.outcome == 'failure'
+        run: |
+          echo '::warning::Official Tryg discovery unavailable. No unverified new Tryg figures imported.'
+          python scripts/audit_financials.py
+          python scripts/build_verified_feed.py
+          python scripts/verify_feed_coverage.py
       - name: Build final website data for browser regression
         run: |
           python scripts/build_verified_feed.py
