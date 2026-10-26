@@ -859,7 +859,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 552,
+  "observation_count": 629,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1628,6 +1628,36 @@
     },
     {
       "company": "Tryg",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 5.742757345387295,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf",
+        "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 4.560058037102288,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf",
+        "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Tryg",
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
@@ -1668,6 +1698,66 @@
       "inputs": [
         "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
         "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 10.902187669499197,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 21.965137995434738,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
+        "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 20.19681349578257,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Storebrand",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 21.1913086913087,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf",
+        "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     }
