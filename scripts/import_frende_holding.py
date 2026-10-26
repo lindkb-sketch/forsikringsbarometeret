@@ -180,6 +180,7 @@ def run():
             income=read(url,7)
             rows+=extract_revenue(income,url+'/sec/7',year,quarter)
             rows+=extract_historical_revenue(income,url+'/sec/7',year,quarter)
+            rows+=extract_insurance_result(income,url+'/sec/7',year,quarter)
             verified.append([year,quarter])
             for row in rows:
                 key=(row['year'],row['quarter'],row['period_type'],row['metric'])
