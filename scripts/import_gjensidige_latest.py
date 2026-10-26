@@ -91,7 +91,7 @@ def import_period(year, quarter, fetch_index=index_html, fetch_pdf=download, ext
     except Exception as exc:
         return {"status": "import_failed", "source": url, "error": f"{type(exc).__name__}: {exc}", "imported": 0}
 
-def periods_due(today=None, first_year=2026):
+def periods_due(today=None, first_year=2024):
     """Return every *completed* reporting quarter; future releases require no code edit."""
     today = today or date.today()
     year, quarter = today.year, (today.month - 1) // 3 + 1
