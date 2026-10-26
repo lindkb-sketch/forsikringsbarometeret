@@ -14,14 +14,14 @@ from publish_geographic_workbooks import atomic_write
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE='https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/da62402f-d597-4d26-afc6-ad0ca6ab8039%3A0f32ecf07056118e0a078d4f6cd3a1de100f16e6/2025-3q-supplementary-information.pdf'
 BASIS='APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue'
-AMOUNT=re.compile(r'(?<!\\d)(?:\\d{1,3}(?:[ ,]\\d{3})+|\\d+)(?!\\d)')
+AMOUNT=re.compile(r'(?<!\d)(?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?!\d)')
 
 def parse(pages):
     matches=[]
     for page,text in pages:
-        if not re.search(r'Table\\s*23\\s*:?\\s*Insurance\\b',text,re.I):continue
+        if not re.search(r'Table\s*23\s*:?\s*Insurance\b',text,re.I):continue
         for line in text.splitlines():
-            m=re.search(r'^\\s*Insurance premiums f\\.o\\.a\\.\\s+(.+)$',line,re.I)
+            m=re.search(r'^\s*Insurance premiums f\.o\.a\.\s+(.+)$',line,re.I)
             if not m:continue
             vals=[int(v.replace(' ','').replace(',','')) for v in AMOUNT.findall(m.group(1))]
             # Columns: 2025 Q3 Q2 Q1, 2024 Q4 Q3, YTD 2025, YTD 2024, FY2024.
