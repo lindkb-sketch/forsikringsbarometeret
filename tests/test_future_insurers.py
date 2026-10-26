@@ -55,11 +55,11 @@ class FutureTests(unittest.TestCase):
  def test_storebrand_q4_group_mock_report(self):
   from import_storebrand_reports import parse_group
   from unittest.mock import patch
-  metrics={'Insurance premiums f.o.a.':2896,'Claims ratio':69,'Cost ratio':18,'Combined ratio':87,'Cash return on equity, annualised (%)':14.4,'Solvency II ratio (%)':200}
+  metrics={'Insurance premiums f.o.a.':2896,'Claims f.o.a.':-2001,'Operational cost':-509,'Claims ratio':69,'Cost ratio':18,'Combined ratio':87,'Cash return on equity, annualised (%)':14.4,'Solvency II ratio (%)':200}
   def line(k,v):return k+' '+' '.join(str(v+i) for i in range(7))
   pages=['Storebrand Group Q4 2026']+['']*7
-  pages[7]='Insurance – Results 2026 Q4 Q3 Q2 Q1\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[:4])
-  pages[4]='Group - Key figures 2026\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[4:])
+  pages[7]='Insurance – Results 2026 Q4 Q3 Q2 Q1\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[:6])
+  pages[4]='Group - Key figures 2026\n'+'\n'.join(line(k,v) for k,v in list(metrics.items())[6:])
   from import_storebrand_reports import row as actual_row
   def mocked_row(text,label,count,parser):
    if label=='Solvency II ratio (%)':return [200+i for i in range(7)]
