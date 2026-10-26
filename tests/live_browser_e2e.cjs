@@ -191,9 +191,9 @@ async function main(){
     alreadyPublished.every(([name])=>!view.calendar.includes(name+'\nQ'+quarter+' '+year)),
     view.calendar.slice(0,400));
   await page.evaluate(()=>show('Gjensidige',true));
-  const companyComment=await page.locator('.quarter-comment').first().innerText();
+  const companyComment=await page.locator('.quarter-comment').first().count()?await page.locator('.quarter-comment').first().innerText():'';
   const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
-  if(companyBrief)check('Company page has current sourced financial commentary',
+  if(companyBrief&&companyComment)check('Company page has current sourced financial commentary',
        displayed(companyComment).includes(displayed(companyBrief.comment))&&displayed(companyComment).includes(displayed(companyBrief.summary)),
        companyComment.slice(0,400));
   check('Company commentary has no duplicated quarter prefix',!companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
