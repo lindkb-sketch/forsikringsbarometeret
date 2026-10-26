@@ -859,7 +859,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 537,
+  "observation_count": 552,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1597,6 +1597,36 @@
       "status": "calculated_from_quarterly_reports"
     },
     {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 10.594869747479784,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 11.496790877855222,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
+        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
       "company": "Tryg",
       "year": 2026,
       "quarter": 1,
@@ -1638,36 +1668,6 @@
       "inputs": [
         "https://tryg.com/system/files/2026-10/Tryg%20Group%20-%20Q3%202026%20-%20Investor%20tables.xlsx",
         "https://attachment.news.eu.nasdaq.com/a43872b6ebf83b3f2e6e25abb98b16226"
-      ],
-      "status": "calculated_from_quarterly_reports"
-    },
-    {
-      "company": "Gjensidige",
-      "year": 2025,
-      "quarter": 4,
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "insurance_revenue_growth",
-      "value": 10.594869747479784,
-      "calculation": "(current/prior-1)*100",
-      "inputs": [
-        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
-        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
-      ],
-      "status": "calculated_from_quarterly_reports"
-    },
-    {
-      "company": "Gjensidige",
-      "year": 2025,
-      "quarter": 4,
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "insurance_revenue_growth",
-      "value": 11.496790877855222,
-      "calculation": "(current/prior-1)*100",
-      "inputs": [
-        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
-        "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     }
