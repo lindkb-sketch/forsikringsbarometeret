@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/data/'
-FILES=['verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json','investor_readiness.json']
+FILES=['verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json']
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 
@@ -58,6 +58,15 @@ def check():
                 raise ValueError('Rolling quarterly runtime differs from deployed artifact')
             if 'periodList=calcPeriods()' not in public_runtime:
                 raise ValueError('Published rolling quarterly model is missing period auto-selection')
+            provenance=public['publication_provenance.json']
+            if len(provenance.get('companies', [])) != len(COMPANIES):
+                raise ValueError('Public provenance must cover all seven insurers')
+            from publication_provenance import build as build_provenance
+            verified_source=json.loads((ROOT/'data/financial_observations.json').read_text(encoding='utf-8'))['observations']
+            if provenance != build_provenance(verified_source, public['verified_financial_feed.json']['observations']):
+                raise ValueError('Public provenance differs from audited source and published feed')
+            for company in provenance['companies']:
+                print('PUBLIC_SOURCE_CHAIN_VERIFIED', company['company'], company['latest_verified_period'], company['observation_sha256'])
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
             for marker in ('id="verified-q3-dashboard-bridge"',
