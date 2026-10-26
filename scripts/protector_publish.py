@@ -99,7 +99,7 @@ def run():
  for r in incoming:
   key=tuple(r[k] for k in KEYS)
   if key in index:
-   if abs(index[key]['value']-r['value'])>0.001:raise ValueError('Published Protector value changed: '+str(key))
+   if abs(index[key]['value']-r['value'])>0.001:raise ValueError('Published Protector value changed: '+str(key)+' verified='+str(index[key]['value'])+' extracted='+str(r['value']))
   else:index[key]=r;added+=1
  merged={**existing,'observations':list(index.values())}
  feed=build(merged)
