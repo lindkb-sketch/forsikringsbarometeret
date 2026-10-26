@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import unittest
 from scripts.prior_year_growth_coverage import evidence, COMPANIES, active_period
 
@@ -24,6 +25,13 @@ class PriorYearEvidenceTests(unittest.TestCase):
           row('Storebrand',2025,'quarter',110,description='APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue')]
     result=next(r for r in evidence(rows)['companies'] if r['company']=='Storebrand')
     self.assertEqual(result['quarter']['status'],'incomparable_basis')
+ def test_fremtind_historical_report_title_is_supported(self):
+    importer=(Path(__file__).resolve().parents[1]/'scripts/import_fremtind_holding.py').read_text()
+    self.assertIn('delårsrapport|kvartalsrapport',importer)
+    import re
+    pattern=r"(?:delårsrapport|kvartalsrapport)\\s+([1-4])\\.?\\s*kvartal\\s+(20\\d{2})"
+    self.assertEqual(re.findall(pattern,'Fremtind Holding delårsrapport 3. kvartal 2025',re.I),[('3','2025')])
+
  def test_auto_rollover_follows_latest_qualified_issuer_quarter(self):
     rows=[row('Tryg',2025,'quarter',100),row('Tryg',2024,'quarter',90)]
     rows.append({**row('Fremtind',2027,'quarter',130),'quarter':1})
