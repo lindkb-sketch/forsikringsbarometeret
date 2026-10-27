@@ -56,10 +56,6 @@ def run(offline=False):
  if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
-  print('RUN import_gjensidige_pdf_norway.py (official PDF Norway PM/BM and totals)',flush=True)
-  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_pdf_norway.py')],cwd=ROOT)
-  if attempt.returncode:
-   print('::warning::Official Norway PDF tables unavailable or ambiguous; preserve previously audited data',flush=True)
   print('RUN import_gjensidige_segments.py (official Norway PM/BM; independently reconciled)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_segments.py')],cwd=ROOT,check=True)
  if not offline:
