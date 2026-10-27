@@ -56,6 +56,8 @@ def run(offline=False):
  if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
+  print('RUN import_gjensidige_segments.py (official Norway PM/BM; independently reconciled)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_segments.py')],cwd=ROOT,check=True)
  if not offline:
   print('RUN storebrand_2024_official_backfill.py (official 2025 Q3 Insurance comparator)',flush=True)
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'storebrand_2024_official_backfill.py')],cwd=ROOT)
