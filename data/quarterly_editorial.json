@@ -820,12 +820,13 @@
     "Q4 2025": {
       "brief": [
         {
-          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Frende, Protector, Storebrand. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
+          "text": "Forsikringslønnsomheten er svekket fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Sampo, Frende, Protector, Storebrand. Rapporttallene viser utviklingen, men fastslår ikke alene hvilke hendelser som ligger bak.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
             "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/01/29/664388_Interim_report_Q4_2025.pdf",
             "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
             "https://storage.mfn.se/1bc26b42-d94f-4e91-a87f-6c3cc87478d8/interim-report-q4-2025-prot.pdf",
             "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf"
@@ -834,6 +835,7 @@
             "Fremtind",
             "Gjensidige",
             "Tryg",
+            "Sampo",
             "Frende",
             "Protector",
             "Storebrand"
@@ -843,11 +845,12 @@
           "theme": "underwriting_pressure"
         },
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Tryg, Frende, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Tryg, Sampo, Frende, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/64dd516aa71c72656e42c5e9f210e43e0e840c87.pdf",
             "https://tryg.com/sites/tryg.com/files/2026-01/Annual%20Report%202025%20-%20TRYG%20A_S_1.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
             "https://frende.wrep.it/q4-2025-frende-holding-as/sec/6",
             "https://storage.mfn.se/1bc26b42-d94f-4e91-a87f-6c3cc87478d8/interim-report-q4-2025-prot.pdf",
             "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf"
@@ -855,6 +858,7 @@
           "companies": [
             "Fremtind",
             "Tryg",
+            "Sampo",
             "Frende",
             "Protector",
             "Storebrand"
@@ -900,7 +904,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "text": "Sampo: combined ratio 84.3 % i Q4 2025, svekket med 1.3 prosentpoeng fra Q3 2025 (83 %).",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
           "company": "Sampo",
           "period": "Q4 2025",
@@ -955,7 +959,7 @@
         },
         "Sampo": {
           "summary": "Sampo: forsikringsinntekter 2322 EURm, forsikringsresultat 364 EURm, combined ratio 84.3 % i Q4 2025.",
-          "comment": "Sampo: combined ratio 84.3 % i Q4 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "comment": "Sampo: combined ratio 84.3 % i Q4 2025, svekket med 1.3 prosentpoeng fra Q3 2025 (83 %).",
           "ytd": "",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf",
           "period": "Q4 2025",
@@ -990,7 +994,7 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
-        "Sampo": "awaiting_curated_commentary",
+        "Sampo": "featured",
         "Frende": "featured",
         "Protector": "featured",
         "Storebrand": "featured"
@@ -1072,6 +1076,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Sampo: combined ratio 83 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
+          "company": "Sampo",
+          "period": "Q3 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Frende: combined ratio 85.3 % i Q3 2025, svekket med 0.8 prosentpoeng fra Q2 2025 (84.5 %).",
           "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6",
           "company": "Frende",
@@ -1118,6 +1129,14 @@
           "period": "Q3 2025",
           "has_comparative": true
         },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2303 EURm (+7.8 % mot Q3 2024), forsikringsresultat 392 EURm, combined ratio 83 % i Q3 2025.",
+          "comment": "Sampo: combined ratio 83 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
+          "period": "Q3 2025",
+          "has_comparative": true
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 818.27 NOKm (+19.0 % mot Q3 2024), forsikringsresultat 148.065 NOKm, combined ratio 85.3 % i Q3 2025.",
           "comment": "Frende: combined ratio 85.3 % i Q3 2025, svekket med 0.8 prosentpoeng fra Q2 2025 (84.5 %).",
@@ -1147,11 +1166,12 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
+        "Sampo": "awaiting_curated_commentary",
         "Frende": "featured",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 6
+      "reported_company_count": 7
     },
     "Q2 2025": {
       "brief": [
@@ -1611,6 +1631,14 @@
           "period": "Q3 2024",
           "has_comparative": false
         },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2137 EURm i Q3 2024.",
+          "comment": "Sampo: forsikringsinntekter 2137 EURm i Q3 2024.",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
+          "period": "Q3 2024",
+          "has_comparative": false
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 687.578 NOKm, forsikringsresultat -0.995 NOKm i Q3 2024.",
           "comment": "Frende: forsikringsinntekter 687.578 NOKm, forsikringsresultat -0.995 NOKm i Q3 2024.",
@@ -1640,11 +1668,12 @@
         "Fremtind": "featured",
         "Gjensidige": "awaiting_curated_commentary",
         "Tryg": "awaiting_curated_commentary",
+        "Sampo": "awaiting_curated_commentary",
         "Frende": "featured",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 6
+      "reported_company_count": 7
     },
     "Q2 2024": {
       "brief": [
