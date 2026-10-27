@@ -59,8 +59,6 @@ jobs:
         run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
       - name: Verify Norway and Nordic segment feed bindings
         run: python -m unittest discover -s tests -p test_segment_runtime_binding.py -v
-      - name: Import approved geographical and Gjensidige PM/BM workbooks
-        run: python scripts/publish_geographic_workbooks.py
       - name: Parse and audit official Sampo PDF tables
         run: |
           python scripts/sampo_publish.py
