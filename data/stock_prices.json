@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T16:24:47.966646+00:00",
+  "updated_at": "2026-10-27T16:47:11.939359+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -35,7 +35,7 @@
     },
     "Sampo / If": {
       "symbol": "SAMPO.HE",
-      "close": 9.376,
+      "close": 9.396,
       "currency": "EUR",
       "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SAMPO.HE?interval=1d&range=10d",
