@@ -25,7 +25,7 @@ def extract(path,year,quarter,workbook_url,report_pdf_url):
         name,cells=sheets[0]
         # Require an exact period header; never assume that column B is current quarter.
         headers=[addr for addr,v in cells.items() if isinstance(v,str)
-                 and re.fullmatch(rf"(?:Q\\s*{quarter}\\s*[-/ ]\\s*{year}|{year}\\s*[-/ ]\\s*Q\\s*{quarter})",v.strip(),re.I)]
+                 and re.fullmatch(rf"(?:Q\s*{quarter}\s*[-/ ]\s*{year}|{year}\s*[-/ ]\s*Q\s*{quarter})",v.strip(),re.I)]
         if len(headers)!=1:raise ValueError(f"Ambiguous period header in {name}: {year} Q{quarter}")
         col=column(headers[0])
         for metric,regex in ROWS.items():
