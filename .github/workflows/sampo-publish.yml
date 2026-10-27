@@ -6,6 +6,8 @@ on:
     paths:
       - 'scripts/verify_source_evidence.py'
       - 'tests/test_segment_runtime_binding.py'
+      - 'tests/test_gjensidige_segments.py'
+      - 'scripts/gjensidige_segments.py'
       - 'scripts/quarterly_runtime.js'
       - 'scripts/sampo_publish.py'
       - 'tests/test_sampo_q3_2025_source.py'
@@ -50,6 +52,8 @@ jobs:
           if-no-files-found: warn
       - name: Check quarterly runtime JavaScript syntax
         run: node --check scripts/quarterly_runtime.js
+      - name: Verify future-quarter Gjensidige PM/BM extractor
+        run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
       - name: Verify Norway and Nordic segment feed bindings
         run: python -m unittest discover -s tests -p test_segment_runtime_binding.py -v
       - name: Parse and audit official Sampo PDF tables
