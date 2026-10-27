@@ -8,6 +8,7 @@ on:
       - 'tests/test_segment_runtime_binding.py'
       - 'tests/test_gjensidige_segments.py'
       - 'scripts/gjensidige_segments.py'
+      - 'scripts/inspect_gjensidige_workbooks.py'
       - 'scripts/publish_geographic_workbooks.py'
       - 'scripts/audit_financials.py'
       - 'data/geographic_workbooks.json'
@@ -55,6 +56,16 @@ jobs:
           if-no-files-found: warn
       - name: Check quarterly runtime JavaScript syntax
         run: node --check scripts/quarterly_runtime.js
+      - name: Download official Gjensidige workbooks and inspect PM/BM source cells
+        continue-on-error: true
+        run: python scripts/inspect_gjensidige_workbooks.py
+      - name: Upload Gjensidige source layout diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gjensidige-source-layout
+          path: data/gjensidige_workbook_diagnostics.json
+          if-no-files-found: warn
       - name: Verify future-quarter Gjensidige PM/BM extractor
         run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
       - name: Verify Norway and Nordic segment feed bindings
