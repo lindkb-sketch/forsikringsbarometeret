@@ -6,11 +6,12 @@ import argparse,hashlib,json,os,tempfile,urllib.request
 from pathlib import Path
 from audit_financials import audit,DATA,ROOT
 from geographic_excel import parse
+from gjensidige_segments import extract as extract_gjensidige_segments
 from quarterly_ytd import add_tryg_ytd
 from build_verified_feed import build,OUT
-KEYS=('company','year','quarter','scope','period_type','metric')
+KEYS=('company','year','quarter','scope','segment','period_type','metric')
 REGISTRY=ROOT/'data/geographic_workbooks.json'
-def key(r):return tuple(r[k] for k in KEYS)
+def key(r):return tuple(r.get(k) for k in KEYS)
 def download(url):
     if not url.startswith('https://'):raise ValueError('HTTPS required')
     req=urllib.request.Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'})
@@ -30,7 +31,11 @@ def prepare(registry,existing,fetcher=download):
         content=fetcher(spec['workbook_url'])
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'report.xlsx';p.write_bytes(content)
-            batch=parse(p,spec['company'],spec['year'],spec['quarter'],spec['workbook_url'],spec['report_pdf_url'])['observations']
+            if spec.get('segments') == 'gjensidige_pm_bm':
+                if spec['company'] != 'Gjensidige':raise ValueError('PM/BM extractor only supports Gjensidige')
+                batch=extract_gjensidige_segments(p,spec['year'],spec['quarter'],spec['workbook_url'],spec['report_pdf_url'])
+            else:
+                batch=parse(p,spec['company'],spec['year'],spec['quarter'],spec['workbook_url'],spec['report_pdf_url'])['observations']
         for r in batch:
             r['source_sha256']=hashlib.sha256(content).hexdigest()
             k=key(r)
