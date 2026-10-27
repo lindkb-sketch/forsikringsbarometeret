@@ -1,30 +1,8 @@
 name: Sampo official quarterly segment verification
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/verify_source_evidence.py'
-      - 'tests/test_segment_runtime_binding.py'
-      - 'tests/test_gjensidige_segments.py'
-      - 'scripts/gjensidige_segments.py'
-      - 'scripts/inspect_gjensidige_workbooks.py'
-      - 'scripts/publish_geographic_workbooks.py'
-      - 'scripts/audit_financials.py'
-      - 'data/geographic_workbooks.json'
-      - 'scripts/quarterly_runtime.js'
-      - 'scripts/sampo_publish.py'
-      - 'tests/test_sampo_q3_2025_source.py'
-      - 'data/financial_observations.json'
-      - 'tests/test_sampo_future.py'
-      - 'tests/test_sampo_real_q4.py'
-      - '.github/workflows/sampo-publish.yml'
-  schedule:
-    - cron: '37 * * * *'
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: forsikringsbarometeret-publish
   cancel-in-progress: false
@@ -70,22 +48,3 @@ jobs:
         run: python scripts/publication_provenance.py
       - name: Build quarterly editorial
         run: python scripts/build_editorial.py
-      - name: Commit only validated finance and editorial
-        run: |
-          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json data/publication_provenance.json; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json data/publication_provenance.json
-            git commit -m 'Publish verified Sampo Nordic segments'
-            git push origin HEAD:main
-          fi
-      - run: |
-          git fetch origin main
-          git reset --hard origin/main
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - uses: actions/deploy-pages@v4
-      - name: Verify live published financial feed
-        run: python scripts/verify_public_pages.py
