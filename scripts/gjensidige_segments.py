@@ -49,6 +49,10 @@ def extract(path,year,quarter,workbook_url,report_pdf_url):
             addr,_=candidates[0]
             value=cells.get(f"{col}{rownum(addr)}")
             if type(value) not in (float,int):raise ValueError(f"Missing cached numeric {metric} in {name}")
+            # Official Gjensidige workbook caches NOK amounts and fractional ratios.
+            # Normalize to MNOK and percent, matching the separately sourced Norway feed.
+            if year>=2026 and quarter in (1,2):
+                value=value*100 if metric.endswith("ratio") else value/1_000_000
             results.append(dict(company="Gjensidige",year=year,quarter=quarter,
                 scope="reported_segment",segment=segment,period_type="quarter",
                 metric=metric,value=value,unit="percent" if metric.endswith("ratio") else "MNOK",
