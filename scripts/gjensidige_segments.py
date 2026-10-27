@@ -18,8 +18,9 @@ def extract(path,year,quarter,workbook_url,report_pdf_url):
     if not (workbook_url.startswith("https://") and report_pdf_url.startswith("https://")):
         raise ValueError("Official HTTPS sources required")
     results=[]
+    workbook_sheets=load_sheets(path)
     for segment,pattern in SEGMENTS.items():
-        sheets=[(name,cells) for name,cells in load_sheets(path).items()
+        sheets=[(name,cells) for name,cells in workbook_sheets.items()
                 if re.search(pattern,name,re.I)]
         if len(sheets)!=1:raise ValueError(f"Missing/ambiguous segment sheet: {segment}")
         name,cells=sheets[0]
