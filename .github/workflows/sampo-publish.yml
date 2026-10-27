@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/verify_source_evidence.py'
+      - 'scripts/quarterly_runtime.js'
       - 'scripts/sampo_publish.py'
       - 'tests/test_sampo_q3_2025_source.py'
       - 'data/financial_observations.json'
