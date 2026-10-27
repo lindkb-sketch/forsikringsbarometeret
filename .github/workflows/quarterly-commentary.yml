@@ -9,8 +9,6 @@ on:
       - 'scripts/build_strategic_market.py'
       - 'scripts/synthesize_report_commentary.py'
       - '.github/workflows/quarterly-commentary.yml'
-  schedule:
-    - cron: '25 3,9,15,21 * * *'
 permissions:
   contents: write
   pages: write
