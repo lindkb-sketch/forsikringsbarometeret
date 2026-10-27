@@ -49,7 +49,7 @@ def discover(year,quarter,fetch=None):
     for table in parser.tables:
         if not table:continue
         headings=[' '.join(c['text'].split()).lower() for c in table[0]]
-        columns=[i for i,h in enumerate(headings) if re.fullmatch(r'q\\s*'+str(quarter),h)]
+        columns=[i for i,h in enumerate(headings) if re.fullmatch(r'q\s*'+str(quarter),h)]
         if len(columns)!=1:continue
         col=columns[0]
         for row in table[1:]:
