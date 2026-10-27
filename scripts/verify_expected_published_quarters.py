@@ -31,6 +31,21 @@ def validate(rows):
             # calculate its growth; a missing prior year is a visible coverage gap.
             if 'insurance_revenue' in found and 'insurance_revenue' not in metrics(company,year-1,quarter,'group'):
                 errors.append(f'{company} Q{quarter} {year} revenue growth comparator missing')
+            if company=='Tryg':
+                for scope in ('group','norway'):
+                    current=next((r for r in rows if r.get('company')==company and
+                        r.get('year')==year and r.get('quarter')==quarter and
+                        r.get('scope')==scope and r.get('period_type')=='quarter' and
+                        r.get('metric')=='insurance_revenue'),None)
+                    prior=next((r for r in rows if r.get('company')==company and
+                        r.get('year')==year-1 and r.get('quarter')==quarter and
+                        r.get('scope')==scope and r.get('period_type')=='quarter' and
+                        r.get('metric')=='insurance_revenue'),None)
+                    if current and prior and (not current.get('unit') or
+                        current.get('unit')!=prior.get('unit')):
+                        errors.append(f'Tryg Q{quarter} {year} {scope} revenue growth units missing/incompatible')
+                    if current and not prior:
+                        errors.append(f'Tryg Q{quarter} {year} {scope} revenue growth prior period missing')
             if company=='Gjensidige':
                 for scope,segment in [('norway',None),('reported_segment','Private Norway'),
                                       ('reported_segment','Commercial Norway')]:
