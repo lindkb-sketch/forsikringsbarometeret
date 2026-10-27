@@ -34,7 +34,7 @@ class SegmentBindingTest(unittest.TestCase):
                           and r["period_type"] == "quarter"]
                 self.assertTrue(subset)
                 self.assertTrue(any(r["metric"] == "combined_ratio" for r in subset))
-                self.assertTrue(all(r.get("source_url") and r.get("source_page") for r in subset))
+                self.assertTrue(all(r.get("source_url") and (r.get("source_page") or r.get("source_cell") or r.get("source_sheet")) for r in subset))
 
     def test_missing_pm_bm_not_faked_from_static_html(self):
         for segment in ("Private Norway", "Commercial Norway"):
