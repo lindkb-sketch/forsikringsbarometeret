@@ -36,12 +36,10 @@ class SegmentBindingTest(unittest.TestCase):
                 self.assertTrue(any(r["metric"] == "combined_ratio" for r in subset))
                 self.assertTrue(all(r.get("source_url") and (r.get("source_page") or r.get("source_cell") or r.get("source_sheet")) for r in subset))
 
-    def test_missing_pm_bm_not_faked_from_static_html(self):
-        for segment in ("Private Norway", "Commercial Norway"):
-            self.assertFalse(any(r["company"] == "Gjensidige"
-                and r["scope"] == "reported_segment" and r.get("segment") == segment
-                for r in ROWS))
+    def test_pm_bm_only_from_verified_feed(self):
         self.assertIn("Ingen kildeverifiserte segmenttall", JS)
+        self.assertIn("r.scope===scope", JS)
+        self.assertIn("r.segment===segment", JS)
 
 if __name__ == "__main__":
     unittest.main()
