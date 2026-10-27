@@ -183,9 +183,50 @@
     // Restore the older Q4/Q1/Q2 values only when they exist in the verified feed;
     // the latest reporting quarter remains an empty slot until issuer publication.
     window.FBActivePeriod={...selection,label:label(selection),priorLabel:'Q'+quarter+' '+(year-1)};
+    // Rebind the existing company segment table to audited feed observations.
+    // Keep the original HTML/CSS and segment labels; never reuse static Q2 values.
+    const segmentSpecs={
+      Tryg:[['Norge total','norway',null]],
+      Gjensidige:[['Norge total','norway',null],['Norge PM','reported_segment','Private Norway'],['Norge BM','reported_segment','Commercial Norway']],
+      Sampo:[['Private Nordic','reported_segment','Private Nordic'],['Nordic Commercial','reported_segment','Nordic Commercial']]
+    };
+    const metrics={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',
+      insurance_service_result:'underwriting'};
+    const evidence=(company,scope,segment,yr,metric)=>
+      (verified?.observations||[]).find(r=>valid(r)&&r.company===company&&
+        r.scope===scope&&(scope!=='reported_segment'||r.segment===segment)&&
+        r.year===yr&&r.quarter===quarter&&r.period_type==='quarter'&&r.metric===metric);
+    function segmentView(company,title,scope,segment){
+      const row={name:title};
+      const currentRevenue=evidence(company,scope,segment,year,'insurance_revenue');
+      const priorRevenue=evidence(company,scope,segment,year-1,'insurance_revenue');
+      for(const [metric,key] of Object.entries(metrics)){
+        const now=evidence(company,scope,segment,year,metric);
+        const prev=evidence(company,scope,segment,year-1,metric);
+        if(now)row[key]=fmt(now.value,key!=='underwriting')+
+          (key==='underwriting'?' '+(now.unit||''):'');
+        if(prev)row[key+'Prev']=fmt(prev.value,key!=='underwriting')+
+          (key==='underwriting'?' '+(prev.unit||''):'');
+      }
+      if(currentRevenue&&priorRevenue&&priorRevenue.value>0&&
+         isSameBasis(currentRevenue,priorRevenue)){
+        row.growth=fmt((currentRevenue.value/priorRevenue.value-1)*100,true);
+      }
+      const older=evidence(company,scope,segment,year-2,'insurance_revenue');
+      if(priorRevenue&&older&&older.value>0&&isSameBasis(priorRevenue,older))
+        row.growthPrev=fmt((priorRevenue.value/older.value-1)*100,true);
+      const source=evidence(company,scope,segment,year,'combined_ratio')||currentRevenue;
+      row.note=source?'Kildeverifisert '+label(selection)+' · '+source.source_url:
+        'Ingen kildeverifiserte segmenttall for '+label(selection);
+      return row;
+    }
+    for(const [company,specs] of Object.entries(segmentSpecs)){
+      segmentData[company]=specs.map(([title,scope,segment])=>
+        segmentView(company,title,scope,segment));
+    }
     // Clear old Q2-only company segment figures rather than masquerade them as current.
     for(const [name,oldRows] of Object.entries(MON_Q2_SEGMENTS)){
-      if(!segmentData[name])continue;
+      if(!segmentData[name]||segmentSpecs[name])continue;
       segmentData[name]=oldRows.map(r=>{
         const x={...r};
         for(const k of ['growth','growthPrev','underwriting','underwritingPrev','cr','crPrev','loss','lossPrev','cost','costPrev'])x[k]='';
