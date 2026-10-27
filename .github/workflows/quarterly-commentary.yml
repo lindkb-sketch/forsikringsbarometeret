@@ -3,8 +3,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: forsikringsbarometeret-publish
   cancel-in-progress: false
