@@ -1,14 +1,6 @@
 name: Backfill quarterly report commentary
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/refresh_report_commentary.py'
-      - 'scripts/build_editorial.py'
-      - 'scripts/build_strategic_market.py'
-      - 'scripts/synthesize_report_commentary.py'
-      - '.github/workflows/quarterly-commentary.yml'
 permissions:
   contents: write
   pages: write
