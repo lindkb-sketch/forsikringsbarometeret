@@ -18,6 +18,13 @@ OUTPUT=ROOT/"data"/"gjensidige_workbook_diagnostics.json"
 def inspect():
     rows=json.loads(SOURCE.read_text(encoding="utf-8"))["observations"]
     sources={}
+    # Include newly discovered issuer pairs, but never treat discovery as verification.
+    candidate_path=ROOT/"data"/"gjensidige_discovery_candidates.json"
+    if candidate_path.exists():
+        candidates=json.loads(candidate_path.read_text(encoding="utf-8")).get("candidates",[])
+        for spec in candidates:
+            if spec.get("company")=="Gjensidige" and spec.get("workbook_url","").startswith("https://"):
+                sources[(spec["year"],spec["quarter"])]=(spec["workbook_url"],spec["report_pdf_url"])
     for row in rows:
         if row.get("company")!="Gjensidige" or row.get("scope")!="norway" or row.get("period_type")!="quarter":
             continue
@@ -25,7 +32,7 @@ def inspect():
         pdf=row.get("source_document_url","")
         if url.lower().split("?")[0].endswith(".xlsx") and pdf.startswith("https://"):
             sources[(row["year"],row["quarter"])]=(url,pdf)
-    output={"workbooks":[]}
+    output={"workbooks":[],"verified_for_publication":False}
     for (year,quarter),(url,pdf) in sorted(sources.items()):
         item={"year":year,"quarter":quarter,"url":url,"report_pdf_url":pdf}
         try:
