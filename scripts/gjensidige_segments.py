@@ -27,10 +27,6 @@ def extract(path,year,quarter,workbook_url,report_pdf_url):
                     if re.fullmatch(r"General Insurance "+segment.split()[0],name,re.I)]
         if len(sheets)!=1:raise ValueError(f"Missing/ambiguous segment sheet: {segment}")
         name,cells=sheets[0]
-        headers=[addr for addr,v in cells.items() if isinstance(v,str)
-                 and re.fullmatch(rf"(?:Q\s*{quarter}\s*[-/ ]\s*{year}|{year}\s*[-/ ]\s*Q\s*{quarter})",v.strip(),re.I)]
-        if len(headers)!=1:raise ValueError(f"Ambiguous period header in {name}: {year} Q{quarter}")
-        col=column(headers[0])
         if not re.search(pattern,name,re.I):
             sections=[rownum(addr) for addr,v in cells.items()
                       if column(addr)=="A" and isinstance(v,str)
@@ -42,6 +38,10 @@ def extract(path,year,quarter,workbook_url,report_pdf_url):
                         and re.fullmatch(r"General Insurance (?:Private|Commercial) [A-Za-z ]+",v.strip(),re.I)]
             end=min(boundaries) if boundaries else 999999
             cells={addr:v for addr,v in cells.items() if begin<=rownum(addr)<end}
+        headers=[addr for addr,v in cells.items() if isinstance(v,str)
+                 and re.fullmatch(rf"(?:Q\s*{quarter}\s*[-/ ]\s*{year}|{year}\s*[-/ ]\s*Q\s*{quarter})",v.strip(),re.I)]
+        if len(headers)!=1:raise ValueError(f"Ambiguous period header in {name}: {year} Q{quarter}")
+        col=column(headers[0])
         for metric,regex in ROWS.items():
             candidates=[(addr,v) for addr,v in cells.items()
                         if isinstance(v,str) and re.fullmatch(regex,re.sub(r"[¹²³⁴⁵⁶⁷⁸⁹⁰*]+$","",v.strip()).strip(),re.I)]
