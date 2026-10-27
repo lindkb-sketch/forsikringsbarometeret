@@ -72,5 +72,13 @@ def main():
     target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     for row in result['companies']:
         print('PRIOR_YEAR_GROWTH',row['company'],row['quarter']['status'],row['ytd']['status'])
+        for kind in ('quarter','ytd'):
+            item=row[kind]
+            if item['status'] != 'verified':
+                print('::warning title=Historical revenue comparison missing::'
+                      +row['company']+' '+kind+' '+item['reference']
+                      +' '+item['status']+'; no unverified growth will be published',flush=True)
+    # Every scheduled run produces explicit warnings for gaps, including future
+    # year transitions. A warning is not an invented financial observation.
 
 if __name__=='__main__':main()
