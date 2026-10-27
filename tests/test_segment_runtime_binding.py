@@ -37,7 +37,9 @@ class SegmentBindingTest(unittest.TestCase):
                 self.assertTrue(all(r.get("source_url") and (r.get("source_page") or r.get("source_cell") or r.get("source_sheet")) for r in subset))
 
     def test_pm_bm_only_from_verified_feed(self):
-        self.assertIn("Ingen kildeverifiserte segmenttall", JS)
+        self.assertIn("Ikke publisert", JS)
+        self.assertIn("if(!published)", JS)
+        self.assertIn("r.year===yr&&r.quarter===quarter", JS)
         self.assertIn("r.scope===scope", JS)
         self.assertIn("r.segment===segment", JS)
 
