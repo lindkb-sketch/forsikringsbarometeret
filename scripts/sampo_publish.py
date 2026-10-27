@@ -129,9 +129,13 @@ def run():
    else:index[key]=row;added+=1
  merged={**baseline,'observations':list(index.values())}
  feed=build(merged)
- if added:
-  atomic_write(DATA,merged);atomic_write(OUT,feed)
- print(json.dumps({'added':added,'sampo_rows':sum(r['company']=='Sampo' for r in merged['observations'])}))
+ # Repair a stale/missing verified feed even when every source observation already exists.
+ # Do not rewrite unchanged artifacts on hourly runs.
+ source_changed=merged!=baseline or not DATA.exists()
+ feed_changed=not OUT.exists() or json.loads(OUT.read_text(encoding='utf-8'))!=feed
+ if source_changed:atomic_write(DATA,merged)
+ if feed_changed:atomic_write(OUT,feed)
+ print(json.dumps({'added':added,'feed_rebuilt':feed_changed,'sampo_rows':sum(r['company']=='Sampo' for r in merged['observations'])}))
 if __name__=='__main__':
  try:run()
  except Exception as e:print('SAMPO IMPORT BLOCKED:',e,file=sys.stderr);sys.exit(1)
