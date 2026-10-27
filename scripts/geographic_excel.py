@@ -89,7 +89,7 @@ def parse(path,company,year,quarter,workbook_url,report_pdf_url):
             # Normalize monetary amounts to DKKm; ratios are already percentages.
             if company=='Tryg' and metric in ('insurance_revenue','insurance_service_result'):
                 if abs(val)>1_000_000: val=val/1_000_000
-            observations.append({'company':company,'year':year,'quarter':quarter,'scope':'norway','period_type':'quarter','metric':metric,'value':val,'source_url':workbook_url,'source_document_url':report_pdf_url,'source_type':'official_investor_tables','source_sheet':name,'source_cell':addr,'status':'reported','source_scope':'norway'})
+            observations.append({'company':company,'year':year,'quarter':quarter,'scope':'norway','period_type':'quarter','metric':metric,'value':val,'unit':('percent' if metric.endswith('ratio') else ('DKKm' if company=='Tryg' else 'MNOK')),'source_url':workbook_url,'source_document_url':report_pdf_url,'source_type':'official_investor_tables','source_sheet':name,'source_cell':addr,'status':'reported','source_scope':'norway'})
     if not observations:raise ValueError('No unambiguous Norway metrics; workbook requires manual adapter')
     return {'source_policy':'official_reports_and_geographic_workbooks','observations':observations}
 if __name__=='__main__':
