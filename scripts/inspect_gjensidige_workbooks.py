@@ -53,4 +53,8 @@ def inspect():
                       "results":[{"period":f'{w["year"]}Q{w["quarter"]}',
                                   "extraction":w.get("extraction",{}).get("status"),
                                   "download_error":w.get("download_error")} for w in output["workbooks"]]}))
-if __name__=="__main__":inspect()
+if __name__=="__main__":
+    inspect()
+    report=json.loads(OUTPUT.read_text(encoding="utf-8"))
+    if not report["workbooks"] or any(w.get("download_error") or w.get("extraction",{}).get("status")!="ok" for w in report["workbooks"]):
+        raise SystemExit("Gjensidige official workbook validation incomplete; no PM/BM publication permitted")
