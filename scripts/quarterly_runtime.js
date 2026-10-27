@@ -40,6 +40,7 @@
       .filter(p=>[...p.issuers.values()].some(metrics=>
         metrics.has('insurance_revenue')&&metrics.has('combined_ratio')))
       .map(({year,quarter})=>({year,quarter}))
+      .filter(p=>p.year>2026||(p.year===2026&&p.quarter>=1))
       .sort((a,b)=>b.year-a.year||b.quarter-a.quarter);
   }
   function lookup(company,type,year,quarter,metric){
@@ -187,6 +188,8 @@
     // Keep the original HTML/CSS and segment labels; never reuse static Q2 values.
     const segmentSpecs={
       Tryg:[['Norge total','norway',null]],
+      Protector:[['Norge total','norway',null]],
+      Storebrand:[['Norge total','norway',null]],
       Gjensidige:[['Norge total','norway',null],['Norge PM','reported_segment','Private Norway'],['Norge BM','reported_segment','Commercial Norway']],
       Sampo:[['Private Nordic','reported_segment','Private Nordic'],['Nordic Commercial','reported_segment','Nordic Commercial']]
     };
@@ -197,12 +200,29 @@
         r.scope===scope&&(scope!=='reported_segment'||r.segment===segment)&&
         r.year===yr&&r.quarter===quarter&&r.period_type==='quarter'&&r.metric===metric);
     function segmentView(company,title,scope,segment){
+      // When the selected quarter has not been published for this geography,
+      // display the latest independently verified period with its OWN label.
+      // Never present a previous quarter as a current-quarter observation.
+      const candidates=(verified?.observations||[]).filter(r=>valid(r)&&
+        r.company===company&&r.scope===scope&&
+        (scope!=='reported_segment'||r.segment===segment)&&
+        r.period_type==='quarter'&&r.year>=2026&&
+        (r.year<year||(r.year===year&&r.quarter<=quarter)));
+      const periods=[...new Set(candidates.map(r=>r.year+'-'+r.quarter))]
+        .sort((a,b)=>Number(b.split('-')[0])-Number(a.split('-')[0])||
+          Number(b.split('-')[1])-Number(a.split('-')[1]));
+      const selected=periods.length?periods[0].split('-').map(Number):[year,quarter];
+      const [segmentYear,segmentQuarter]=selected;
+      const segmentEvidence=(yr,metric)=>(verified?.observations||[]).find(r=>
+        valid(r)&&r.company===company&&r.scope===scope&&
+        (scope!=='reported_segment'||r.segment===segment)&&
+        r.year===yr&&r.quarter===segmentQuarter&&r.period_type==='quarter'&&r.metric===metric);
       const row={name:title};
-      const currentRevenue=evidence(company,scope,segment,year,'insurance_revenue');
-      const priorRevenue=evidence(company,scope,segment,year-1,'insurance_revenue');
+      const currentRevenue=segmentEvidence(segmentYear,'insurance_revenue');
+      const priorRevenue=segmentEvidence(segmentYear-1,'insurance_revenue');
       for(const [metric,key] of Object.entries(metrics)){
-        const now=evidence(company,scope,segment,year,metric);
-        const prev=evidence(company,scope,segment,year-1,metric);
+        const now=segmentEvidence(segmentYear,metric);
+        const prev=segmentEvidence(segmentYear-1,metric);
         if(now)row[key]=fmt(now.value,key!=='underwriting')+
           (key==='underwriting'?' '+(now.unit||''):'');
         if(prev)row[key+'Prev']=fmt(prev.value,key!=='underwriting')+
@@ -212,11 +232,11 @@
          isSameBasis(currentRevenue,priorRevenue)){
         row.growth=fmt((currentRevenue.value/priorRevenue.value-1)*100,true);
       }
-      const older=evidence(company,scope,segment,year-2,'insurance_revenue');
+      const older=segmentEvidence(segmentYear-2,'insurance_revenue');
       if(priorRevenue&&older&&older.value>0&&isSameBasis(priorRevenue,older))
         row.growthPrev=fmt((priorRevenue.value/older.value-1)*100,true);
-      const source=evidence(company,scope,segment,year,'combined_ratio')||currentRevenue;
-      row.note=source?'Kildeverifisert '+label(selection)+' · '+source.source_url:
+      const source=segmentEvidence(segmentYear,'combined_ratio')||currentRevenue;
+      row.note=source?'Kildeverifisert Q'+segmentQuarter+' '+segmentYear+(segmentYear!==year||segmentQuarter!==quarter?' (siste tilgjengelige Norge-kvartal)':'')+' · '+source.source_url:
         'Ingen kildeverifiserte segmenttall for '+label(selection);
       return row;
     }
