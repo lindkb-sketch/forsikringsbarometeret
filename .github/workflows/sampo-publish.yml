@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/verify_source_evidence.py'
+      - 'tests/test_segment_runtime_binding.py'
       - 'scripts/quarterly_runtime.js'
       - 'scripts/sampo_publish.py'
       - 'tests/test_sampo_q3_2025_source.py'
@@ -47,6 +48,8 @@ jobs:
           name: financial-source-evidence
           path: data/source_evidence_audit.json
           if-no-files-found: warn
+      - name: Verify Norway and Nordic segment feed bindings
+        run: python -m unittest discover -s tests -p test_segment_runtime_binding.py -v
       - name: Parse and audit official Sampo PDF tables
         run: |
           python scripts/sampo_publish.py
