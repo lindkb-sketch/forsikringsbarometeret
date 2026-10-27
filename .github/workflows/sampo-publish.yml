@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'scripts/verify_source_evidence.py'
       - 'scripts/sampo_publish.py'
       - 'tests/test_sampo_q3_2025_source.py'
       - 'data/financial_observations.json'
@@ -36,6 +37,15 @@ jobs:
         run: python -m unittest discover -s tests -p test_sampo_future.py -v
       - name: Regression test with real official Q4 2025 report
         run: python -m unittest discover -s tests -p test_sampo_real_q4.py -v
+      - name: Audit original financial source documents (report unresolved evidence)
+        run: python scripts/verify_source_evidence.py
+      - name: Upload per-observation original-source evidence report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: financial-source-evidence
+          path: data/source_evidence_audit.json
+          if-no-files-found: warn
       - name: Parse and audit official Sampo PDF tables
         run: |
           python scripts/sampo_publish.py
