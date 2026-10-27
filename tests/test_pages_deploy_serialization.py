@@ -16,6 +16,6 @@ class DeployConcurrencyTests(unittest.TestCase):
    publishing.append(path.name)
    self.assertRegex(text,r'(?m)^concurrency:\s*\n\s*group:\s*'+re.escape(GROUP)+r'\s*$')
    self.assertRegex(text,r'(?m)^\s*cancel-in-progress:\s*false\s*$')
-  self.assertGreaterEqual(len(publishing),6,publishing)
+  self.assertEqual(publishing,['update.yml'],publishing)
 
 if __name__=='__main__': unittest.main()
