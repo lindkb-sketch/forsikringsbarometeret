@@ -33,7 +33,7 @@ def audit(data):
             errors.append(f"{label}: group source cannot support Norway value")
 
         if r.get("source_type")=="official_investor_tables":
-            if r.get("company") not in ("Tryg","Gjensidige") or r.get("scope")!="norway":
+            if r.get("company") not in ("Tryg","Gjensidige") or (r.get("scope")!="norway" and not (r.get("company")=="Gjensidige" and r.get("scope")=="reported_segment" and r.get("segment") in ("Private Norway","Commercial Norway"))):
                 errors.append(f"{label}: investor tables permitted only for Tryg/Gjensidige Norway")
             if not str(r.get("source_url","")).lower().split("?")[0].endswith(".xlsx"):
                 errors.append(f"{label}: investor tables must be XLSX")
