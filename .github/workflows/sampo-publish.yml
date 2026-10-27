@@ -42,14 +42,16 @@ jobs:
           python scripts/audit_financials.py
       - name: Verify sourced Sampo Q3 2025 coverage
         run: python -m unittest discover -s tests -p test_sampo_q3_2025_source.py -v
+      - name: Rebuild source-to-feed publication provenance
+        run: python scripts/publication_provenance.py
       - name: Build quarterly editorial
         run: python scripts/build_editorial.py
       - name: Commit only validated finance and editorial
         run: |
-          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json; then
+          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json data/publication_provenance.json; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json
+            git add data/financial_observations.json data/verified_financial_feed.json data/quarterly_editorial.json data/publication_provenance.json
             git commit -m 'Publish verified Sampo Nordic segments'
             git push origin HEAD:main
           fi
