@@ -47,7 +47,9 @@ def inspect():
                     for name,cells in sheets.items() if "general insurance" in name.lower()]
                 try:
                     extracted=extract(file,year,quarter,url,pdf)
-                    item["extracted_values"]=[{"segment":r["segment"],"metric":r["metric"],"value":r["value"],"unit":r["unit"],"sheet":r["source_sheet"],"cell":r["source_cell"]} for r in extracted]\n                    item["norway_reference"]=[{"metric":r["metric"],"value":r["value"],"unit":r.get("unit")} for r in rows if r.get("company")=="Gjensidige" and r.get("scope")=="norway" and r.get("year")==year and r.get("quarter")==quarter and r.get("period_type")=="quarter"]\n                    item["reconciliation"]=reconcile(extracted,rows,year,quarter)
+                    item["extracted_values"]=[{"segment":r["segment"],"metric":r["metric"],"value":r["value"],"unit":r["unit"],"sheet":r["source_sheet"],"cell":r["source_cell"]} for r in extracted]
+                    item["norway_reference"]=[{"metric":r["metric"],"value":r["value"],"unit":r.get("unit")} for r in rows if r.get("company")=="Gjensidige" and r.get("scope")=="norway" and r.get("year")==year and r.get("quarter")==quarter and r.get("period_type")=="quarter"]
+                    item["reconciliation"]=reconcile(extracted,rows,year,quarter)
                     item["extraction"]={"status":"ok","observations":len(extracted),
                         "references":[{"segment":r["segment"],"metric":r["metric"],
                                        "sheet":r["source_sheet"],"cell":r["source_cell"]}
