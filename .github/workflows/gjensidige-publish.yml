@@ -1,22 +1,8 @@
 name: Gjensidige verified publication
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '07 * * * *'
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/gjensidige-publish.yml'
-      - 'scripts/gjensidige_publish.py'
-      - 'scripts/gjensidige_norway_excel.py'
-      - 'requirements-reports.txt'
-      - 'scripts/gjensidige_report_check.py'
-      - 'scripts/ingest_official_pdf.py'
-      - 'tests/test_gjensidige*.py'
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: forsikringsbarometeret-publish
   cancel-in-progress: false
@@ -52,40 +38,3 @@ jobs:
           python scripts/audit_financials.py
           python -m json.tool data/financial_observations.json > /dev/null
           python -m json.tool data/verified_financial_feed.json > /dev/null
-      - name: Commit verified Gjensidige observations
-        run: |
-          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json data/gjensidige_norway_segments.json; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/financial_observations.json data/verified_financial_feed.json data/gjensidige_norway_segments.json
-            git commit -m 'Publish verified Gjensidige quarterly observations'
-            git push origin HEAD:main
-          fi
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - uses: actions/deploy-pages@v4
-        id: deployment
-      - name: Verify Gjensidige values in live GitHub Pages feed
-        run: |
-          python - <<'PY'
-          import json,time,urllib.request
-          url='https://lindkb-sketch.github.io/forsikringsbarometeret/data/verified_financial_feed.json'
-          local=json.load(open('data/verified_financial_feed.json',encoding='utf-8'))
-          def k(r):return tuple(r[x] for x in ('company','year','quarter','scope','period_type','metric'))
-          wanted={k(r):r['value'] for r in local['observations'] if r['company']=='Gjensidige' and r['year']==2026}
-          assert wanted, 'No Gjensidige observations in verified feed'
-          for i in range(12):
-              try:
-                  req=urllib.request.Request(url+'?v='+str(time.time()),headers={'Cache-Control':'no-cache'})
-                  with urllib.request.urlopen(req,timeout=20) as response: published=json.load(response)
-                  got={k(r):r['value'] for r in published['observations'] if r['company']=='Gjensidige' and r['year']==2026}
-                  if got==wanted:
-                      print('GJENSIDIGE LIVE PUBLICATION VERIFIED:',len(wanted),'observations')
-                      break
-                  print('Awaiting live feed synchronization',len(got),len(wanted))
-              except Exception as exc:print('Retrying live feed:',exc)
-              if i==11:raise SystemExit('Live Gjensidige feed verification failed')
-              time.sleep(10)
-          PY
