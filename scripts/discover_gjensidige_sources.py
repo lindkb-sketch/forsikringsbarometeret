@@ -10,7 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 INDEX="https://www.gjensidige.com/investor-relations/reports-and-presentations"
-ALLOWED=("gjensidige.com","mb.cision.com")
+ALLOWED=("www.gjensidige.com","gjensidige.com","mb.cision.com")
 class Links(HTMLParser):
     def __init__(self):
         super().__init__();self.links=[];self.href=None;self.label=[]
