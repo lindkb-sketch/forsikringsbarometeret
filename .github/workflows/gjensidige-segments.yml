@@ -8,6 +8,7 @@ on:
       - 'scripts/discover_gjensidige_sources.py'
       - 'scripts/reconcile_gjensidige_segments.py'
       - 'tests/test_gjensidige_reconciliation.py'
+      - 'tests/test_gjensidige_discovery.py'
       - 'scripts/inspect_gjensidige_workbooks.py'
       - 'scripts/geographic_excel.py'
       - 'scripts/publish_geographic_workbooks.py'
@@ -29,6 +30,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
       - name: Validate independent Norway reconciliation tests
         run: python -m unittest discover -s tests -p test_gjensidige_reconciliation.py -v
+      - name: Test source discovery and fail-closed period pairing
+        run: python -m unittest discover -s tests -p test_gjensidige_discovery.py -v
       - name: Discover next official quarterly XLSX and PDF candidates
         run: python scripts/discover_gjensidige_sources.py
       - name: Download original XLSX and validate both Norway segments
