@@ -24,7 +24,6 @@ class SegmentBindingTest(unittest.TestCase):
         for company, scope, segment in (
             ("Tryg", "norway", None),
             ("Gjensidige", "norway", None),
-            ("Sampo", "reported_segment", "Private Nordic"),
             ("Sampo", "reported_segment", "Nordic Commercial"),
         ):
             with self.subTest(company=company, segment=segment):
@@ -35,6 +34,12 @@ class SegmentBindingTest(unittest.TestCase):
                 self.assertTrue(subset)
                 self.assertTrue(any(r["metric"] == "combined_ratio" for r in subset))
                 self.assertTrue(all(r.get("source_url") and (r.get("source_page") or r.get("source_cell") or r.get("source_sheet")) for r in subset))
+
+    def test_missing_sampo_private_nordic_remains_unpublished(self):
+        self.assertFalse(any(r["company"] == "Sampo"
+            and r["scope"] == "reported_segment" and r.get("segment") == "Private Nordic"
+            and r["year"] == 2026 and r["quarter"] == 2 for r in ROWS))
+        self.assertIn("[\x27Private Nordic\x27,\x27reported_segment\x27,\x27Private Nordic\x27]", JS)
 
     def test_missing_pm_bm_not_faked_from_static_html(self):
         for segment in ("Private Norway", "Commercial Norway"):
