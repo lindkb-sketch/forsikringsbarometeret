@@ -52,7 +52,8 @@ def parse(blob,url,year,quarter):
  header=' '.join(t for _,t in pages[:5])
  if str(year) not in header:raise ValueError('Incorrect report year')
  quarter_words={1:('January-March','Jan-Mar','Q1'),2:('January-June','Apr-Jun','April-June','Q2'),3:('January-September','Jul-Sep','July-September','Q3'),4:('January-December','Oct-Dec','October-December','Q4','fourth quarter','financial statement release')}
- if not any(word.lower() in header.lower() for word in quarter_words[quarter]):raise ValueError(f'Report quarter does not match target period: Q{quarter}/{year}; url={url}; header={header[:300]!r}')
+ normalized_header=re.sub(r'[\u2010-\u2015\u2212]', '-', header).lower()
+ if not any(word.lower() in normalized_header for word in quarter_words[quarter]):raise ValueError(f'Report quarter does not match target period: Q{quarter}/{year}; url={url}; header={header[:300]!r}')
  observations=[]
  labels={'insurance_revenue':'Insurance revenue, net','insurance_service_result':'Underwriting result','loss_ratio':'Risk ratio','expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
  for segment in ('Sampo Group',)+SEGMENTS:
