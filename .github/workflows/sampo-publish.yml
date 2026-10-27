@@ -8,6 +8,9 @@ on:
       - 'tests/test_segment_runtime_binding.py'
       - 'tests/test_gjensidige_segments.py'
       - 'scripts/gjensidige_segments.py'
+      - 'scripts/publish_geographic_workbooks.py'
+      - 'scripts/audit_financials.py'
+      - 'data/geographic_workbooks.json'
       - 'scripts/quarterly_runtime.js'
       - 'scripts/sampo_publish.py'
       - 'tests/test_sampo_q3_2025_source.py'
@@ -56,6 +59,8 @@ jobs:
         run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
       - name: Verify Norway and Nordic segment feed bindings
         run: python -m unittest discover -s tests -p test_segment_runtime_binding.py -v
+      - name: Import approved geographical and Gjensidige PM/BM workbooks
+        run: python scripts/publish_geographic_workbooks.py
       - name: Parse and audit official Sampo PDF tables
         run: |
           python scripts/sampo_publish.py
