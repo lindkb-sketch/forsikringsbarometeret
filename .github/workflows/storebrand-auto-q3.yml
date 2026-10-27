@@ -1,18 +1,8 @@
 name: Storebrand automatic quarterly publication
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/storebrand-auto-q3.yml'
-      - 'scripts/storebrand_*.py'
-      - 'scripts/import_storebrand_reports.py'
-  schedule:
-    - cron: '17 * * * *'
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: forsikringsbarometeret-publish
   cancel-in-progress: false
@@ -118,81 +108,3 @@ jobs:
           python scripts/audit_financials.py
           python -m json.tool data/financial_observations.json > /dev/null
           python -m json.tool data/verified_financial_feed.json > /dev/null
-      - name: Commit only audited observations and feed
-        run: |
-          if ! git diff --quiet -- data/financial_observations.json data/verified_financial_feed.json; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data/financial_observations.json data/verified_financial_feed.json
-            git commit -m 'Publish verified Storebrand quarterly observations'
-            # Keep generated nonfinancial artifacts out of the rebase worktree.
-            # Their contents are not part of the audited financial commit.
-            git stash push --include-untracked -m storebrand-publish-temporary-worktree || true
-            # Another scheduled issuer may update main while PDFs are parsed.
-            # Rebase the verified financial-only commit; never force-push.
-            for attempt in 1 2 3 4; do
-              git fetch origin main
-              if git rebase origin/main && git push origin HEAD:main; then
-                echo "Verified Storebrand observations safely published."
-                break
-              fi
-              git rebase --abort 2>/dev/null || true
-              if [ "$attempt" -eq 4 ]; then
-                echo "::error::Concurrent financial write conflict; no overwrite performed"
-                exit 1
-              fi
-              sleep 3
-            done
-          else
-            echo 'No changes in verified Storebrand observations.'
-          fi
-      - name: Refresh latest committed feed before Pages deployment
-        run: |
-          git fetch origin main
-          git reset --hard origin/main
-          python - <<'PY'
-          import json
-          p=json.load(open('data/verified_financial_feed.json'))
-          found={(r['quarter'],r['scope']) for r in p['observations'] if r['company']=='Storebrand' and r['year']==2026}
-          assert all((q,s) in found for q in (1,2,3) for s in ('group','norway')),found
-          print('Storebrand baseline verified and future reported quarters preserved:',len(found))
-          PY
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: Deploy Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Verify published Storebrand quarterly feed on public GitHub Pages
-        run: |
-          python - <<'PY'
-          import json, time, urllib.request
-          url = 'https://lindkb-sketch.github.io/forsikringsbarometeret/data/verified_financial_feed.json'
-          expected = json.load(open('data/verified_financial_feed.json', encoding='utf-8'))
-          def key(r):
-              return tuple(r[k] for k in ('company','year','quarter','scope','period_type','metric'))
-          wanted = {key(r): r['value'] for r in expected['observations']
-                    if r['company'] == 'Storebrand' and r['year'] >= 2026}
-          assert wanted and all(any(k[1]==2026 and k[2]==q and k[3]==scope for k in wanted) for q in (1,2,3) for scope in ('group','norway')), 'Missing historical Storebrand baseline'
-          for attempt in range(12):
-              try:
-                  req = urllib.request.Request(url + '?verification=' + str(int(time.time())),
-                                               headers={'Cache-Control':'no-cache'})
-                  with urllib.request.urlopen(req, timeout=20) as response:
-                      assert response.status == 200
-                      actual = json.load(response)
-                  got = {key(r): r['value'] for r in actual['observations']
-                         if r['company'] == 'Storebrand' and r['year'] == 2026}
-                  if got == wanted:
-                      print('PUBLISHED STOREBRAND QUARTERS VERIFIED:', len(wanted), 'observations match live GitHub Pages')
-                      break
-                  print('Published feed not yet synchronized:', len(got), 'of', len(wanted))
-              except Exception as e:
-                  print('Published feed not yet accessible:', repr(e))
-              if attempt == 11:
-                  raise SystemExit('GitHub Pages publication could not be verified')
-              time.sleep(10)
-          PY
