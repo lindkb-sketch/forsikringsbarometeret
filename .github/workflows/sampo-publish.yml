@@ -48,6 +48,8 @@ jobs:
           name: financial-source-evidence
           path: data/source_evidence_audit.json
           if-no-files-found: warn
+      - name: Check quarterly runtime JavaScript syntax
+        run: node --check scripts/quarterly_runtime.js
       - name: Verify Norway and Nordic segment feed bindings
         run: python -m unittest discover -s tests -p test_segment_runtime_binding.py -v
       - name: Parse and audit official Sampo PDF tables
