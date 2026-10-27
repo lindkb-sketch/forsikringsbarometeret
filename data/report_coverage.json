@@ -107,8 +107,9 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 15,
+      "group_quarter_observations": 21,
       "group_quarters_with_required_metrics": [
+        "2025-Q3",
         "2025-Q4",
         "2026-Q1",
         "2026-Q2"

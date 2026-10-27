@@ -859,7 +859,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 629,
+  "observation_count": 645,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1713,6 +1713,21 @@
       "inputs": [
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf",
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/a54538ec-e317-4386-adfa-38c2849bcbb2:a00900f3b30486ee15cba89559dbecbf1def35f5/2025-4q-interim-report-storebrand-asa.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Sampo",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 7.7678989237248475,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
+        "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     },

@@ -169,12 +169,17 @@
       "company": "Sampo",
       "quarter": {
         "reference": "2025-Q3 vs 2024-Q3",
-        "status": "missing_verified_comparable",
-        "growth_percent": null,
-        "missing_years": [
-          2025,
-          2024
-        ]
+        "status": "verified",
+        "growth_percent": 7.8,
+        "unit": "EURm",
+        "revenue_basis": "insurance_revenue",
+        "source_urls": [
+          "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf"
+        ],
+        "observation_values": {
+          "2025": 2303.0,
+          "2024": 2137.0
+        }
       },
       "ytd": {
         "reference": "2025-Q3 vs 2024-Q3",
