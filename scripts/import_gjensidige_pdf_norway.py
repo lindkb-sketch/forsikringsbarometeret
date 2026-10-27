@@ -32,16 +32,16 @@ def parse(pages,year,quarter,url,digest):
         # The printed segment KPI table has a full heading and five dated columns.
         matches=[(page,txt) for page,txt in pages
                  if re.search(re.escape(title),txt,re.I)
-                 and re.search(r'Q\\s*'+str(quarter)+r'\\s*'+str(year),txt,re.I)
+                 and re.search(r'Q\s*'+str(quarter)+r'\s*'+str(year),txt,re.I)
                  and 'Insurance revenue' in txt and 'Combined ratio' in txt]
         if len(matches)!=1:
             raise ValueError('Missing or ambiguous official Norway segment table: '+title)
         page,txt=matches[0]
         for metric,pattern in METRICS.items():
-            lines=[line for line in txt.splitlines() if re.match(r'^\\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\\s+[-\\d]',line,re.I)]
+            lines=[line for line in txt.splitlines() if re.match(r'^\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\s+[-\d]',line,re.I)]
             if len(lines)!=1:
                 raise ValueError('Missing or ambiguous '+metric+' in '+title)
-            values=re.findall(r'-?\\d[\\d,]*\\.\\d+',lines[0][len(re.match(r'^\\s*'+pattern,lines[0],re.I).group(0)):])
+            values=re.findall(r'-?\d[\d,]*\.\d+',lines[0][len(re.match(r'^\s*'+pattern,lines[0],re.I).group(0)):])
             if len(values)<2:raise ValueError('Missing comparative columns: '+title+' '+metric)
             for yr,idx in ((year,0),(year-1,1)):
                 value=float(values[idx].replace(',',''))
