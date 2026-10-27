@@ -9,6 +9,7 @@ from pathlib import Path
 from geographic_excel import load_sheets
 from publish_geographic_workbooks import download
 from gjensidige_segments import extract
+from reconcile_gjensidige_segments import reconcile
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"data"/"verified_financial_feed.json"
@@ -39,6 +40,7 @@ def inspect():
                     for name,cells in sheets.items() if "general insurance" in name.lower()]
                 try:
                     extracted=extract(file,year,quarter,url,pdf)
+                    item["reconciliation"]=reconcile(extracted,rows,year,quarter)
                     item["extraction"]={"status":"ok","observations":len(extracted),
                         "references":[{"segment":r["segment"],"metric":r["metric"],
                                        "sheet":r["source_sheet"],"cell":r["source_cell"]}
