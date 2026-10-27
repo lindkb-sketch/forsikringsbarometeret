@@ -200,44 +200,37 @@
         r.scope===scope&&(scope!=='reported_segment'||r.segment===segment)&&
         r.year===yr&&r.quarter===quarter&&r.period_type==='quarter'&&r.metric===metric);
     function segmentView(company,title,scope,segment){
-      // When the selected quarter has not been published for this geography,
-      // display the latest independently verified period with its OWN label.
-      // Never present a previous quarter as a current-quarter observation.
-      const candidates=(verified?.observations||[]).filter(r=>valid(r)&&
-        r.company===company&&r.scope===scope&&
-        (scope!=='reported_segment'||r.segment===segment)&&
-        r.period_type==='quarter'&&r.year>=2026&&
-        (r.year<year||(r.year===year&&r.quarter<=quarter)));
-      const periods=[...new Set(candidates.map(r=>r.year+'-'+r.quarter))]
-        .sort((a,b)=>Number(b.split('-')[0])-Number(a.split('-')[0])||
-          Number(b.split('-')[1])-Number(a.split('-')[1]));
-      const selected=periods.length?periods[0].split('-').map(Number):[year,quarter];
-      const [segmentYear,segmentQuarter]=selected;
-      const segmentEvidence=(yr,metric)=>(verified?.observations||[]).find(r=>
-        valid(r)&&r.company===company&&r.scope===scope&&
-        (scope!=='reported_segment'||r.segment===segment)&&
-        r.year===yr&&r.quarter===segmentQuarter&&r.period_type==='quarter'&&r.metric===metric);
+      // Only observations from the selected quarter are eligible.
+      // Missing Norway figures must never be replaced by an older quarter.
       const row={name:title};
-      const currentRevenue=segmentEvidence(segmentYear,'insurance_revenue');
-      const priorRevenue=segmentEvidence(segmentYear-1,'insurance_revenue');
-      for(const [metric,key] of Object.entries(metrics)){
-        const now=segmentEvidence(segmentYear,metric);
-        const prev=segmentEvidence(segmentYear-1,metric);
-        if(now)row[key]=fmt(now.value,key!=='underwriting')+
-          (key==='underwriting'?' '+(now.unit||''):'');
+      const currentRevenue=evidence(company,scope,segment,year,'insurance_revenue');
+      const priorRevenue=evidence(company,scope,segment,year-1,'insurance_revenue');
+      const currentRows=Object.entries(metrics).map(([metric,key])=>
+        [key,evidence(company,scope,segment,year,metric),metric]);
+      const published=Boolean(currentRevenue||currentRows.some(([,now])=>now));
+      if(!published){
+        for(const key of Object.values(metrics))row[key]='Ikke publisert';
+        row.growth='Ikke publisert';
+        row.note='Ikke publisert · '+label(selection)+' · ingen kildeverifiserte Norge-tall';
+        return row;
+      }
+      for(const [key,now,metric] of currentRows){
+        const prev=evidence(company,scope,segment,year-1,metric);
+        row[key]=now?fmt(now.value,key!=='underwriting')+
+          (key==='underwriting'?' '+(now.unit||''):''):'Ikke publisert';
         if(prev)row[key+'Prev']=fmt(prev.value,key!=='underwriting')+
           (key==='underwriting'?' '+(prev.unit||''):'');
       }
       if(currentRevenue&&priorRevenue&&priorRevenue.value>0&&
-         isSameBasis(currentRevenue,priorRevenue)){
+         isSameBasis(currentRevenue,priorRevenue))
         row.growth=fmt((currentRevenue.value/priorRevenue.value-1)*100,true);
-      }
-      const older=segmentEvidence(segmentYear-2,'insurance_revenue');
+      else row.growth='Ikke publisert';
+      const older=evidence(company,scope,segment,year-2,'insurance_revenue');
       if(priorRevenue&&older&&older.value>0&&isSameBasis(priorRevenue,older))
         row.growthPrev=fmt((priorRevenue.value/older.value-1)*100,true);
-      const source=segmentEvidence(segmentYear,'combined_ratio')||currentRevenue;
-      row.note=source?'Kildeverifisert Q'+segmentQuarter+' '+segmentYear+(segmentYear!==year||segmentQuarter!==quarter?' (siste tilgjengelige Norge-kvartal)':'')+' · '+source.source_url:
-        'Ingen kildeverifiserte segmenttall for '+label(selection);
+      const source=evidence(company,scope,segment,year,'combined_ratio')||currentRevenue||
+        currentRows.find(([,now])=>now)?.[1];
+      row.note='Kildeverifisert '+label(selection)+' · '+source.source_url;
       return row;
     }
     for(const [company,specs] of Object.entries(segmentSpecs)){
