@@ -1,0 +1,35 @@
+name: Gjensidige PM BM official source validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/gjensidige_segments.py'
+      - 'scripts/inspect_gjensidige_workbooks.py'
+      - 'scripts/geographic_excel.py'
+      - 'scripts/publish_geographic_workbooks.py'
+      - 'tests/test_gjensidige_segments.py'
+      - '.github/workflows/gjensidige-segments.yml'
+  schedule:
+    - cron: '17 8 * * *'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate extractor unit tests
+        run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
+      - name: Download original XLSX and validate both Norway segments
+        run: python scripts/inspect_gjensidige_workbooks.py
+      - name: Preserve exact source-cell evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gjensidige-official-source-diagnostics
+          path: data/gjensidige_workbook_diagnostics.json
+          if-no-files-found: warn
