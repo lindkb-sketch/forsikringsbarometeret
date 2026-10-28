@@ -83,6 +83,29 @@ def parse_group(blob,year,quarter,url):
                                   (' / prior-year comparative column' if observation_year!=year else '')))
         return out
 
+def reconcile_pdf_rounding(existing, norway):
+    """Accept PDF presentation rounding of legacy issuer XLSX values.
+
+    The PDF is the only new input. Existing audited precision is preserved
+    only where it agrees with the official PDF to its displayed precision.
+    Larger discrepancies still fail closed.
+    """
+    keys=('company','year','quarter','scope','period_type','metric')
+    old={tuple(r[k] for k in keys):r for r in existing['observations']}
+    filtered=[]
+    for row in norway:
+        prior=old.get(tuple(row[k] for k in keys))
+        if prior is None:
+            filtered.append(row)
+            continue
+        delta=abs(prior['value']-row['value'])
+        tolerance=0.11 if row['unit']=='percent' else 0.5
+        if delta>tolerance:
+            raise ValueError('Tryg PDF disagrees with existing audited Norway value: '+
+                             str((row['year'],row['quarter'],row['metric'],prior['value'],row['value'])))
+        # Retain audited unrounded values where PDF agrees within rounding.
+    return filtered
+
 def run(pairs=None):
     if pairs is None:pairs=json.loads(CANDIDATES.read_text())['pairs']
     if not pairs:raise ValueError('No official Tryg pairs')
@@ -105,7 +128,7 @@ def run(pairs=None):
                 existing,_=merge(existing,group)
                 try:
                     norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
-                    existing,_=merge(existing,norway)
+                    existing,_=merge(existing,reconcile_pdf_rounding(existing,norway))
                     print('TRYG_HISTORICAL_NORWAY_PDF',year,quarter,len(norway),flush=True)
                 except ValueError as geography_error:
                     print('::warning::Tryg historical Norway geography not verified:',year,quarter,str(geography_error)[:180],flush=True)
@@ -115,10 +138,9 @@ def run(pairs=None):
         pdf=download_tryg_report(spec['report_pdf_url'],quarter)
         group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
         existing,_=merge(existing,group)
-        # Prefer the explicitly labelled official PDF geography table.
-        # The investor workbook remains a fallback for PDF layouts that lack it.
+        # Require the issuer's official PDF geography table; no XLSX fallback.
         norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
-        existing,_=merge(existing,norway)
+        existing,_=merge(existing,reconcile_pdf_rounding(existing,norway))
         print('TRYG_VERIFIED',year,quarter,'group',len(group),'norway',
               len([r for r in existing['observations'] if r['company']=='Tryg'
                    and r['scope']=='norway' and r['year']==year and r['quarter']==quarter]))
