@@ -45,7 +45,7 @@ def verify(source,feed):
         if company=='Gjensidige' and date>=(2026,1):
             # A published Gjensidige group quarter cannot silently appear on
             # the website without its independently sourced PM+BM Norway KPIs.
-            required_norway={'insurance_revenue','loss_ratio','expense_ratio','combined_ratio'}
+            required_norway={'insurance_revenue','insurance_revenue_growth','insurance_service_result','loss_ratio','expense_ratio','combined_ratio'}
             norway=[r for r in source if r['company']=='Gjensidige'
                     and r.get('scope')=='norway' and r.get('period_type')=='quarter'
                     and (r['year'],r['quarter'])==date]
@@ -56,6 +56,17 @@ def verify(source,feed):
             for observation in norway:
                 if observation['metric'] in required_norway and index.get(key(observation))!=observation:
                     errors.append(f'Gjensidige Norway not in published feed: {key(observation)}')
+            for segment in ('Private Norway','Commercial Norway'):
+                part=[r for r in source if r.get('company')=='Gjensidige'
+                      and r.get('scope')=='reported_segment' and r.get('segment')==segment
+                      and r.get('period_type')=='quarter'
+                      and (r['year'],r['quarter'])==date]
+                part_metrics={r['metric'] for r in part}
+                absent_part=required_norway-part_metrics
+                if absent_part:errors.append(f'Gjensidige {segment} missing {sorted(absent_part)}')
+                for observation in part:
+                    if observation['metric'] in required_norway and index.get(key(observation))!=observation:
+                        errors.append(f'Gjensidige {segment} not published: {key(observation)}')
             ratios={r['metric']:r['value'] for r in norway}
             if {'loss_ratio','expense_ratio','combined_ratio'}<=ratios.keys():
                 if abs(ratios['loss_ratio']+ratios['expense_ratio']-ratios['combined_ratio'])>0.02:
