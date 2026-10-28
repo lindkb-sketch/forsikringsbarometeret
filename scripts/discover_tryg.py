@@ -37,7 +37,7 @@ def parse(markup,year):
             quarter=4
         else:
             continue
-        if not re.search(r'(?<!\\d)'+str(year)+r'(?!\\d)',search_text):continue
+        if not re.search(r'(?<!\d)'+str(year)+r'(?!\d)',search_text):continue
         kind=None
         if name.lower().endswith('.xlsx') and re.search(r'investor.?tables|investor.?table',search_text,re.I):kind='workbook_url'
         elif name.lower().endswith('.pdf') and re.search(r'interim report|financial report|annual report',search_text,re.I):kind='report_pdf_url'
