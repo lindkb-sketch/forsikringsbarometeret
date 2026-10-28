@@ -7,6 +7,7 @@ from audit_financials import ROOT,audit
 from ingest_official_pdf import download as download_pdf,merge
 from publish_geographic_workbooks import prepare,atomic_write
 from build_verified_feed import build
+from tryg_norway_pdf import parse_norway_pdf
 
 CANDIDATES=ROOT/'data/tryg_candidates.json'
 DATA=ROOT/'data/financial_observations.json'
@@ -108,23 +109,36 @@ def run(pairs=None):
         pdf=download_pdf(spec['report_pdf_url'])
         group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
         existing,_=merge(existing,group)
-        wb={'workbooks':[{'company':'Tryg','year':year,'quarter':quarter,
-                          'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
-                          'approved':True}]}
-        # Re-import registered observations from the exact same issuer workbook;
-        # the live extraction replaces historical metadata only after full audit.
+        # Prefer the explicitly labelled official PDF geography table.
+        # The investor workbook remains a fallback for PDF layouts that lack it.
         baseline=existing
-        existing={**existing,'observations':[r for r in existing['observations']
-                  if not (r['company']=='Tryg' and r['scope']=='norway' and
-                          r['year']==year and r['quarter']==quarter)]}
-        existing,_,_=prepare(wb,existing)
+        try:
+            norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
+            existing={**existing,'observations':[r for r in existing['observations']
+                      if not (r['company']=='Tryg' and r['scope']=='norway'
+                              and r['year']==year and r['quarter']==quarter
+                              and r['period_type']=='quarter'
+                              and r['metric'] in {x['metric'] for x in norway})]}
+            existing,_=merge(existing,norway)
+            print('TRYG_NORWAY_PDF_VERIFIED',year,quarter,len(norway),flush=True)
+        except ValueError as error:
+            if not spec.get('workbook_url'):
+                raise ValueError('Norway PDF could not be validated and no official XLSX is available: '+str(error))
+            print('::warning::Tryg Norway PDF rejected; trying verified issuer XLSX:',str(error)[:180],flush=True)
+            wb={'workbooks':[{'company':'Tryg','year':year,'quarter':quarter,
+                              'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
+                              'approved':True}]}
+            existing={**baseline,'observations':[r for r in baseline['observations']
+                      if not (r['company']=='Tryg' and r['scope']=='norway' and
+                              r['year']==year and r['quarter']==quarter)]}
+            existing,_,_=prepare(wb,existing)
         previous={(r['period_type'],r['metric']):r['value'] for r in baseline['observations']
                   if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
         imported={(r['period_type'],r['metric']):r['value'] for r in existing['observations']
                   if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
         for key,val in previous.items():
             if key not in imported or abs(imported[key]-val)>max(0.5,abs(val)*0.00025):
-                raise ValueError('Tryg Norway XLSX conflicts with previously audited figure: '+str((year,quarter,key,val,imported.get(key))))
+                raise ValueError('Tryg Norway official sources conflict with audited value: '+str((year,quarter,key,val,imported.get(key))))
         print('TRYG_VERIFIED',year,quarter,'group',len(group),'norway',
               len([r for r in existing['observations'] if r['company']=='Tryg'
                    and r['scope']=='norway' and r['year']==year and r['quarter']==quarter]))
