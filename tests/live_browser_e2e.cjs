@@ -164,6 +164,15 @@ async function main(){
   for(const issuer of ['Gjensidige','Protector']){
     await page.evaluate(name=>show(name,true),issuer);
     const panel=page.locator('.company-profitability');
+    const placement=await page.evaluate(()=>{
+      const graph=document.querySelector('.company-profitability');
+      const cards=document.querySelector('.dynamic-kpis');
+      const segments=document.querySelector('.tablewrap');
+      return Boolean(graph&&cards&&segments&&
+        (cards.compareDocumentPosition(graph)&Node.DOCUMENT_POSITION_FOLLOWING)&&
+        (graph.compareDocumentPosition(segments)&Node.DOCUMENT_POSITION_FOLLOWING));
+    });
+    check(issuer+' profitability follows group KPI cards before segment table',placement,issuer);
     const panelCount=await panel.count();
     const panelText=panelCount?await panel.first().innerText():'';
     const quarterCount=panelCount?await panel.first().locator('.profit-quarter').count():0;
