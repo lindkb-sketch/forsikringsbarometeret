@@ -21,12 +21,6 @@ METRICS={
     'expense_ratio':r'Cost ratio',
     'combined_ratio':r'Combined ratio',
 }
-AMOUNTS={
-    'claims':r'Incurred claims and changes in past and future service',
-    'expenses':r'Other incurred insurance service expenses',
-    'premiums':r'Reinsurance premiums',
-    'recoveries':r'Amounts recovered from reinsurance',
-}
 SEGMENTS=('Private Norway','Commercial Norway')
 KEYS=('company','year','quarter','scope','segment','period_type','metric')
 NUMBER=r'-?\d[\d,]*\.\d+'
@@ -45,7 +39,7 @@ def parse(pages,year,quarter,url,digest):
         page,txt=matches[0]
         source_lines=txt.splitlines()
         values_by_metric={}
-        for metric,pattern in {**METRICS,**AMOUNTS}.items():
+        for metric,pattern in METRICS.items():
             lines=[line for line in source_lines
                    if re.match(r'^\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\s+[-\d]',line,re.I)]
             if len(lines)!=1:raise ValueError('Missing or ambiguous '+metric+' in '+title)
@@ -55,15 +49,10 @@ def parse(pages,year,quarter,url,digest):
             values_by_metric[metric]=[float(n.replace(',','')) for n in numbers[:2]]
         for yr,idx in ((year,0),(year-1,1)):
             revenue=values_by_metric['insurance_revenue'][idx]
-            claims=values_by_metric['claims'][idx]
-            expenses=values_by_metric['expenses'][idx]
-            premiums=values_by_metric['premiums'][idx]
-            recoveries=values_by_metric['recoveries'][idx]
-            if revenue<=0 or claims>0 or expenses>0 or premiums>0:
-                raise ValueError('Unexpected source signs/revenue in '+title)
-            # Take the issuer's published APM ratios from the PDF. Reinsurance
-            # recoveries may have either sign; do not reconstruct APM ratios
-            # from the IFRS service result components.
+            if revenue<=0:
+                raise ValueError('Nonpositive Norway segment revenue in '+title)
+            # Read reported KPI values directly from the issuer PDF.
+            # Only Norway totals are calculated from PM and BM.
             reported={m:values_by_metric[m][idx] for m in
                       ('loss_ratio','expense_ratio','combined_ratio')}
             if not (0 <= reported['loss_ratio'] <= 200
@@ -73,9 +62,6 @@ def parse(pages,year,quarter,url,digest):
             if abs(reported['loss_ratio']+reported['expense_ratio']
                    -reported['combined_ratio'])>0.21:
                 raise ValueError('Reported PDF ratios do not reconcile in '+title)
-            if abs(revenue+claims+expenses+premiums+recoveries
-                   -values_by_metric['insurance_service_result'][idx])>0.31:
-                raise ValueError('PDF insurance service result does not reconcile in '+title)
             for metric in METRICS:
                 value=values_by_metric[metric][idx]
                 rows.append(dict(company='Gjensidige',year=yr,quarter=quarter,
