@@ -29,7 +29,7 @@ AMOUNTS={
 }
 SEGMENTS=('Private Norway','Commercial Norway')
 KEYS=('company','year','quarter','scope','segment','period_type','metric')
-NUMBER=r'-?\\d[\\d,]*\\.\\d+'
+NUMBER=r'-?\d[\d,]*\.\d+'
 def key(r):return tuple(r.get(k) for k in KEYS)
 
 def parse(pages,year,quarter,url,digest):
@@ -38,7 +38,7 @@ def parse(pages,year,quarter,url,digest):
         title='General Insurance '+segment
         matches=[(page,txt) for page,txt in pages
                  if re.search(re.escape(title),txt,re.I)
-                 and re.search(r'Q\\s*'+str(quarter)+r'\\s*'+str(year),txt,re.I)
+                 and re.search(r'Q\s*'+str(quarter)+r'\s*'+str(year),txt,re.I)
                  and 'Insurance revenue' in txt and 'Combined ratio' in txt]
         if len(matches)!=1:
             raise ValueError('Missing or ambiguous official Norway segment table: '+title)
@@ -47,9 +47,9 @@ def parse(pages,year,quarter,url,digest):
         values_by_metric={}
         for metric,pattern in {**METRICS,**AMOUNTS}.items():
             lines=[line for line in source_lines
-                   if re.match(r'^\\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\\s+[-\\d]',line,re.I)]
+                   if re.match(r'^\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\s+[-\d]',line,re.I)]
             if len(lines)!=1:raise ValueError('Missing or ambiguous '+metric+' in '+title)
-            match=re.match(r'^\\s*'+pattern,lines[0],re.I)
+            match=re.match(r'^\s*'+pattern,lines[0],re.I)
             numbers=re.findall(NUMBER,lines[0][match.end():])
             if len(numbers)<2:raise ValueError('Missing comparative columns: '+title+' '+metric)
             values_by_metric[metric]=[float(n.replace(',','')) for n in numbers[:2]]
@@ -92,7 +92,8 @@ def prepare(data,fetcher=download,reader=read_pdf):
     additions=[]
     for year,quarter,url in sorted(sources):
         if all(('Gjensidige',year,quarter,'reported_segment',seg,'quarter','combined_ratio') in existing
-               for seg in SEGMENTS):continue
+               for seg in SEGMENTS) and all(('Gjensidige',year,quarter,'norway',None,'quarter',m) in existing
+               for m in METRICS):continue
         blob=fetcher(url)
         if not blob.startswith(b'%PDF-'):raise ValueError('Not official PDF')
         batch=parse(reader(blob),year,quarter,url,hashlib.sha256(blob).hexdigest())
