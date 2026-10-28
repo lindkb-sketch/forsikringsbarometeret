@@ -11,12 +11,7 @@ def run(offline=False):
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
  if not offline:
-  print('RUN publish_geographic_workbooks.py (optional external workbook; preserve audited baseline on unavailable source)',flush=True)
-  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'publish_geographic_workbooks.py')],cwd=ROOT)
-  if attempt.returncode:
-   print('WARNING: Official geographical XLSX unavailable; no workbook values imported; existing audited records preserved.',flush=True)
- if not offline:
-  print('RUN discover_tryg.py (official Tryg group PDF and Norway XLSX)',flush=True)
+  print('RUN discover_tryg.py (official Tryg PDF reports only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'discover_tryg.py')],cwd=ROOT,check=True)
   print('RUN import_tryg.py (fail-closed group and Norway)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_tryg.py')],cwd=ROOT,check=True)
