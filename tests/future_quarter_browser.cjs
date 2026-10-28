@@ -37,6 +37,16 @@ for(const mode of ['quarter','ytd']){
    return {expected,cards};
   },{company,mode});
   assert(detail.cards.length===2,company+' '+mode+' detail cards missing');
+  const chart=await page.locator('.company-profitability');
+  assert(await chart.count()===1,company+' '+mode+' profitability chart missing');
+  assert((await chart.innerText()).includes('Utvikling i lønnsomhet · '+company),
+    company+' '+mode+' profitability chart shows wrong issuer');
+  assert(await chart.locator('.profit-quarter').count()===5,
+    company+' '+mode+' profitability timeline must contain five quarters');
+  const chartLabels=await chart.locator('.profit-quarter').allTextContents();
+  assert(chartLabels.join(',')==='Q4 2025,Q1 2026,Q2 2026,Q3 2026,Q4 2026',
+    company+' '+mode+' profitability timeline failed Q4 rollover: '+chartLabels);
+
   for(const card of detail.cards)
    assert(card.source==='verified-quarterly-feed'&&card.period===mode,
      company+' '+mode+' has stale/fixed company card');
