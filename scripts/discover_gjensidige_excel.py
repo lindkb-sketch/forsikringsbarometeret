@@ -46,6 +46,8 @@ def discover(year,quarter,fetch=None):
     html=fetch(INDEX)
     parser=Tables();parser.feed(html)
     candidates=[]
+    # The archive currently displays Q1/Q2 for 2026; never treat a
+    # different year's Q3 as this year's workbook.
     for table in parser.tables:
         if not table:continue
         headings=[' '.join(c['text'].split()).lower() for c in table[0]]
@@ -60,9 +62,12 @@ def discover(year,quarter,fetch=None):
                 url=urllib.parse.urljoin(INDEX,href)
                 host=urllib.parse.urlsplit(url).hostname or ''
                 if host not in ('www.gjensidige.com','gjensidige.com','mb.cision.com'):continue
-                if not url.lower().split('?')[0].endswith('.xlsx'):continue
+                if not (url.lower().split('?')[0].endswith('.xlsx') or
+                        '/attachment/download/' in url.lower()):continue
                 candidates.append(url)
-    return sorted(set(candidates))
+    if candidates:
+        raise ValueError('Unscoped Gjensidige archive table: year cannot be proven for workbook candidates; refuse cross-year import')
+    return []
 
 if __name__=='__main__':
     import sys
