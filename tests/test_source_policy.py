@@ -18,6 +18,20 @@ class SourcePolicyTest(unittest.TestCase):
     source_section='Quarterly outline - Geography / Norwegian general insurance',source_document_period='Q3 2026')
   self.assertFalse(validate_source_policy([row]))
   self.assertTrue(validate_source_policy([{**row,'source_section':'Group summary'}]))
+class GjensidigeDerivedNorwayPolicy(unittest.TestCase):
+ def test_derived_total_requires_both_official_segment_cells(self):
+  base=dict(company='Gjensidige',year=2026,quarter=3,period_type='quarter',
+    metric='insurance_revenue',source_type='official_investor_tables',
+    source_url='https://issuer.example/figures.xlsx',
+    source_document_url='https://issuer.example/report.pdf',source_sha256='a'*64)
+  calculated=dict(base,scope='norway',status='calculated',
+    calculation='sum_official_norway_segments')
+  segments=[dict(base,scope='reported_segment',segment=name,status='reported',
+    source_sheet=name,source_cell='B12') for name in ('Private Norway','Commercial Norway')]
+  self.assertFalse(validate_source_policy([calculated]+segments))
+  self.assertTrue(validate_source_policy([calculated,segments[0]]))
+  self.assertTrue(validate_source_policy([calculated,{**segments[0], 'source_sha256':'b'*64},segments[1]]))
+
 class StorebrandNorwayQ4Policy(unittest.TestCase):
  def test_global_audit_rejects_storebrand_norway_q4(self):
   from audit_financials import audit
