@@ -8,6 +8,8 @@ from audit_financials import DATA,audit
 from build_verified_feed import OUT,build
 from publish_geographic_workbooks import atomic_write
 SOURCES={
+ (2025,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q1/sampo_interim_statement_q1_2025.pdf',
+ (2025,2):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf',
  (2025,3):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf',
  (2025,4):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf',
  (2026,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf',
