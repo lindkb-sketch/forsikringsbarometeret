@@ -423,7 +423,15 @@
     // Replace the legacy Q2 label with the actual selected quarter.
     const heading=fragment.querySelector('.section-head h2');
     if(heading)heading.textContent=heading.textContent.replace(/Q2 2026/,label(selection));
-    return fragment.innerHTML+growthMatrixHtml(c)+'<section class="panel company-profitability" aria-label="Lønnsomhetsutvikling for '+c+'">'+profitabilityChart(c)+'</section>';
+    const cards=fragment.querySelector('.dynamic-kpis');
+    if(cards){
+      const panel=document.createElement('section');
+      panel.className='panel company-profitability';
+      panel.setAttribute('aria-label','Lønnsomhetsutvikling for '+c);
+      panel.innerHTML=profitabilityChart(c);
+      cards.insertAdjacentElement('afterend',panel);
+    }
+    return fragment.innerHTML+growthMatrixHtml(c);
   }
   company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
