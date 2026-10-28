@@ -41,9 +41,9 @@ class YearRolloverTests(unittest.TestCase):
               '''<a href="/2027/Investor_tables_Q1_2027.xlsx">Investor tables Q1 2027</a>''')
         self.assertEqual([(r['year'],r['quarter']) for r in parse_tryg(html,2027)],[(2027,1)])
 
-    def test_tryg_reject_unpaired_pdf(self):
+    def test_tryg_accepts_official_pdf_without_excel(self):
         html='<a href="/2027/Interim_report_Q1_2027.pdf">Interim report Q1 2027</a>'
-        self.assertEqual(parse_tryg(html,2027),[])
+        self.assertEqual(len(parse_tryg(html,2027)),1)
 
     def test_storebrand_2027_pair_selection(self):
         records=[
