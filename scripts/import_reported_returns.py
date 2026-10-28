@@ -44,6 +44,25 @@ def extract(blob,company,year,quarter):
                 for m in re.finditer(pattern,text,re.I):
                     value=float(m.group(1).replace(',','.'))
                     if -100<=value<=200:candidates.append((pageno,value))
+    # Protector's official KPI appendix reports ROE in a quarterly table,
+    # with a superscript footnote and a separate percent-unit column.
+    # Only the first numeric value of that explicitly labelled Q-row is
+    # the current quarter; do not mistake investment returns for equity.
+    if company=='Protector':
+        with pdfplumber.open(io.BytesIO(blob)) as pdf:
+            for pageno,page in enumerate(pdf.pages,1):
+                lines=(page.extract_text() or '').splitlines()
+                for i,line in enumerate(lines):
+                    if not re.match(r'^\\s*Return on equity,?\\s*annualis(?:ed|z)\\b',line,re.I):
+                        continue
+                    header=' '.join(lines[max(0,i-45):i])
+                    if not (re.search(r'Q\\s*'+str(quarter)+r'\\s*'+str(year),header,re.I)
+                            or re.search(r'Q'+str(quarter)+r'\\s*\\(?.*?'+str(year),header,re.I)):
+                        continue
+                    tail=re.sub(r'^\\s*Return on equity,?\\s*annualis(?:ed|z)[¹²³*]*', '',line,flags=re.I)
+                    m=re.match(r'\\s*(?:%\\s*)?(-?\\d{1,3}(?:[.,]\\d{1,2})?)\\s*%?',tail)
+                    if m:
+                        candidates.append((pageno,float(m.group(1).replace(',','.'))))
     distinct={round(v,3) for _,v in candidates}
     if len(distinct)!=1:
         raise ValueError(company+' explicit return missing or ambiguous: '+str(sorted(distinct)))
