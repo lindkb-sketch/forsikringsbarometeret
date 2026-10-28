@@ -27,6 +27,10 @@ class GjensidigeNorwayPdfRatioTest(unittest.TestCase):
         rows=parse(pages,2026,2,"https://example.org/report.pdf","a"*64)
         def value(name,metric):
             return next(r["value"] for r in rows if r["year"]==2026 and r["segment"]==name and r["metric"]==metric)
+        self.assertAlmostEqual(value("Private Norway","insurance_service_result"),20)
+        self.assertAlmostEqual(value("Commercial Norway","insurance_service_result"),20)
+        self.assertAlmostEqual(value("Private Norway","insurance_revenue_growth"),0)
+        self.assertAlmostEqual(value("Commercial Norway","insurance_revenue_growth"),0)
         self.assertAlmostEqual(value("Private Norway","loss_ratio"),63)
         self.assertAlmostEqual(value("Private Norway","expense_ratio"),10)
         self.assertAlmostEqual(value("Private Norway","combined_ratio"),73)
