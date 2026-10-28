@@ -53,7 +53,7 @@ def extract(blob,company,year,quarter):
             for pageno,page in enumerate(pdf.pages,1):
                 lines=(page.extract_text() or '').splitlines()
                 for i,line in enumerate(lines):
-                    if not re.match(r'^\\s*Return on equity,?\\s*annualis(?:ed|z)\\b',line,re.I):
+                    if not re.match(r'^\\s*Return on equity,?\\s*annualis(?:ed|z)[¹²³*]?',line,re.I):
                         continue
                     header=' '.join(lines[max(0,i-45):i])
                     if not (re.search(r'Q\\s*'+str(quarter)+r'\\s*'+str(year),header,re.I)
