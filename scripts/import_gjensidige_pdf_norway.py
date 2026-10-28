@@ -59,8 +59,10 @@ def parse(pages,year,quarter,url,digest):
             expenses=values_by_metric['expenses'][idx]
             premiums=values_by_metric['premiums'][idx]
             recoveries=values_by_metric['recoveries'][idx]
-            if revenue<=0 or claims>0 or expenses>0 or premiums>0 or recoveries<0:
+            if revenue<=0 or claims>0 or expenses>0 or premiums>0:
                 raise ValueError('Unexpected source signs/revenue in '+title)
+            # Reinsurance recoveries can be positive or negative in the issuer PDF.
+            # Validate the signed sum against the reported combined ratio below.
             # Source expenses are signed negative; convert to positive ratios.
             loss=-(claims+premiums+recoveries)/revenue*100
             cost=-expenses/revenue*100
