@@ -103,6 +103,12 @@ def run(pairs=None):
                 pdf=download_tryg_report(spec['report_pdf_url'],quarter)
                 group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
                 existing,_=merge(existing,group)
+                try:
+                    norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
+                    existing,_=merge(existing,norway)
+                    print('TRYG_HISTORICAL_NORWAY_PDF',year,quarter,len(norway),flush=True)
+                except ValueError as geography_error:
+                    print('::warning::Tryg historical Norway geography not verified:',year,quarter,str(geography_error)[:180],flush=True)
             except Exception as exc:
                 print('::warning::Tryg historical 2024 comparison unavailable:',year,quarter,type(exc).__name__,str(exc)[:180],flush=True)
             continue
