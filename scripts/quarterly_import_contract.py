@@ -42,6 +42,24 @@ def verify(source,feed):
             matching=index.get(key(r))
             if matching!=r:
                 errors.append(f'{company}: official observation missing/modified in published feed: {key(r)}')
+        if company=='Gjensidige' and date>=(2026,1):
+            # A published Gjensidige group quarter cannot silently appear on
+            # the website without its independently sourced PM+BM Norway KPIs.
+            required_norway={'insurance_revenue','loss_ratio','expense_ratio','combined_ratio'}
+            norway=[r for r in source if r['company']=='Gjensidige'
+                    and r.get('scope')=='norway' and r.get('period_type')=='quarter'
+                    and (r['year'],r['quarter'])==date]
+            norway_metrics={r['metric'] for r in norway}
+            absent=required_norway-norway_metrics
+            if absent:
+                errors.append(f'Gjensidige Norway Q{date[1]} {date[0]} missing PM+BM metrics: {sorted(absent)}')
+            for observation in norway:
+                if observation['metric'] in required_norway and index.get(key(observation))!=observation:
+                    errors.append(f'Gjensidige Norway not in published feed: {key(observation)}')
+            ratios={r['metric']:r['value'] for r in norway}
+            if {'loss_ratio','expense_ratio','combined_ratio'}<=ratios.keys():
+                if abs(ratios['loss_ratio']+ratios['expense_ratio']-ratios['combined_ratio'])>0.02:
+                    errors.append(f'Gjensidige Norway CR is not loss ratio + expense ratio: Q{date[1]} {date[0]}')
         revenue=next((r for r in latest if r['metric']=='insurance_revenue'),None)
         if company=='Frende' and (not revenue or 'Sum driftsinntekter' not in revenue.get('source_definition','')):
             errors.append('Frende: revenue must be the reported Sum driftsinntekter, not IFRS insurance revenue')
