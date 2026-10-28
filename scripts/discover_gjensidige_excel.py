@@ -15,16 +15,22 @@ from publish_geographic_workbooks import download
 INDEX='https://www.gjensidige.com/investor-relations/reports-and-presentations'
 class Tables(HTMLParser):
     def __init__(self):
-        super().__init__();self.tables=[];self.table=None;self.row=None;self.cell=None;self.link=None
+        super().__init__();self.tables=[];self.table=None;self.row=None;self.cell=None;self.link=None;self.context='';self.table_years=[];self.heading=None
     def handle_starttag(self,tag,attrs):
         a=dict(attrs)
-        if tag=='table':self.table=[]
+        if tag in ('h2','h3','h4'):self.heading=[]
+        if tag=='table':self.table=[];self.table_years.append(self.context)
         if tag=='tr' and self.table is not None:self.row=[]
         if tag in ('td','th') and self.row is not None:self.cell={'text':'','links':[]}
         if tag=='a' and self.cell is not None:self.link=a.get('href')
     def handle_data(self,data):
+        if self.heading is not None:self.heading.append(data)
         if self.cell is not None:self.cell['text']+=data
     def handle_endtag(self,tag):
+        if tag in ('h2','h3','h4') and self.heading is not None:
+            heading=' '.join(' '.join(self.heading).split())
+            if re.search(r'\\b20\\d{2}\\b',heading):self.context=heading
+            self.heading=None
         if tag=='a': 
             if self.link and self.cell is not None:self.cell['links'].append(self.link)
             self.link=None
@@ -48,7 +54,8 @@ def discover(year,quarter,fetch=None):
     candidates=[]
     # The archive currently displays Q1/Q2 for 2026; never treat a
     # different year's Q3 as this year's workbook.
-    for table in parser.tables:
+    for table,context in zip(parser.tables,parser.table_years):
+        if not re.search(r'(?<!\\d)'+str(year)+r'(?!\\d)',context):continue
         if not table:continue
         headings=[' '.join(c['text'].split()).lower() for c in table[0]]
         columns=[i for i,h in enumerate(headings) if re.fullmatch(r'q\s*'+str(quarter),h)]
@@ -65,9 +72,7 @@ def discover(year,quarter,fetch=None):
                 if not (url.lower().split('?')[0].endswith('.xlsx') or
                         '/attachment/download/' in url.lower()):continue
                 candidates.append(url)
-    if candidates:
-        raise ValueError('Unscoped Gjensidige archive table: year cannot be proven for workbook candidates; refuse cross-year import')
-    return []
+    return sorted(set(candidates))
 
 if __name__=='__main__':
     import sys
