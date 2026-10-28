@@ -27,7 +27,7 @@ class ReportedReturnTests(unittest.TestCase):
         _,value,_=self.extract_text('Gjensidige','The annualised return on equity was 34.2 per cent.')
         self.assertEqual(value,34.2)
     def test_protector_issuer_quarterly_table_with_footnote(self):
-        text="Quarterly outline Q3 2026 Q3 2025 Q1-Q3 2026\\nReturn on equity, annualised¹ % 47.9 % 28.7 % 33.8 %"
+        text="Quarterly outline Q3 2026 Q3 2025 Q1-Q3 2026\nReturn on equity, annualised¹ % 47.9 % 28.7 % 33.8 %"
         page,value,label=self.extract_text('Protector',text)
         self.assertEqual((page,value,label),(1,47.9,'ROE annualised'))
     def test_ambiguous_values_fail_closed(self):
