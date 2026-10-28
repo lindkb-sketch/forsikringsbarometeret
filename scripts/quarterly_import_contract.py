@@ -17,7 +17,7 @@ AS_OF={'solvency_ratio'}
 def key(r):
     return (r['company'],r['year'],r['quarter'],r['scope'],r['period_type'],r['metric'],r.get('segment'))
 
-def verify(source,feed):
+def verify(source,feed,require_norway=True):
     result=audit({'observations':source})
     if not result['ok']:
         raise ValueError('Official-source audit failed: '+repr(result['errors'][:6]))
@@ -42,7 +42,7 @@ def verify(source,feed):
             matching=index.get(key(r))
             if matching!=r:
                 errors.append(f'{company}: official observation missing/modified in published feed: {key(r)}')
-        if company=='Gjensidige' and date>=(2026,1):
+        if require_norway and company=='Gjensidige' and date>=(2026,1):
             # A published Gjensidige group quarter cannot silently appear on
             # the website without its independently sourced PM+BM Norway KPIs.
             required_norway={'insurance_revenue','insurance_revenue_growth','insurance_service_result','loss_ratio','expense_ratio','combined_ratio'}
