@@ -98,9 +98,12 @@ def prepare(data,fetcher=download,reader=read_pdf):
     existing={key(r):r for r in observations}
     additions=[]
     for year,quarter,url in sorted(sources):
-        if all(('Gjensidige',year,quarter,'reported_segment',seg,'quarter','combined_ratio') in existing
-               for seg in SEGMENTS) and all(('Gjensidige',year,quarter,'norway',None,'quarter',m) in existing
-               for m in (*METRICS,'insurance_revenue_growth')):continue
+        required_segment_metrics=(*METRICS,'insurance_revenue_growth')
+        if (all(('Gjensidige',year,quarter,'reported_segment',seg,'quarter',m) in existing
+                for seg in SEGMENTS for m in required_segment_metrics)
+            and all(('Gjensidige',year,quarter,'norway',None,'quarter',m) in existing
+                    for m in (*METRICS,'insurance_revenue_growth'))):
+            continue
         blob=fetcher(url)
         if not blob.startswith(b'%PDF-'):raise ValueError('Not official PDF')
         batch=parse(reader(blob),year,quarter,url,hashlib.sha256(blob).hexdigest())
