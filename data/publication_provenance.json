@@ -72,11 +72,11 @@
     {
       "company": "Protector",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 6,
       "official_source_urls": [
         "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
       ],
-      "observation_sha256": "553e2e2ad4ddef2b39da6d632a6182d67841ce972b06c7e09f16b3496b273714",
+      "observation_sha256": "f03d2d186c2d5e532b0f26c3ac74e40a6ed97b999e0d88ca8203d921efc03c3f",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
