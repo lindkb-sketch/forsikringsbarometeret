@@ -87,6 +87,11 @@ def run(pairs=None):
     if not pairs:raise ValueError('No official Tryg pairs')
     latest=max((x['year'],x['quarter']) for x in pairs)
     existing=json.loads(DATA.read_text())
+    # Historical official Excel rows omitted the currency/ratio unit.
+    # Restore the known unit without changing any verified amount or source.
+    for row in existing['observations']:
+        if row.get('company')=='Tryg' and row.get('scope')=='norway' and row.get('source_sheet') and not row.get('unit'):
+            row['unit']='percent' if row['metric'].endswith('ratio') else 'DKKm'
     for spec in sorted(pairs,key=lambda x:(x['year'],x['quarter'])):
         year,quarter=spec['year'],spec['quarter']
         if year<2025:continue
