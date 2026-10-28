@@ -54,6 +54,11 @@ def run(offline=False):
   print('RUN import_gjensidige_pdf_norway.py (verified Norway PM/BM from official quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_pdf_norway.py')],cwd=ROOT,check=True)
  if not offline:
+  print('RUN storebrand_2025_growth_backfill.py (official PDF comparators, fail closed at coverage gate)',flush=True)
+  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'storebrand_2025_growth_backfill.py')],cwd=ROOT)
+  if attempt.returncode:
+   print('::warning::Storebrand 2025 Q1/Q2 official growth comparators unavailable; strict coverage gate will block incomplete figures',flush=True)
+ if not offline:
   print('RUN storebrand_2024_official_backfill.py (official 2025 Q3 Insurance comparator)',flush=True)
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'storebrand_2024_official_backfill.py')],cwd=ROOT)
   if attempt.returncode:
