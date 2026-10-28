@@ -1287,13 +1287,9 @@ monSetQuarter=function(q){
  }
 };
 const MON_EXEC_ORIG_PROFITABILITY=profitabilityChart;
-profitabilityChart=function(){
- let html=MON_EXEC_ORIG_PROFITABILITY();
- if(profitabilityCompany==='Storebrand'){
-  html=html.replace('</div>', '</div>');
-
- }
- return html;
+// Preserve explicit issuer selection in embedded company profitability charts.
+profitabilityChart=function(companyName=profitabilityCompany){
+ return MON_EXEC_ORIG_PROFITABILITY(companyName);
 };
 // Only hide a pending company when a complete new-quarter report record is present.
 // Normalize display names to model keys, notably Sampo/If -> Sampo.
