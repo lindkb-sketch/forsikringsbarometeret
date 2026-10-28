@@ -563,12 +563,12 @@
           "has_comparative": true
         },
         "Sampo": {
-          "summary": "Sampo: forsikringsinntekter 2437 EURm, forsikringsresultat 418 EURm, combined ratio 82.9 % i Q2 2026.",
+          "summary": "Sampo: forsikringsinntekter 2437 EURm (+7.6 % mot Q2 2025), forsikringsresultat 418 EURm, combined ratio 82.9 % (Q2 2025: 82.6 %) i Q2 2026.",
           "comment": "Sampo: combined ratio 82.9 % i Q2 2026, forbedret med 1.5 prosentpoeng fra Q1 2026 (84.4 %).",
           "ytd": "",
           "source_url": "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969",
           "period": "Q2 2026",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 935.132 NOKm (+13.5 % mot Q2 2025), forsikringsresultat 211.293 NOKm, combined ratio 81.3 % (Q2 2025: 84.5 %) i Q2 2026.",
@@ -579,20 +579,20 @@
           "has_comparative": true
         },
         "Protector": {
-          "summary": "Protector: forsikringsinntekter 3698 MNOK, forsikringsresultat 684 MNOK, combined ratio 81.5 % i Q2 2026.",
+          "summary": "Protector: forsikringsinntekter 3698 MNOK (+8.4 % mot Q2 2025), forsikringsresultat 684 MNOK, combined ratio 81.5 % i Q2 2026.",
           "comment": "Protector: combined ratio 81.5 % i Q2 2026, forbedret med 3.4 prosentpoeng fra Q1 2026 (84.9 %).",
           "ytd": "",
           "source_url": "https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf",
           "period": "Q2 2026",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Storebrand": {
-          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2799 MNOK, forsikringsresultat 371 MNOK, combined ratio 87 % i Q2 2026.",
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2799 MNOK (+16.2 % mot Q2 2025), forsikringsresultat 371 MNOK, combined ratio 87 % i Q2 2026.",
           "comment": "Storebrand: combined ratio 87 % i Q2 2026, forbedret med 6 prosentpoeng fra Q1 2026 (93 %).",
           "ytd": "",
           "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
           "period": "Q2 2026",
-          "has_comparative": false
+          "has_comparative": true
         }
       },
       "issuer_brief_status": {
@@ -774,12 +774,12 @@
           "has_comparative": true
         },
         "Sampo": {
-          "summary": "Sampo: forsikringsinntekter 2363 EURm, forsikringsresultat 368 EURm, combined ratio 84.4 % i Q1 2026.",
+          "summary": "Sampo: forsikringsinntekter 2363 EURm (+8.0 % mot Q1 2025), forsikringsresultat 368 EURm, combined ratio 84.4 % (Q1 2025: 84.6 %) i Q1 2026.",
           "comment": "Sampo: combined ratio 84.4 % i Q1 2026, svekket med 0.1 prosentpoeng fra Q4 2025 (84.3 %).",
           "ytd": "",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
           "period": "Q1 2026",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 1823.32 NOKm (+12.3 % mot Q1 2025), forsikringsresultat 62.915 NOKm, combined ratio 93.9 % (Q1 2025: 102.7 %) i Q1 2026.",
@@ -790,20 +790,20 @@
           "has_comparative": true
         },
         "Protector": {
-          "summary": "Protector: forsikringsinntekter 3696 MNOK, forsikringsresultat 559 MNOK, combined ratio 84.9 % i Q1 2026.",
+          "summary": "Protector: forsikringsinntekter 3696 MNOK (+13.5 % mot Q1 2025), forsikringsresultat 559 MNOK, combined ratio 84.9 % i Q1 2026.",
           "comment": "Protector: combined ratio 84.9 % i Q1 2026, forbedret med 0.1 prosentpoeng fra Q4 2025 (85 %).",
           "ytd": "",
           "source_url": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
           "period": "Q1 2026",
-          "has_comparative": false
+          "has_comparative": true
         },
         "Storebrand": {
-          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2684 MNOK, forsikringsresultat 177 MNOK, combined ratio 93 % i Q1 2026.",
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2684 MNOK (+19.0 % mot Q1 2025), forsikringsresultat 177 MNOK, combined ratio 93 % i Q1 2026.",
           "comment": "Storebrand: combined ratio 93 % i Q1 2026, uendret med 0 prosentpoeng fra Q4 2025 (93 %).",
           "ytd": "",
           "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
           "period": "Q1 2026",
-          "has_comparative": false
+          "has_comparative": true
         }
       },
       "issuer_brief_status": {
@@ -1004,18 +1004,20 @@
     "Q3 2025": {
       "brief": [
         {
-          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Gjensidige, Tryg, Frende har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Gjensidige, Tryg, Sampo, Frende har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
             "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
             "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
             "https://frende.wrep.it/q3-2025-frende-holding-as/sec/6"
           ],
           "companies": [
             "Fremtind",
             "Gjensidige",
             "Tryg",
+            "Sampo",
             "Frende"
           ],
           "period": "Q3 2025",
@@ -1023,17 +1025,23 @@
           "theme": "diverging_underwriting"
         },
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
             "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
-            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
+            "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
+            "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
           ],
           "companies": [
             "Fremtind",
             "Gjensidige",
-            "Tryg"
+            "Tryg",
+            "Sampo",
+            "Protector",
+            "Storebrand"
           ],
           "period": "Q3 2025",
           "type": "qualitative_quarter_theme",
@@ -1076,7 +1084,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Sampo: combined ratio 83 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "text": "Sampo: combined ratio 83 % i Q3 2025, svekket med 0.4 prosentpoeng fra Q2 2025 (82.6 %).",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
           "company": "Sampo",
           "period": "Q3 2025",
@@ -1131,7 +1139,7 @@
         },
         "Sampo": {
           "summary": "Sampo: forsikringsinntekter 2303 EURm (+7.8 % mot Q3 2024), forsikringsresultat 392 EURm, combined ratio 83 % i Q3 2025.",
-          "comment": "Sampo: combined ratio 83 % i Q3 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "comment": "Sampo: combined ratio 83 % i Q3 2025, svekket med 0.4 prosentpoeng fra Q2 2025 (82.6 %).",
           "ytd": "",
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf",
           "period": "Q3 2025",
@@ -1166,28 +1174,30 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
-        "Sampo": "awaiting_curated_commentary",
+        "Sampo": "featured",
         "Frende": "featured",
-        "Protector": "awaiting_curated_commentary",
-        "Storebrand": "awaiting_curated_commentary"
+        "Protector": "featured",
+        "Storebrand": "featured"
       },
       "reported_company_count": 7
     },
     "Q2 2025": {
       "brief": [
         {
-          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Frende. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind, Gjensidige, Tryg, Sampo, Frende. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
             "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf",
             "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6"
           ],
           "companies": [
             "Fremtind",
             "Gjensidige",
             "Tryg",
+            "Sampo",
             "Frende"
           ],
           "period": "Q2 2025",
@@ -1195,15 +1205,21 @@
           "theme": "underwriting_improvement"
         },
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Gjensidige, Tryg, Sampo, Protector, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
           "source_urls": [
             "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf"
+            "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+            "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf",
+            "https://storage.mfn.se/c/aHR0cHM6Ly9hcGkzLm9zbG8ub3Nsb2JvcnMubm8vdjEvbmV3c3JlYWRlci9hdHRhY2htZW50P21lc3NhZ2VJZD02NTEwNjcmYXR0YWNobWVudElkPTMwODIxMA/interim-report-q2-2025-prot.pdf?news-id=bd7bca87-9f31-5428-af80-572d8ba4cfb9",
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/d6d61aaf-ead8-4578-bfa6-20eca01ce1ae:e573ec41189ee1b2434899dde429cd729a0fabcd/2025-3q-interim-report-sttorebrand-asa-2.pdf"
           ],
           "companies": [
             "Gjensidige",
-            "Tryg"
+            "Tryg",
+            "Sampo",
+            "Protector",
+            "Storebrand"
           ],
           "period": "Q2 2025",
           "type": "qualitative_quarter_theme",
@@ -1248,6 +1264,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Sampo: combined ratio 82.6 % i Q2 2025, forbedret med 2 prosentpoeng fra Q1 2025 (84.6 %).",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf",
+          "company": "Sampo",
+          "period": "Q2 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Frende: combined ratio 84.5 % i Q2 2025, forbedret med 18.2 prosentpoeng fra Q1 2025 (102.7 %).",
           "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
           "company": "Frende",
@@ -1273,10 +1296,18 @@
           "has_comparative": false
         },
         "Tryg": {
-          "summary": "Tryg: forsikringsinntekter 10120 MDKK, forsikringsresultat 2307 MDKK, combined ratio 77.2 % i Q2 2025.",
+          "summary": "Tryg: forsikringsinntekter 10120 MDKK (+6.0 % mot Q2 2024), forsikringsresultat 2307 MDKK, combined ratio 77.2 % (Q2 2024: 78.8 %) i Q2 2025.",
           "comment": "Tryg: combined ratio 77.2 % i Q2 2025, forbedret med 7 prosentpoeng fra Q1 2025 (84.2 %).",
-          "ytd": "HIÅ: forsikringsinntekter 19888 MDKK.",
+          "ytd": "HIÅ: forsikringsinntekter 19888 MDKK (+4.3 % mot HIÅ 2024).",
           "source_url": "https://tryg.com/system/files/2026-07/Interim%20report%20Q2%20and%20H1%202026%20-%20TRYG%20A_S.pdf",
+          "period": "Q2 2025",
+          "has_comparative": true
+        },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2264 EURm, forsikringsresultat 393 EURm, combined ratio 82.6 % i Q2 2025.",
+          "comment": "Sampo: combined ratio 82.6 % i Q2 2025, forbedret med 2 prosentpoeng fra Q1 2025 (84.6 %).",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf",
           "period": "Q2 2025",
           "has_comparative": false
         },
@@ -1287,15 +1318,34 @@
           "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/6",
           "period": "Q2 2025",
           "has_comparative": true
+        },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3413 MNOK i Q2 2025.",
+          "comment": "Protector: forsikringsinntekter 3413 MNOK i Q2 2025.",
+          "ytd": "",
+          "source_url": "https://storage.mfn.se/c/aHR0cHM6Ly9hcGkzLm9zbG8ub3Nsb2JvcnMubm8vdjEvbmV3c3JlYWRlci9hdHRhY2htZW50P21lc3NhZ2VJZD02NTEwNjcmYXR0YWNobWVudElkPTMwODIxMA/interim-report-q2-2025-prot.pdf?news-id=bd7bca87-9f31-5428-af80-572d8ba4cfb9",
+          "period": "Q2 2025",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2408 MNOK i Q2 2025.",
+          "comment": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2408 MNOK i Q2 2025.",
+          "ytd": "",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/d6d61aaf-ead8-4578-bfa6-20eca01ce1ae:e573ec41189ee1b2434899dde429cd729a0fabcd/2025-3q-interim-report-sttorebrand-asa-2.pdf",
+          "period": "Q2 2025",
+          "has_comparative": false
         }
       },
       "issuer_brief_status": {
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
-        "Frende": "featured"
+        "Sampo": "featured",
+        "Frende": "featured",
+        "Protector": "featured",
+        "Storebrand": "featured"
       },
-      "reported_company_count": 4
+      "reported_company_count": 7
     },
     "Q1 2025": {
       "brief": [
@@ -1317,17 +1367,19 @@
           "theme": "underwriting_pressure"
         },
         {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Tryg, Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Tryg, Frende, Storebrand. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
             "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
-            "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6"
+            "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
+            "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/d6d61aaf-ead8-4578-bfa6-20eca01ce1ae:e573ec41189ee1b2434899dde429cd729a0fabcd/2025-3q-interim-report-sttorebrand-asa-2.pdf"
           ],
           "companies": [
             "Fremtind",
             "Tryg",
-            "Frende"
+            "Frende",
+            "Storebrand"
           ],
           "period": "Q1 2025",
           "type": "qualitative_quarter_theme",
@@ -1370,6 +1422,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Sampo: combined ratio 84.6 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q1/sampo_interim_statement_q1_2025.pdf",
+          "company": "Sampo",
+          "period": "Q1 2025",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Frende: combined ratio 102.7 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
           "company": "Frende",
@@ -1395,10 +1454,18 @@
           "has_comparative": false
         },
         "Tryg": {
-          "summary": "Tryg: forsikringsinntekter 9768 MDKK, forsikringsresultat 1540 MDKK, combined ratio 84.2 % i Q1 2025.",
+          "summary": "Tryg: forsikringsinntekter 9768 MDKK (+2.5 % mot Q1 2024), forsikringsresultat 1540 MDKK, combined ratio 84.2 % (Q1 2024: 86.6 %) i Q1 2025.",
           "comment": "Tryg: combined ratio 84.2 % i Q1 2025, svekket med 1.7 prosentpoeng fra Q4 2024 (82.5 %).",
-          "ytd": "HIÅ: forsikringsinntekter 9768 MDKK.",
+          "ytd": "HIÅ: forsikringsinntekter 9768 MDKK (+2.5 % mot HIÅ 2024).",
           "source_url": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+          "period": "Q1 2025",
+          "has_comparative": true
+        },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2188 EURm, forsikringsresultat 336 EURm, combined ratio 84.6 % i Q1 2025.",
+          "comment": "Sampo: combined ratio 84.6 % i Q1 2025. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q1/sampo_interim_statement_q1_2025.pdf",
           "period": "Q1 2025",
           "has_comparative": false
         },
@@ -1409,15 +1476,34 @@
           "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/6",
           "period": "Q1 2025",
           "has_comparative": true
+        },
+        "Protector": {
+          "summary": "Protector: forsikringsinntekter 3255 MNOK i Q1 2025.",
+          "comment": "Protector: forsikringsinntekter 3255 MNOK i Q1 2025.",
+          "ytd": "",
+          "source_url": "https://protectorforsikring.no/getfile.php/138843-1745427299/Documents/Investor%20Relation/Interim%20Reports/2025%20Interim%20Report%20Q1.pdf",
+          "period": "Q1 2025",
+          "has_comparative": false
+        },
+        "Storebrand": {
+          "summary": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2256 MNOK i Q1 2025.",
+          "comment": "Storebrand: segmentpremier (APM, ikke IFRS-forsikringsinntekter) 2256 MNOK i Q1 2025.",
+          "ytd": "",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2025/_/attachment/inline/d6d61aaf-ead8-4578-bfa6-20eca01ce1ae:e573ec41189ee1b2434899dde429cd729a0fabcd/2025-3q-interim-report-sttorebrand-asa-2.pdf",
+          "period": "Q1 2025",
+          "has_comparative": false
         }
       },
       "issuer_brief_status": {
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
-        "Frende": "featured"
+        "Sampo": "awaiting_curated_commentary",
+        "Frende": "featured",
+        "Protector": "awaiting_curated_commentary",
+        "Storebrand": "featured"
       },
-      "reported_company_count": 4
+      "reported_company_count": 7
     },
     "Q4 2024": {
       "brief": [
@@ -1555,27 +1641,31 @@
     "Q3 2024": {
       "brief": [
         {
-          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Fremtind. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
-          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
-          "source_urls": [
-            "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
-          ],
-          "companies": [
-            "Fremtind"
-          ],
-          "period": "Q3 2024",
-          "type": "qualitative_quarter_theme",
-          "theme": "underwriting_improvement"
-        },
-        {
-          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "text": "Kvartalet viser ulike lønnsomhetsretninger: Fremtind forbedrer forsikringsdriften sammenlignet med foregående kvartal, mens Tryg har en svakere utvikling. Dette viser et tydelig skille mellom selskapene, uten at rapporttallene alene forklarer årsaken.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
           "source_urls": [
             "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+            "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+          ],
+          "companies": [
+            "Fremtind",
+            "Tryg"
+          ],
+          "period": "Q3 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "diverging_underwriting"
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Fremtind, Tryg, Frende. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+          "source_urls": [
+            "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf",
+            "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
             "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
           ],
           "companies": [
             "Fremtind",
+            "Tryg",
             "Frende"
           ],
           "period": "Q3 2024",
@@ -1599,7 +1689,7 @@
           "type": "rule_based_interpretation"
         },
         {
-          "text": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "text": "Tryg: combined ratio 79.1 % i Q3 2024, svekket med 0.3 prosentpoeng fra Q2 2024 (78.8 %).",
           "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
           "company": "Tryg",
           "period": "Q3 2024",
@@ -1625,7 +1715,7 @@
         },
         "Tryg": {
           "summary": "Tryg: forsikringsinntekter 9786 MDKK, forsikringsresultat 2048 MDKK, combined ratio 79.1 % i Q3 2024.",
-          "comment": "Tryg: combined ratio 79.1 % i Q3 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "comment": "Tryg: combined ratio 79.1 % i Q3 2024, svekket med 0.3 prosentpoeng fra Q2 2024 (78.8 %).",
           "ytd": "HIÅ: forsikringsinntekter 28862 MDKK.",
           "source_url": "https://tryg.com/sites/tryg.com/files/2025-10/Q3%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
           "period": "Q3 2024",
@@ -1667,7 +1757,7 @@
       "issuer_brief_status": {
         "Fremtind": "featured",
         "Gjensidige": "awaiting_curated_commentary",
-        "Tryg": "awaiting_curated_commentary",
+        "Tryg": "featured",
         "Sampo": "awaiting_curated_commentary",
         "Frende": "featured",
         "Protector": "awaiting_curated_commentary",
@@ -1677,6 +1767,19 @@
     },
     "Q2 2024": {
       "brief": [
+        {
+          "text": "Et fellestrekk er forbedret forsikringslønnsomhet fra foregående kvartal hos Tryg. Utviklingen er basert på sammenlignbare rapporterte forsikringsmåltall; årsakene må vurderes i selskapenes egne rapportkommentarer.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "source_urls": [
+            "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+          ],
+          "companies": [
+            "Tryg"
+          ],
+          "period": "Q2 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "underwriting_improvement"
+        },
         {
           "text": "Samtidig viser rapporterte inntekter eller segmentpremier en nedgang fra foregående kvartal hos Frende. Ulikt rapporteringsgrunnlag gjør at utviklingen bør vurderes selskap for selskap.",
           "source_url": "https://frende.wrep.it/q2-2025-frende-holding-as/sec/7",
@@ -1689,6 +1792,19 @@
           "period": "Q2 2024",
           "type": "qualitative_quarter_theme",
           "theme": "revenue_decline"
+        },
+        {
+          "text": "Den rapporterte premie- eller inntektsutviklingen peker oppover hos Tryg. Selskapenes rapporteringsdefinisjoner er ulike, så dette er ikke en rangering av sammenlignbar vekst.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "source_urls": [
+            "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf"
+          ],
+          "companies": [
+            "Tryg"
+          ],
+          "period": "Q2 2024",
+          "type": "qualitative_quarter_theme",
+          "theme": "revenue_direction"
         }
       ],
       "implications": [
@@ -1696,6 +1812,13 @@
           "text": "Fremtind: combined ratio 92.6 % i Q2 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf",
           "company": "Fremtind",
+          "period": "Q2 2024",
+          "type": "rule_based_interpretation"
+        },
+        {
+          "text": "Tryg: combined ratio 78.8 % i Q2 2024, forbedret med 7.8 prosentpoeng fra Q1 2024 (86.6 %).",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
           "period": "Q2 2024",
           "type": "rule_based_interpretation"
         }
@@ -1706,6 +1829,14 @@
           "comment": "Fremtind: combined ratio 92.6 % i Q2 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
           "ytd": "HIÅ: forsikringsinntekter 8300 NOKm.",
           "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/33705199d143bc7dca32c6909a75cd86a76d14e3.pdf",
+          "period": "Q2 2024",
+          "has_comparative": false
+        },
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 9545 MDKK, forsikringsresultat 2020 MDKK, combined ratio 78.8 % i Q2 2024.",
+          "comment": "Tryg: combined ratio 78.8 % i Q2 2024, forbedret med 7.8 prosentpoeng fra Q1 2024 (86.6 %).",
+          "ytd": "HIÅ: forsikringsinntekter 19077 MDKK.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-07/Q2%20and%20H1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
           "period": "Q2 2024",
           "has_comparative": false
         },
@@ -1720,19 +1851,22 @@
       },
       "issuer_brief_status": {
         "Fremtind": "awaiting_curated_commentary",
+        "Tryg": "featured",
         "Frende": "featured"
       },
-      "reported_company_count": 2
+      "reported_company_count": 3
     },
     "Q1 2024": {
       "brief": [
         {
           "text": "Kvartalsrapportene er registrert, men det finnes foreløpig ikke tilstrekkelig sammenlignbare opplysninger til å trekke dokumenterte fellestrekk eller forklare utviklingen. Les selskapenes rapporter for den kvalitative ledelsesgjennomgangen.",
-          "source_url": "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-04/Q1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
           "source_urls": [
+            "https://tryg.com/sites/tryg.com/files/2025-04/Q1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
             "https://frende.wrep.it/q1-2025-frende-holding-as/sec/7"
           ],
           "companies": [
+            "Tryg",
             "Frende"
           ],
           "period": "Q1 2024",
@@ -1740,8 +1874,24 @@
           "theme": "insufficient_comparatives"
         }
       ],
-      "implications": [],
+      "implications": [
+        {
+          "text": "Tryg: combined ratio 86.6 % i Q1 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-04/Q1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "company": "Tryg",
+          "period": "Q1 2024",
+          "type": "rule_based_interpretation"
+        }
+      ],
       "by_company": {
+        "Tryg": {
+          "summary": "Tryg: forsikringsinntekter 9531 MDKK, forsikringsresultat 1280 MDKK, combined ratio 86.6 % i Q1 2024.",
+          "comment": "Tryg: combined ratio 86.6 % i Q1 2024. Ingen kildeverifisert, sammenlignbar referanseperiode.",
+          "ytd": "HIÅ: forsikringsinntekter 9531 MDKK.",
+          "source_url": "https://tryg.com/sites/tryg.com/files/2025-04/Q1%20Interim%20Report%202025%20-%20TRYG%20A_S.pdf",
+          "period": "Q1 2024",
+          "has_comparative": false
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 1395.03 NOKm, forsikringsresultat -115.865 NOKm i Q1 2024.",
           "comment": "Frende: forsikringsinntekter 1395.03 NOKm, forsikringsresultat -115.865 NOKm i Q1 2024.",
@@ -1752,9 +1902,10 @@
         }
       },
       "issuer_brief_status": {
+        "Tryg": "featured",
         "Frende": "featured"
       },
-      "reported_company_count": 1
+      "reported_company_count": 2
     }
   },
   "news": [
