@@ -19,11 +19,11 @@
     {
       "company": "Gjensidige",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 6,
       "official_source_urls": [
         "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
       ],
-      "observation_sha256": "a47881e5b4c3b3f192620aa6a4545cfe9c4f21355f0f3bfb1b2014e35ed27fec",
+      "observation_sha256": "db096fdeb46f63bfebc1e0ea7bd3a4ea4a762b962d4b52da6b454f40a2e78ae1",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
