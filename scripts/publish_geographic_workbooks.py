@@ -42,7 +42,14 @@ def prepare(registry,existing,fetcher=download):
             if k in existing_keys:
                 old=existing_keys[k]
                 # A previously reviewed value is immutable; changing it requires manual correction.
-                if old!=r:raise ValueError(f'Existing value conflicts with newly parsed workbook: {k}')
+                if old!=r:
+                    # Metadata may be enriched (e.g. the previously absent
+                    # currency unit); audited numeric values remain immutable.
+                    expected_unit='percent' if r['metric'].endswith('ratio') else ('DKKm' if r['company']=='Tryg' else 'MNOK')
+                    if abs(old['value']-r['value'])>1e-7 or (
+                        old.get('unit') not in (None,expected_unit) or
+                        r.get('unit')!=expected_unit):
+                        raise ValueError(f'Existing value conflicts with newly parsed workbook: {k}')
             elif any(key(other)==k for other in pending):
                 raise ValueError(f'Duplicate staged key: {k}')
             else:pending.append(r)
