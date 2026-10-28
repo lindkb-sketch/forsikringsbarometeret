@@ -69,8 +69,10 @@ def discover(year,quarter,fetch=None):
                 url=urllib.parse.urljoin(INDEX,href)
                 host=urllib.parse.urlsplit(url).hostname or ''
                 if host not in ('www.gjensidige.com','gjensidige.com','mb.cision.com'):continue
-                if not (url.lower().split('?')[0].endswith('.xlsx') or
-                        '/attachment/download/' in url.lower()):continue
+                # Issuer download endpoints may omit the .xlsx suffix.
+                # The importer independently verifies XLSX archive bytes.
+                if not (url.lower().split('?')[0].endswith(('.xlsx','.xlsm')) or
+                        '/attachment/' in url.lower() or '/download/' in url.lower()):continue
                 candidates.append(url)
     return sorted(set(candidates))
 
