@@ -21,34 +21,63 @@ METRICS={
     'expense_ratio':r'Cost ratio',
     'combined_ratio':r'Combined ratio',
 }
+AMOUNTS={
+    'claims':r'Incurred claims and changes in past and future service',
+    'expenses':r'Other incurred insurance service expenses',
+    'premiums':r'Reinsurance premiums',
+    'recoveries':r'Amounts recovered from reinsurance',
+}
 SEGMENTS=('Private Norway','Commercial Norway')
 KEYS=('company','year','quarter','scope','segment','period_type','metric')
+NUMBER=r'-?\\d[\\d,]*\\.\\d+'
 def key(r):return tuple(r.get(k) for k in KEYS)
 
 def parse(pages,year,quarter,url,digest):
     rows=[]
     for segment in SEGMENTS:
         title='General Insurance '+segment
-        # The printed segment KPI table has a full heading and five dated columns.
         matches=[(page,txt) for page,txt in pages
                  if re.search(re.escape(title),txt,re.I)
-                 and re.search(r'Q\s*'+str(quarter)+r'\s*'+str(year),txt,re.I)
+                 and re.search(r'Q\\s*'+str(quarter)+r'\\s*'+str(year),txt,re.I)
                  and 'Insurance revenue' in txt and 'Combined ratio' in txt]
         if len(matches)!=1:
             raise ValueError('Missing or ambiguous official Norway segment table: '+title)
         page,txt=matches[0]
-        for metric,pattern in METRICS.items():
-            lines=[line for line in txt.splitlines() if re.match(r'^\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\s+[-\d]',line,re.I)]
-            if len(lines)!=1:
-                raise ValueError('Missing or ambiguous '+metric+' in '+title)
-            values=re.findall(r'-?\d[\d,]*\.\d+',lines[0][len(re.match(r'^\s*'+pattern,lines[0],re.I).group(0)):])
-            if len(values)<2:raise ValueError('Missing comparative columns: '+title+' '+metric)
-            for yr,idx in ((year,0),(year-1,1)):
-                value=float(values[idx].replace(',',''))
+        source_lines=txt.splitlines()
+        values_by_metric={}
+        for metric,pattern in {**METRICS,**AMOUNTS}.items():
+            lines=[line for line in source_lines
+                   if re.match(r'^\\s*'+pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\\s+[-\\d]',line,re.I)]
+            if len(lines)!=1:raise ValueError('Missing or ambiguous '+metric+' in '+title)
+            match=re.match(r'^\\s*'+pattern,lines[0],re.I)
+            numbers=re.findall(NUMBER,lines[0][match.end():])
+            if len(numbers)<2:raise ValueError('Missing comparative columns: '+title+' '+metric)
+            values_by_metric[metric]=[float(n.replace(',','')) for n in numbers[:2]]
+        for yr,idx in ((year,0),(year-1,1)):
+            revenue=values_by_metric['insurance_revenue'][idx]
+            claims=values_by_metric['claims'][idx]
+            expenses=values_by_metric['expenses'][idx]
+            premiums=values_by_metric['premiums'][idx]
+            recoveries=values_by_metric['recoveries'][idx]
+            if revenue<=0 or claims>0 or expenses>0 or premiums>0 or recoveries<0:
+                raise ValueError('Unexpected source signs/revenue in '+title)
+            # Source expenses are signed negative; convert to positive ratios.
+            loss=-(claims+premiums+recoveries)/revenue*100
+            cost=-expenses/revenue*100
+            combined=loss+cost
+            if not (0<=loss<=200 and 0<=cost<=100 and 0<=combined<=200):
+                raise ValueError('Implausible derived Norway ratios in '+title)
+            if abs(combined-values_by_metric['combined_ratio'][idx])>0.15:
+                raise ValueError('Derived CR does not match reported CR in '+title)
+            derived={'loss_ratio':loss,'expense_ratio':cost,'combined_ratio':combined}
+            for metric in METRICS:
+                value=derived.get(metric,values_by_metric[metric][idx])
                 rows.append(dict(company='Gjensidige',year=yr,quarter=quarter,
                     scope='reported_segment',segment=segment,period_type='quarter',
                     metric=metric,value=value,unit='percent' if 'ratio' in metric else 'MNOK',
-                    status='reported',source_type='official_quarterly_report',
+                    status='calculated' if metric in derived else 'reported',
+                    calculation='signed_claims_reinsurance_expenses_over_revenue' if metric in derived else None,
+                    source_type='official_quarterly_report',
                     source_url=url,source_page=page,source_sha256=digest,
                     source_section=title))
     return rows
