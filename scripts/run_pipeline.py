@@ -60,6 +60,8 @@ def run(offline=False):
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_excel_auto.py')],cwd=ROOT)
   if attempt.returncode:
    print('::warning::Gjensidige official Excel discovery/import failed; strict coverage gate will block missing published figures',flush=True)
+  print('RUN import_gjensidige_pdf_norway.py (verified Norway PM/BM from official quarterly PDF)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_pdf_norway.py')],cwd=ROOT,check=True)
   print('RUN import_gjensidige_segments.py (official Norway PM/BM; independently reconciled)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_segments.py')],cwd=ROOT,check=True)
  if not offline:
