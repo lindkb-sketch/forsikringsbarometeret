@@ -164,6 +164,31 @@ def extract(blob, url):
                         if observation_year != year else ""),
                     "source_sha256": digest,
                 })
+        # Eika-adjusted annualised equity return is a separate issuer APM.
+        # It has no valid prior-year comparison until the report prints one;
+        # never substitute ordinary return on equity or Eika Gruppen ROE.
+        adjusted_label="Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS"
+        adjusted=[line for line in text.splitlines()
+                  if adjusted_label.lower() in line.lower()]
+        if len(adjusted)>1:
+            raise ValueError("Ambiguous Eika-adjusted equity return rows")
+        if adjusted:
+            tail=adjusted[0].split(adjusted_label,1)[-1].strip()
+            token=re.match(r"^(-?\\d{1,3}(?:,\\d{1,2})?)\\s*%",tail)
+            if token:
+                value=number(token.group(1))
+                if not -100<=value<=200:
+                    raise ValueError("Implausible Eika-adjusted equity return")
+                result.append({
+                    "company":"Fremtind","year":year,"quarter":q,"scope":"group",
+                    "period_type":"quarter","metric":"return_on_equity",
+                    "value":value,"unit":"percent","status":"reported",
+                    "source_type":"official_quarterly_report","source_url":url,
+                    "source_page":page_index+1,"source_sha256":digest,
+                    "source_entity":"Fremtind Holding konsern",
+                    "source_document_period":f"Q{q} {year}",
+                    "source_definition":adjusted_label,
+                })
         if solvency:
             for period in ("quarter","ytd"):
                 for obs_year,value in ((year,solvency[0][0]),(year-1,solvency[0][1])):
