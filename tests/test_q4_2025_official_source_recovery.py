@@ -14,7 +14,8 @@ class OfficialQ4ImportTests(unittest.TestCase):
   self.assertIn((2026,4),periods_due(date(2027,1,15)))
  def test_protector_attempts_q4_in_verified_pipeline(self):
   s=(ROOT/'scripts/protector_publish.py').read_text()
-  self.assertIn('(y==2025 and q==4)',s)
+  self.assertIn('relevant={(y,q) for scope,y,q,metric in values if y>=2025}',s)
+  self.assertIn('for year,quarter in sorted(relevant):',s)
   self.assertIn('pages=parse_pdf(blob,year,quarter)',s)
   self.assertIn('page_no=provenance(pages,scope,metric,value)',s)
 if __name__=='__main__':unittest.main()
