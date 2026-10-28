@@ -9,7 +9,7 @@ import io
 import re
 import pdfplumber
 
-NUM = r"-?\\d[\\d,]*(?:\\.\\d+)?"
+NUM = r"-?\d[\d,]*(?:\.\d+)?"
 LABELS = {
     "insurance_revenue": "Insurance revenue",
     "insurance_service_result": "Insurance service result",
@@ -30,7 +30,7 @@ def parse_norway_pdf(blob, year, quarter, url):
                 or "Norwegian general insurance" not in text):
                 continue
             before, after = text.split("Norwegian general insurance", 1)
-            headers = re.findall(r"Q([1-4])\\s+(20\\d\\d)", before)
+            headers = re.findall(r"Q([1-4])\s+(20\d\d)", before)
             if (str(quarter), str(year)) not in headers:
                 continue
             section = after.split("Swedish general insurance", 1)[0]
@@ -49,7 +49,7 @@ def parse_norway_pdf(blob, year, quarter, url):
     output = []
     for metric, label in LABELS.items():
         rows = [line.strip() for line in section.splitlines()
-                if re.match(r"^"+re.escape(label)+r"\\s+", line.strip(), re.I)]
+                if re.match(r"^"+re.escape(label)+r"\s+", line.strip(), re.I)]
         if len(rows) != 1:
             raise ValueError("Tryg Norway row absent/ambiguous: "+label)
         raw = rows[0][len(label):]
