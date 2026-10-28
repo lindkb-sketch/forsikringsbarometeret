@@ -19,17 +19,17 @@ def parse(blob,year,quarter,url):
         raise ValueError('Protector historical source is not a PDF')
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
         title=' '.join((p.extract_text() or '')[:350] for p in pdf.pages[:2])
-        if not re.search(r'Q'+str(quarter)+r'\\b',title,re.I) or str(year) not in title:
+        if not re.search(r'Q'+str(quarter)+r'\b',title,re.I) or str(year) not in title:
             raise ValueError('Wrong Protector historical PDF period')
         found=[]
         for page,p in enumerate(pdf.pages,1):
             text=p.extract_text() or ''
-            if not re.search(r'(?m)^Income overview\\s*$',text):
+            if not re.search(r'(?m)^Income overview\s*$',text):
                 continue
-            if not re.search(r'Q'+str(quarter)+r'\\s+'+str(year),text):
+            if not re.search(r'Q'+str(quarter)+r'\s+'+str(year),text):
                 continue
             for line in text.splitlines():
-                m=re.fullmatch(r'Insurance revenue\\s+([\\d,]+)(?:\\s+.*)?',line.strip(),re.I)
+                m=re.fullmatch(r'Insurance revenue\s+([\d,]+)(?:\s+.*)?',line.strip(),re.I)
                 if m:
                     found.append((page,float(m.group(1).replace(',',''))))
         if len(found)!=1 or found[0][1]<=0:
