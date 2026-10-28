@@ -19,9 +19,9 @@ class TrygAnnualQ4(unittest.TestCase):
   self.assertEqual(len(rows),1)
   self.assertEqual((rows[0]['year'],rows[0]['quarter']),(2027,4))
   self.assertIn('annual_report_2027.pdf',rows[0]['report_pdf_url'])
-  self.assertIn('q4-2027-investor-tables.xlsx',rows[0]['workbook_url'])
- def test_annual_only_is_not_marked_as_published(self):
-  self.assertEqual(parse('<a href="/annual_report_2027.pdf">Annual Report 2027</a>',2027),[])
+  self.assertNotIn('workbook_url',rows[0])
+ def test_annual_pdf_is_sufficient_for_discovery(self):
+  self.assertEqual(len(parse('<a href="/annual_report_2027.pdf">Annual Report 2027</a>',2027)),1)
  def test_q4_workbook_only_is_not_marked_as_published(self):
   self.assertEqual(parse('<a href="/tryg-q4-2027-investor-tables.xlsx">Q4 2027 investor tables</a>',2027),[])
  def test_wrong_year_does_not_match(self):
