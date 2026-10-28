@@ -16,7 +16,7 @@ def key(r):return tuple(r.get(k) for k in KEYS)
 
 def prepare(data,year,quarter,discoverer=discover,fetcher=download):
     urls=discoverer(year,quarter)
-    if not urls:return data,0
+    if not urls:raise ValueError(f'Official Gjensidige Q{quarter} {year} Excel workbook not discovered; refusing silent skip')
     if len(urls)!=1:raise ValueError('Ambiguous official Gjensidige XLSX sources: '+repr(urls))
     url=urls[0]
     group=[r for r in data['observations'] if r.get('company')=='Gjensidige'
