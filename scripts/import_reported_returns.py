@@ -67,7 +67,7 @@ def run():
         try:
             blob=download(url)
             page,value,definition=extract(blob,company,year,quarter)
-        except (ValueError,OSError,TimeoutError) as error:
+        except Exception as error:
             print('::warning::RETURN_PDF_UNVERIFIED',company,year,quarter,str(error)[:130],flush=True)
             continue
         row=dict(company=company,year=year,quarter=quarter,scope='group',
