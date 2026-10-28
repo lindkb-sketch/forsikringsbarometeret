@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Discover exact Tryg A/S group PDF and investor XLSX pairs from official archive."""
+"""Discover official Tryg quarterly PDF reports without spreadsheet dependencies."""
 import json,re,urllib.request,urllib.parse
 from datetime import date
 from html.parser import HTMLParser
@@ -39,8 +39,7 @@ def parse(markup,year):
             continue
         if not re.search(r'(?<!\d)'+str(year)+r'(?!\d)',search_text):continue
         kind=None
-        if name.lower().endswith('.xlsx') and re.search(r'investor.?tables|investor.?table',search_text,re.I):kind='workbook_url'
-        elif name.lower().endswith('.pdf') and re.search(r'interim report|financial report|annual report',search_text,re.I):kind='report_pdf_url'
+        if name.lower().endswith('.pdf') and re.search(r'interim report|financial report|annual report',search_text,re.I):kind='report_pdf_url'
         if kind:
             item=result.setdefault((year,quarter),{'company':'Tryg','year':year,'quarter':quarter,'source_index_url':BASE+str(year)})
             if kind in item and item[kind]!=url:raise ValueError('Ambiguous Tryg official archive '+str((year,quarter,kind)))
