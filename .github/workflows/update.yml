@@ -177,9 +177,12 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages-${{ github.run_attempt }}
           path: .
       - uses: actions/deploy-pages@v4
         id: deployment
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
       - name: Verify actual public finance, news, stock and editorial JSON
         run: python scripts/verify_public_pages.py
       - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
