@@ -80,6 +80,13 @@ def parse(pages,year,quarter,url,digest):
                     source_type='official_quarterly_report',
                     source_url=url,source_page=page,source_sha256=digest,
                     source_section=title))
+    for segment in SEGMENTS:
+        current=next(r for r in rows if r['segment']==segment and r['year']==year and r['metric']=='insurance_revenue')
+        prior=next(r for r in rows if r['segment']==segment and r['year']==year-1 and r['metric']=='insurance_revenue')
+        if prior['value']<=0:raise ValueError('Missing comparative segment revenue')
+        rows.append({**current,'metric':'insurance_revenue_growth',
+            'value':100*(current['value']/prior['value']-1),'unit':'percent',
+            'status':'calculated','calculation':'same_quarter_prior_year_revenue'})
     return rows
 
 def prepare(data,fetcher=download,reader=read_pdf):
@@ -93,7 +100,7 @@ def prepare(data,fetcher=download,reader=read_pdf):
     for year,quarter,url in sorted(sources):
         if all(('Gjensidige',year,quarter,'reported_segment',seg,'quarter','combined_ratio') in existing
                for seg in SEGMENTS) and all(('Gjensidige',year,quarter,'norway',None,'quarter',m) in existing
-               for m in METRICS):continue
+               for m in (*METRICS,'insurance_revenue_growth')):continue
         blob=fetcher(url)
         if not blob.startswith(b'%PDF-'):raise ValueError('Not official PDF')
         batch=parse(reader(blob),year,quarter,url,hashlib.sha256(blob).hexdigest())
@@ -103,6 +110,11 @@ def prepare(data,fetcher=download,reader=read_pdf):
                 if abs(existing[k]['value']-r['value'])>0.15:
                     raise ValueError('Conflicting verified segment value '+str(k))
             elif k not in {key(x) for x in additions}:additions.append(r)
+        # Calculate the geographic growth from summed current and prior-year revenue.
+        current=sum(r['value'] for r in batch if r['year']==year and r['metric']=='insurance_revenue')
+        previous=sum(r['value'] for r in batch if r['year']==year-1 and r['metric']=='insurance_revenue')
+        if previous<=0:raise ValueError('Missing comparative Norway revenue')
+        growth=100*(current/previous-1)
         # Norway totals must be derived from two independently identified
         # country segments; never substitute group or Nordic figures.
         for yr in (year,year-1):
@@ -126,6 +138,18 @@ def prepare(data,fetcher=download,reader=read_pdf):
                     source_type='official_quarterly_report',source_url=url,
                     source_page=segrows[0]['source_page'],source_sha256=segrows[0]['source_sha256'],
                     source_section='General Insurance Private Norway + Commercial Norway'))
+        k=('Gjensidige',year,quarter,'norway',None,'quarter','insurance_revenue_growth')
+        if k in existing:
+            if abs(existing[k]['value']-growth)>0.15:
+                raise ValueError('Existing Norway growth differs from segment revenues')
+        else:
+            additions.append(dict(company='Gjensidige',year=year,quarter=quarter,
+                scope='norway',period_type='quarter',metric='insurance_revenue_growth',
+                value=growth,unit='percent',status='calculated',
+                calculation='revenue_weighted_official_norway_segments',
+                source_type='official_quarterly_report',source_url=url,
+                source_page=batch[0]['source_page'],source_sha256=batch[0]['source_sha256'],
+                source_section='General Insurance Private Norway + Commercial Norway'))
     merged={**data,'observations':observations+additions}
     result=audit(merged)
     if not result['ok']:raise ValueError('Norway PDF audit failed: '+repr(result['errors']))
