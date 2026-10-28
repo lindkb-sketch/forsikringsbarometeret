@@ -61,24 +61,27 @@ def parse(pages,year,quarter,url,digest):
             recoveries=values_by_metric['recoveries'][idx]
             if revenue<=0 or claims>0 or expenses>0 or premiums>0:
                 raise ValueError('Unexpected source signs/revenue in '+title)
-            # Reinsurance recoveries can be positive or negative in the issuer PDF.
-            # Validate the signed sum against the reported combined ratio below.
-            # Source expenses are signed negative; convert to positive ratios.
-            loss=-(claims+premiums+recoveries)/revenue*100
-            cost=-expenses/revenue*100
-            combined=loss+cost
-            if not (0<=loss<=200 and 0<=cost<=100 and 0<=combined<=200):
-                raise ValueError('Implausible derived Norway ratios in '+title)
-            if abs(combined-values_by_metric['combined_ratio'][idx])>0.15:
-                raise ValueError('Derived CR does not match reported CR in '+title)
-            derived={'loss_ratio':loss,'expense_ratio':cost,'combined_ratio':combined}
+            # Take the issuer's published APM ratios from the PDF. Reinsurance
+            # recoveries may have either sign; do not reconstruct APM ratios
+            # from the IFRS service result components.
+            reported={m:values_by_metric[m][idx] for m in
+                      ('loss_ratio','expense_ratio','combined_ratio')}
+            if not (0 <= reported['loss_ratio'] <= 200
+                    and 0 <= reported['expense_ratio'] <= 100
+                    and 0 <= reported['combined_ratio'] <= 200):
+                raise ValueError('Implausible PDF ratios in '+title)
+            if abs(reported['loss_ratio']+reported['expense_ratio']
+                   -reported['combined_ratio'])>0.21:
+                raise ValueError('Reported PDF ratios do not reconcile in '+title)
+            if abs(revenue+claims+expenses+premiums+recoveries
+                   -values_by_metric['insurance_service_result'][idx])>0.31:
+                raise ValueError('PDF insurance service result does not reconcile in '+title)
             for metric in METRICS:
-                value=derived.get(metric,values_by_metric[metric][idx])
+                value=values_by_metric[metric][idx]
                 rows.append(dict(company='Gjensidige',year=yr,quarter=quarter,
                     scope='reported_segment',segment=segment,period_type='quarter',
                     metric=metric,value=value,unit='percent' if 'ratio' in metric else 'MNOK',
-                    status='calculated' if metric in derived else 'reported',
-                    calculation='signed_claims_reinsurance_expenses_over_revenue' if metric in derived else None,
+                    status='reported',
                     source_type='official_quarterly_report',
                     source_url=url,source_page=page,source_sha256=digest,
                     source_section=title))
