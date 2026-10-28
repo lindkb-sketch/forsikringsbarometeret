@@ -14,6 +14,13 @@ class DiscoverTrygPDF(unittest.TestCase):
         self.assertIn("report_pdf_url",rows[0])
         self.assertNotIn("workbook_url",rows[0])
 
+    def test_workbook_is_not_registered_as_a_source(self):
+        html=('<a href="/media/q3-2026-interim-report.pdf">Q3 2026 interim report</a>'
+              '<a href="/media/q3-2026-investor-tables.xlsx">Q3 2026 investor tables</a>')
+        rows=parse(html,2026)
+        self.assertEqual(len(rows),1)
+        self.assertNotIn("workbook_url",rows[0])
+
     def test_other_year_not_misclassified(self):
         html='<a href="/media/q3-2025-interim-report.pdf">Q3 2025 interim report</a>'
         self.assertEqual(parse(html,2026),[])
