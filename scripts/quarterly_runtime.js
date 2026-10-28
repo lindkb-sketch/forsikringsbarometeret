@@ -373,6 +373,15 @@
     fragment.innerHTML=relabel(previousCompany(c));
     const cardNodes=fragment.querySelectorAll('.dynamic-kpis > .metric');
     const d=(ytdMode()?MON_YTD_Q3:MON_Q3)[c]||{};
+    if(!d.growthPrev&&selection){
+      const type=ytdMode()?'ytd':'quarter',y=selection.year-1,q=selection.quarter;
+      const prior=quote(c,type,y,q,'insurance_revenue');
+      const older=quote(c,type,y-1,q,'insurance_revenue');
+      const reported=quote(c,type,y,q,'insurance_revenue_growth');
+      if(reported&&Number.isFinite(reported.value))d.growthPrev=fmt(reported.value,true);
+      else if(prior&&older&&older.value>0&&isSameBasis(prior,older))
+        d.growthPrev=fmt(100*(prior.value/older.value-1),true);
+    }
     if(cardNodes.length>=2){
       const esc=x=>String(x??'').replace(/[&<>"']/g,ch=>({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
