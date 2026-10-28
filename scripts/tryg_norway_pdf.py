@@ -30,14 +30,14 @@ def parse_norway_pdf(blob, year, quarter, url):
                 or "Norwegian general insurance" not in text):
                 continue
             before, after = text.split("Norwegian general insurance", 1)
-            headers = re.findall(r"Q([1-4])\\s+(20\\d\\d)", before)
+            headers = re.findall(r"Q([1-4])\s+(20\d\d)", before)
             if (str(quarter), str(year)) not in headers:
                 # Tryg also prints quarter and year on separate header rows.
                 lines=before.splitlines()
                 for i,line in enumerate(lines):
-                    qs=re.findall(r"\\bQ([1-4])\\b",line)
+                    qs=re.findall(r"\bQ([1-4])\b",line)
                     if not qs or i+1>=len(lines):continue
-                    yrs=re.findall(r"\\b20\\d{2}\\b",lines[i+1])
+                    yrs=re.findall(r"\b20\d{2}\b",lines[i+1])
                     if len(qs)==len(yrs) and len(qs)>=2:
                         headers=list(zip(qs,yrs))
                         break
