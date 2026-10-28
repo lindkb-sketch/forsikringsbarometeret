@@ -51,14 +51,8 @@ def run(offline=False):
  if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
-  print('RUN import_gjensidige_excel_auto.py (discover official issuer Excel and verify Norway PM/BM)',flush=True)
-  attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_excel_auto.py')],cwd=ROOT)
-  if attempt.returncode:
-   print('::warning::Gjensidige official Excel discovery/import failed; strict coverage gate will block missing published figures',flush=True)
   print('RUN import_gjensidige_pdf_norway.py (verified Norway PM/BM from official quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_pdf_norway.py')],cwd=ROOT,check=True)
-  print('RUN import_gjensidige_segments.py (official Norway PM/BM; independently reconciled)',flush=True)
-  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_segments.py')],cwd=ROOT,check=True)
  if not offline:
   print('RUN storebrand_2024_official_backfill.py (official 2025 Q3 Insurance comparator)',flush=True)
   attempt=subprocess.run([sys.executable,str(ROOT/'scripts'/'storebrand_2024_official_backfill.py')],cwd=ROOT)
