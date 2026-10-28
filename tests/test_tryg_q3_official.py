@@ -6,6 +6,14 @@ class OfficialTrygTests(unittest.TestCase):
  def setUpClass(cls):cls.rows=json.loads((ROOT/"data/financial_observations.json").read_text())["observations"]
  def value(self,year,quarter,metric,period="quarter"):
   r=[x for x in self.rows if x["company"]=="Tryg" and x["year"]==year and x["quarter"]==quarter and x["metric"]==metric and x["period_type"]==period and x["scope"]=="norway"]
+  if period=="ytd" and not r:
+   self.assertIn(metric,("insurance_revenue","insurance_service_result"))
+   quarters=[x for x in self.rows if x["company"]=="Tryg" and x["year"]==year
+             and x["quarter"]<=quarter and x["metric"]==metric
+             and x["period_type"]=="quarter" and x["scope"]=="norway"
+             and x.get("source_type")=="official_quarterly_report"]
+   self.assertEqual({x["quarter"] for x in quarters},set(range(1,quarter+1)))
+   return sum(x["value"] for x in quarters)
   self.assertEqual(len(r),1)
   return r[0]["value"]
  def test_q3_revenue(self):self.assertAlmostEqual(self.value(2026,3,"insurance_revenue"),2513,delta=1)
