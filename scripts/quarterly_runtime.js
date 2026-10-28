@@ -346,6 +346,18 @@
     if(!selection)return '';
     const esc=s=>String(s??'').replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]));
     const q=MON_Q3[c]||{},h=MON_YTD_Q3[c]||{};
+    // Compute the previous-year growth from the official 2025 and 2024
+    // revenues when the presentation adapter omits the comparison field.
+    const priorGrowth=type=>{
+      const metric='insurance_revenue_growth',y=selection.year-1,quarter=selection.quarter;
+      const stated=quote(c,type,y,quarter,metric);
+      if(stated&&Number.isFinite(stated.value))return fmt(stated.value,true);
+      const a=quote(c,type,y,quarter,'insurance_revenue');
+      const b=quote(c,type,y-1,quarter,'insurance_revenue');
+      return a&&b&&b.value>0&&isSameBasis(a,b)?fmt(100*(a.value/b.value-1),true):null;
+    };
+    if(!q.growthPrev)q.growthPrev=priorGrowth('quarter');
+    if(!h.growthPrev)h.growthPrev=priorGrowth('ytd');
     return '<section class="panel source-growth-matrix"><h2>Inntektsvekst · Q'+selection.quarter+' '+selection.year+'</h2>'+
       '<div class="dynamic-kpis">'+growthMatrix(c).map(([label,value,available,key])=>
         '<div class="metric" data-growth-period="'+key+'"><div class="name">'+esc(label)+'</div>'+
@@ -402,7 +414,7 @@
     // Replace the legacy Q2 label with the actual selected quarter.
     const heading=fragment.querySelector('.section-head h2');
     if(heading)heading.textContent=heading.textContent.replace(/Q2 2026/,label(selection));
-    return fragment.innerHTML+growthMatrixHtml(c);
+    return fragment.innerHTML+growthMatrixHtml(c)+'<section class="panel company-profitability" aria-label="Lønnsomhetsutvikling for '+c+'">'+profitabilityChart(c)+'</section>';
   }
   company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
