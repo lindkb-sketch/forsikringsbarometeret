@@ -159,6 +159,29 @@ async function main(){
   if(quote)check('Last delayed closing price in existing company stock panel',
        quotesOnCompany.includes(String(quote.close))&&quotesOnCompany.includes(quote.trading_date),
        quotesOnCompany.slice(0,420));
+  // Each company detail must show its own profitability graph and source-derived
+  // prior-year revenue growth; do not accept the homepage's selected issuer.
+  for(const issuer of ['Gjensidige','Protector']){
+    await page.evaluate(name=>show(name,true),issuer);
+    const panel=page.locator('.company-profitability');
+    check(issuer+' has its own profitability chart',
+      (await panel.count())===1 &&
+      (await panel.innerText()).includes('Utvikling i lønnsomhet · '+issuer) &&
+      (await panel.locator('.profit-quarter').count())===5,issuer);
+    const prior=feed.observations.find(r=>r.company===issuer&&r.year===year-1&&
+      r.quarter===quarter&&r.scope==='group'&&r.period_type==='quarter'&&
+      r.metric==='insurance_revenue');
+    const older=feed.observations.find(r=>r.company===issuer&&r.year===year-2&&
+      r.quarter===quarter&&r.scope==='group'&&r.period_type==='quarter'&&
+      r.metric==='insurance_revenue');
+    if(prior&&older&&older.value>0&&prior.unit===older.unit){
+      const expected=((prior.value/older.value-1)*100).toLocaleString('nb-NO',
+        {minimumFractionDigits:1,maximumFractionDigits:1});
+      const card=page.locator('.source-growth-matrix [data-growth-period="quarter-prior"] .value');
+      check(issuer+' displays verified last-year revenue growth',
+        (await card.innerText()).includes(expected),expected);
+    }
+  }
   await page.evaluate(()=>show('home',true));
   const tableQ=norm(await page.locator('body').innerText());
   for(const c of ['Fremtind','Storebrand']){
