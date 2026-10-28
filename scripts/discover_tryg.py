@@ -45,7 +45,7 @@ def parse(markup,year):
             item=result.setdefault((year,quarter),{'company':'Tryg','year':year,'quarter':quarter,'source_index_url':BASE+str(year)})
             if kind in item and item[kind]!=url:raise ValueError('Ambiguous Tryg official archive '+str((year,quarter,kind)))
             item[kind]=url
-    return [item for _,item in sorted(result.items()) if 'workbook_url' in item and 'report_pdf_url' in item]
+    return [item for _,item in sorted(result.items()) if 'report_pdf_url' in item]
 
 def run(years=None):
     if years is None:
@@ -58,7 +58,7 @@ def run(years=None):
             markup=resp.read(2_000_001)
         if len(markup)>2_000_000:raise ValueError('Oversized archive')
         pairs.extend(parse(markup.decode('utf-8','replace'),year))
-    if not pairs:raise ValueError('No issuer-linked Tryg PDF/XLSX pairs')
+    if not pairs:raise ValueError('No issuer-linked Tryg PDFs')
     OUT.write_text(json.dumps({'complete':True,'pairs':pairs},ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'Tryg_pairs':[(x['year'],x['quarter']) for x in pairs]}))
     return pairs
