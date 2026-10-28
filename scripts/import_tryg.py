@@ -112,7 +112,7 @@ def run(pairs=None):
             except Exception as exc:
                 print('::warning::Tryg historical 2024 comparison unavailable:',year,quarter,type(exc).__name__,str(exc)[:180],flush=True)
             continue
-        pdf=download_pdf(spec['report_pdf_url'])
+        pdf=download_tryg_report(spec['report_pdf_url'],quarter)
         group=parse_group(pdf,year,quarter,spec['report_pdf_url'])
         existing,_=merge(existing,group)
         # Prefer the explicitly labelled official PDF geography table.
@@ -120,11 +120,8 @@ def run(pairs=None):
         baseline=existing
         try:
             norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
-            existing={**existing,'observations':[r for r in existing['observations']
-                      if not (r['company']=='Tryg' and r['scope']=='norway'
-                              and r['year']==year and r['quarter']==quarter
-                              and r['period_type']=='quarter'
-                              and r['metric'] in {x['metric'] for x in norway})]}
+            # Preserve already audited observations and other periods (including YTD).
+            # Never replace them before comparing official source values.
             existing,_=merge(existing,norway)
             print('TRYG_NORWAY_PDF_VERIFIED',year,quarter,len(norway),flush=True)
         except ValueError as error:
@@ -134,10 +131,7 @@ def run(pairs=None):
             wb={'workbooks':[{'company':'Tryg','year':year,'quarter':quarter,
                               'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
                               'approved':True}]}
-            existing={**baseline,'observations':[r for r in baseline['observations']
-                      if not (r['company']=='Tryg' and r['scope']=='norway' and
-                              r['year']==year and r['quarter']==quarter)]}
-            existing,_,_=prepare(wb,existing)
+            existing,_,_=prepare(wb,baseline)
         previous={(r['period_type'],r['metric']):r['value'] for r in baseline['observations']
                   if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
         imported={(r['period_type'],r['metric']):r['value'] for r in existing['observations']
