@@ -164,10 +164,14 @@ async function main(){
   for(const issuer of ['Gjensidige','Protector']){
     await page.evaluate(name=>show(name,true),issuer);
     const panel=page.locator('.company-profitability');
+    const panelCount=await panel.count();
+    const panelText=panelCount?await panel.first().innerText():'';
+    const quarterCount=panelCount?await panel.first().locator('.profit-quarter').count():0;
     check(issuer+' has its own profitability chart',
-      (await panel.count())===1 &&
-      (await panel.innerText()).includes('Utvikling i lønnsomhet · '+issuer) &&
-      (await panel.locator('.profit-quarter').count())===5,issuer);
+      panelCount===1 && panelText.includes('Utvikling i lønnsomhet · '+issuer) &&
+      quarterCount===5,
+      JSON.stringify({issuer,panelCount,quarterCount,heading:panelText.slice(0,160),
+        html:await page.locator('body').evaluate(el=>el.innerHTML.includes('company-profitability'))}));
     const prior=feed.observations.find(r=>r.company===issuer&&r.year===year-1&&
       r.quarter===quarter&&r.scope==='group'&&r.period_type==='quarter'&&
       r.metric==='insurance_revenue');
