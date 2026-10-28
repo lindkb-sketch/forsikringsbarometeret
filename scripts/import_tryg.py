@@ -120,10 +120,6 @@ def run(pairs=None):
         baseline=existing
         try:
             norway=parse_norway_pdf(pdf,year,quarter,spec['report_pdf_url'])
-            # Preserve already audited observations and other periods (including YTD).
-            # Never replace them before comparing official source values.
-            existing,_=merge(existing,norway)
-            print('TRYG_NORWAY_PDF_VERIFIED',year,quarter,len(norway),flush=True)
         except ValueError as error:
             if not spec.get('workbook_url'):
                 raise ValueError('Norway PDF could not be validated and no official XLSX is available: '+str(error))
@@ -132,6 +128,11 @@ def run(pairs=None):
                               'workbook_url':spec['workbook_url'],'report_pdf_url':spec['report_pdf_url'],
                               'approved':True}]}
             existing,_,_=prepare(wb,baseline)
+        else:
+            # A validated PDF must reconcile; never mask a numerical/audit
+            # conflict by switching silently to the Excel fallback.
+            existing,_=merge(existing,norway)
+            print('TRYG_NORWAY_PDF_VERIFIED',year,quarter,len(norway),flush=True)
         previous={(r['period_type'],r['metric']):r['value'] for r in baseline['observations']
                   if r['company']=='Tryg' and r['scope']=='norway' and r['year']==year and r['quarter']==quarter}
         imported={(r['period_type'],r['metric']):r['value'] for r in existing['observations']
