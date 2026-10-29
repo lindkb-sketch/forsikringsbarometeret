@@ -40,11 +40,39 @@ def coverage(rows):
                          "source_url":matches[0]["source_url"] if len(matches)==1 else None}
     return result
 
+def quarterly_coverage(rows, start_year=2026):
+    """All published issuer quarters from Q1 2026 onward, never future guesses."""
+    result={}
+    for company,expected in TARGETS.items():
+        periods=sorted({(r["year"],r["quarter"]) for r in rows
+            if r.get("company")==company and r.get("scope")=="group"
+            and r.get("period_type")=="quarter" and
+            r.get("metric")=="insurance_revenue"
+            and r.get("status") in ("reported","calculated")
+            and r.get("year",0)>=start_year})
+        for year,quarter in periods:
+            matches=[r for r in rows if r.get("company")==company
+                and (r.get("year"),r.get("quarter"))==(year,quarter)
+                and r.get("scope")=="group" and r.get("period_type")=="quarter"
+                and r.get("metric")=="return_on_equity"
+                and r.get("status")=="reported"
+                and r.get("source_type")=="official_quarterly_report"
+                and r.get("source_url","").startswith("https://")
+                and expected.lower() in r.get("source_definition","").lower()]
+            key=f"{company} Q{quarter} {year}"
+            result[key]={"state":"verified" if len(matches)==1 else "missing_or_ambiguous",
+                         "source_url":matches[0]["source_url"] if len(matches)==1 else None}
+    return result
+
 def run():
     rows=json.loads(DATA.read_text(encoding="utf-8"))["observations"]
     result=coverage(rows)
+    history=quarterly_coverage(rows)
     dest=DATA.parent/"reported_returns_coverage.json"
     dest.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    print("RETURN_KPI_QUARTERLY_COVERAGE",json.dumps(history,ensure_ascii=False),flush=True)
+    for key,row in history.items():
+        if row["state"]!="verified":print("::warning::RETURN_KPI_QUARTER_MISSING",key,flush=True)
     for company,row in result.items():
         if row["state"]!="verified":
             print("::warning::RETURN_KPI_COVERAGE",company,row,flush=True)
