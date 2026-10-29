@@ -41,6 +41,8 @@ def synthesize(row):
  original=row.get('text','')
  if '«' not in original or '»' not in original:return None
  quote=original.split('«',1)[1].split('»',1)[0]
+ # A standalone PDF section title may precede an otherwise complete sentence.
+ quote=re.sub(r'^Prospects\\s+(?=Underlying profitability remains good\\b)','',quote,flags=re.I)
  # Reject PDF multi-column joining, fragments and mislabeled sections.
  if len(quote)>250 or quote.count('.')>1 or quote.count('  '):return None
  if re.search(r'\b(?:contents|--|annual report|table of contents)\b',quote,re.I):return None
