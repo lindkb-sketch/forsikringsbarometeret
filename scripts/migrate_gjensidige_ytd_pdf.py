@@ -17,7 +17,7 @@ LABELS={'insurance_revenue':'Insurance revenue',
         'loss_ratio':'Loss ratio, net of reinsurance',
         'expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
 SEGMENTS=('Private Norway','Commercial Norway')
-NUMBER=r'-?\\d[\\d,]*\\.\\d+'
+NUMBER=r'-?\d[\d,]*\.\d+'
 def source_values(pages):
     result={}
     pages_by_segment={}
@@ -32,9 +32,9 @@ def source_values(pages):
         result[segment]={}
         for metric,label in LABELS.items():
             matching=[line for line in txt.splitlines()
-                      if re.match(r'^\\s*'+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\\s+[-\\d]',line,re.I)]
+                      if re.match(r'^\s*'+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰* ]+)?\s+[-\d]',line,re.I)]
             if len(matching)!=1:raise ValueError('Ambiguous source row: '+segment+' '+metric)
-            tail=re.sub(r'^\\s*'+re.escape(label), '',matching[0],flags=re.I)
+            tail=re.sub(r'^\s*'+re.escape(label), '',matching[0],flags=re.I)
             nums=re.findall(NUMBER,tail)
             # Q2 2026, Q2 2025, YTD 2026, YTD 2025, FY 2025
             if len(nums)<5:raise ValueError('Missing distinct YTD column: '+segment+' '+metric)
