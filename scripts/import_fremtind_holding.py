@@ -167,28 +167,33 @@ def extract(blob, url):
         # Eika-adjusted annualised equity return is a separate issuer APM.
         # It has no valid prior-year comparison until the report prints one;
         # never substitute ordinary return on equity or Eika Gruppen ROE.
-        adjusted_label="Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS"
-        adjusted=[line for line in text.splitlines()
-                  if adjusted_label.lower() in line.lower()]
-        if len(adjusted)>1:
-            raise ValueError("Ambiguous Eika-adjusted equity return rows")
-        if adjusted:
-            tail=adjusted[0].split(adjusted_label,1)[-1].strip()
-            token=re.match(r"^(-?\\d{1,3}(?:,\\d{1,2})?)\\s*%",tail)
-            if token:
-                value=number(token.group(1))
-                if not -100<=value<=200:
-                    raise ValueError("Implausible Eika-adjusted equity return")
-                result.append({
-                    "company":"Fremtind","year":year,"quarter":q,"scope":"group",
-                    "period_type":"quarter","metric":"return_on_equity",
-                    "value":value,"unit":"percent","status":"reported",
-                    "source_type":"official_quarterly_report","source_url":url,
-                    "source_page":page_index+1,"source_sha256":digest,
-                    "source_entity":"Fremtind Holding konsern",
-                    "source_document_period":f"Q{q} {year}",
-                    "source_definition":adjusted_label,
-                })
+        # Match the issuer-specific Eika-adjusted return in the actual PDF
+        # table. Do not substitute ordinary ROE or estimate missing periods.
+        adjusted_caption=re.compile(
+            r"Annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+"
+            r"(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s+Forsikring\\s+AS",
+            re.I)
+        matches=[]
+        for line in text.splitlines():
+            found=adjusted_caption.search(line)
+            if not found:continue
+            tail=line[found.end():].strip()
+            values=re.findall(r"(?<![\\w])-?\\d{1,3}(?:,\\d{1,2})?\\s*%?",tail)
+            if values:matches.append(values)
+        if len(matches)>1:raise ValueError("Duplicate Eika-adjusted return rows")
+        if matches:
+            value=number(matches[0][0])
+            if not -100<=value<=200:raise ValueError("Eika-adjusted return outside supported range")
+            result.append({
+                "company":"Fremtind","year":year,"quarter":q,"scope":"group",
+                "period_type":"quarter","metric":"return_on_equity",
+                "value":value,"unit":"percent","status":"reported",
+                "source_type":"official_quarterly_report","source_url":url,
+                "source_page":page_index+1,"source_sha256":digest,
+                "source_entity":"Fremtind Holding konsern",
+                "source_document_period":f"Q{q} {year}",
+                "source_definition":"Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS",
+            })
         if solvency:
             for period in ("quarter","ytd"):
                 for obs_year,value in ((year,solvency[0][0]),(year-1,solvency[0][1])):
