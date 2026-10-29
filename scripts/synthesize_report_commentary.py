@@ -10,6 +10,8 @@ import re
 # Deliberately narrow descriptions: the source must explicitly contain the
 # driver AND its direction; never infer financial causation from a keyword.
 PATTERNS=(
+ ('profitability',r'\bunderlying profitability remains good, and continued disciplined underwriting\b',
+  'beskriver god underliggende lønnsomhet og vektlegger fortsatt disiplinert risikovurdering'),
  ('large_claims',r'\bfewer large claims than budgeted\b',
   'opplyser at omfanget av storskader var lavere enn budsjettert'),
  ('reinsurance',r'\blower reinsurance prices\b',
