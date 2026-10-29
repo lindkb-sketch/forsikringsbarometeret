@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from import_reported_returns import extract
+from import_reported_returns import extract, official_tryg_presentations
 
 class Page:
     def __init__(self,text):self.text=text
@@ -49,6 +49,24 @@ class ReportedReturnTests(unittest.TestCase):
     def test_no_equity_metric_from_investment_returns(self):
         with self.assertRaises(ValueError):
             self.extract_text('Protector','Return on investments 7.6 %')
+    def test_official_tryg_quarter_presentation_discovery(self):
+        from unittest.mock import MagicMock
+        html=(b'<a href="/sites/tryg.com/files/2026-01/Q4%202025%20-%20Investor%20presentation.pdf">'
+              b'Q4 2025 - Investor presentation.pdf</a>'
+              b'<a href="/tables/Q4-2025.xlsx">Q4 2025 - Investor tables.xlsx</a>')
+        mock=MagicMock()
+        mock.__enter__.return_value.read.return_value=html
+        with patch('urllib.request.urlopen',return_value=mock):
+            urls=list(official_tryg_presentations(2025,4))
+        self.assertEqual(len(urls),1)
+        self.assertTrue(urls[0].endswith('.pdf'))
+    def test_presentation_discovery_does_not_accept_unrelated_quarters(self):
+        from unittest.mock import MagicMock
+        html=(b'<a href="/Q3_2025_Investor_presentation.pdf">Q3 2025 - Investor presentation.pdf</a>')
+        mock=MagicMock()
+        mock.__enter__.return_value.read.return_value=html
+        with patch('urllib.request.urlopen',return_value=mock):
+            self.assertEqual(list(official_tryg_presentations(2025,4)),[])
     def test_scheduled_import_and_chart_binding(self):
         root=Path(__file__).resolve().parents[1]
         pipeline=(root/'scripts/run_pipeline.py').read_text()
