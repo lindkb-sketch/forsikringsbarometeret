@@ -13,6 +13,7 @@ TARGETS={
  "Tryg":"ROOF",
  "Gjensidige":"ROE",
  "Protector":"ROE",
+ "Storebrand":"Cash return on equity",
 }
 def coverage(rows):
     result={}
@@ -40,8 +41,8 @@ def coverage(rows):
                          "source_url":matches[0]["source_url"] if len(matches)==1 else None}
     return result
 
-def quarterly_coverage(rows, start_year=2026):
-    """All published issuer quarters from Q1 2026 onward, never future guesses."""
+def quarterly_coverage(rows, start_year=2025, start_quarter=3):
+    """All published issuer quarters from Q3 2025 onward, including future quarters."""
     result={}
     for company,expected in TARGETS.items():
         periods=sorted({(r["year"],r["quarter"]) for r in rows
@@ -49,7 +50,7 @@ def quarterly_coverage(rows, start_year=2026):
             and r.get("period_type")=="quarter" and
             r.get("metric")=="insurance_revenue"
             and r.get("status") in ("reported","calculated")
-            and r.get("year",0)>=start_year})
+            and (r.get("year",0),r.get("quarter",0))>=(start_year,start_quarter)})
         for year,quarter in periods:
             matches=[r for r in rows if r.get("company")==company
                 and (r.get("year"),r.get("quarter"))==(year,quarter)
