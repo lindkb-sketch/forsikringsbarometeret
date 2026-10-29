@@ -10,6 +10,8 @@ import re
 # Deliberately narrow descriptions: the source must explicitly contain the
 # driver AND its direction; never infer financial causation from a keyword.
 PATTERNS=(
+ ('growth',r'\bprice increases, improved risk selection\b',
+  'peker på prisjusteringer og forbedret risikoutvelgelse som sentrale grep i forsikringsdriften'),
  ('profitability',r'\bunderlying profitability remains good, and continued disciplined underwriting\b',
   'beskriver god underliggende lønnsomhet og vektlegger fortsatt disiplinert risikovurdering'),
  ('large_claims',r'\bfewer large claims than budgeted\b',
