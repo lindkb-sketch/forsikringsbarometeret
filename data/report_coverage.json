@@ -44,8 +44,20 @@
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
       },
+      "e2e_evidence": {
+        "Q3 2025": true,
+        "Q4 2025": true,
+        "Q1 2026": true,
+        "Q2 2026": true,
+        "Q3 2026": true
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Gjensidige",
@@ -89,8 +101,20 @@
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
       },
+      "e2e_evidence": {
+        "Q3 2025": true,
+        "Q4 2025": true,
+        "Q1 2026": true,
+        "Q2 2026": true,
+        "Q3 2026": true
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Tryg",
@@ -136,8 +160,20 @@
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
       },
+      "e2e_evidence": {
+        "Q3 2025": true,
+        "Q4 2025": true,
+        "Q1 2026": true,
+        "Q2 2026": true,
+        "Q3 2026": true
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Sampo",
@@ -165,8 +201,23 @@
         "reason": "no verified revenue period"
       },
       "return_kpi_coverage": null,
+      "e2e_evidence": {
+        "scheduled_workflow": true,
+        "issuer_importer_in_pipeline": true,
+        "official_source_on_latest_quarter": true,
+        "validated_latest_quarter_metrics": true,
+        "source_to_feed_parity": true,
+        "fresh_report_discovery_observed": false,
+        "fresh_report_ingested_without_manual_intervention": false,
+        "public_pages_parity_observed_in_same_scheduled_run": false
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Frende",
@@ -196,8 +247,23 @@
         "reason": "verified comparable revenue years"
       },
       "return_kpi_coverage": null,
+      "e2e_evidence": {
+        "scheduled_workflow": true,
+        "issuer_importer_in_pipeline": true,
+        "official_source_on_latest_quarter": true,
+        "validated_latest_quarter_metrics": true,
+        "source_to_feed_parity": true,
+        "fresh_report_discovery_observed": false,
+        "fresh_report_ingested_without_manual_intervention": false,
+        "public_pages_parity_observed_in_same_scheduled_run": false
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Protector",
@@ -237,8 +303,20 @@
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
       },
+      "e2e_evidence": {
+        "Q3 2025": true,
+        "Q4 2025": true,
+        "Q1 2026": true,
+        "Q2 2026": true,
+        "Q3 2026": true
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     },
     {
       "company": "Storebrand",
@@ -279,10 +357,22 @@
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
       },
+      "e2e_evidence": {
+        "Q3 2025": true,
+        "Q4 2025": true,
+        "Q1 2026": true,
+        "Q2 2026": true,
+        "Q3 2026": true
+      },
+      "missing_e2e_evidence": [
+        "fresh_report_discovery_observed",
+        "fresh_report_ingested_without_manual_intervention",
+        "public_pages_parity_observed_in_same_scheduled_run"
+      ],
       "automatic_complete": false,
-      "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
+      "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     }
   ],
   "return_kpi_history_complete": true,
-  "definition": "Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication. Historical return KPI completeness is separately reported and does not certify future imports."
+  "definition": "Automatic requires issuer discovery, fresh unattended import, official parsing, audited feed parity and public Pages parity in the same scheduled run; static repository evidence is insufficient."
 }
