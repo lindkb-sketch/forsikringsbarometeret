@@ -167,6 +167,7 @@ def run():
     existing={(r['company'],r['year'],r['quarter'],r['scope'],r['period_type'],r['metric']):r
               for r in records}
     added=0
+    updated=0
     for company,year,quarter,url in sources:
         # Never assign a previous year's ROE/ROOF by reading the current
         # period's PDF without a separately verified year-labelled column.
@@ -177,7 +178,12 @@ def run():
             print('::warning::RETURN_PERIOD_DOCUMENT_MISMATCH',company,year,quarter,url,flush=True)
             continue
         k=(company,year,quarter,'group','quarter','return_on_equity')
-        if k in existing:continue
+        old=existing.get(k)
+        # Recheck a known report only against its original, period-matched
+        # official source. Different URLs may be alternate presentations or
+        # unrelated documents; never overwrite an established value with one.
+        if old and old.get('source_url')!=url:
+            continue
         try:
             blob=download(url)
             page,value,definition=extract(blob,company,year,quarter)
@@ -208,14 +214,35 @@ def run():
             source_type='official_quarterly_report',source_url=url,
             source_page=page,source_sha256=hashlib.sha256(blob).hexdigest(),
             source_document_period=f'Q{quarter} {year}',source_definition=definition)
-        records.append(row)
+        if old:
+            old_hash=old.get('source_sha256')
+            if old_hash==row['source_sha256']:
+                continue
+            if old_hash is None:
+                # Legacy observations lack a comparable source fingerprint.
+                # Never silently replace them, even when a later PDF differs.
+                print('::warning::RETURN_LEGACY_REVIEW_REQUIRED',company,year,quarter,flush=True)
+                continue
+            # Same official URL, new PDF bytes: retain original provenance and
+            # history in the record; a revised figure remains fully auditable.
+            history=list(old.get('source_revision_history',[]))
+            history.append({field:old.get(field) for field in
+                            ('value','source_url','source_page','source_sha256',
+                             'source_definition','source_document_period')})
+            row['source_revision_history']=history
+            records[records.index(old)]=row
+            updated+=1
+            print('RETURN_OFFICIAL_PDF_REVISION',company,year,quarter,
+                  old['value'],'->',value,flush=True)
+        else:
+            records.append(row)
+            added+=1
+            print('REPORTED_RETURN_PDF',company,year,quarter,value,definition,flush=True)
         existing[k]=row
-        added+=1
-        print('REPORTED_RETURN_PDF',company,year,quarter,value,definition,flush=True)
     if not audit(data)['ok']:raise ValueError('Reported returns failed audit')
-    if added:
+    if added or updated:
         atomic_write(DATA,data)
         atomic_write(DATA.parent/'verified_financial_feed.json',build(data))
-    print('REPORTED_RETURN_PDF_ADDED',added,flush=True)
+    print('REPORTED_RETURN_PDF_ADDED',added,'REVISED',updated,flush=True)
 
 if __name__=='__main__':run()
