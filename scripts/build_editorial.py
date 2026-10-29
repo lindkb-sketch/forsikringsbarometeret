@@ -217,6 +217,19 @@ def build(feed,news):
     'ytd':ytd_note,'source_url':source,'period':label,
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
   documented=documented_report_insights(label,by_company) or []
+  # Preserve report-grounded qualitative notes per issuer independently
+  # of the limited cross-market brief selection.
+  for company in by_company:
+   by_company[company]['qualitative_notes']=[
+    {'text':entry['text'],'source_url':source['url'],
+     'source_page':source.get('page')}
+    for entry in documented
+    if company in entry.get('companies',[])
+    for source in entry.get('sources',[])
+    if source.get('company')==company
+    and source.get('kind')=='official_quarterly_report'
+    and source.get('page') and source.get('sha256')
+   ][:3]
   baseline=thematic_brief(by_company,rows,year,q)
   # Preserve published issuer commentary while adding new arrivals, and use
   # audited comparative context only for themes not already explained by sources.
