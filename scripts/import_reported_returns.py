@@ -115,6 +115,34 @@ def extract(blob,company,year,quarter):
     pageno,value=candidates[0]
     return pageno,value,definition
 
+def official_tryg_presentations(year,quarter):
+    """Issuer archive PDF links; never use Excel or arbitrary search results."""
+    from html.parser import HTMLParser
+    from urllib.parse import urljoin,urlparse
+    from urllib.request import Request,urlopen
+    class Links(HTMLParser):
+        def __init__(self):
+            super().__init__();self.url=None;self.text=[];self.links=[]
+        def handle_starttag(self,tag,attrs):
+            if tag=='a':
+                self.url=dict(attrs).get('href');self.text=[]
+        def handle_data(self,data):
+            if self.url is not None:self.text.append(data)
+        def handle_endtag(self,tag):
+            if tag=='a' and self.url is not None:
+                self.links.append((self.url,' '.join(self.text)))
+                self.url=None
+    archive=f'https://tryg.com/en/downloads-{year}'
+    with urlopen(Request(archive,headers={'User-Agent':'Forsikringsbarometeret/1.0'}),timeout=20) as response:
+        parser=Links();parser.feed(response.read(350_001).decode('utf-8','replace'))
+    for href,title in parser.links:
+        dest=urljoin(archive,href)
+        parsed=urlparse(dest)
+        if parsed.scheme!='https' or parsed.hostname not in ('tryg.com','www.tryg.com'):continue
+        if not parsed.path.lower().endswith('.pdf'):continue
+        if re.search(rf'Q{quarter}\\s+{year}\\s*[-–]\\s*Investor presentation',title,re.I):
+            yield dest
+
 def run():
     data=json.loads(DATA.read_text(encoding='utf-8'))
     records=data['observations']
@@ -133,8 +161,26 @@ def run():
             blob=download(url)
             page,value,definition=extract(blob,company,year,quarter)
         except Exception as error:
-            print('::warning::RETURN_PDF_UNVERIFIED',company,year,quarter,str(error)[:130],flush=True)
-            continue
+            # Tryg publishes an official PDF investor presentation for each
+            # quarter, including Q4 when the annual PDF is oversized.
+            # A reported ROOF value from that presentation is sufficient.
+            recovered=None
+            if company=='Tryg':
+                try:
+                    for alternate in official_tryg_presentations(year,quarter):
+                        try:
+                            candidate=download(alternate)
+                            verified_page,verified_value,verified_definition=extract(candidate,company,year,quarter)
+                            recovered=(alternate,candidate,verified_page,verified_value,verified_definition)
+                            break
+                        except (ValueError,OSError,TimeoutError):
+                            continue
+                except (ValueError,OSError,TimeoutError) as lookup_error:
+                    print('::warning::RETURN_PRESENTATION_UNAVAILABLE',company,year,quarter,str(lookup_error)[:120],flush=True)
+            if recovered is None:
+                print('::warning::RETURN_PDF_UNVERIFIED',company,year,quarter,str(error)[:130],flush=True)
+                continue
+            url,blob,page,value,definition=recovered
         row=dict(company=company,year=year,quarter=quarter,scope='group',
             source_scope='group',period_type='quarter',metric='return_on_equity',
             value=value,unit='percent',status='reported',
