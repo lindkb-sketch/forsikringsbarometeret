@@ -1850,16 +1850,13 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    // A numerical feed summary is NOT editorial commentary. Only publish
    // genuinely qualitative, period-specific findings from official issuer
    // reports or investor presentations with source evidence.
-   const notes=(block?.brief||[]).filter(x=>
-     Array.isArray(x.companies)&&x.companies.includes(c)&&
-     x.type==='qualitative_quarter_theme'&&
-     x.basis!=='issuer_pdf_verbatim'&&
-     Array.isArray(x.sources)&&x.sources.some(z=>
-       z.company===c&&z.kind==='official_quarterly_report'&&
-       z.url&&z.page&&z.sha256));
+   const notes=(item?.qualitative_notes||[]).filter(x=>
+     x.text&&/^https:\/\//.test(x.source_url)&&x.source_page);
    body=notes.length?notes.slice(0,2).map(x=>
-     '<p>'+esc(x.text)+'</p><p>'+src(x)+'</p>').join(''):
-     '<p>Redaksjonell kvartalskommentar avventer verifiserte kvalitative opplysninger fra selskapets kvartalsrapport eller kvartalspresentasjon. Nøkkeltallene vises separat.</p>';
+     '<p>'+esc(x.text)+'</p><p><a href="'+safeUrl(x.source_url)+
+     '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport, side '+
+     esc(x.source_page)+' ↗</a></p>').join(''):
+     '<p>Redaksjonell kvartalskommentar avventer kontrollerte, kvalitative opplysninger fra selskapets offisielle kvartalsrapport eller presentasjon. Nøkkeltallene vises separat.</p>';
   }else{
    const facts=(block?.brief||[]).filter(x=>x.text && x.basis!=='issuer_pdf_verbatim' && !/ omtaler i kvartalsrapporten:/.test(x.text) && (x.type==='qualitative_quarter_theme' || x.company)).slice(0,4);
    const themeTitle={large_claims:'Store skader og enkelthendelser',weather:'Vær og naturskader',
