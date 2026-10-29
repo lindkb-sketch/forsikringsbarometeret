@@ -9,6 +9,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand')
 REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio')
+RETURN_TYPES={'Fremtind':'Eika','Gjensidige':'ROE','Tryg':'ROOF',
+              'Protector':'ROE','Storebrand':'Cash return on equity'}
+RETURN_QUARTERS=((2025,3),(2025,4),(2026,1),(2026,2),(2026,3))
 
 def build(root=ROOT):
     root=Path(root)
@@ -48,6 +51,25 @@ def build(root=ROOT):
                              'verified comparable revenue years' if available else
                              'missing verified revenue for prior-prior year'}
 
+        return_status=None
+        if company in RETURN_TYPES:
+            checks={}
+            for year,quarter in RETURN_QUARTERS:
+                matches=[r for r in group if r.get('year')==year
+                         and r.get('quarter')==quarter
+                         and r.get('metric')=='return_on_equity'
+                         and r.get('status')=='reported'
+                         and r.get('source_type')=='official_quarterly_report'
+                         and str(r.get('source_url','')).startswith('https://')
+                         and isinstance(r.get('source_page'),int)
+                         and r['source_page']>0
+                         and RETURN_TYPES[company].lower() in
+                             str(r.get('source_definition','')).lower()]
+                checks[f'Q{quarter} {year}']=len(matches)==1
+            return_status={'historical_source_verified':all(checks.values()),
+                           'quarters':checks,
+                           'scheduled_import_configured':True,
+                           'future_quarter_end_to_end_verified':False}
         result.append({'company':company,'official_archive_registered':any(s.get('index_url') for s in sources),
           'direct_pdf_registered':sum(bool(s.get('document_url')) for s in sources),
           'official_report_candidates':sum(c.get('company')==company for c in candidate_rows),
@@ -55,10 +77,13 @@ def build(root=ROOT):
           'group_quarter_observations':len(group),'group_quarters_with_required_metrics':sorted(complete),
           'prior_year_growth_quarter':historical_growth_status('quarter'),
           'prior_year_growth_ytd':historical_growth_status('ytd'),
+          'return_kpi_coverage':return_status,
           'automatic_complete':False,
           'reason':'End-to-end automatic discovery, source parsing and publication not yet verified for this issuer'})
     return {'all_seven_automatic':all(x['automatic_complete'] for x in result),'companies':result,
-       'definition':'Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication.'}
+       'return_kpi_history_complete':all(x['return_kpi_coverage']['historical_source_verified']
+             for x in result if x['return_kpi_coverage'] is not None),
+       'definition':'Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication. Historical return KPI completeness is separately reported and does not certify future imports.'}
 
 if __name__=='__main__':
     output=ROOT/'data/report_coverage.json'
