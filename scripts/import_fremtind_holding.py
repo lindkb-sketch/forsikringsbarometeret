@@ -169,21 +169,27 @@ def extract(blob, url):
         # never substitute ordinary return on equity or Eika Gruppen ROE.
         # Match the issuer-specific Eika-adjusted return in the actual PDF
         # table. Do not substitute ordinary ROE or estimate missing periods.
-        adjusted_caption=re.compile(
-            r"Annualisert\s+egenkapitalavkastning\s+justert\s+for\s+"
-            r"(?:transaksjonen|fusjonen)\s+med\s+Eika\s+Forsikring\s+AS",
+        # The official quarterly table may wrap the Eika APM label across
+        # two physical lines, and print EikaForsikring as one word.
+        caption=re.compile(
+            r"Annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+"
+            r"(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s*Forsikring\\s+AS\\*?",
             re.I)
         matches=[]
-        for line in text.splitlines():
-            found=adjusted_caption.search(line)
+        lines=text.splitlines()
+        for i in range(len(lines)):
+            window=" ".join(lines[i:i+2])
+            found=caption.search(window)
             if not found:continue
-            tail=line[found.end():].strip()
-            values=re.findall(r"(?<![\w])-?\d{1,3}(?:,\d{1,2})?\s*%?",tail)
-            if values:matches.append(values)
-        if len(matches)>1:raise ValueError("Duplicate Eika-adjusted return rows")
-        if matches:
-            value=number(matches[0][0])
-            if not -100<=value<=200:raise ValueError("Eika-adjusted return outside supported range")
+            # A table line has the current-quarter observation first.
+            remainder=window[found.end():].strip()
+            values=re.findall(r"(?<![\\w])-?\\d{1,3}(?:,\\d{1,2})?\\s*%",remainder)
+            if values:matches.append((i,number(values[0])))
+        unique={round(value,3) for _,value in matches}
+        if len(unique)>1:raise ValueError("Conflicting Eika-adjusted return values")
+        if len(unique)==1:
+            value=next(iter(unique))
+            if not -100<=value<=200:raise ValueError("Implausible Eika-adjusted return")
             result.append({
                 "company":"Fremtind","year":year,"quarter":q,"scope":"group",
                 "period_type":"quarter","metric":"return_on_equity",
