@@ -32,6 +32,18 @@
         "quarter": 3,
         "reason": "verified comparable revenue years"
       },
+      "return_kpi_coverage": {
+        "historical_source_verified": true,
+        "quarters": {
+          "Q3 2025": true,
+          "Q4 2025": true,
+          "Q1 2026": true,
+          "Q2 2026": true,
+          "Q3 2026": true
+        },
+        "scheduled_import_configured": true,
+        "future_quarter_end_to_end_verified": false
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -64,6 +76,18 @@
         "year": 2025,
         "quarter": 3,
         "reason": "verified comparable revenue years"
+      },
+      "return_kpi_coverage": {
+        "historical_source_verified": true,
+        "quarters": {
+          "Q3 2025": true,
+          "Q4 2025": true,
+          "Q1 2026": true,
+          "Q2 2026": true,
+          "Q3 2026": true
+        },
+        "scheduled_import_configured": true,
+        "future_quarter_end_to_end_verified": false
       },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
@@ -100,6 +124,18 @@
         "quarter": 3,
         "reason": "verified comparable revenue years"
       },
+      "return_kpi_coverage": {
+        "historical_source_verified": true,
+        "quarters": {
+          "Q3 2025": true,
+          "Q4 2025": true,
+          "Q1 2026": true,
+          "Q2 2026": true,
+          "Q3 2026": true
+        },
+        "scheduled_import_configured": true,
+        "future_quarter_end_to_end_verified": false
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -128,6 +164,7 @@
         "available": false,
         "reason": "no verified revenue period"
       },
+      "return_kpi_coverage": null,
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -158,6 +195,7 @@
         "quarter": 2,
         "reason": "verified comparable revenue years"
       },
+      "return_kpi_coverage": null,
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     },
@@ -186,6 +224,18 @@
         "year": 2024,
         "quarter": 3,
         "reason": "missing verified revenue for prior-prior year"
+      },
+      "return_kpi_coverage": {
+        "historical_source_verified": true,
+        "quarters": {
+          "Q3 2025": true,
+          "Q4 2025": true,
+          "Q1 2026": true,
+          "Q2 2026": true,
+          "Q3 2026": true
+        },
+        "scheduled_import_configured": true,
+        "future_quarter_end_to_end_verified": false
       },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
@@ -217,9 +267,22 @@
         "quarter": 3,
         "reason": "verified comparable revenue years"
       },
+      "return_kpi_coverage": {
+        "historical_source_verified": true,
+        "quarters": {
+          "Q3 2025": true,
+          "Q4 2025": true,
+          "Q1 2026": true,
+          "Q2 2026": true,
+          "Q3 2026": true
+        },
+        "scheduled_import_configured": true,
+        "future_quarter_end_to_end_verified": false
+      },
       "automatic_complete": false,
       "reason": "End-to-end automatic discovery, source parsing and publication not yet verified for this issuer"
     }
   ],
-  "definition": "Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication."
+  "return_kpi_history_complete": true,
+  "definition": "Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication. Historical return KPI completeness is separately reported and does not certify future imports."
 }
