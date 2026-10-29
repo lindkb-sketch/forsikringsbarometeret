@@ -139,32 +139,32 @@
   "stocks": [
     {
       "company": "Gjensidige",
-      "trading_date": "2026-10-27",
-      "calendar_days_old": 2,
+      "trading_date": "2026-10-29",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     },
     {
       "company": "Protector",
-      "trading_date": "2026-10-27",
-      "calendar_days_old": 2,
+      "trading_date": "2026-10-29",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     },
     {
       "company": "Storebrand",
-      "trading_date": "2026-10-27",
-      "calendar_days_old": 2,
+      "trading_date": "2026-10-29",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     },
     {
       "company": "Tryg",
-      "trading_date": "2026-10-27",
-      "calendar_days_old": 2,
+      "trading_date": "2026-10-29",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     },
     {
       "company": "Sampo / If",
-      "trading_date": "2026-10-27",
-      "calendar_days_old": 2,
+      "trading_date": "2026-10-29",
+      "calendar_days_old": 0,
       "status": "dated_delayed_close"
     }
   ],
