@@ -14371,15 +14371,16 @@
       "source_scope": "group",
       "period_type": "quarter",
       "metric": "return_on_equity",
-      "value": 47.9,
+      "value": 28.7,
       "unit": "percent",
       "status": "reported",
       "source_type": "official_quarterly_report",
-      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
       "source_page": 18,
       "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
       "source_document_period": "Q3 2025",
-      "source_definition": "ROE annualised"
+      "source_definition": "ROE annualised – Protector Forsikring ASA, Q3 2025 isolated quarter",
+      "source_entity": "Protector Forsikring ASA"
     },
     {
       "company": "Protector",
