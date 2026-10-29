@@ -21,6 +21,9 @@ LABELS={
  'Protector':(
    r'return on equity,? annualis(?:ed|z)',
    'ROE annualised'),
+ 'Fremtind':(
+   r'annualisert\\s+egenkapitalavkastning\\s+justert\\s+for',
+   'Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS'),
  'Tryg':(
    r'(?:return on own funds\s*\(ROOF\)|\bROOF\b)',
    'ROOF annualised'),
@@ -50,21 +53,43 @@ def extract(blob,company,year,quarter):
     # page, never infer ROOF from solvency ratio or ordinary profit.
     if company=='Tryg' and not candidates:
         roof_patterns=[
-            re.compile(r"return\\s+on\\s+own\\s+funds\\s*\\(\\s*ROOF\\s*\\)"
-                       r"[^.\\n]{0,100}?(-?\\d{1,3}(?:[.,]\\d{1,2})?)\\s*%",re.I),
-            re.compile(r"\\bROOF\\b\\s*(?:\\(\\s*%\\s*\\))?\\s*(?:was|of|at|:)?"
-                       r"\\s*(-?\\d{1,3}(?:[.,]\\d{1,2})?)\\s*%",re.I),
+            re.compile(r"return\s+on\s+own\s+funds\s*\(\s*ROOF\s*\)"
+                       r"[^.\n]{0,100}?(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%",re.I),
+            re.compile(r"\bROOF\b\s*(?:\(\s*%\s*\))?\s*(?:was|of|at|:)?"
+                       r"\s*(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%",re.I),
         ]
         with pdfplumber.open(io.BytesIO(blob)) as pdf:
             for pageno,page in enumerate(pdf.pages,1):
                 raw=page.extract_text() or ''
-                variants=[raw,re.sub(r"\\s+"," ",raw)]
+                variants=[raw,re.sub(r"\s+"," ",raw)]
                 for variant in variants:
                     for pattern in roof_patterns:
                         for match in pattern.finditer(variant):
                             value=float(match.group(1).replace(',','.'))
                             if -100<=value<=200:
                                 candidates.append((pageno,value))
+    # Fremtind's Eika-adjusted equity return is in the Holding PDF KPI
+    # table. It may be split across rows and need not pass the independent
+    # revenue/combined-ratio table extraction to be an official figure.
+    if company=='Fremtind':
+        caption=re.compile(
+            r'annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+'
+            r'(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s*Forsikring\\s+AS',
+            re.I)
+        with pdfplumber.open(io.BytesIO(blob)) as pdf:
+            for pageno,page in enumerate(pdf.pages,1):
+                lines=(page.extract_text() or '').splitlines()
+                for i,line in enumerate(lines):
+                    context=' '.join(lines[i:i+3])
+                    m=caption.search(context)
+                    if not m:continue
+                    remainder=context[m.end():]
+                    # Capture the first explicitly printed percentage in the
+                    # current-quarter column, never a plain equity amount.
+                    values=re.findall(r'(?<![\\w.,])-?\\d{1,3}(?:[.,]\\d{1,2})?\\s*%',remainder)
+                    if values:
+                        value=float(values[0].replace('%','').replace(' ','').replace(',','.'))
+                        if -100<=value<=200:candidates.append((pageno,value))
     # Protector's official KPI appendix reports ROE in a quarterly table,
     # with a superscript footnote and a separate percent-unit column.
     # Only the first numeric value of that explicitly labelled Q-row is
