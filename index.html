@@ -1101,6 +1101,7 @@ let MON_CARD=(c,key,originalHtml)=>{
  if(key==='growth'&&c==='Frende'){const label=card.querySelector('.name');if(label)label.textContent='Vekst i forsikringsinntekter (IFRS 4)';}
  if(v)v.textContent=val+(key==='result'&&d[key]?' '+(d.resultUnit||'MNOK'):'');
  if(prior)prior.textContent=(period==='H3'?'HIÅ ':'Q')+(window.FBActivePeriod?.quarter||3)+' '+((window.FBActivePeriod?.year||2026)-1)+': '+prev+(key==='result'&&d[key+'Prev']?' '+(d.resultUnit||'MNOK'):'');
+ if(key==='solvency'&&!d[key]&&prior)prior.textContent='Konsernsolvens ikke kildeverifisert for valgt kvartal';
  if(delta){
    const parse=n=>{const x=String(n||'').replace(/\s/g,'').replace(/−/g,'-').replace(',','.').match(/-?\d+(?:\.\d+)?/);return x?Number(x[0]):NaN;};
    const a=parse(val),b=parse(prev);
