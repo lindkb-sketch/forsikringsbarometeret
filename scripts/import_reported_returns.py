@@ -22,7 +22,7 @@ LABELS={
    r'return on equity,? annualis(?:ed|z)',
    'ROE annualised'),
  'Fremtind':(
-   r'annualisert\\s+egenkapitalavkastning\\s+justert\\s+for',
+   r'annualisert\s+egenkapitalavkastning\s+justert\s+for',
    'Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS'),
  'Tryg':(
    r'(?:return on own funds\s*\(ROOF\)|\bROOF\b)',

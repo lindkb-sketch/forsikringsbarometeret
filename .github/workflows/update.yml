@@ -33,6 +33,10 @@ jobs:
           git status --short
       - name: Verify PDF-only Tryg import wiring
         run: python -m unittest discover -s tests -p 'test_tryg_pdf_only_wiring.py' -v
+      - name: Fast PDF return parser preflight
+        run: |
+          python -m py_compile scripts/import_reported_returns.py scripts/import_fremtind_holding.py scripts/check_reported_returns_coverage.py
+          python -m unittest discover -s tests -p 'test_reported_returns*.py' -v
       - name: Test dashboard and financial data
         run: |
           python -m unittest discover -s tests -v

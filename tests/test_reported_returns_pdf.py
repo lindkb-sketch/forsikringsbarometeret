@@ -28,8 +28,8 @@ class ReportedReturnTests(unittest.TestCase):
         self.assertEqual(value,32.2)
         self.assertIn('Eika',definition)
     def test_tryg_roof_wrapped_under_solveny_header(self):
-        sample=("Dividend and solvency\\n"
-            "The return on own funds (ROOF)\\nwas 47.0%.")
+        sample=("Dividend and solvency\n"
+            "The return on own funds (ROOF)\nwas 47.0%.")
         _,value,definition=self.extract_text('Tryg',sample)
         self.assertEqual(value,47.0)
         self.assertEqual(definition,'ROOF annualised')

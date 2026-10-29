@@ -172,8 +172,8 @@ def extract(blob, url):
         # The official quarterly table may wrap the Eika APM label across
         # two physical lines, and print EikaForsikring as one word.
         caption=re.compile(
-            r"Annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+"
-            r"(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s*Forsikring\\s+AS\\*?",
+            r"Annualisert\s+egenkapitalavkastning\s+justert\s+for\s+"
+            r"(?:transaksjonen|fusjonen)\s+med\s+Eika\s*Forsikring\s+AS\*?",
             re.I)
         matches=[]
         lines=text.splitlines()
@@ -183,7 +183,7 @@ def extract(blob, url):
             if not found:continue
             # A table line has the current-quarter observation first.
             remainder=window[found.end():].strip()
-            values=re.findall(r"(?<![\\w.,])-?\\d{1,3}(?:[.,]\\d{1,2})?\\s*%",remainder)
+            values=re.findall(r"(?<![\w.,])-?\d{1,3}(?:[.,]\d{1,2})?\s*%",remainder)
             if values:matches.append((i,number(values[0])))
         unique={round(value,3) for _,value in matches}
         if len(unique)>1:raise ValueError("Conflicting Eika-adjusted return values")
