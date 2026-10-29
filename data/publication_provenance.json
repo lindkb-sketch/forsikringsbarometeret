@@ -6,11 +6,11 @@
     {
       "company": "Fremtind",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 6,
+      "group_quarter_observations": 7,
       "official_source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
       ],
-      "observation_sha256": "1fb82dc9f95017fc494d4e70c7cad4525d4982332bab3330fd7849813679e5f8",
+      "observation_sha256": "cf40d023adb3c10f010bd10a06ade8a2cf091db0339afcf95667d1723089d563",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
