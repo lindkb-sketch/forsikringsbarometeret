@@ -17,6 +17,20 @@ def build(root=ROOT):
     root=Path(root)
     observations=json.loads((root/'data/financial_observations.json').read_text())['observations']
     registry=json.loads((root/'data/report_sources.json').read_text())['sources']
+    feed=json.loads((root/'data/verified_financial_feed.json').read_text())['observations']
+    workflow=(root/'.github/workflows/update.yml').read_text(encoding='utf-8')
+    pipeline=(root/'scripts/run_pipeline.py').read_text(encoding='utf-8')
+    required_steps=('scripts/run_pipeline.py','scripts/publication_provenance.py',
+                    'scripts/verify_public_pages.py','actions/deploy-pages@v4')
+    scheduled=('schedule:' in workflow and all(step in workflow for step in required_steps))
+    feed_index={(r.get('company'),r.get('year'),r.get('quarter'),r.get('scope'),
+                 r.get('period_type'),r.get('metric'),r.get('segment')):r for r in feed}
+    importer_map={'Fremtind':'import_fremtind_holding.py',
+                  'Gjensidige':'import_gjensidige_latest.py',
+                  'Tryg':'import_tryg.py','Sampo':'sampo_publish.py',
+                  'Frende':'import_frende_holding.py',
+                  'Protector':'protector_publish.py',
+                  'Storebrand':'storebrand_publish_q3.py'}
     result=[]
     candidate_path=root/'data/frende_fremtind_candidates.json'
     candidate_data=json.loads(candidate_path.read_text()) if candidate_path.exists() else {'candidates':[],'complete':False}
@@ -51,6 +65,26 @@ def build(root=ROOT):
                              'verified comparable revenue years' if available else
                              'missing verified revenue for prior-prior year'}
 
+        latest=max(((r['year'],r['quarter']) for r in group),default=None)
+        latest_rows=[r for r in group if (r['year'],r['quarter'])==latest] if latest else []
+        official=[r for r in latest_rows if r.get('source_type')=='official_quarterly_report'
+                  and str(r.get('source_url','')).startswith('https://')]
+        published=bool(latest_rows) and all(
+            feed_index.get((r.get('company'),r.get('year'),r.get('quarter'),
+                            r.get('scope'),r.get('period_type'),r.get('metric'),
+                            r.get('segment')))==r for r in latest_rows)
+        checks={
+            'scheduled_workflow':scheduled,
+            'issuer_importer_in_pipeline':importer_map[company] in pipeline,
+            'official_source_on_latest_quarter':bool(official),
+            'validated_latest_quarter_metrics':bool(latest and f"{latest[0]}-Q{latest[1]}" in complete),
+            'source_to_feed_parity':published,
+            # Historical observations do not establish how they were discovered.
+            'fresh_report_discovery_observed':False,
+            'fresh_report_ingested_without_manual_intervention':False,
+            'public_pages_parity_observed_in_same_scheduled_run':False,
+        }
+        missing=[name for name,passed in checks.items() if not passed]
         return_status=None
         if company in RETURN_TYPES:
             checks={}
@@ -78,12 +112,14 @@ def build(root=ROOT):
           'prior_year_growth_quarter':historical_growth_status('quarter'),
           'prior_year_growth_ytd':historical_growth_status('ytd'),
           'return_kpi_coverage':return_status,
-          'automatic_complete':False,
-          'reason':'End-to-end automatic discovery, source parsing and publication not yet verified for this issuer'})
+          'e2e_evidence':checks,'missing_e2e_evidence':missing,
+          'automatic_complete':not missing,
+          'reason':'Verified across all required steps' if not missing else
+                   'Missing end-to-end evidence: '+', '.join(missing)})
     return {'all_seven_automatic':all(x['automatic_complete'] for x in result),'companies':result,
        'return_kpi_history_complete':all(x['return_kpi_coverage']['historical_source_verified']
              for x in result if x['return_kpi_coverage'] is not None),
-       'definition':'Automatic requires real official report discovery, extraction of validated numbers, and successful scheduled publication. Historical return KPI completeness is separately reported and does not certify future imports.'}
+       'definition':'Automatic requires issuer discovery, fresh unattended import, official parsing, audited feed parity and public Pages parity in the same scheduled run; static repository evidence is insufficient.'}
 
 if __name__=='__main__':
     output=ROOT/'data/report_coverage.json'
