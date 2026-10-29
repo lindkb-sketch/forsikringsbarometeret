@@ -51,7 +51,9 @@
       "status": "reported",
       "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/4237d035-d763-4991-b204-bc1f67cf23ea%3Ad3110f016fb66573dd897fa09fdf013b05a792df/2026-q2-interim-report-storebrand-asa.pdf",
       "source_page": 5,
-      "source_type": "official_quarterly_report"
+      "source_type": "official_quarterly_report",
+      "source_sha256": "e42cfc9f0b3dd81cb58afc1d8be36040dc3f4f5430d9e06f4cdc3d8cda9ffd81",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Storebrand",
@@ -148,7 +150,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -165,7 +169,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -182,7 +188,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -199,7 +207,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -216,7 +226,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -233,7 +245,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -250,7 +264,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -267,7 +283,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -284,7 +302,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -301,7 +321,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -318,7 +340,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -335,7 +359,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -352,7 +378,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -369,7 +397,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -386,7 +416,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -403,7 +435,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -420,7 +454,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -437,7 +473,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -454,7 +492,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -471,7 +511,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -488,7 +530,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -505,7 +549,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -522,7 +568,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -539,7 +587,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -556,7 +606,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -573,7 +625,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -590,7 +644,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -607,7 +663,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -624,7 +682,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -641,7 +701,9 @@
       "source_page": 36,
       "source_type": "official_quarterly_report",
       "source_section": "Quarterly outline - Geography / Norwegian general insurance",
-      "source_document_period": "Q3 2026"
+      "source_document_period": "Q3 2026",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Storebrand",
@@ -14913,7 +14975,9 @@
       "source_page": 55,
       "source_document_period": "Q3 2025",
       "source_definition": "ROE annualised (Return on equity, annualised %) – Gjensidige Forsikring Group",
-      "source_entity": "Gjensidige Forsikring Group"
+      "source_entity": "Gjensidige Forsikring Group",
+      "source_sha256": "3d5ed0f090c1edaacc49e1243a1438e29c54ea4867ed99f9d6e5bacdbfa48178",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -14932,7 +14996,9 @@
       "source_document_period": "Q3 2026",
       "source_definition": "ROOF annualised",
       "source_entity": "Tryg A/S",
-      "source_section": "Dividend and solvency"
+      "source_section": "Dividend and solvency",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Gjensidige",
@@ -14950,7 +15016,9 @@
       "source_page": 56,
       "source_document_period": "Q4 2025",
       "source_definition": "ROE annualised (full-year 2025; Q4 year-end observation)",
-      "source_entity": "Gjensidige Forsikring Group"
+      "source_entity": "Gjensidige Forsikring Group",
+      "source_sha256": "c3db0693eb75e6ac83c4bd969759c9bd687969276d78adb286a4531c355470ae",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Fremtind",
@@ -14968,7 +15036,9 @@
       "source_document_period": "Q3 2025",
       "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – kvartal Q3",
       "source_entity": "Fremtind Holding konsern",
-      "source_page": 3
+      "source_page": 3,
+      "source_sha256": "ac39220f4c45440bff79efa1625750271829f16857e49d7f6e279f15ca4973f6",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Fremtind",
@@ -14986,7 +15056,9 @@
       "source_document_period": "Q4 2025",
       "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – kvartal Q4",
       "source_entity": "Fremtind Holding konsern",
-      "source_page": 3
+      "source_page": 3,
+      "source_sha256": "50637a690fd46c84d898ab6e1cdd2a05f0faa0bd201cc1f3354e402a0113cae1",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -15004,7 +15076,9 @@
       "source_document_period": "Q3 2025",
       "source_definition": "ROOF annualised – Q3 2025 investor presentation",
       "source_entity": "Tryg A/S",
-      "source_page": 4
+      "source_page": 4,
+      "source_sha256": "970a450f173727a0cb3c61ff3e0c7bef049954b92dceb7ff422b4ae34d90db65",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Tryg",
@@ -15022,7 +15096,9 @@
       "source_page": 17,
       "source_document_period": "Q4 2025",
       "source_definition": "ROOF (Return on Own Funds), Q4 2025 isolated quarter – 36.8%, not the full-year 40.3%",
-      "source_entity": "Tryg A/S"
+      "source_entity": "Tryg A/S",
+      "source_sha256": "6608efe48be1dcb83d84cfebaba4497b1da48fb7b4bb55e0afbd72e4c220f778",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Fremtind",
@@ -15040,7 +15116,9 @@
       "source_page": 3,
       "source_document_period": "Q2 2026",
       "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – isolert kvartal",
-      "source_entity": "Fremtind Holding konsern"
+      "source_entity": "Fremtind Holding konsern",
+      "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Fremtind",
@@ -15058,7 +15136,9 @@
       "source_page": 3,
       "source_document_period": "Q3 2026",
       "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – isolert kvartal",
-      "source_entity": "Fremtind Holding konsern"
+      "source_entity": "Fremtind Holding konsern",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_integrity_check": "pdf_signature_page_and_sha256"
     },
     {
       "company": "Gjensidige",

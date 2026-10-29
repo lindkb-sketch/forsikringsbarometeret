@@ -10,7 +10,7 @@
       "official_source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
       ],
-      "observation_sha256": "cf40d023adb3c10f010bd10a06ade8a2cf091db0339afcf95667d1723089d563",
+      "observation_sha256": "6b3909ca59634b6975e35f84bc55093bbd52ff2675870cf5c63ea372a5b3ecb2",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -36,7 +36,7 @@
       "official_source_urls": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
       ],
-      "observation_sha256": "f64aea491ea6784805571cd9733c526a47429c5bdf5ede08341559b1f421ca01",
+      "observation_sha256": "e80df2320695faccd294297ce210b948b8b6bde07a8060d41697bcf752b344d6",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,

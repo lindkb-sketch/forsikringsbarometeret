@@ -13,14 +13,9 @@
     "Frende": 20,
     "Sampo": 1
   },
-  "missing_source_sha256": 40,
-  "missing_source_sha256_by_company": {
-    "Storebrand": 1,
-    "Tryg": 33,
-    "Gjensidige": 2,
-    "Fremtind": 4
-  },
+  "missing_source_sha256": 0,
+  "missing_source_sha256_by_company": {},
   "source_policy_exceptions": [],
-  "official_pdf_or_presentation_only_confirmed": false,
+  "official_pdf_or_presentation_only_confirmed": true,
   "note": "Historical comparison columns require separate column-level evidence; a source URL or report year alone cannot certify the reported period."
 }
