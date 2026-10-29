@@ -27,6 +27,26 @@ class ReportedReturnTests(unittest.TestCase):
         _,value,definition=self.extract_text('Fremtind',sample)
         self.assertEqual(value,32.2)
         self.assertIn('Eika',definition)
+    def test_fremtind_q2_2026_interleaved_pdf_footnote(self):
+        sample=("Resultatutvikling og nøkkeltall Q2 2026\n"
+            "Annualisert egenkapitalavkastning justert for transaksjonen med\n"
+            "2) Andre inntekter og kostnader justert ved oppkjøp av Eika Forsikring AS\n"
+            "Eika Forsikring AS 49,5 % 34,2 % 42,7 % 31,4 % 40,5 %")
+        _,value,_=self.extract_text('Fremtind',sample)
+        self.assertEqual(value,49.5)
+    def test_fremtind_q3_2026_interleaved_pdf_footnote(self):
+        sample=("Resultatutvikling og nøkkeltall Q3 2026\n"
+            "3) Skattekostnaden er et estimat. Annualisert egenkapitalavkastning justert for\n"
+            "4) Bestandspremien justert for fusjonen med Eika\n"
+            "transaksjonen med Eika Forsikring AS 40,2 % 41,4 % 41,7 % 34,5 % 40,5 %")
+        _,value,_=self.extract_text('Fremtind',sample)
+        self.assertEqual(value,40.2)
+    def test_fremtind_rejects_footnote_percent_as_return(self):
+        with self.assertRaises(ValueError):
+            self.extract_text('Fremtind',
+                "Annualisert egenkapitalavkastning justert for\n"
+                "2) Et urelatert mål steg 92,0 % i perioden\n"
+                "Eika Forsikring AS uten rapportert avkastningsverdi")
     def test_tryg_roof_wrapped_under_solveny_header(self):
         sample=("Dividend and solvency\n"
             "The return on own funds (ROOF)\nwas 47.0%.")

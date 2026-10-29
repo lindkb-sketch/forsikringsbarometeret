@@ -14687,6 +14687,42 @@
       "source_document_period": "Q4 2025",
       "source_definition": "Tryg A/S Annual Report 2025, Key figures and ratios: Return on Own Funds (%) Q4 2025 (not full-year 2025)",
       "source_entity": "Tryg A/S"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 2,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "return_on_equity",
+      "value": 49.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+      "source_page": 3,
+      "source_document_period": "Q2 2026",
+      "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – isolert kvartal",
+      "source_entity": "Fremtind Holding konsern"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "return_on_equity",
+      "value": 40.2,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_page": 3,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS – isolert kvartal",
+      "source_entity": "Fremtind Holding konsern"
     }
   ],
   "market_share": {

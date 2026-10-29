@@ -72,24 +72,35 @@ def extract(blob,company,year,quarter):
     # table. It may be split across rows and need not pass the independent
     # revenue/combined-ratio table extraction to be an official figure.
     if company=='Fremtind':
-        caption=re.compile(
-            r'annualisert\s+egenkapitalavkastning\s+justert\s+for\s+'
-            r'(?:transaksjonen|fusjonen)\s+med\s+Eika\s*Forsikring\s+AS',
-            re.I)
+        # Actual Fremtind Q2/Q3 2026 PDFs interleave numbered footnotes
+        # between the KPI caption and the row containing percentages.
+        # Only accept a percentage immediately following the full Eika
+        # row label; a footnote percentage is never an acceptable value.
+        heading=re.compile(
+            r'annualisert\s+egenkapitalavkastning\s+justert\s+for',re.I)
+        value_row=re.compile(
+            r'^\s*(?:transaksjonen\s+med\s+)?Eika\s*Forsikring\s+AS\s+'
+            r'(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%',re.I)
+        inline_row=re.compile(
+            r'transaksjonen\s+med\s+Eika\s*Forsikring\s+AS\s+'
+            r'(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%',re.I)
         with pdfplumber.open(io.BytesIO(blob)) as pdf:
-            for pageno,page in enumerate(pdf.pages,1):
+            for pageno,page in enumerate(pdf.pages[:7],1):
                 lines=(page.extract_text() or '').splitlines()
                 for i,line in enumerate(lines):
-                    context=' '.join(lines[i:i+3])
-                    m=caption.search(context)
-                    if not m:continue
-                    remainder=context[m.end():]
-                    # Capture the first explicitly printed percentage in the
-                    # current-quarter column, never a plain equity amount.
-                    values=re.findall(r'(?<![\w.,])-?\d{1,3}(?:[.,]\d{1,2})?\s*%',remainder)
-                    if values:
-                        value=float(values[0].replace('%','').replace(' ','').replace(',','.'))
-                        if -100<=value<=200:candidates.append((pageno,value))
+                    match=heading.search(line)
+                    if not match:continue
+                    # Inline KPI row (Q1), or a separately wrapped value
+                    # line within the following six physical rows (Q2/Q3).
+                    m=inline_row.search(line[match.end():])
+                    if not m:
+                        for subsequent in lines[i+1:i+7]:
+                            m=value_row.search(subsequent)
+                            if m:break
+                    if m:
+                        value=float(m.group(1).replace(',','.'))
+                        if -100<=value<=200:
+                            candidates.append((pageno,value))
     # Protector's official KPI appendix reports ROE in a quarterly table,
     # with a superscript footnote and a separate percent-unit column.
     # Only the first numeric value of that explicitly labelled Q-row is
