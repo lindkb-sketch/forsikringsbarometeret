@@ -74,6 +74,16 @@ def run():
     print("RETURN_KPI_QUARTERLY_COVERAGE",json.dumps(history,ensure_ascii=False),flush=True)
     for key,row in history.items():
         if row["state"]!="verified":print("::warning::RETURN_KPI_QUARTER_MISSING",key,flush=True)
+    # Required five rolling slots on the published profitability charts.
+    # Future periods remain data-driven; never fabricate unavailable values.
+    required=[f"{company} Q{q} {y}"
+              for company in TARGETS
+              for y,q in ((2025,3),(2025,4),(2026,1),(2026,2),(2026,3))]
+    absent=[key for key in required
+            if history.get(key,{}).get("state")!="verified"]
+    if absent:
+        raise SystemExit("RETURN_KPI_REQUIRED_FIVE_QUARTERS_MISSING "+", ".join(absent))
+    print("RETURN_KPI_ALL_FIVE_QUARTERS_VERIFIED",len(required),flush=True)
     for company,row in result.items():
         if row["state"]!="verified":
             print("::warning::RETURN_KPI_COVERAGE",company,row,flush=True)
