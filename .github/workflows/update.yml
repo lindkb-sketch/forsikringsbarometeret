@@ -16,7 +16,7 @@ jobs:
   validate-and-deploy:
     runs-on: ubuntu-latest
     env:
-      BAROMETER_PDF_RUN_CACHE: ${{ runner.temp }}/forsikringsbarometeret-pdf-${{ github.run_id }}-${{ github.run_attempt }}
+      BAROMETER_PDF_RUN_CACHE: /tmp/forsikringsbarometeret-pdf-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
