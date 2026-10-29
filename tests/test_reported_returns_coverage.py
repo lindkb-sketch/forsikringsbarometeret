@@ -19,7 +19,9 @@ class ReturnCoverageTests(unittest.TestCase):
               obs("Protector","insurance_revenue"),
               obs("Protector","return_on_equity",definition="ROE"),
               obs("Gjensidige","insurance_revenue"),
-              obs("Gjensidige","return_on_equity",definition="ROE")]
+              obs("Gjensidige","return_on_equity",definition="ROE"),
+              obs("Storebrand","insurance_revenue"),
+              obs("Storebrand","return_on_equity",definition="Cash return on equity, annualised")]
         self.assertTrue(all(x["state"]=="verified" for x in coverage(rows).values()))
         rows.append(obs("Tryg","insurance_revenue",2026,4))
         self.assertEqual(coverage(rows)["Tryg"]["state"],"missing_or_ambiguous")
@@ -38,6 +40,16 @@ class ReturnCoverageTests(unittest.TestCase):
         self.assertNotIn("Tryg Q4 2026",result)
         rows.append(obs("Tryg","insurance_revenue",2026,4))
         self.assertIn("Tryg Q4 2026",quarterly_coverage(rows))
+    def test_five_company_q3_2025_to_q3_2026_window(self):
+        companies=("Fremtind","Storebrand","Gjensidige","Tryg","Protector")
+        periods=((2025,3),(2025,4),(2026,1),(2026,2),(2026,3))
+        rows=[obs(c,"insurance_revenue",y,q) for c in companies for y,q in periods]
+        coverage_rows=quarterly_coverage(rows)
+        self.assertEqual(len(coverage_rows),25)
+        self.assertEqual(set(coverage_rows),{f"{c} Q{q} {y}" for c in companies for y,q in periods})
+        self.assertTrue(all(row["state"]=="missing_or_ambiguous" for row in coverage_rows.values()))
+        rows.append(obs("Storebrand","return_on_equity",2025,3,definition="Cash return on equity, annualised"))
+        self.assertEqual(quarterly_coverage(rows)["Storebrand Q3 2025"]["state"],"verified")
     def test_pipeline_runs_coverage_after_verified_feed(self):
         source=(Path(__file__).resolve().parents[1]/"scripts/run_pipeline.py").read_text()
         self.assertIn("'check_reported_returns_coverage.py'",source)
