@@ -73,7 +73,26 @@ def replace(data,values,pages,digest):
             source_section='General Insurance Private Norway + Commercial Norway',
             source_document_period='Q2 2026',source_revision_history=history)
         replacements[id(r)]=new
-    result={**data,'observations':[replacements.get(id(r),r) for r in old]}
+    # Norway totals require same-period PDF segment lineage, not just a
+    # PDF URL on the aggregate. Publish the two independently read YTD tables.
+    segment_rows=[]
+    for segment in SEGMENTS:
+        for metric in LABELS:
+            row=dict(company='Gjensidige',year=2026,quarter=2,
+                scope='reported_segment',segment=segment,period_type='ytd',
+                metric=metric,value=values[segment][metric],
+                unit='percent' if metric in ('loss_ratio','expense_ratio','combined_ratio') else 'MNOK',
+                status='reported',source_type='official_quarterly_report',
+                source_url=PDF,source_page=pages[segment],source_sha256=digest,
+                source_section='General Insurance '+segment,
+                source_document_period='Q2 2026')
+            exists=[x for x in old if all(x.get(k)==row.get(k) for k in
+                ('company','year','quarter','scope','segment','period_type','metric'))]
+            if exists:
+                if abs(exists[0]['value']-row['value'])>0.15:
+                    raise ValueError('Existing YTD segment conflicts with official PDF: '+segment+' '+metric)
+            else:segment_rows.append(row)
+    result={**data,'observations':[replacements.get(id(r),r) for r in old]+segment_rows}
     if not audit(result)['ok']:raise ValueError('Official PDF migration failed financial audit')
     return result,len(legacy)
 
