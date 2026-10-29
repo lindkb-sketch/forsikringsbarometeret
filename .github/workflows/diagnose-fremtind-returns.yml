@@ -1,0 +1,47 @@
+name: Diagnose Fremtind PDF returns (fast)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/diagnose-fremtind-returns.yml'
+permissions:
+  contents: read
+jobs:
+  pdf-row-diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pdfplumber
+      - name: Inspect actual quarterly PDF rows (no database changes)
+        run: |
+          python - <<'PY'
+          from urllib.request import Request,urlopen
+          from io import BytesIO
+          import pdfplumber,re
+          sources={
+            'Q1 2026':'https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf',
+            'Q2 2026':'https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf',
+            'Q3 2026':'https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf',
+          }
+          for period,url in sources.items():
+            print('PDF_PERIOD',period,url,flush=True)
+            try:
+              with urlopen(Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'}),timeout=25) as r:
+                data=r.read(20_000_001)
+              with pdfplumber.open(BytesIO(data)) as pdf:
+                for number,page in enumerate(pdf.pages[:7],1):
+                  lines=(page.extract_text() or '').splitlines()
+                  for i,line in enumerate(lines):
+                    if re.search('egenkapitalavkastning|EikaForsikring|Eika Forsikring',line,re.I):
+                      print('PDF_RETURN_CONTEXT',period,'page',number,'line',i,repr(' | '.join(lines[max(0,i-1):i+3]))[:600],flush=True)
+                  for tab in page.extract_tables() or []:
+                    for row in tab:
+                      cells=[str(v or '').replace('\\n',' ') for v in row]
+                      if any('egenkapitalavkastning' in c.lower() for c in cells):
+                        print('PDF_RETURN_TABLE',period,'page',number,repr(cells)[:900],flush=True)
+            except Exception as exc:
+              print('PDF_DIAG_ERROR',period,type(exc).__name__,str(exc)[:250],flush=True)
+          PY
