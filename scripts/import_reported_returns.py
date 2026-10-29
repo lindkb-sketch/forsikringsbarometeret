@@ -44,6 +44,27 @@ def extract(blob,company,year,quarter):
                 for m in re.finditer(pattern,text,re.I):
                     value=float(m.group(1).replace(',','.'))
                     if -100<=value<=200:candidates.append((pageno,value))
+    # Tryg's quarterly PDF states ROOF under Dividend and solvency.
+    # PDF line breaks and typography can separate the caption and value.
+    # Require an explicit issuer ROOF caption and percentage on the SAME
+    # page, never infer ROOF from solvency ratio or ordinary profit.
+    if company=='Tryg' and not candidates:
+        roof_patterns=[
+            re.compile(r"return\\s+on\\s+own\\s+funds\\s*\\(\\s*ROOF\\s*\\)"
+                       r"[^.\\n]{0,100}?(-?\\d{1,3}(?:[.,]\\d{1,2})?)\\s*%",re.I),
+            re.compile(r"\\bROOF\\b\\s*(?:\\(\\s*%\\s*\\))?\\s*(?:was|of|at|:)?"
+                       r"\\s*(-?\\d{1,3}(?:[.,]\\d{1,2})?)\\s*%",re.I),
+        ]
+        with pdfplumber.open(io.BytesIO(blob)) as pdf:
+            for pageno,page in enumerate(pdf.pages,1):
+                raw=page.extract_text() or ''
+                variants=[raw,re.sub(r"\\s+"," ",raw)]
+                for variant in variants:
+                    for pattern in roof_patterns:
+                        for match in pattern.finditer(variant):
+                            value=float(match.group(1).replace(',','.'))
+                            if -100<=value<=200:
+                                candidates.append((pageno,value))
     # Protector's official KPI appendix reports ROE in a quarterly table,
     # with a superscript footnote and a separate percent-unit column.
     # Only the first numeric value of that explicitly labelled Q-row is
