@@ -14578,6 +14578,25 @@
       "source_document_period": "Q3 2025",
       "source_definition": "Return on equity, annualised (%) – Gjensidige Forsikring Group",
       "source_entity": "Gjensidige Forsikring Group"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "return_on_equity",
+      "value": 47,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_page": 6,
+      "source_document_period": "Q3 2026",
+      "source_definition": "ROOF annualised",
+      "source_entity": "Tryg A/S",
+      "source_section": "Dividend and solvency"
     }
   ],
   "market_share": {

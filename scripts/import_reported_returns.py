@@ -150,7 +150,9 @@ def run():
         for r in records if r.get('company') in LABELS and
         r.get('scope')=='group' and r.get('period_type')=='quarter'
         and r.get('metric')=='insurance_revenue' and
-        r.get('source_type')=='official_quarterly_report' and r.get('year')>=2025})
+        r.get('source_type')=='official_quarterly_report' and r.get('year')>=2025
+        and (not r.get('source_document_period')
+             or r['source_document_period']==f"Q{r['quarter']} {r['year']}")})
     existing={(r['company'],r['year'],r['quarter'],r['scope'],r['period_type'],r['metric']):r
               for r in records}
     added=0
