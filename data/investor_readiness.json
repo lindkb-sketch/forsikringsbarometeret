@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-10-28",
+  "as_of": "2026-10-29",
   "reference_quarter": "Q3 2026",
   "investor_ready": false,
   "status": "NOT_APPROVED_FOR_INVESTOR_USE",
@@ -139,32 +139,32 @@
   "stocks": [
     {
       "company": "Gjensidige",
-      "trading_date": "2026-10-28",
-      "calendar_days_old": 0,
+      "trading_date": "2026-10-27",
+      "calendar_days_old": 2,
       "status": "dated_delayed_close"
     },
     {
       "company": "Protector",
-      "trading_date": "2026-10-28",
-      "calendar_days_old": 0,
+      "trading_date": "2026-10-27",
+      "calendar_days_old": 2,
       "status": "dated_delayed_close"
     },
     {
       "company": "Storebrand",
-      "trading_date": "2026-10-28",
-      "calendar_days_old": 0,
+      "trading_date": "2026-10-27",
+      "calendar_days_old": 2,
       "status": "dated_delayed_close"
     },
     {
       "company": "Tryg",
-      "trading_date": "2026-10-28",
-      "calendar_days_old": 0,
+      "trading_date": "2026-10-27",
+      "calendar_days_old": 2,
       "status": "dated_delayed_close"
     },
     {
       "company": "Sampo / If",
-      "trading_date": "2026-10-28",
-      "calendar_days_old": 0,
+      "trading_date": "2026-10-27",
+      "calendar_days_old": 2,
       "status": "dated_delayed_close"
     }
   ],

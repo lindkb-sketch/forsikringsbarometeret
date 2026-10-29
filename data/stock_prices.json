@@ -1,43 +1,43 @@
 {
-  "updated_at": "2026-10-28T20:42:08.232829+00:00",
+  "updated_at": "2026-10-29T00:03:40.990693+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
-      "close": 260.4,
+      "close": 263.4,
       "currency": "NOK",
-      "trading_date": "2026-10-28",
+      "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/GJF.OL?interval=1d&range=10d",
       "price_type": "delayed_daily_close"
     },
     "Protector": {
       "symbol": "PROT.OL",
-      "close": 446.4,
+      "close": 439.6,
       "currency": "NOK",
-      "trading_date": "2026-10-28",
+      "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/PROT.OL?interval=1d&range=10d",
       "price_type": "delayed_daily_close"
     },
     "Storebrand": {
       "symbol": "STB.OL",
-      "close": 194.2,
+      "close": 193.6,
       "currency": "NOK",
-      "trading_date": "2026-10-28",
+      "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/STB.OL?interval=1d&range=10d",
       "price_type": "delayed_daily_close"
     },
     "Tryg": {
       "symbol": "TRYG.CO",
-      "close": 158.9,
+      "close": 158.6,
       "currency": "DKK",
-      "trading_date": "2026-10-28",
+      "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/TRYG.CO?interval=1d&range=10d",
       "price_type": "delayed_daily_close"
     },
     "Sampo / If": {
       "symbol": "SAMPO.HE",
-      "close": 9.344,
+      "close": 9.396,
       "currency": "EUR",
-      "trading_date": "2026-10-28",
+      "trading_date": "2026-10-27",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SAMPO.HE?interval=1d&range=10d",
       "price_type": "delayed_daily_close"
     }
