@@ -161,7 +161,7 @@ def run():
         # period's PDF without a separately verified year-labelled column.
         # In particular, the 2026 Gjensidige/Tryg PDF must not generate a
         # 2025 observation simply because a 2025 revenue comparator exists.
-        document_year=re.search(r'20\\d{2}',url)
+        document_year=re.search(r'20\d{2}',url)
         if document_year and int(document_year.group())>year:
             print('::warning::RETURN_PERIOD_DOCUMENT_MISMATCH',company,year,quarter,url,flush=True)
             continue

@@ -70,7 +70,7 @@ class ReportedReturnTests(unittest.TestCase):
     def test_year_mismatch_must_not_backfill_prior_year_roe(self):
         import re
         url='https://issuer.example/reports/2026/quarter-3.pdf'
-        self.assertGreater(int(re.search(r'20\\d{2}',url).group()),2025)
+        self.assertGreater(int(re.search(r'20\d{2}',url).group()),2025)
     def test_scheduled_import_and_chart_binding(self):
         root=Path(__file__).resolve().parents[1]
         pipeline=(root/'scripts/run_pipeline.py').read_text()
