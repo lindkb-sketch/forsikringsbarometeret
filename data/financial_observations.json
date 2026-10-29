@@ -14573,10 +14573,10 @@
       "unit": "percent",
       "status": "reported",
       "source_type": "official_quarterly_report",
-      "source_url": "https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2025/10/24/657864_Interim_report_Q3_2025.pdf",
-      "source_page": 55,
+      "source_url": "https://mb.cision.com/Public/1122/4255914/b5adb2ecea00e922.pdf",
+      "source_page": 56,
       "source_document_period": "Q3 2025",
-      "source_definition": "Return on equity, annualised (%) – Gjensidige Forsikring Group",
+      "source_definition": "Gjensidige Forsikring Group: Return on equity, annualised (YTD as of Q3 2025)",
       "source_entity": "Gjensidige Forsikring Group"
     },
     {
@@ -14597,6 +14597,24 @@
       "source_definition": "ROOF annualised",
       "source_entity": "Tryg A/S",
       "source_section": "Dividend and solvency"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "return_on_equity",
+      "value": 27.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4299514/9fb6a76af9b6c67e.pdf",
+      "source_page": 56,
+      "source_document_period": "Q4 2025",
+      "source_definition": "ROE annualised (full-year 2025; Q4 year-end observation)",
+      "source_entity": "Gjensidige Forsikring Group"
     }
   ],
   "market_share": {
