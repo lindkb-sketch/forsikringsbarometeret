@@ -14669,6 +14669,24 @@
       "source_definition": "ROOF annualised – Q3 2025 investor presentation",
       "source_entity": "Tryg A/S",
       "source_page": 4
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 4,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "return_on_equity",
+      "value": 36.8,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://via.ritzau.dk/files/90446/14762299/331993/en",
+      "source_page": 17,
+      "source_document_period": "Q4 2025",
+      "source_definition": "Tryg A/S Annual Report 2025, Key figures and ratios: Return on Own Funds (%) Q4 2025 (not full-year 2025)",
+      "source_entity": "Tryg A/S"
     }
   ],
   "market_share": {
