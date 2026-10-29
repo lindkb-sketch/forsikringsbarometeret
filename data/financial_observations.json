@@ -14506,42 +14506,6 @@
       "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
       "source_document_period": "Q3 2026",
       "source_definition": "ROE annualised"
-    },
-    {
-      "company": "Fremtind",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "group",
-      "period_type": "quarter",
-      "metric": "return_on_equity",
-      "value": 36.3,
-      "unit": "percent",
-      "status": "reported",
-      "source_type": "official_quarterly_report",
-      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
-      "source_page": 3,
-      "source_sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555",
-      "source_entity": "Fremtind Holding konsern",
-      "source_document_period": "Q1 2026",
-      "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS"
-    },
-    {
-      "company": "Fremtind",
-      "year": 2026,
-      "quarter": 1,
-      "scope": "group",
-      "period_type": "ytd",
-      "metric": "return_on_equity",
-      "value": 36.3,
-      "unit": "percent",
-      "status": "reported",
-      "source_type": "official_quarterly_report",
-      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
-      "source_page": 3,
-      "source_sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555",
-      "source_entity": "Fremtind Holding konsern",
-      "source_document_period": "Q1 2026",
-      "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS"
     }
   ],
   "market_share": {
