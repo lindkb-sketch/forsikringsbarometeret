@@ -14,8 +14,8 @@
           "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
         ],
         "observation_values": {
-          "2025": 6047.0,
-          "2024": 5445.0
+          "2025": 6047,
+          "2024": 5445
         }
       },
       "ytd": {
@@ -29,8 +29,8 @@
           "https://cdn.sanity.io/files/rppnrdtw/production/857576f96ed94160de50fa9eee1652651a1e7ec7.pdf"
         ],
         "observation_values": {
-          "2025": 17376.0,
-          "2024": 13745.0
+          "2025": 17376,
+          "2024": 13745
         }
       }
     },
@@ -62,7 +62,7 @@
           "https://www.gjensidige.se/_/attachment/inline/ea1b0f6f-0cc6-4299-9139-42a7238d2a68%3A663ba0de3580b8576beb3142bc68c3104ff143a4/Resultatrapport%20Q3%202025.pdf"
         ],
         "observation_values": {
-          "2025": 31689.0,
+          "2025": 31689,
           "2024": 28340.5
         }
       }
@@ -80,8 +80,8 @@
           "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
         ],
         "observation_values": {
-          "2025": 10175.0,
-          "2024": 9786.0
+          "2025": 10175,
+          "2024": 9786
         }
       },
       "ytd": {
@@ -95,8 +95,8 @@
           "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
         ],
         "observation_values": {
-          "2025": 30063.0,
-          "2024": 28862.0
+          "2025": 30063,
+          "2024": 28862
         }
       }
     },
@@ -113,7 +113,7 @@
           "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
         ],
         "observation_values": {
-          "2025": 3529.0,
+          "2025": 3529,
           "2024": 3002
         }
       },
@@ -145,7 +145,7 @@
           "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
         ],
         "observation_values": {
-          "2025": 2475.0,
+          "2025": 2475,
           "2024": 2044
         }
       },
@@ -160,7 +160,7 @@
           "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
         ],
         "observation_values": {
-          "2025": 7140.0,
+          "2025": 7140,
           "2024": 5874
         }
       }
@@ -177,8 +177,8 @@
           "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf"
         ],
         "observation_values": {
-          "2025": 2303.0,
-          "2024": 2137.0
+          "2025": 2303,
+          "2024": 2137
         }
       },
       "ytd": {

@@ -10,7 +10,7 @@
       "official_source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
       ],
-      "observation_sha256": "ae516dc6403765d22a97ca09d983d52e2293a83dce32802ed8179ba01a10330d",
+      "observation_sha256": "1fb82dc9f95017fc494d4e70c7cad4525d4982332bab3330fd7849813679e5f8",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -23,7 +23,7 @@
       "official_source_urls": [
         "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
       ],
-      "observation_sha256": "db096fdeb46f63bfebc1e0ea7bd3a4ea4a762b962d4b52da6b454f40a2e78ae1",
+      "observation_sha256": "fe88bcff534731327fb82c10d48fa09d5b54ad9eaa5f64ca5743a800c9a4d51c",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -32,11 +32,11 @@
     {
       "company": "Tryg",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 6,
       "official_source_urls": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
       ],
-      "observation_sha256": "c6bf38139e92d55b3140a6977d97511ddd6ae5694840e1daf7e07943c6ceced2",
+      "observation_sha256": "f64aea491ea6784805571cd9733c526a47429c5bdf5ede08341559b1f421ca01",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -49,7 +49,7 @@
       "official_source_urls": [
         "https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969"
       ],
-      "observation_sha256": "5c29328fec606fcc13816e48dc4f6e4efe727df566083b7222c5b92ab0cd977a",
+      "observation_sha256": "f1ec8750641da314125ffd2de6e6a414fdbca07797b3f86b74186409305f4e7d",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -76,7 +76,7 @@
       "official_source_urls": [
         "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
       ],
-      "observation_sha256": "f03d2d186c2d5e532b0f26c3ac74e40a6ed97b999e0d88ca8203d921efc03c3f",
+      "observation_sha256": "f778b3aa84f2b05adcd371bba4506198a59bfcd37888627cf8c509fdb1bc0292",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -89,7 +89,7 @@
       "official_source_urls": [
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
       ],
-      "observation_sha256": "8b42f8efe052b987a40e4049448ed68ec4c01a2c2c23587b606b44a763292587",
+      "observation_sha256": "a9eb468f7b7b6b67e27896bb1bf9b450458cb578ca91e2324a8158bdb767d6e4",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
