@@ -8,6 +8,8 @@ import hashlib
 import io
 import json
 import re
+import os
+from datetime import datetime, timezone
 import pdfplumber
 from audit_financials import DATA, audit
 from build_verified_feed import build
@@ -166,8 +168,17 @@ def run():
              or r['source_document_period']==f"Q{r['quarter']} {r['year']}")})
     existing={(r['company'],r['year'],r['quarter'],r['scope'],r['period_type'],r['metric']):r
               for r in records}
+    # Every scan checks for new quarters. Fingerprinted historical reports
+    # are rechecked weekly; latest quarters daily for official revisions.
+    now=datetime.now(timezone.utc)
+    force=os.environ.get('RETURN_RECHECK_ALL')=='1'
+    nightly=now.hour==2 and now.minute<30
+    weekly=nightly and now.weekday()==6
+    newest={company:max((year,quarter) for c,year,quarter,_ in sources if c==company)
+            for company in LABELS if any(c==company for c,_,_,_ in sources)}
     added=0
     updated=0
+    skipped=0
     for company,year,quarter,url in sources:
         # Never assign a previous year's ROE/ROOF by reading the current
         # period's PDF without a separately verified year-labelled column.
@@ -183,6 +194,10 @@ def run():
         # official source. Different URLs may be alternate presentations or
         # unrelated documents; never overwrite an established value with one.
         if old and old.get('source_url')!=url:
+            continue
+        if old and old.get('source_sha256') and not (
+                force or weekly or nightly and (year,quarter)==newest.get(company)):
+            skipped+=1
             continue
         try:
             blob=download(url)
@@ -243,6 +258,6 @@ def run():
     if added or updated:
         atomic_write(DATA,data)
         atomic_write(DATA.parent/'verified_financial_feed.json',build(data))
-    print('REPORTED_RETURN_PDF_ADDED',added,'REVISED',updated,flush=True)
+    print('REPORTED_RETURN_PDF_ADDED',added,'REVISED',updated,'UNCHANGED_SKIPPED',skipped,flush=True)
 
 if __name__=='__main__':run()
