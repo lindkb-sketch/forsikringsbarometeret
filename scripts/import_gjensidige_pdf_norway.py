@@ -80,6 +80,18 @@ def parse(pages,year,quarter,url,digest):
             'status':'calculated','calculation':'same_quarter_prior_year_revenue'})
     return rows
 
+def official_revision(previous, verified):
+    """Official report takes precedence; keep previous evidence for audit."""
+    if previous == verified:
+        return previous
+    updated=dict(verified)
+    history=list(previous.get('source_revision_history',[]))
+    history.append({k:previous.get(k) for k in
+                    ('value','source_url','source_type','source_page',
+                     'source_sha256','source_definition','source_sheet','source_cell')})
+    updated['source_revision_history']=history
+    return updated
+
 def prepare(data,fetcher=download,reader=read_pdf):
     observations=data['observations']
     sources={(r['year'],r['quarter'],r['source_url']) for r in observations
@@ -106,10 +118,10 @@ def prepare(data,fetcher=download,reader=read_pdf):
         for r in batch:
             k=key(r)
             if k in existing:
-                if abs(existing[k]['value']-r['value'])>0.15:
-                    raise ValueError('Conflicting verified segment value '+str(k))
                 if existing[k].get('source_type')=='official_investor_tables':
-                    replacements[k]=r
+                    replacements[k]=official_revision(existing[k],r)
+                elif abs(existing[k]['value']-r['value'])>0.15:
+                    raise ValueError('Conflicting separately verified PDF segment value '+str(k))
             elif k not in {key(x) for x in additions}:additions.append(r)
         # Calculate the geographic growth from summed current and prior-year revenue.
         current=sum(r['value'] for r in batch if r['year']==year and r['metric']=='insurance_revenue')
@@ -129,16 +141,16 @@ def prepare(data,fetcher=download,reader=read_pdf):
                     value=sum(vals[s]*revenue[s] for s in SEGMENTS)/sum(revenue.values())
                 k=('Gjensidige',yr,quarter,'norway',None,'quarter',metric)
                 if k in existing:
-                    if abs(existing[k]['value']-value)>(0.3 if 'ratio' in metric else 0.25):
-                        raise ValueError('Norway total does not reconcile: '+str(k))
                     if existing[k].get('source_type')=='official_investor_tables':
-                        replacements[k]=dict(company='Gjensidige',year=yr,quarter=quarter,
+                        replacements[k]=official_revision(existing[k],dict(company='Gjensidige',year=yr,quarter=quarter,
                             scope='norway',period_type='quarter',metric=metric,value=value,
                             unit='percent' if 'ratio' in metric else 'MNOK',status='calculated',
                             calculation='revenue_weighted_official_norway_segments' if 'ratio' in metric else 'sum_official_norway_segments',
                             source_type='official_quarterly_report',source_url=url,
                             source_page=segrows[0]['source_page'],source_sha256=segrows[0]['source_sha256'],
-                            source_section='General Insurance Private Norway + Commercial Norway')
+                            source_section='General Insurance Private Norway + Commercial Norway'))
+                    elif abs(existing[k]['value']-value)>(0.3 if 'ratio' in metric else 0.25):
+                        raise ValueError('Conflicting separately verified PDF Norway total '+str(k))
                     continue
                 additions.append(dict(company='Gjensidige',year=yr,quarter=quarter,
                     scope='norway',period_type='quarter',metric=metric,value=value,
@@ -149,16 +161,16 @@ def prepare(data,fetcher=download,reader=read_pdf):
                     source_section='General Insurance Private Norway + Commercial Norway'))
         k=('Gjensidige',year,quarter,'norway',None,'quarter','insurance_revenue_growth')
         if k in existing:
-            if abs(existing[k]['value']-growth)>0.15:
-                raise ValueError('Existing Norway growth differs from segment revenues')
             if existing[k].get('source_type')=='official_investor_tables':
-                replacements[k]=dict(company='Gjensidige',year=year,quarter=quarter,
+                replacements[k]=official_revision(existing[k],dict(company='Gjensidige',year=year,quarter=quarter,
                     scope='norway',period_type='quarter',metric='insurance_revenue_growth',
                     value=growth,unit='percent',status='calculated',
                     calculation='revenue_weighted_official_norway_segments',
                     source_type='official_quarterly_report',source_url=url,
                     source_page=batch[0]['source_page'],source_sha256=batch[0]['source_sha256'],
-                    source_section='General Insurance Private Norway + Commercial Norway')
+                    source_section='General Insurance Private Norway + Commercial Norway'))
+            elif abs(existing[k]['value']-growth)>0.15:
+                raise ValueError('Conflicting separately verified PDF Norway growth '+str(k))
         else:
             additions.append(dict(company='Gjensidige',year=year,quarter=quarter,
                 scope='norway',period_type='quarter',metric='insurance_revenue_growth',
