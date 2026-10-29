@@ -21,8 +21,8 @@ class ReportedReturnTests(unittest.TestCase):
         page,value,label=self.extract_text('Tryg','The return on own funds (ROOF) was 47.0%.')
         self.assertEqual((page,value,label),(1,47.0,'ROOF annualised'))
     def test_fremtind_adjusted_return_wrapped_pdf_table(self):
-        sample=("Fremtind Holding Q3 2026\\n"
-            "Annualisert egenkapitalavkastning justert for\\n"
+        sample=("Fremtind Holding Q3 2026\n"
+            "Annualisert egenkapitalavkastning justert for\n"
             "transaksjonen med EikaForsikring AS 32,2 % 34,2 %")
         _,value,definition=self.extract_text('Fremtind',sample)
         self.assertEqual(value,32.2)
