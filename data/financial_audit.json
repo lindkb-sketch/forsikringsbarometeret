@@ -1101,10 +1101,10 @@
       "scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 11.087357755395688,
+      "value": 11.086330935251798,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+        "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
         "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
@@ -1116,10 +1116,10 @@
       "scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 11.367015573299799,
+      "value": 11.36618447318769,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
         "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
@@ -2016,10 +2016,10 @@
       "scope": "reported_segment",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 16.766674013107764,
+      "value": 16.765736930345977,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+        "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
         "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
@@ -2031,10 +2031,10 @@
       "scope": "reported_segment",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 6.010100095380833,
+      "value": 6.008993050824363,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+        "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
         "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
@@ -2046,10 +2046,10 @@
       "scope": "reported_segment",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 16.171507180156652,
+      "value": 16.170961516630733,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
         "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
@@ -2061,10 +2061,10 @@
       "scope": "reported_segment",
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
-      "value": 6.9004685240884545,
+      "value": 6.899372064798692,
       "calculation": "(current/prior-1)*100",
       "inputs": [
-        "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+        "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
         "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf"
       ],
       "status": "calculated_from_quarterly_reports"

@@ -5550,60 +5550,87 @@
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 77.343131,
+      "value": 77.29768797357684,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
-      "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 77.343131,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
+          "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 9.417036,
+      "value": 9.389981218832977,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
-      "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 9.417036,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
+          "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 7720.571364,
+      "value": 7720.5,
       "unit": "MNOK",
-      "status": "reported",
-      "calculation": null,
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private + General Insurance Commercial",
-      "source_cell": "B31 + B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "status": "calculated",
+      "calculation": "sum_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 7720.571364,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private + General Insurance Commercial",
+          "source_cell": "B31 + B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5627,40 +5654,58 @@
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 1749.23971,
+      "value": 1749.3,
       "unit": "MNOK",
-      "status": "reported",
-      "calculation": null,
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private + General Insurance Commercial",
-      "source_cell": "B38 + B38",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "status": "calculated",
+      "calculation": "sum_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 1749.23971,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private + General Insurance Commercial",
+          "source_cell": "B38 + B38"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 1,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 67.926096,
+      "value": 67.90770675474387,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
-      "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 67.926096,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial + General Insurance Private + General Insurance Commercial",
+          "source_cell": "B32 + B32 + B33 + B33 + B36 + B36 + B37 + B37 + B31 + B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5670,16 +5715,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 77.0472319947651,
+      "value": 77.0,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Commercial",
-      "source_cell": "B49",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 14,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 77.0472319947651,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial",
+          "source_cell": "B49"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5689,16 +5744,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 77.64362778194631,
+      "value": 77.6,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private",
-      "source_cell": "B49",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 77.64362778194631,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private",
+          "source_cell": "B49"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5708,16 +5773,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 8.1497111913322,
+      "value": 8.1,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Commercial",
-      "source_cell": "B48",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 14,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 8.1497111913322,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial",
+          "source_cell": "B48"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5727,16 +5802,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 10.7040490136612,
+      "value": 10.7,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private",
-      "source_cell": "B48",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 10.7040490136612,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private",
+          "source_cell": "B48"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5746,16 +5831,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 3890.040623,
+      "value": 3890.0,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Commercial",
-      "source_cell": "B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 14,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 3890.040623,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial",
+          "source_cell": "B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5765,16 +5860,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 3830.530741,
+      "value": 3830.5,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private",
-      "source_cell": "B31",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 3830.530741,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private",
+          "source_cell": "B31"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5820,16 +5925,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 892.8719995065829,
+      "value": 892.9,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Commercial",
-      "source_cell": "B38",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 14,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 892.8719995065829,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial",
+          "source_cell": "B38"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5839,16 +5954,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 856.36771038493,
+      "value": 856.4,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private",
-      "source_cell": "B38",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 856.36771038493,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private",
+          "source_cell": "B38"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5858,16 +5983,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 68.8975208034329,
+      "value": 68.9,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Commercial",
-      "source_cell": "B47",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 14,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 68.8975208034329,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial",
+          "source_cell": "B47"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -5877,16 +6012,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 66.9395787682851,
+      "value": 66.9,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
-      "source_sheet": "General Insurance Private",
-      "source_cell": "B47",
-      "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4341796/af7aaae92042a970.pdf",
+      "source_page": 10,
+      "source_sha256": "51653b9c465fd185fa29f8fca0d334c3ced96fab08d86827a3be0f5e8270e5ab",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 66.9395787682851,
+          "source_url": "https://mb.cision.com/Public/1122/4341797/873c4b7bc89a4c0f.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "5facb13d62cb4c8fcac107bf833cc8681d506d4f0fe9c3e8a25183fc77065126",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private",
+          "source_cell": "B47"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6081,60 +6226,87 @@
       "year": 2026,
       "quarter": 2,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 65.951524,
+      "value": 65.95435169611177,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
-      "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 65.951524,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
+          "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 2,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 9.354115,
+      "value": 9.356399553105547,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
-      "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 9.354115,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
+          "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 2,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 8145.160785,
+      "value": 8145.1,
       "unit": "MNOK",
-      "status": "reported",
-      "calculation": null,
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No",
-      "source_cell": "B5 + B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "status": "calculated",
+      "calculation": "sum_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 8145.160785,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No",
+          "source_cell": "B5 + B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6158,40 +6330,58 @@
       "year": 2026,
       "quarter": 2,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 2773.303109,
+      "value": 2773.4,
       "unit": "MNOK",
-      "status": "reported",
-      "calculation": null,
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No",
-      "source_cell": "B11 + B11",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "status": "calculated",
+      "calculation": "sum_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 2773.303109,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No",
+          "source_cell": "B11 + B11"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
       "year": 2026,
       "quarter": 2,
       "scope": "norway",
-      "source_scope": "norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 56.597409,
+      "value": 56.59795214300622,
       "unit": "percent",
       "status": "calculated",
-      "calculation": "Net claims + signed reinsurance, plus operating expenses for CR, divided by summed PM and BM revenue",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_type": "official_investor_tables",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
-      "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_section": "PM Norway + BM Norway; claims, operating expenses, reinsurance premiums and recoveries summed with signs"
+      "calculation": "revenue_weighted_official_norway_segments",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway + Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 56.597409,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No + General Insurance Private Norwa + General Insurance Commercial No",
+          "source_cell": "B6 + B6 + B7 + B7 + B9 + B9 + B10 + B10 + B5 + B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6301,16 +6491,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 65.1051081993994,
+      "value": 65.1,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Commercial No",
-      "source_cell": "B22",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 15,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 65.1051081993994,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial No",
+          "source_cell": "B22"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6320,16 +6520,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "combined_ratio",
-      "value": 66.7893220497834,
+      "value": 66.8,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa",
-      "source_cell": "B22",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 66.7893220497834,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa",
+          "source_cell": "B22"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6339,16 +6549,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 8.07917860293102,
+      "value": 8.1,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Commercial No",
-      "source_cell": "B21",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 15,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 8.07917860293102,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial No",
+          "source_cell": "B21"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6358,16 +6578,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "expense_ratio",
-      "value": 10.6160704023097,
+      "value": 10.6,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa",
-      "source_cell": "B21",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 10.6160704023097,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa",
+          "source_cell": "B21"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6377,16 +6607,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 4051.741558,
+      "value": 4051.7,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Commercial No",
-      "source_cell": "B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 15,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 4051.741558,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial No",
+          "source_cell": "B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6396,16 +6636,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "insurance_revenue",
-      "value": 4093.419227,
+      "value": 4093.4,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa",
-      "source_cell": "B5",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 4093.419227,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa",
+          "source_cell": "B5"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6451,16 +6701,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 1413.8508327040702,
+      "value": 1413.9,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Commercial No",
-      "source_cell": "B11",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 15,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 1413.8508327040702,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial No",
+          "source_cell": "B11"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6470,16 +6730,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "insurance_service_result",
-      "value": 1359.45227663122,
+      "value": 1359.5,
       "unit": "MNOK",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa",
-      "source_cell": "B11",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 1359.45227663122,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa",
+          "source_cell": "B11"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6489,16 +6759,26 @@
       "segment": "Commercial Norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 57.02592959646841,
+      "value": 57.0,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Commercial No",
-      "source_cell": "B20",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 15,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Commercial Norway",
+      "source_revision_history": [
+        {
+          "value": 57.02592959646841,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Commercial No",
+          "source_cell": "B20"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
@@ -6508,16 +6788,26 @@
       "segment": "Private Norway",
       "period_type": "quarter",
       "metric": "loss_ratio",
-      "value": 56.1732516474737,
+      "value": 56.2,
       "unit": "percent",
       "status": "reported",
-      "source_type": "official_investor_tables",
-      "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
-      "source_document_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
-      "source_sheet": "General Insurance Private Norwa",
-      "source_cell": "B20",
-      "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
-      "source_scope": "reported_segment"
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4373892/b3fb98691b4814f0.pdf",
+      "source_page": 11,
+      "source_sha256": "740268e3e7442a3962464501b8afbf4280f3f382eaa93c15341c81fc90d3e512",
+      "source_section": "General Insurance Private Norway",
+      "source_revision_history": [
+        {
+          "value": 56.1732516474737,
+          "source_url": "https://mb.cision.com/Public/1122/4373899/b0ab985d8284a746.xlsx",
+          "source_type": "official_investor_tables",
+          "source_page": null,
+          "source_sha256": "87af3cadb89a6a175b77165f3df67315f778b68a253d48cef46103aae73f8220",
+          "source_definition": null,
+          "source_sheet": "General Insurance Private Norwa",
+          "source_cell": "B20"
+        }
+      ]
     },
     {
       "company": "Gjensidige",
