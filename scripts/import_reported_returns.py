@@ -140,7 +140,7 @@ def official_tryg_presentations(year,quarter):
         parsed=urlparse(dest)
         if parsed.scheme!='https' or parsed.hostname not in ('tryg.com','www.tryg.com'):continue
         if not parsed.path.lower().endswith('.pdf'):continue
-        if re.search(rf'Q{quarter}\\s+{year}\\s*[-–]\\s*Investor presentation',title,re.I):
+        if re.search(rf'Q{quarter}\s+{year}\s*[-–]\s*Investor presentation',title,re.I):
             yield dest
 
 def run():
