@@ -71,7 +71,7 @@ def run(offline=False):
  if not offline:
   print('RUN import_reported_returns.py (issuer PDF ROE and ROOF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_reported_returns.py')],cwd=ROOT,check=True)
- for name in ['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','refresh_report_commentary.py','build_editorial.py','build_strategic_market.py','update.py','verify_feed_coverage.py','verify_expected_published_quarters.py']:
+ for name in ['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','refresh_report_commentary.py','build_editorial.py','build_strategic_market.py','update.py','verify_feed_coverage.py','verify_expected_published_quarters.py','check_reported_returns_coverage.py']:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
  print('Pipeline complete. Coverage is reported separately; it is not implied.')
