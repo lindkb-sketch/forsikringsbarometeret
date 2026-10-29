@@ -13,7 +13,7 @@ from audit_financials import DATA,audit
 from ingest_official_pdf import download
 from publish_geographic_workbooks import atomic_write
 
-COMPANIES=('Tryg','Protector')
+COMPANIES=('Tryg','Protector','Sampo')
 def extract(blob,company,year,quarter):
     if not blob.startswith(b'%PDF-'):raise ValueError('Not an official PDF')
     candidates=[]
@@ -25,6 +25,12 @@ def extract(blob,company,year,quarter):
                 patterns=[
                     r'solvency ratio was\s*(\d{2,3}(?:[.,]\d+)?)\s*%\s*at the end of Q'+str(quarter)+r'\s*'+str(year),
                     r'(?:reported )?solvency ratio at the end of Q'+str(quarter)+r'\s*'+str(year)+r' was\s*(\d{2,3}(?:[.,]\d+)?)\s*%'
+                ]
+            elif company=='Sampo':
+                if not re.search(r'(?:Q\\s*'+str(quarter)+r'|half.year|H1)\\s*'+str(year),text,re.I):continue
+                patterns=[
+                    r'\\bSolvency\\s*II\\s*ratio\\s*(?:was|of|:)?\\s*(\\d{2,3}(?:[.,]\\d+)?)\\s*%',
+                    r'\\bGroup\\s*solvency\\s*ratio\\s*(?:was|of|:)?\\s*(\\d{2,3}(?:[.,]\\d+)?)\\s*%'
                 ]
             else:
                 # Label and reported quarter explicitly visible on the page;
