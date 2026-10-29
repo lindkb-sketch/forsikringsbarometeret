@@ -170,15 +170,15 @@ def extract(blob, url):
         # Match the issuer-specific Eika-adjusted return in the actual PDF
         # table. Do not substitute ordinary ROE or estimate missing periods.
         adjusted_caption=re.compile(
-            r"Annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+"
-            r"(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s+Forsikring\\s+AS",
+            r"Annualisert\s+egenkapitalavkastning\s+justert\s+for\s+"
+            r"(?:transaksjonen|fusjonen)\s+med\s+Eika\s+Forsikring\s+AS",
             re.I)
         matches=[]
         for line in text.splitlines():
             found=adjusted_caption.search(line)
             if not found:continue
             tail=line[found.end():].strip()
-            values=re.findall(r"(?<![\\w])-?\\d{1,3}(?:,\\d{1,2})?\\s*%?",tail)
+            values=re.findall(r"(?<![\w])-?\d{1,3}(?:,\d{1,2})?\s*%?",tail)
             if values:matches.append(values)
         if len(matches)>1:raise ValueError("Duplicate Eika-adjusted return rows")
         if matches:
