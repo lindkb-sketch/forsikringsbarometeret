@@ -762,6 +762,24 @@
       "year": 2025,
       "quarter": 1,
       "scope": "group",
+      "source_scope": "group",
+      "period_type": "ytd",
+      "metric": "return_on_equity",
+      "value": 36.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/cc40aefcac2520c61277ae39dd5e10fb572fa273.pdf",
+      "source_page": 3,
+      "source_sha256": "b170699b8834e7f648c746d3a3705c0e60763be2be5d8bad1276d9604c7ea555",
+      "source_document_period": "Q1 2025",
+      "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 1,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "solvency_ratio",
       "value": 168.0,
@@ -14598,6 +14616,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 803,
+  "observation_count": 804,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
