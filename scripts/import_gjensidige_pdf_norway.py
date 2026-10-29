@@ -88,12 +88,17 @@ def prepare(data,fetcher=download,reader=read_pdf):
         and r['year']>=2026}
     existing={key(r):r for r in observations}
     additions=[]
+    replacements={}
     for year,quarter,url in sorted(sources):
         required_segment_metrics=(*METRICS,'insurance_revenue_growth')
         if (all(('Gjensidige',year,quarter,'reported_segment',seg,'quarter',m) in existing
                 for seg in SEGMENTS for m in required_segment_metrics)
             and all(('Gjensidige',year,quarter,'norway',None,'quarter',m) in existing
-                    for m in (*METRICS,'insurance_revenue_growth'))):
+                    for m in (*METRICS,'insurance_revenue_growth'))
+            and not any(r.get('company')=='Gjensidige'
+                and r.get('year')==year and r.get('quarter')==quarter
+                and r.get('source_type')=='official_investor_tables'
+                for r in observations)):
             continue
         blob=fetcher(url)
         if not blob.startswith(b'%PDF-'):raise ValueError('Not official PDF')
@@ -103,6 +108,8 @@ def prepare(data,fetcher=download,reader=read_pdf):
             if k in existing:
                 if abs(existing[k]['value']-r['value'])>0.15:
                     raise ValueError('Conflicting verified segment value '+str(k))
+                if existing[k].get('source_type')=='official_investor_tables':
+                    replacements[k]=r
             elif k not in {key(x) for x in additions}:additions.append(r)
         # Calculate the geographic growth from summed current and prior-year revenue.
         current=sum(r['value'] for r in batch if r['year']==year and r['metric']=='insurance_revenue')
@@ -124,6 +131,14 @@ def prepare(data,fetcher=download,reader=read_pdf):
                 if k in existing:
                     if abs(existing[k]['value']-value)>(0.3 if 'ratio' in metric else 0.25):
                         raise ValueError('Norway total does not reconcile: '+str(k))
+                    if existing[k].get('source_type')=='official_investor_tables':
+                        replacements[k]=dict(company='Gjensidige',year=yr,quarter=quarter,
+                            scope='norway',period_type='quarter',metric=metric,value=value,
+                            unit='percent' if 'ratio' in metric else 'MNOK',status='calculated',
+                            calculation='revenue_weighted_official_norway_segments' if 'ratio' in metric else 'sum_official_norway_segments',
+                            source_type='official_quarterly_report',source_url=url,
+                            source_page=segrows[0]['source_page'],source_sha256=segrows[0]['source_sha256'],
+                            source_section='General Insurance Private Norway + Commercial Norway')
                     continue
                 additions.append(dict(company='Gjensidige',year=yr,quarter=quarter,
                     scope='norway',period_type='quarter',metric=metric,value=value,
@@ -136,6 +151,14 @@ def prepare(data,fetcher=download,reader=read_pdf):
         if k in existing:
             if abs(existing[k]['value']-growth)>0.15:
                 raise ValueError('Existing Norway growth differs from segment revenues')
+            if existing[k].get('source_type')=='official_investor_tables':
+                replacements[k]=dict(company='Gjensidige',year=year,quarter=quarter,
+                    scope='norway',period_type='quarter',metric='insurance_revenue_growth',
+                    value=growth,unit='percent',status='calculated',
+                    calculation='revenue_weighted_official_norway_segments',
+                    source_type='official_quarterly_report',source_url=url,
+                    source_page=batch[0]['source_page'],source_sha256=batch[0]['source_sha256'],
+                    source_section='General Insurance Private Norway + Commercial Norway')
         else:
             additions.append(dict(company='Gjensidige',year=year,quarter=quarter,
                 scope='norway',period_type='quarter',metric='insurance_revenue_growth',
@@ -144,10 +167,10 @@ def prepare(data,fetcher=download,reader=read_pdf):
                 source_type='official_quarterly_report',source_url=url,
                 source_page=batch[0]['source_page'],source_sha256=batch[0]['source_sha256'],
                 source_section='General Insurance Private Norway + Commercial Norway'))
-    merged={**data,'observations':observations+additions}
+    merged={**data,'observations':[replacements.get(key(r),r) for r in observations]+additions}
     result=audit(merged)
     if not result['ok']:raise ValueError('Norway PDF audit failed: '+repr(result['errors']))
-    return merged,len(additions)
+    return merged,len(additions)+len(replacements)
 
 def run():
     data=json.loads(DATA.read_text(encoding='utf-8'))
