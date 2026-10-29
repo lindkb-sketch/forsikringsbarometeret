@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"scripts"))
-from check_reported_returns_coverage import coverage
+from check_reported_returns_coverage import coverage, quarterly_coverage
 
 def obs(company,metric,year=2026,quarter=3,definition="",source="https://issuer.example/quarter.pdf"):
     return dict(company=company,metric=metric,year=year,quarter=quarter,
@@ -28,6 +28,16 @@ class ReturnCoverageTests(unittest.TestCase):
               obs("Tryg","return_on_equity",definition="ordinary ROE",
                   source="https://issuer.example/excel.xlsx")]
         self.assertEqual(coverage(rows)["Tryg"]["state"],"missing_or_ambiguous")
+    def test_q1_to_q3_2026_and_future_quarters_are_automatically_checked(self):
+        rows=[obs("Tryg","insurance_revenue",2026,q) for q in (1,2,3)]
+        rows.append(obs("Tryg","return_on_equity",2026,1,definition="ROOF"))
+        result=quarterly_coverage(rows)
+        self.assertEqual(result["Tryg Q1 2026"]["state"],"verified")
+        self.assertEqual(result["Tryg Q2 2026"]["state"],"missing_or_ambiguous")
+        self.assertEqual(result["Tryg Q3 2026"]["state"],"missing_or_ambiguous")
+        self.assertNotIn("Tryg Q4 2026",result)
+        rows.append(obs("Tryg","insurance_revenue",2026,4))
+        self.assertIn("Tryg Q4 2026",quarterly_coverage(rows))
     def test_pipeline_runs_coverage_after_verified_feed(self):
         source=(Path(__file__).resolve().parents[1]/"scripts/run_pipeline.py").read_text()
         self.assertIn("'check_reported_returns_coverage.py'",source)
