@@ -27,10 +27,10 @@ def extract(blob,company,year,quarter):
                     r'(?:reported )?solvency ratio at the end of Q'+str(quarter)+r'\s*'+str(year)+r' was\s*(\d{2,3}(?:[.,]\d+)?)\s*%'
                 ]
             elif company=='Sampo':
-                if not re.search(r'(?:Q\\s*'+str(quarter)+r'|half.year|H1)\\s*'+str(year),text,re.I):continue
+                if not re.search(r'(?:Q\s*'+str(quarter)+r'|half.year|H1)\s*'+str(year),text,re.I):continue
                 patterns=[
-                    r'\\bSolvency\\s*II\\s*ratio\\s*(?:was|of|:)?\\s*(\\d{2,3}(?:[.,]\\d+)?)\\s*%',
-                    r'\\bGroup\\s*solvency\\s*ratio\\s*(?:was|of|:)?\\s*(\\d{2,3}(?:[.,]\\d+)?)\\s*%'
+                    r'\bSolvency\s*II\s*ratio\s*(?:was|of|:)?\s*(\d{2,3}(?:[.,]\d+)?)\s*%',
+                    r'\bGroup\s*solvency\s*ratio\s*(?:was|of|:)?\s*(\d{2,3}(?:[.,]\d+)?)\s*%'
                 ]
             else:
                 # Label and reported quarter explicitly visible on the page;
