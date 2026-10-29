@@ -51,6 +51,8 @@ def run(offline=False):
  if not offline:
   print('RUN import_gjensidige_latest.py (issuer-linked verified quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_latest.py')],cwd=ROOT,check=True)
+  print('RUN migrate_gjensidige_ytd_pdf.py (retire official workbook YTD baseline)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'migrate_gjensidige_ytd_pdf.py')],cwd=ROOT,check=True)
   print('RUN import_gjensidige_pdf_norway.py (verified Norway PM/BM from official quarterly PDF)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_gjensidige_pdf_norway.py')],cwd=ROOT,check=True)
  if not offline:
