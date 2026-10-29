@@ -155,6 +155,14 @@ def run():
               for r in records}
     added=0
     for company,year,quarter,url in sources:
+        # Never assign a previous year's ROE/ROOF by reading the current
+        # period's PDF without a separately verified year-labelled column.
+        # In particular, the 2026 Gjensidige/Tryg PDF must not generate a
+        # 2025 observation simply because a 2025 revenue comparator exists.
+        document_year=re.search(r'20\\d{2}',url)
+        if document_year and int(document_year.group())>year:
+            print('::warning::RETURN_PERIOD_DOCUMENT_MISMATCH',company,year,quarter,url,flush=True)
+            continue
         k=(company,year,quarter,'group','quarter','return_on_equity')
         if k in existing:continue
         try:

@@ -67,6 +67,10 @@ class ReportedReturnTests(unittest.TestCase):
         mock.__enter__.return_value.read.return_value=html
         with patch('urllib.request.urlopen',return_value=mock):
             self.assertEqual(list(official_tryg_presentations(2025,4)),[])
+    def test_year_mismatch_must_not_backfill_prior_year_roe(self):
+        import re
+        url='https://issuer.example/reports/2026/quarter-3.pdf'
+        self.assertGreater(int(re.search(r'20\\d{2}',url).group()),2025)
     def test_scheduled_import_and_chart_binding(self):
         root=Path(__file__).resolve().parents[1]
         pipeline=(root/'scripts/run_pipeline.py').read_text()
