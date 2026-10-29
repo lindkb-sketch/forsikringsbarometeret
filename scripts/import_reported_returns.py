@@ -73,8 +73,8 @@ def extract(blob,company,year,quarter):
     # revenue/combined-ratio table extraction to be an official figure.
     if company=='Fremtind':
         caption=re.compile(
-            r'annualisert\\s+egenkapitalavkastning\\s+justert\\s+for\\s+'
-            r'(?:transaksjonen|fusjonen)\\s+med\\s+Eika\\s*Forsikring\\s+AS',
+            r'annualisert\s+egenkapitalavkastning\s+justert\s+for\s+'
+            r'(?:transaksjonen|fusjonen)\s+med\s+Eika\s*Forsikring\s+AS',
             re.I)
         with pdfplumber.open(io.BytesIO(blob)) as pdf:
             for pageno,page in enumerate(pdf.pages,1):
@@ -86,7 +86,7 @@ def extract(blob,company,year,quarter):
                     remainder=context[m.end():]
                     # Capture the first explicitly printed percentage in the
                     # current-quarter column, never a plain equity amount.
-                    values=re.findall(r'(?<![\\w.,])-?\\d{1,3}(?:[.,]\\d{1,2})?\\s*%',remainder)
+                    values=re.findall(r'(?<![\w.,])-?\d{1,3}(?:[.,]\d{1,2})?\s*%',remainder)
                     if values:
                         value=float(values[0].replace('%','').replace(' ','').replace(',','.'))
                         if -100<=value<=200:candidates.append((pageno,value))
