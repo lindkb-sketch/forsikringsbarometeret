@@ -1,8 +1,7 @@
 {
-  "observation_count": 808,
+  "observation_count": 818,
   "source_types": {
-    "official_quarterly_report": 803,
-    "official_investor_tables": 5
+    "official_quarterly_report": 818
   },
   "comparative_period_rows": 304,
   "comparative_periods_by_company": {
@@ -21,13 +20,7 @@
     "Gjensidige": 2,
     "Fremtind": 4
   },
-  "source_policy_exceptions": [
-    "row 109: workbook evidence, not report/presentation PDF",
-    "row 110: workbook evidence, not report/presentation PDF",
-    "row 111: workbook evidence, not report/presentation PDF",
-    "row 112: workbook evidence, not report/presentation PDF",
-    "row 113: workbook evidence, not report/presentation PDF"
-  ],
+  "source_policy_exceptions": [],
   "official_pdf_or_presentation_only_confirmed": false,
   "note": "Historical comparison columns require separate column-level evidence; a source URL or report year alone cannot certify the reported period."
 }
