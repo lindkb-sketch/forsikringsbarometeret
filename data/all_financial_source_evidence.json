@@ -1,0 +1,63 @@
+{
+  "observation_count": 808,
+  "source_types": {
+    "official_quarterly_report": 773,
+    "official_investor_tables": 35
+  },
+  "comparative_period_rows": 304,
+  "comparative_periods_by_company": {
+    "Storebrand": 50,
+    "Tryg": 110,
+    "Fremtind": 66,
+    "Gjensidige": 45,
+    "Protector": 12,
+    "Frende": 20,
+    "Sampo": 1
+  },
+  "missing_source_sha256": 40,
+  "missing_source_sha256_by_company": {
+    "Storebrand": 1,
+    "Tryg": 33,
+    "Gjensidige": 2,
+    "Fremtind": 4
+  },
+  "source_policy_exceptions": [
+    "row 99: workbook evidence, not report/presentation PDF",
+    "row 100: workbook evidence, not report/presentation PDF",
+    "row 101: workbook evidence, not report/presentation PDF",
+    "row 102: workbook evidence, not report/presentation PDF",
+    "row 103: workbook evidence, not report/presentation PDF",
+    "row 104: workbook evidence, not report/presentation PDF",
+    "row 105: workbook evidence, not report/presentation PDF",
+    "row 106: workbook evidence, not report/presentation PDF",
+    "row 107: workbook evidence, not report/presentation PDF",
+    "row 108: workbook evidence, not report/presentation PDF",
+    "row 109: workbook evidence, not report/presentation PDF",
+    "row 110: workbook evidence, not report/presentation PDF",
+    "row 111: workbook evidence, not report/presentation PDF",
+    "row 112: workbook evidence, not report/presentation PDF",
+    "row 113: workbook evidence, not report/presentation PDF",
+    "row 616: workbook evidence, not report/presentation PDF",
+    "row 617: workbook evidence, not report/presentation PDF",
+    "row 618: workbook evidence, not report/presentation PDF",
+    "row 619: workbook evidence, not report/presentation PDF",
+    "row 620: workbook evidence, not report/presentation PDF",
+    "row 621: workbook evidence, not report/presentation PDF",
+    "row 622: workbook evidence, not report/presentation PDF",
+    "row 623: workbook evidence, not report/presentation PDF",
+    "row 624: workbook evidence, not report/presentation PDF",
+    "row 625: workbook evidence, not report/presentation PDF",
+    "row 626: workbook evidence, not report/presentation PDF",
+    "row 627: workbook evidence, not report/presentation PDF",
+    "row 628: workbook evidence, not report/presentation PDF",
+    "row 629: workbook evidence, not report/presentation PDF",
+    "row 630: workbook evidence, not report/presentation PDF",
+    "row 631: workbook evidence, not report/presentation PDF",
+    "row 632: workbook evidence, not report/presentation PDF",
+    "row 633: workbook evidence, not report/presentation PDF",
+    "row 634: workbook evidence, not report/presentation PDF",
+    "row 635: workbook evidence, not report/presentation PDF"
+  ],
+  "official_pdf_or_presentation_only_confirmed": false,
+  "note": "Historical comparison columns require separate column-level evidence; a source URL or report year alone cannot certify the reported period."
+}
