@@ -17,9 +17,12 @@ def build(root=ROOT):
     root=Path(root)
     observations=json.loads((root/'data/financial_observations.json').read_text())['observations']
     registry=json.loads((root/'data/report_sources.json').read_text())['sources']
-    feed=json.loads((root/'data/verified_financial_feed.json').read_text())['observations']
-    workflow=(root/'.github/workflows/update.yml').read_text(encoding='utf-8')
-    pipeline=(root/'scripts/run_pipeline.py').read_text(encoding='utf-8')
+    feed_path=root/'data/verified_financial_feed.json'
+    feed=json.loads(feed_path.read_text())['observations'] if feed_path.exists() else []
+    workflow_path=root/'.github/workflows/update.yml'
+    workflow=workflow_path.read_text(encoding='utf-8') if workflow_path.exists() else ''
+    pipeline_path=root/'scripts/run_pipeline.py'
+    pipeline=pipeline_path.read_text(encoding='utf-8') if pipeline_path.exists() else ''
     required_steps=('scripts/run_pipeline.py','scripts/publication_provenance.py',
                     'scripts/verify_public_pages.py','actions/deploy-pages@v4')
     scheduled=('schedule:' in workflow and all(step in workflow for step in required_steps))
