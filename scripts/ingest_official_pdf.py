@@ -62,12 +62,34 @@ def parse_highlights(pages,company,year,quarter,url,sha):
  return out
 
 def download(url):
+ """Reuse bytes for the same PDF within ONE workflow run, never across runs.
+
+ This is a network optimization, not a source verification shortcut: PDF
+ parsing and all downstream financial checks still execute normally.
+ """
  if not url.startswith('https://'):raise ValueError('HTTPS required')
+ cache_root=os.environ.get('BAROMETER_PDF_RUN_CACHE')
+ cache_file=None
+ if cache_root:
+  cache_file=Path(cache_root)/('pdf-'+hashlib.sha256(url.encode('utf-8')).hexdigest())
+  if cache_file.is_file():
+   blob=cache_file.read_bytes()
+   if blob.startswith(b'%PDF-') and len(blob)<=35_000_000:
+    print('PDF_RUN_CACHE_HIT',url,flush=True)
+    return blob
  req=urllib.request.Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'})
  with urllib.request.urlopen(req,timeout=40) as response:
   if not response.geturl().startswith('https://'):raise ValueError('Insecure redirect')
   blob=response.read(35_000_001)
  if len(blob)>35_000_000:raise ValueError('PDF too large')
+ if cache_file and blob.startswith(b'%PDF-'):
+  cache_file.parent.mkdir(parents=True,exist_ok=True)
+  fd,tmp=tempfile.mkstemp(prefix='.pdf-cache-',dir=cache_file.parent)
+  try:
+   with os.fdopen(fd,'wb') as out:out.write(blob)
+   os.replace(tmp,cache_file)
+  finally:
+   if os.path.exists(tmp):os.unlink(tmp)
  return blob
 
 def merge(existing,new):
