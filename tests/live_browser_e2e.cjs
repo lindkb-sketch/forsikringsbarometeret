@@ -150,9 +150,19 @@ async function main(){
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
   const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
-  if(companyBrief)check('Company page has current sourced financial commentary',
-       displayed(companyComment).includes(displayed(companyBrief.comment))&&displayed(companyComment).includes(displayed(companyBrief.summary)),
-       companyComment.slice(0,400));
+  if(companyBrief){
+    const qualitative=(companyBrief.qualitative_notes||[]).filter(note=>note.text&&note.source_url&&note.source_page);
+    check('Company page has source-linked qualitative quarterly commentary',
+      qualitative.length
+        ? qualitative.slice(0,2).some(note=>displayed(companyComment).includes(displayed(note.text))) &&
+          companyComment.includes('Offisiell kvartalsrapport')
+        : companyComment.includes('Redaksjonell kvartalskommentar avventer'),
+      companyComment.slice(0,400));
+    check('Company commentary does not repeat financial KPI recap',
+      !displayed(companyComment).includes(displayed(companyBrief.summary)) &&
+      !displayed(companyComment).includes(displayed(companyBrief.comment)),
+      companyComment.slice(0,400));
+  }
   check('Company commentary has no duplicated quarter prefix',!companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
   const quotesOnCompany=await page.locator('.stock-section').first().innerText();
   const quote=stocks.prices?.Gjensidige;
