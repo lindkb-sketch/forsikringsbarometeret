@@ -32,11 +32,11 @@
     {
       "company": "Tryg",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 6,
+      "group_quarter_observations": 7,
       "official_source_urls": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
       ],
-      "observation_sha256": "e80df2320695faccd294297ce210b948b8b6bde07a8060d41697bcf752b344d6",
+      "observation_sha256": "0598d0b244902b0272e8d0d6cdef87a5e1231bf2ec16b1185ddf5e16dfc111cd",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,

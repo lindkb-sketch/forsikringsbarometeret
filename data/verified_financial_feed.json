@@ -15114,6 +15114,24 @@
       "quarter": 3,
       "scope": "group",
       "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "solvency_ratio",
+      "value": 203.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_page": 5,
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_document_period": "Q3 2026",
+      "source_definition": "Reported quarter-end Group solvency ratio"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "source_scope": "group",
       "period_type": "ytd",
       "metric": "combined_ratio",
       "value": 83.2,
@@ -15285,6 +15303,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 818,
+  "observation_count": 819,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
