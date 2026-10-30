@@ -7,12 +7,26 @@ Missing/ambiguous cells fail closed; no financial amounts are embedded in code.
 import hashlib
 import json
 import re
+import os
+import tempfile
 from datetime import date
 from pathlib import Path
 from audit_financials import DATA, audit
 from build_verified_feed import publish
 from ingest_official_pdf import download, read_pdf
-from publish_geographic_workbooks import atomic_write
+def atomic_write(path, payload):
+    """Atomically write verified PDF records without importing the XLSX pipeline."""
+    path = Path(path)
+    fd, tmp = tempfile.mkstemp(prefix=".gjensidige-pdf-", suffix=".json", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as out:
+            json.dump(payload, out, ensure_ascii=False, indent=2)
+            out.write("\n")
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
 
 METRICS={
     'insurance_revenue':r'Insurance revenue',
