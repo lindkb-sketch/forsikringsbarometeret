@@ -9,10 +9,9 @@ on:
       - 'scripts/reconcile_gjensidige_segments.py'
       - 'tests/test_gjensidige_reconciliation.py'
       - 'tests/test_gjensidige_discovery.py'
-      - 'scripts/inspect_gjensidige_workbooks.py'
-      - 'scripts/geographic_excel.py'
-      - 'scripts/publish_geographic_workbooks.py'
-      - 'tests/test_gjensidige_segments.py'
+      - 'scripts/validate_gjensidige_pdf_segments.py'
+      - 'scripts/import_gjensidige_pdf_norway.py'
+      - 'tests/test_gjensidige_pdf_ratio_amounts.py'
       - '.github/workflows/gjensidige-segments.yml'
   schedule:
     - cron: '17 8 * * *'
@@ -26,22 +25,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate extractor unit tests
-        run: python -m unittest discover -s tests -p test_gjensidige_segments.py -v
-      - name: Validate independent Norway reconciliation tests
-        run: python -m unittest discover -s tests -p test_gjensidige_reconciliation.py -v
-      - name: Test source discovery and fail-closed period pairing
-        run: python -m unittest discover -s tests -p test_gjensidige_discovery.py -v
-      - name: Discover next official quarterly XLSX and PDF candidates
-        run: python scripts/discover_gjensidige_sources.py
-      - name: Download original XLSX and validate both Norway segments
-        run: python scripts/inspect_gjensidige_workbooks.py
-      - name: Preserve exact source-cell evidence even on failure
+      - name: Install PDF parsing dependencies
+        run: python -m pip install pymupdf
+      - name: Validate Norway PDF extraction tests
+        run: python -m unittest discover -s tests -p test_gjensidige_pdf_ratio_amounts.py -v
+      - name: Validate PM/BM directly from official quarterly PDF
+        run: python scripts/validate_gjensidige_pdf_segments.py
+      - name: Preserve PDF validation evidence even on failure
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gjensidige-official-source-diagnostics
           path: |
-            data/gjensidige_workbook_diagnostics.json
-            data/gjensidige_discovery_candidates.json
+            data/gjensidige_pdf_diagnostics.json
           if-no-files-found: warn
