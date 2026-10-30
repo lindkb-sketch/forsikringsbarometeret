@@ -867,7 +867,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 819,
+  "observation_count": 829,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -2156,6 +2156,36 @@
       "inputs": [
         "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
         "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 18.96354504014568,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 14.255452621382215,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+        "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7"
       ],
       "status": "calculated_from_quarterly_reports"
     }

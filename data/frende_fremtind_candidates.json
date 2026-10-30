@@ -3,6 +3,15 @@
     {
       "company": "Frende",
       "year": 2026,
+      "quarter": 3,
+      "document_url": "https://frende.wrep.it/q3-2026-frende-holding-as",
+      "source_format": "publisher_html",
+      "archive_url": "https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/",
+      "status": "requires_pdf_entity_and_period_verification"
+    },
+    {
+      "company": "Frende",
+      "year": 2026,
       "quarter": 2,
       "document_url": "https://frende.wrep.it/q2-2026-frende-holding-as",
       "source_format": "publisher_html",

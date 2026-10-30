@@ -130,6 +130,13 @@
       "type": "rule_based_interpretation"
     },
     {
+      "text": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
+      "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+      "company": "Frende",
+      "period": "Q3 2026",
+      "type": "rule_based_interpretation"
+    },
+    {
       "text": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
       "company": "Protector",
@@ -189,6 +196,15 @@
       "has_comparative": true,
       "qualitative_notes": []
     },
+    "Frende": {
+      "summary": "Frende: forsikringsinntekter 973.443 NOKm (+19.0 % mot Q3 2025), forsikringsresultat 184.381 NOKm, combined ratio 84 % (Q3 2025: 85.3 %) i Q3 2026.",
+      "comment": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
+      "ytd": "HIÅ: forsikringsinntekter 3731.89 NOKm (+14.3 % mot HIÅ 2025).",
+      "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+      "period": "Q3 2026",
+      "has_comparative": true,
+      "qualitative_notes": []
+    },
     "Protector": {
       "summary": "Protector: forsikringsinntekter 3864 MNOK (+9.5 % mot Q3 2025), forsikringsresultat 670 MNOK, combined ratio 82.7 % (Q3 2025: 83.1 %) i Q3 2026.",
       "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
@@ -212,10 +228,11 @@
     "Fremtind": "featured",
     "Gjensidige": "featured",
     "Tryg": "featured",
+    "Frende": "awaiting_curated_commentary",
     "Protector": "awaiting_curated_commentary",
     "Storebrand": "awaiting_curated_commentary"
   },
-  "reported_company_count": 5,
+  "reported_company_count": 6,
   "periods": {
     "Q3 2026": {
       "brief": [
@@ -348,6 +365,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "company": "Frende",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
           "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
           "company": "Protector",
@@ -407,6 +431,15 @@
           "has_comparative": true,
           "qualitative_notes": []
         },
+        "Frende": {
+          "summary": "Frende: forsikringsinntekter 973.443 NOKm (+19.0 % mot Q3 2025), forsikringsresultat 184.381 NOKm, combined ratio 84 % (Q3 2025: 85.3 %) i Q3 2026.",
+          "comment": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
+          "ytd": "HIÅ: forsikringsinntekter 3731.89 NOKm (+14.3 % mot HIÅ 2025).",
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "period": "Q3 2026",
+          "has_comparative": true,
+          "qualitative_notes": []
+        },
         "Protector": {
           "summary": "Protector: forsikringsinntekter 3864 MNOK (+9.5 % mot Q3 2025), forsikringsresultat 670 MNOK, combined ratio 82.7 % (Q3 2025: 83.1 %) i Q3 2026.",
           "comment": "Protector: combined ratio 82.7 % i Q3 2026, svekket med 1.2 prosentpoeng fra Q2 2026 (81.5 %).",
@@ -430,10 +463,11 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
+        "Frende": "awaiting_curated_commentary",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 5
+      "reported_company_count": 6
     },
     "Q2 2026": {
       "brief": [

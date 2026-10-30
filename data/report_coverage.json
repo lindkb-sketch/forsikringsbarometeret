@@ -223,27 +223,28 @@
       "company": "Frende",
       "official_archive_registered": true,
       "direct_pdf_registered": 0,
-      "official_report_candidates": 46,
+      "official_report_candidates": 47,
       "candidate_discovery_verified": true,
-      "group_quarter_observations": 38,
+      "group_quarter_observations": 43,
       "group_quarters_with_required_metrics": [
         "2025-Q1",
         "2025-Q2",
         "2025-Q3",
         "2025-Q4",
         "2026-Q1",
-        "2026-Q2"
+        "2026-Q2",
+        "2026-Q3"
       ],
       "prior_year_growth_quarter": {
         "available": true,
         "year": 2025,
-        "quarter": 2,
+        "quarter": 3,
         "reason": "verified comparable revenue years"
       },
       "prior_year_growth_ytd": {
         "available": true,
         "year": 2025,
-        "quarter": 2,
+        "quarter": 3,
         "reason": "verified comparable revenue years"
       },
       "return_kpi_coverage": null,

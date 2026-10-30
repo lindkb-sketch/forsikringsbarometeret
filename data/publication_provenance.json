@@ -57,13 +57,13 @@
     },
     {
       "company": "Frende",
-      "latest_verified_period": "2026-Q2",
+      "latest_verified_period": "2026-Q3",
       "group_quarter_observations": 5,
       "official_source_urls": [
-        "https://frende.wrep.it/q2-2026-frende-holding-as/sec/6",
-        "https://frende.wrep.it/q2-2026-frende-holding-as/sec/7"
+        "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+        "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7"
       ],
-      "observation_sha256": "65d8da511d065e8344996c802ba91a85df6698f99a648e0e5738894db6d67145",
+      "observation_sha256": "9d86e4bd1ff419a1f481b1f69819a24953575a81d0c87902d12573b1fb2354cf",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
