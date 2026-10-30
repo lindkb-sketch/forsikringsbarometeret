@@ -9,6 +9,7 @@ on:
       - 'tests/test_gjensidige_pdf_ratio_amounts.py'
       - 'tests/test_validate_gjensidige_pdf_segments.py'
       - 'scripts/ingest_official_pdf.py'
+      - 'data/financial_observations.json'
       - '.github/workflows/gjensidige-segments.yml'
   schedule:
     - cron: '17 8 * * *'
