@@ -55,6 +55,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_frende_fremtind_discovery.py' -v
           python -m unittest discover -s tests -p 'test_gjensidige_report_check.py' -v
           python -m unittest discover -s tests -p 'test_discover_reports.py' -v
+      - name: Simulate Q4 rollover and Q3 Sampo Frende source readiness (no publication)
+        run: python -m unittest discover -s tests -p 'test_quarter_rollover_readiness.py' -v
       - name: Discover Frende Holding and Fremtind Holding official report candidates
         run: python scripts/discover_frende_fremtind.py || echo "::warning::Issuer archives unavailable; no unverified data imported"
       - name: Fetch independent editorial media headlines
