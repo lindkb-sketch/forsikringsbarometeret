@@ -30,7 +30,7 @@ def discover(html,base_url,company):
   if parsed.hostname!=base.hostname:continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Require interim-report context, and an explicit PDF file extension.
-  if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
+  if not re.search(r"\.pdf$",parsed.path,re.I):continue
   if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
   if re.search(r"(presentation|presentasjon|press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
   if url not in seen:
