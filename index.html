@@ -1853,11 +1853,20 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    // reports or investor presentations with source evidence.
    const notes=(item?.qualitative_notes||[]).filter(x=>
      x.text&&/^https:\/\//.test(x.source_url)&&x.source_page);
-   body=notes.length?notes.slice(0,2).map(x=>
-     '<p>'+esc(x.text)+'</p><p><a href="'+safeUrl(x.source_url)+
-     '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport, side '+
-     esc(x.source_page)+' ↗</a></p>').join(''):
-     '<p>Redaksjonell kvartalskommentar avventer kontrollerte, kvalitative opplysninger fra selskapets offisielle kvartalsrapport eller presentasjon. Nøkkeltallene vises separat.</p>';
+   if(notes.length){
+    body=notes.slice(0,2).map(x=>
+      '<p>'+esc(x.text)+'</p><p><a href="'+safeUrl(x.source_url)+
+      '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport, side '+
+      esc(x.source_page)+' ↗</a></p>').join('');
+   }else if(item?.period===period && item.summary && /^https:\/\//.test(item.source_url||'')){
+    // Source-backed numeric summary is useful, but must never be presented
+    // as qualitative issuer commentary or invented management explanation.
+    body='<p><strong>Oppsummering av rapporterte nøkkeltall:</strong> '+
+      esc(item.summary)+'</p><p><a href="'+safeUrl(item.source_url)+
+      '" target="_blank" rel="noopener noreferrer">Offisiell rapport ↗</a></p>';
+   }else{
+    body='<p>Ingen kildeverifisert kvartalsoppsummering tilgjengelig for valgt periode.</p>';
+   }
   }else{
    const facts=(block?.brief||[]).filter(x=>x.text && x.basis!=='issuer_pdf_verbatim' && !/ omtaler i kvartalsrapporten:/.test(x.text) && (x.type==='qualitative_quarter_theme' || x.company)).slice(0,4);
    const themeTitle={large_claims:'Store skader og enkelthendelser',weather:'Vær og naturskader',
