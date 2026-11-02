@@ -29,7 +29,33 @@ LABELS={
  'expense_ratio':'Kostnadsandel %',
  'combined_ratio':'Combined Ratio',
 }
-NUM=re.compile(r'(?<!\S)-?\d+(?:[ \u00a0]\d{3})*(?:,\d+)?\s*%?')
+def parse_pdf_numbers(tail, count, percent=False):
+    """Recover uniquely grouped PDF columns; never infer ambiguous amounts."""
+    if percent:
+        values=re.findall(r'-?\d+(?:,\d+)?\s*%',tail)
+        if len(values)!=count:raise ValueError('PDF ratio column mismatch')
+        return [number(v) for v in values]
+    tokens=re.findall(r'-?\d+',tail)
+    from functools import lru_cache
+    @lru_cache(None)
+    def split(index,remaining):
+        if remaining==0:return [()] if index==len(tokens) else []
+        solutions=[]
+        for size in (1,2,3):
+            group=tokens[index:index+size]
+            if len(group)!=size:continue
+            if size==1 and len(group[0].lstrip('-'))<4:continue
+            if size>1 and (not 1<=len(group[0].lstrip('-'))<=3 or
+                            any(len(t)!=3 for t in group[1:])):continue
+            value=int(''.join(group))
+            if not 1000<=value<=20_000_000:continue
+            for rest in split(index+size,remaining-1):
+                solutions.append((value,)+rest)
+        return solutions[:2]
+    matches=split(0,count)
+    if len(matches)!=1:raise ValueError('Ambiguous or invalid PDF numeric column boundaries')
+    return list(matches[0])
+
 
 def number(value):
     return float(value.strip().rstrip('%').replace(' ','').replace('\u00a0','').replace(',','.'))
@@ -62,16 +88,14 @@ def parse_page(text,year,quarter,pdf_url,pdf_sha,page):
         candidates=[line for line in lines if line.startswith(label+' ') or line==label]
         if len(candidates)!=1:raise ValueError('Missing/ambiguous PDF row '+label)
         tail=candidates[0][len(label):].strip()
-        values=[number(v) for v in NUM.findall(tail)]
         expected=3 if quarter==1 else 5
-        if len(values)!=expected:
-            raise ValueError(f'PDF {label}: expected {expected} columns, got {len(values)}')
+        values=parse_pdf_numbers(tail,expected,metric.endswith('ratio'))
         data[metric]=values
     claims=[line for line in lines if line.startswith('Erstatningskostnader for egen regning ')]
     expenses=[line for line in lines if line.startswith('Forskringsrelaterte driftskostnader ')]
     if len(claims)!=1 or len(expenses)!=1:raise ValueError('Missing PDF technical cost lines')
-    claims_vals=[number(v) for v in NUM.findall(claims[0].split('Erstatningskostnader for egen regning ',1)[1])]
-    expenses_vals=[number(v) for v in NUM.findall(expenses[0].split('Forskringsrelaterte driftskostnader ',1)[1])]
+    claims_vals=parse_pdf_numbers(claims[0].split('Erstatningskostnader for egen regning ',1)[1],3 if quarter==1 else 5)
+    expenses_vals=parse_pdf_numbers(expenses[0].split('Forskringsrelaterte driftskostnader ',1)[1],3 if quarter==1 else 5)
     if len(claims_vals)!=len(data['insurance_revenue']) or len(expenses_vals)!=len(claims_vals):
         raise ValueError('PDF costs and revenue columns differ')
     cols=[('quarter',0)]+([('ytd',0)] if quarter==1 else [('ytd',2)])
