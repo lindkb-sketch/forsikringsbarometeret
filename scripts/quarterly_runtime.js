@@ -187,6 +187,7 @@
     // Rebind the existing company segment table to audited feed observations.
     // Keep the original HTML/CSS and segment labels; never reuse static Q2 values.
     const segmentSpecs={
+      Frende:[['Frende Skadeforsikring AS · Norge','norway',null]],
       Tryg:[['Norge total','norway',null]],
       Protector:[['Norge total','norway',null]],
       Storebrand:[['Norge total','norway',null]],
