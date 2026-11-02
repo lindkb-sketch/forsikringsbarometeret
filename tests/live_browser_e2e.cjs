@@ -68,6 +68,28 @@ async function main(){
      technical:!!document.querySelector('#verified-financial-panel, #automated-editorial, .live-market-updates')
   }));
   check('Original KPI card/grid design remains intact',!view.oldReplacement&&view.kpis>=6&&view.tableRows>=7,JSON.stringify({kpis:view.kpis,rows:view.tableRows}));
+  // Regression: visiting Frende must display the non-life subsidiary data
+  // directly below the KPI section, never at the bottom of the long page.
+  await page.evaluate(()=>show('Frende',true));
+  await page.locator('.frende-skade-pdf-disclosure').waitFor({state:'visible',timeout:15000});
+  const frendeSkade=await page.evaluate(()=>{
+    const node=document.querySelector('.frende-skade-pdf-disclosure');
+    const kpis=document.querySelector('.dynamic-kpis');
+    const box=node?.getBoundingClientRect();
+    return {present:!!node,visible:!!node&&box.width>0&&box.height>0,
+      afterKpis:node?.previousElementSibling===kpis||
+        node?.previousElementSibling?.classList.contains('company-profitability'),
+      labels:node?.innerText||'',links:node?.querySelectorAll('.frende-skade-report-links a').length||0,
+      tables:node?.querySelectorAll('table tbody tr').length||0};
+  });
+  check('Frende Skade visibly positioned next to main KPI cards',
+    frendeSkade.visible&&frendeSkade.afterKpis,JSON.stringify(frendeSkade).slice(0,650));
+  check('Frende Skade PDF figures and report links visible',
+    frendeSkade.labels.includes('Frende Skadeforsikring AS')&&frendeSkade.links>=3&&
+    frendeSkade.tables>=4,JSON.stringify(frendeSkade).slice(0,650));
+  await page.screenshot({path:'data/browser_frende_skade.png',fullPage:true});
+  report.screenshots.push('data/browser_frende_skade.png');
+  await page.evaluate(()=>show('home',true));
   const metrics={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',
       insurance_revenue:'revenue',insurance_service_result:'result'};
   const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
