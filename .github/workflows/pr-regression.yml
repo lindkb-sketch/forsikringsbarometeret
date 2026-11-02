@@ -87,14 +87,14 @@ jobs:
               if missing:raise AssertionError(f'{company}: missing verified quarters {missing}')
               print(company,'verified',sorted(periods))
           PY
-      - name: Discover live official Tryg paired reports
+      - name: Discover live official Tryg PDF reports
         run: python scripts/discover_tryg.py
-      - name: Live Tryg PDF group and Norway Excel end-to-end import
+      - name: Live Tryg PDF group and Norway PDF end-to-end import
         run: |
           python scripts/import_tryg.py
           python scripts/audit_financials.py
           python scripts/verify_feed_coverage.py
-      - name: Audit Tryg group PDF and Norway Excel automation readiness
+      - name: Audit Tryg PDF-only group and Norway automation readiness
         run: python scripts/verify_tryg_end_to_end.py
       - name: Build final website data for browser regression
         run: |
@@ -129,7 +129,7 @@ jobs:
       - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
         continue-on-error: true
         run: PAGES_VERIFY_ATTEMPTS=1 python scripts/verify_public_pages.py
-      - name: Inspect official Tryg 2026 PDF and Excel archive links
+      - name: Inspect official Tryg 2026 PDF archive links
         run: |
           python - <<'PY'
           import urllib.request,re
@@ -147,81 +147,26 @@ jobs:
           parser=Links();parser.feed(markup)
           print('LINK_COUNT',len(parser.links))
           for url,label in parser.links:
-              if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and ('.pdf' in url.lower() or '.xlsx' in url.lower()):
+              if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and '.pdf' in url.lower():
                   print('TRYG_LINK',repr(label[:110]),repr(url[:320]))
           PY
-      - name: Inspect official Tryg PDF group and Norway workbook schemas
+      - name: Inspect official Tryg PDF group and Norway source schemas
         run: |
           python - <<'PY'
-          import json,sys,urllib.request,io,re
+          import json,io,urllib.request
           import pdfplumber
-          sys.path.insert(0,'scripts')
-          from geographic_excel import load_sheets
           from pathlib import Path
           pairs=json.loads(Path('data/tryg_candidates.json').read_text())['pairs']
           for pair in pairs:
               if pair['year']!=2026 or pair['quarter']!=3:continue
-              print('TRYG_Q3_PDF',pair['report_pdf_url'])
-              print('TRYG_Q3_XLSX',pair['workbook_url'])
-              with urllib.request.urlopen(pair['report_pdf_url'],timeout=40) as r:blob=r.read(35000000)
+              url=pair['report_pdf_url']
+              print('TRYG_Q3_PDF',url)
+              req=urllib.request.Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'})
+              with urllib.request.urlopen(req,timeout=40) as response:blob=response.read(35_000_001)
+              if len(blob)>35_000_000 or not blob.startswith(b'%PDF-'):raise ValueError('Invalid official PDF')
               with pdfplumber.open(io.BytesIO(blob)) as pdf:
                   for i,page in enumerate(pdf.pages[:15]):
                       lines=(page.extract_text() or '').splitlines()
-                      matches=[(n,line) for n,line in enumerate(lines) if re.search('insurance revenue|insurance service result|combined ratio|claims ratio|expense ratio',line,re.I)]
-                      if matches:
-                          print('PDF_PAGE',i+1,'HEAD',lines[:4])
-                          for n,line in matches[:12]:print('PDF_ROW',n,repr(line[:210]))
-              with urllib.request.urlopen(pair['workbook_url'],timeout=40) as r:blob=r.read(25000000)
-              p=Path('/tmp/tryg_q3_2026.xlsx');p.write_bytes(blob)
-              sheets=load_sheets(p)
-              print('XLSX_SHEETS',list(sheets))
-              for name,cells in sheets.items():
-                  if re.search('geograph',name,re.I):
-                      print('XLSX_GEO',name,'FIRST',list(cells.items())[:30])
+                      if any('insurance revenue' in line.lower() for line in lines):
+                          print('PDF_PAGE',i+1,'ROWS',lines[:12])
           PY
-
-  browser-e2e:
-    name: Render dashboard with PR changes (local Pages preview)
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install browser automation
-        run: |
-          npm install --no-save playwright
-          google-chrome --version
-      - name: Rebuild source-verified website data
-        run: |
-          python scripts/build_verified_feed.py
-          python scripts/report_coverage.py
-          python scripts/investor_readiness.py
-      - name: Serve PR website and test rendered dashboard
-        env:
-          BAROMETER_URL: http://127.0.0.1:8765/
-        run: |
-          set -euo pipefail
-          python -m http.server 8765 --bind 127.0.0.1 >/tmp/forsikringsbarometeret-http.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
-          for attempt in $(seq 1 30); do
-            if curl --silent --fail --output /dev/null http://127.0.0.1:8765/index.html; then break; fi
-            sleep 1
-          done
-          curl --fail http://127.0.0.1:8765/index.html --output /dev/null
-          node tests/live_browser_e2e.cjs
-      - name: Preserve screenshots and browser audit on every result
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pr-rendered-dashboard
-          path: |
-            data/browser_home_q3.png
-            data/browser_home_ytd.png
-            data/browser_e2e_report.json
-          if-no-files-found: warn
