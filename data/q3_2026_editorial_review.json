@@ -1,12 +1,48 @@
 {
   "period": "Q3 2026",
-  "status": "pending_source_page_review",
+  "status": "source_reviewed",
   "narratives": {
-    "Fremtind": "Fremtind leverte et sterkere forsikringskvartal enn året før, samtidig som inntektene fortsatte å vokse. Forbedringen i lønnsomheten gir et positivt bilde av den løpende forsikringsdriften, men kvartalet var ikke uten store enkelthendelser.\n\nSelskapet trekker frem brannen i Krokstadelva som en viktig storskade. Samtidig peker rapporteringen på lavere skadefrekvens innen bilforsikring og effekten av tidligere premiejusteringer. Værskadene var relativt begrensede i perioden, mens kostnader knyttet til reparasjoner, leverandører og lønninger fortsatt er forhold selskapet følger tett. Fremtind forventer sterk konkurranse og vedvarende oppmerksomhet om lønnsomhet.",
-    "Gjensidige": "Gjensidige leverte et solid tredje kvartal med bedre forsikringslønnsomhet og videre vekst i inntektene. Resultatutviklingen peker mot en mer effektiv forsikringsdrift enn i samme periode i fjor, støttet av gunstigere skadeutvikling.\n\nSelskapet fremhever målrettede prisjusteringer, bedre risikoutvelgelse og kostnadsdisiplin som viktige tiltak. Veksten kommer både fra prisendringer og aktivitet i deler av forsikringsporteføljen, og bør derfor ikke tolkes som ren kundevekst. Kvartalet omfattet også oppfølging av kunder etter større skadehendelser. Helhetsbildet er sterkere lønnsomhet, men fortsatt behov for å balansere pris, kundeopplevelse og risiko.",
-    "Tryg": "Tryg leverte høyere forsikringsinntekter og bedre lønnsomhet enn i tredje kvartal året før. Utviklingen viser at forsikringsdriften har styrket seg, selv om skadebelastningen og resultatene kan variere mellom markeder og perioder.\n\nI rapporteringen fremheves forbedringer i den underliggende skadeprosenten, også i Norge. Dette er et viktig signal om utviklingen i kjernevirksomheten, men tallene alene viser ikke hvor mye av forbedringen som skyldes priser, skadefrekvens eller enkelthendelser. Selskapet omtaler også distribusjonssamarbeid, blant annet knyttet til XPENG i Norge, og en videreføring av samarbeidet med SOS International. Samlet peker kvartalet mot vekst og bedre forsikringsdrift.",
-    "Frende": "Frende rapporterte økte forsikringsinntekter og bedre forsikringslønnsomhet enn i samme kvartal året før. Utviklingen tyder på at forsikringsvirksomheten håndterte inntektsveksten med en mer gunstig samlet skade- og kostnadsbelastning.\n\nDe verifiserte kvartalstallene gir likevel ikke alene grunnlag for å forklare hvilke skadehendelser, prisgrep eller kundeendringer som lå bak utviklingen. Det foreligger heller ikke en tilstrekkelig kildeverifisert omtale av nye samarbeid eller andre vesentlige strategiske hendelser for dette kvartalet. Bildet er derfor positivt på resultat og vekst, mens de operative driverne må avklares mot selskapets egen rapportering før en mer detaljert vurdering kan publiseres.",
-    "Protector": "Protector leverte vekst i forsikringsinntektene og en moderat forbedring i forsikringslønnsomheten fra tredje kvartal året før. Det peker mot fortsatt lønnsom forsikringsdrift, men endringen i samlet skade- og kostnadsprosent var mindre enn hos flere andre selskaper.\n\nI kvartalsrapporten understreker selskapet at den underliggende lønnsomheten fortsatt vurderes som god, og at disiplinert risikoutvelgelse og prising skal støtte forsikringsresultatet. Styret viser samtidig til usikkerhet i markedsforholdene. Det gir et bilde av en virksomhet som prioriterer kvalitet i forsikringsporteføljen og forsiktig risikotaking, fremfor å la vekst alene styre utviklingen.",
-    "Storebrand": "Storebrands forsikringsvirksomhet viste økte rapporterte segmentpremier og bedre lønnsomhet enn i tredje kvartal året før. Segmentpremier er et alternativt resultatmål og må ikke forveksles med IFRS-definerte forsikringsinntekter. Utviklingen peker likevel mot fremgang i den rapporterte forsikringsdelen av konsernet.\n\nKvartalsrapporten omtaler kostnader knyttet til oppkjøpet av aksjer i Knif Trygghet Forsikring og enkelte prosjektkostnader. Dette er relevant strategisk kontekst, men slike konsernforhold bør ikke uten videre fremstilles som direkte årsaker til forsikringssegmentets resultat. For leseren er hovedbildet vekst og bedre forsikringsdrift, kombinert med en pågående strategisk utvikling som må følges opp i senere rapporter."
+    "Fremtind": {
+      "text": "Fremtind leverte et sterkt tredje kvartal, med høyere forsikringsinntekter og bedre lønnsomhet enn året før. Lavere skadefrekvens på bil og næringsbygg, sammen med tidligere prisjusteringer, bidro til forbedringen. Både privat- og bedriftsmarkedet vokste, og den løpende forsikringsdriften fremstår solid.\n\nSamtidig var brannen i Krokstadelva en betydelig enkelthendelse. Fremtind mobiliserte beredskap og samarbeidet med bankene om rask hjelp til berørte kunder. Storskadene var høyere enn i fjor, mens værskadene var relativt lave. Selskapet advarer om at skadeinflasjonen fortsatt er høy og at storm, nedbør og flom kan gjøre kommende kvartaler mer krevende. Kvartalet viser dermed god lønnsomhet, men også betydningen av beredskap og disiplinert prising.",
+      "source_url": "https://www.mynewsdesk.com/no/fremtind/pressreleases/fremtind-med-sterkt-resultat-i-tredje-kvartal-3473122",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    },
+    "Gjensidige": {
+      "text": "Gjensidige leverte et sterkt tredje kvartal med høyere forsikringsresultat og bedre lønnsomhet enn året før. Både privat- og bedriftsmarkedet fikk lavere skadeprosenter, og konsernet peker på gunstig skadeutvikling og solid underliggende drift. Forsikringsinntektene økte, særlig støttet av prisjusteringer i flere markeder og vekst innen utvalgte produkter i det norske privatmarkedet.\n\nSelskapet har arbeidet med målrettede prisendringer, risikoutvelgelse og kostnadsdisiplin. Brannen i Drammensregionen var en viktig hendelse, og Gjensidige fremhever oppfølgingen av berørte kunder gjennom personlig hjelp og digitale løsninger. Samlet viser kvartalet en sterkere forsikringsvirksomhet, selv om prisutvikling, skadebelastning og kundeopplevelse fortsatt må balanseres. Veksten bør ikke tolkes som bare flere kunder, siden prisendringer også er en vesentlig forklaring.",
+      "source_url": "https://news.cision.com/gjensidige-forsikring-asa/r/gjensidige-q3-2026--higher-profit-driven-by-an-improved-insurance-service-result,c4414214",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    },
+    "Tryg": {
+      "text": "Tryg leverte et rekordhøyt forsikringsresultat i tredje kvartal, med bedre lønnsomhet og videre inntektsvekst. Den underliggende skadeprosenten ble forbedret, blant annet i Norge, mens store skader og værskader var på et gunstig nivå. Det gir et positivt bilde av forsikringsdriften, selv om slike skadeforhold kan variere mellom kvartaler.\n\nKundeaktiviteten utviklet seg også positivt. Tryg rapporterte høyere kundetilfredshet og tosifret salgsvekst på konsernnivå. Selskapet annonserte nye partnerskap innen bilforsikring med Mercedes-Benz i Sverige, Tesla i Danmark og XPENG i Norge. Disse avtalene skal støtte videre vekst i motorsegmentet. Kvartalet kombinerte dermed bedre resultater, økt salg og konkrete distribusjonstiltak, mens langsiktig lønnsomhet fortsatt avhenger av god prising og skadeutvikling.",
+      "source_url": "https://kommunikasjon.ntb.no/pressemelding/19098944/tryg-as-interim-report-q1-q3-2026?lang=en&publisherId=4954260",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    },
+    "Frende": {
+      "text": "Frende rapporterte sitt sterkeste resultat hittil i et tredje kvartal, målt per utgangen av september. Resultatet før skatt hittil i år var høyere enn i samme periode i fjor, og selskapet fremhever god forsikringsdrift og tiltak gjennomført over flere år. Den rapporterte skadeprosenten har også utviklet seg i riktig retning.\n\nVeksten fortsatte gjennom kvartalet. Frende opplyser at forsikringsbestanden har økt, og trekker frem både prisjusteringer og kundevekst som forklaringer. Samarbeid med Varig, Lokalbank og nye brannkasser bidrar ifølge selskapet til kundetilgangen. Dette gir kvartalet et tydelig preg av både bedre lønnsomhet og styrket distribusjon. Samtidig må videre vekst vurderes opp mot skadeutvikling og kostnader, slik at økt volum også gir varig lønnsomhet.",
+      "source_url": "https://api.kommunikasjon.ntb.no/pressemelding/19120196/historisk-godt-resultat-for-frende?lang=no&publisherId=5653809",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    },
+    "Protector": {
+      "text": "Protector leverte høyere forsikringsinntekter og et sterkere forsikringsresultat enn i tredje kvartal i fjor. Combined ratio var noe lavere, noe som viser en moderat forbedring i den samlede forsikringslønnsomheten. Veksten i brutto tegnede premier var samtidig sterk, særlig målt i lokale valutaer, og selskapet rapporterte et betydelig høyere overskudd for kvartalet.\n\nLedelsen beskriver den underliggende lønnsomheten som god og fremhever fortsatt disiplinert risikovurdering. Protector peker på skadeutvikling, inflasjon og svingninger i kapitalmarkedene som sentrale risikofaktorer. Selskapet investerer også i teknologi og data for å forbedre beslutninger og redusere operasjonell risiko. Styret besluttet et utbytte på fem kroner per aksje. Helhetsbildet er lønnsom vekst med fortsatt oppmerksomhet om risiko og kapitaldisiplin.",
+      "source_url": "https://investor.protectorforsikring.no/pressreleases/q3-2026-cr-827-earnings-per-share-nok-102-dividend-nok-500-per-share-mviclalu",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    },
+    "Storebrand": {
+      "text": "Storebrand leverte rekordsterkt driftsresultat i tredje kvartal, med et viktig bidrag fra forsikringsvirksomheten. Forsikringsresultatet økte, og combined ratio ble bedre enn året før. I privatmarkedet fremhever konsernet økte markedsandeler og en lav skadeprosent, mens bedriftsmarkedet viste sunn vekst og stabil lønnsomhet.\n\nStorebrand rapporterer samtidig videre vekst i porteføljepremier, som er et annet mål enn IFRS-definerte forsikringsinntekter. Konsernet peker på økte distribusjonskostnader og investeringer i driften for å støtte veksten. Oppkjøpet av Knif Trygghet Forsikring ble fullført i oktober og er en viktig strategisk hendelse for den videre utviklingen. Samlet viser kvartalet at forsikring har blitt en stadig viktigere bidragsyter til konsernets resultat, samtidig som integrasjon og kostnadskontroll blir sentrale oppfølgingspunkter.",
+      "source_url": "https://www.mfn.se/cis/a/storebrand/storebrand-asa-results-for-the-third-quarter-2026-d998b67d",
+      "source_type": "official_issuer_release",
+      "period": "Q3 2026",
+      "verified": true
+    }
   }
 }
