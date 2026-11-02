@@ -238,6 +238,13 @@ def build(feed,news):
     'ytd':ytd_note,'source_url':source,'period':label,
     'reader_summary':reader_summary(company,label,rev,previous_rev,cr,previous_cr,last_cr),
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
+  review_file=ROOT/'data/q3_2026_editorial_review.json'
+  if review_file.exists():
+   review=json.loads(review_file.read_text(encoding='utf-8'))
+   if review.get('status')=='source_reviewed' and review.get('period')==label:
+    for name,entry in review.get('narratives',{}).items():
+     if name in by_company and entry.get('verified') and entry.get('period')==label:
+      by_company[name]['editorial_review']=entry
   documented=documented_report_insights(label,by_company) or []
   # Preserve report-grounded qualitative notes per issuer independently
   # of the limited cross-market brief selection.
