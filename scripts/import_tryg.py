@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed Tryg group and Norway import using official issuer PDFs only."""
-import hashlib,io,json,re,tempfile,urllib.request,urllib.parse
+import hashlib,io,json,re,tempfile,urllib.request,urllib.parse,time
 from pathlib import Path
 import pdfplumber
 from audit_financials import ROOT,audit
@@ -18,22 +18,29 @@ FIELDS={'insurance_revenue':r'Insurance revenue','insurance_service_result':r'In
 NUMBER=r'-?\d[\d,]*(?:\.\d+)?'
 
 def download_tryg_report(url,quarter):
-    # The official full-year/Q4 PDF is materially larger than interim reports.
-    # Keep a bounded, issuer-host-only exception; Q1-Q3 retain the normal limit.
-    if quarter != 4:
-        return download_pdf(url)
+    """Bounded retry for transient issuer network failures; never relax PDF checks."""
     parsed=urllib.parse.urlparse(url)
     if parsed.scheme!='https' or parsed.hostname not in ('tryg.com','www.tryg.com'):
-        raise ValueError('Tryg Q4 source must be official issuer HTTPS PDF')
-    req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
-    with urllib.request.urlopen(req,timeout=70) as response:
-        target=urllib.parse.urlparse(response.geturl())
-        if target.scheme!='https' or target.hostname not in ('tryg.com','www.tryg.com'):
-            raise ValueError('Untrusted Tryg annual report redirect')
-        blob=response.read(60_000_001)
-    if len(blob)>60_000_000 or not blob.startswith(b'%PDF-'):
-        raise ValueError('Invalid or oversized Tryg full-year PDF')
-    return blob
+        raise ValueError('Tryg source must be official issuer HTTPS PDF')
+    limit=60_000_000 if quarter==4 else 35_000_000
+    last=None
+    for attempt in range(3):
+        try:
+            req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
+            with urllib.request.urlopen(req,timeout=70) as response:
+                target=urllib.parse.urlparse(response.geturl())
+                if target.scheme!='https' or target.hostname not in ('tryg.com','www.tryg.com'):
+                    raise ValueError('Untrusted Tryg report redirect')
+                blob=response.read(limit+1)
+            if len(blob)>limit or not blob.startswith(b'%PDF-'):
+                raise ValueError('Invalid or oversized Tryg official PDF')
+            return blob
+        except (TimeoutError,ConnectionError,OSError) as exc:
+            last=exc
+            if attempt==2:break
+            print('TRYG_PDF_RETRY',attempt+1,type(exc).__name__,flush=True)
+            time.sleep(2*(attempt+1))
+    raise RuntimeError('Official Tryg PDF unavailable after bounded retries') from last
 
 def parse_group(blob,year,quarter,url):
     if not blob.startswith(b'%PDF-') or len(blob)>(60_000_000 if quarter==4 else 35_000_000):raise ValueError('Invalid Tryg group PDF')
