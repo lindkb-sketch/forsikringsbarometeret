@@ -40,6 +40,7 @@ jobs:
       - name: Verify Q1 Q2 Q3 2026 complete original-PDF-only financial imports
         run: |
           python -m unittest discover -s tests -p 'test_frende_skade_financial_import.py' -v
+          python scripts/discover_frende_skade_reports.py
           python scripts/import_frende_skade.py
           python - <<'PY'
           import json
