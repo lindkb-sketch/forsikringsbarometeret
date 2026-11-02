@@ -16,6 +16,8 @@ ESSENTIAL=(
  'data/stock_prices.json',
  'data/strategic_market.json',
  'data/investor_readiness.json',
+ 'data/frende_skade_reports.json',
+ 'data/frende_skade_financials.json',
  'data/profitability_coverage.json',
 )
 def verify(root=ROOT):

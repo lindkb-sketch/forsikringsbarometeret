@@ -1,0 +1,44 @@
+"""Regression contract for Frende Skade PDF extraction, separate from Holding."""
+import unittest
+from scripts.import_frende_skade import parse_page,parse_pdf_numbers,build
+
+PDF='https://live.euronext.com/offisielt.pdf'
+Q3='''Kvartalsrapport, tredje kvartal 2026|Resultat
+Resultat
+Resultatregnskap 3.kv.2026 3.kv.2025 01.01-30.09.26 01-01-30.09.25 31.12.2025
+I tusen kroner
+Teknisk regnskap for skadeforsikring
+Premieinntekter for egen regning 961 391 825 529 2 787 759 2 420 547 3 275 575
+Erstatningskostnader for egen regning 596 615 513 840 1 893 934 1 703 865 2 231 872
+Forskringsrelaterte driftskostnader 172 109 143 752 452 805 411 862 598 135
+Resultat av teknisk regnskap i skadeforsikring 192 667 167 938 441 020 304 820 445 567
+Nøkkelinformasjon
+Kostnadsandel % 17,9 % 17,4 % 16,2 % 17,0 % 18,3 %
+Skade % E/R 62,1 % 62,2 % 67,9 % 70,4 % 68,1 %
+Combined Ratio 80,0 % 79,7 % 84,2 % 87,4 % 86,4 %
+'''
+class FrendeSkadePDFTests(unittest.TestCase):
+    def test_pdf_thousands_grouping_has_unique_five_columns(self):
+        s='961 391 825 529 2 787 759 2 420 547 3 275 575'
+        self.assertEqual(parse_pdf_numbers(s,5),[961391,825529,2787759,2420547,3275575])
+    def test_actual_q3_reported_and_ytd_numbers(self):
+        rows=parse_page(Q3,2026,3,PDF,'a'*64,3)
+        self.assertEqual(len(rows),10)
+        d={(r['period_type'],r['metric']):r['value'] for r in rows}
+        self.assertEqual(d[('quarter','insurance_revenue')],961.391)
+        self.assertEqual(d[('ytd','insurance_revenue')],2787.759)
+        self.assertEqual(d[('quarter','insurance_service_result')],192.667)
+        self.assertEqual(d[('quarter','combined_ratio')],80.0)
+        self.assertEqual(d[('ytd','combined_ratio')],84.2)
+        self.assertTrue(all(r['source_entity']=='Frende Skadeforsikring AS' for r in rows))
+        self.assertTrue(all(r['source_url']==PDF for r in rows))
+    def test_wrong_period_and_mismatching_ratio_rejected(self):
+        with self.assertRaisesRegex(ValueError,'year/quarter mismatch'):
+            parse_page(Q3,2026,2,PDF,'a'*64,3)
+        with self.assertRaisesRegex(ValueError,'combined ratio'):
+            parse_page(Q3.replace('80,0 %','89,0 %'),2026,3,PDF,'a'*64,3)
+    def test_unverified_pdf_never_creates_rows(self):
+        result=build({'reports':[{'year':2026,'quarter':3,'source_url':'https://frende.wrep.it/q3-2026-frende-skadeforsikring-as'}]})
+        self.assertFalse(result['observations'])
+        self.assertTrue(result['diagnostics'])
+if __name__=='__main__': unittest.main()

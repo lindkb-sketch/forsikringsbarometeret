@@ -443,11 +443,24 @@
       const links=reports.map(r=>'<li><a href="'+escapeHtml(r.source_url)+
         '" target="_blank" rel="noopener noreferrer">Q'+r.quarter+' '+r.year+
         ' – offisiell rapport / PDF-vedlegg ↗</a></li>').join('');
+      const financialRows=Array.isArray(frendeSkadeFinancials?.observations)
+        ?frendeSkadeFinancials.observations.filter(r=>r.year===selection.year&&r.quarter===selection.quarter&&
+          r.period_type===(ytdMode()?'ytd':'quarter')&&r.source_entity==='Frende Skadeforsikring AS'):[];
+      const wanted=[['insurance_revenue','Rapporterte inntekter'],['combined_ratio','Combined ratio'],
+                    ['loss_ratio','Skadeprosent'],['expense_ratio','Kostnadsprosent']];
+      const metrics=Object.fromEntries(financialRows.map(r=>[r.metric,r]));
+      const complete=wanted.every(([key])=>metrics[key]&&Number.isFinite(metrics[key].value));
+      const detail=complete?'<div class="tablewrap"><table><thead><tr><th>Måltall</th><th>Q'+selection.quarter+
+        ' '+selection.year+(ytdMode()?' HIÅ':'')+'</th><th>Kilde</th></tr></thead><tbody>'+
+        wanted.map(([key,label])=>'<tr><td>'+label+'</td><td>'+
+          escapeHtml(fmt(metrics[key].value))+' '+escapeHtml(metrics[key].unit||'')+'</td><td><a href="'+
+          escapeHtml(metrics[key].source_url)+'" target="_blank" rel="noopener noreferrer">Rapport ↗</a></td></tr>').join('')+
+        '</tbody></table></div>':'<p>Ingen fullstendig kildekontrollert tallserie for valgt kvartal. Konserntall brukes ikke som erstatning.</p>';
       subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egne kvartalsrapporter</h3>'+
         '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er forskjellige rapporteringsenheter. '+
         'Konserntallene ovenfor gjelder ikke automatisk skadeforsikringsselskapet.</p>'+
-        (links?'<ul>'+links+'</ul>':'<p>Ingen separat rapportlenke er bekreftet.</p>')+
-        '<p>Skadeselskapets nøkkeltall publiseres først når de er kontrollert fra selskapets egen PDF.</p>';
+        detail+(links?'<ul>'+links+'</ul>':'<p>Ingen separat rapportlenke er bekreftet.</p>')+
+        '<p>Skadeselskapets tall har egen juridisk enhet og egen rapportkilde, uavhengig av Frende Holding.</p>';
       fragment.appendChild(subsidiary);
     }
     return fragment.innerHTML+growthMatrixHtml(c);
@@ -590,15 +603,18 @@
   const oldTable=table;
   table=()=>normalizeRevenueTable(oldTable());
   let frendeSkadeReports=null;
+  let frendeSkadeFinancials=null;
   async function refresh(){
     try{
-      const [response, calendarResponse, skadeResponse]=await Promise.all([
+      const [response, calendarResponse, skadeResponse, skadeFinResponse]=await Promise.all([
         fetch('data/verified_financial_feed.json?t='+Date.now(),{cache:'no-store'}),
         fetch('data/calendar.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null),
-        fetch('data/frende_skade_reports.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null)
+        fetch('data/frende_skade_reports.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null),
+        fetch('data/frende_skade_financials.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null)
       ]);
       if(calendarResponse?.ok)calendarData=await calendarResponse.json();
       if(skadeResponse?.ok)frendeSkadeReports=await skadeResponse.json();
+      if(skadeFinResponse?.ok)frendeSkadeFinancials=await skadeFinResponse.json();
       if(!response.ok)throw Error('Verifisert finansfeed: HTTP '+response.status);
       const incoming=await response.json();
       if(!Array.isArray(incoming.observations))throw Error('Finansfeed mangler observasjoner');
