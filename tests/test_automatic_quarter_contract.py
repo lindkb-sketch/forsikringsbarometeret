@@ -22,8 +22,11 @@ class AutomaticQuarterImportTests(unittest.TestCase):
  def test_unpublished_quarters_do_not_require_fabricated_observations(self):
   source,feed=self.records()
   result=verify(source,feed,require_norway=False)
-  self.assertIn('Q2 2026',next(x['latest_imported'] for x in result if x['company']=='Frende'))
-  self.assertIn('Q2 2026',next(x['latest_imported'] for x in result if x['company']=='Sampo'))
+  for company in ('Frende', 'Sampo'):
+   latest=max((r['year'],r['quarter']) for r in source
+              if r['company']==company and r['scope']=='group' and r['period_type']=='quarter')
+   self.assertEqual(f'Q{latest[1]} {latest[0]}',
+                    next(x['latest_imported'] for x in result if x['company']==company))
  def test_frende_revenue_definition_is_operating_revenue(self):
   source,feed=self.records()
   result=verify(source,feed,require_norway=False)
