@@ -1862,7 +1862,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     // Source-backed numeric summary is useful, but must never be presented
     // as qualitative issuer commentary or invented management explanation.
     body='<p><strong>Oppsummering av rapporterte nøkkeltall:</strong> '+
-      esc(item.summary)+'</p><p><a href="'+safeUrl(item.source_url)+
+      esc(item.summary)+'</p>'+
+      (item.comment && item.comment!==item.summary
+        ? '<p><strong>Utvikling basert på rapporterte tall:</strong> '+esc(item.comment)+'</p>'
+        : '')+
+      '<p><a href="'+safeUrl(item.source_url)+
       '" target="_blank" rel="noopener noreferrer">Offisiell rapport ↗</a></p>';
    }else{
     body='<p>Ingen kildeverifisert kvartalsoppsummering tilgjengelig for valgt periode.</p>';
