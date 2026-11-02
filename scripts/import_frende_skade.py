@@ -69,9 +69,21 @@ def parse(blob,year,quarter,url):
   with pdfplumber.open(io.BytesIO(blob)) as pdf:
    if not pdf.pages:raise ValueError('Empty PDF')
    text=pdf.pages[0].extract_text() or ''
-  # PDF first-page extraction: only a real aligned table is acceptable.
-  lines=[x.split() for x in text.splitlines()]
-  raise ValueError('PDF layout needs verified column alignment before import')
+  # Reconstruct rows from page-one labelled values, preserving signed amounts.
+  # Reject ambiguous multi-column extraction instead of guessing.
+  import html
+  report_rows=[]
+  header=f'Resultatregnskap {quarter}.kv.{year} {quarter}.kv.{year-1}'
+  report_rows.append([header])
+  for label in METRICS:
+   matching=[line for line in text.splitlines() if re.match(r'^\\s*'+re.escape(label)+r'\\s+',line,re.I)]
+   if len(matching)!=1:raise ValueError('Missing or ambiguous PDF first-page row '+label)
+   tail=re.sub(r'^\\s*'+re.escape(label)+r'\\s+','',matching[0],flags=re.I)
+   values=re.findall(r'-?\\d{1,3}(?:[ \\u00a0]\\d{3})+(?:[.,]\\d+)?\\s*%?|-?\\d+(?:[.,]\\d+)?\\s*%?',tail)
+   if len(values)<2:raise ValueError('Missing PDF comparison columns '+label)
+   report_rows.append([label,values[0],values[1]])
+  markup='<table>'+''.join('<tr>'+''.join('<td>'+html.escape(str(v))+'</td>' for v in row)+'</tr>' for row in report_rows)+'</table>'
+  return parse_table(markup,year,quarter,url,hashlib.sha256(blob).hexdigest())
  return parse_table(blob.decode('utf-8'),year,quarter,url,hashlib.sha256(blob).hexdigest())
 
 def run():
