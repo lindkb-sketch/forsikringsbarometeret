@@ -468,7 +468,10 @@
         'Konserntallene ovenfor gjelder ikke automatisk skadeforsikringsselskapet.</p>'+
         detail+recentLinks+archiveLinks+
         '<p>Skadeselskapets tall har egen juridisk enhet og egen rapportkilde, uavhengig av Frende Holding.</p>';
-      fragment.appendChild(subsidiary);
+      // Show subsidiary figures next to the group KPIs, not below the entire
+      // long company analysis where users may never discover them.
+      if(cards)cards.insertAdjacentElement('afterend',subsidiary);
+      else fragment.prepend(subsidiary);
     }
     return fragment.innerHTML+growthMatrixHtml(c);
   }
