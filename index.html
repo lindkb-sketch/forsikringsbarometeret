@@ -1540,7 +1540,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
 .mon-calendar .mon-cal-column-list .mon-cal-row{width:100%;margin:0;min-width:0}
 .mon-calendar .mon-cal-empty{font-size:13px;color:#687c8b;margin:10px 0}
 .mon-calendar .mon-cal-column[data-calendar-group="pending"]{border-top:3px solid #d79a37}
-.mon-calendar .mon-cal-column[data-calendar-group="reported"]{border-top:3px solid #2f947e;margin-top:18px}
+.mon-calendar .mon-cal-column[data-calendar-group="reported"]{border-top:3px solid #2f947e}\n.mon-calendar-next-quarter{margin-top:36px;clear:both}
 @media(max-width:850px){.mon-calendar .mon-cal-split{grid-template-columns:1fr;gap:12px}.mon-calendar .mon-cal-column{padding:13px}}
 </style><script id="live-report-calendar">
 (()=>{
@@ -1607,6 +1607,12 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
       '<span class="pill">'+entries.length+' selskaper</span></div>'+
       '<div class="mon-cal-split">'+
       column('Avventer kvartalstall','Har ennå ikke publisert verifiserte '+esc(current)+'-tall.',outstanding,'pending')+
+      '</div></section>'+
+      '<section class="mon-calendar mon-calendar-next-quarter" aria-label="Neste kvartals publiseringsdatoer">'+
+      '<div class="mon-calendar-top"><div><div class="eyebrow">KOMMENDE RAPPORTERING</div>'+
+      '<h2>Neste kvartal – publiseringsdatoer · '+esc(nextPeriod(current))+'</h2></div>'+
+      '<span class="pill">'+reported.length+' selskaper</span></div>'+
+      '<div class="mon-cal-split">'+
       column('Neste rapporter · '+esc(nextPeriod(current)),'Har publisert '+esc(current)+'. Nedtelling til neste rapport.',reported,'reported')+
       '</div></section>';
   };

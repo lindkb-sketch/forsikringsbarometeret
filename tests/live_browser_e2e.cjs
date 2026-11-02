@@ -63,7 +63,7 @@ async function main(){
      media:document.querySelector('#media-news')?.innerText||'',
      strategic:document.querySelector('.quarter-changes')?.innerText||'',
      brief:document.querySelector('.quarter-comment')?.innerText||'',
-     calendar:document.querySelector('.mon-calendar')?.innerText||'',
+     calendar:[...document.querySelectorAll('.mon-calendar')].map(el=>el.innerText).join('\n'),
      newsGroups:FBNews.newsGroups(),
      technical:!!document.querySelector('#verified-financial-panel, #automated-editorial, .live-market-updates')
   }));
@@ -328,7 +328,7 @@ async function main(){
   });
   check('Returning to active quarter restores financial calendar',
     restored.selected?.year===year+1&&restored.selected?.quarter===1&&
-    restored.calendarCount===1&&restored.html.includes('Neste rapporter'),
+    restored.calendarCount===2&&restored.html.includes('Neste rapporter'),
     JSON.stringify(restored).slice(0,500));
   check('Rolling graph includes next-year Q1',future.quarters.includes('Q1 '+(year+1)),future.quarters.join(','));
   check('Next quarter and year in dropdown',future.options.some(x=>x.includes('Q1 '+(year+1))),future.options.join(','));
