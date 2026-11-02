@@ -3,10 +3,13 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from source_policy import validate_source_policy
+from discover_tryg import parse as discover_tryg_pdf
 
 class RegisteredSources(unittest.TestCase):
  def test_tryg_registered_candidates_are_pdf_only(self):
-  candidates=json.loads((ROOT/'data/tryg_candidates.json').read_text())['pairs']
+  markup=('''<a href="https://tryg.com/system/files/2026-10/Interim%20report%20Q3%202026.pdf">Interim report Q3 2026</a>'''
+          '<a href="https://tryg.com/system/files/2026-10/Investor%20tables%20Q3%202026.xlsx">Investor tables Q3 2026</a>')
+  candidates=discover_tryg_pdf(markup,2026)
   self.assertTrue(candidates)
   for item in candidates:
    self.assertTrue(item['report_pdf_url'].lower().split('?')[0].endswith('.pdf'))
