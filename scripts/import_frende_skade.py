@@ -125,6 +125,12 @@ def build(report_index, previous=None, reader=read_section):
         year,quarter=record['year'],record['quarter']
         if year<2025:continue
         url=record['source_url']
+        # Publisher HTML is useful for layout diagnostics but is NOT a PDF
+        # source. Refuse numerical publication until the original issuer PDF
+        # is separately downloaded, parsed and its values corroborated.
+        if not str(record.get('pdf_url','')).lower().split('?')[0].endswith('.pdf'):
+            problems.append({'year':year,'quarter':quarter,'reason':'Original issuer PDF not verified; Wrepit HTML cannot authorize figures'})
+            continue
         if not url.startswith('https://frende.wrep.it/'):continue
         try:
             rows=verify_period(url,year,quarter,reader)
