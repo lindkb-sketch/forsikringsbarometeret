@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/data/'
-FILES=['verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json']
+FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_financial_feed.json','stock_prices.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json']
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 
@@ -90,6 +90,23 @@ def check():
             stock=public['stock_prices.json']['prices'].get('Protector')
             if not stock or stock.get('symbol')!='PROT.OL' or not stock.get('trading_date'):
                 raise ValueError('Protector delayed stock quote missing')
+            skade=public['frende_skade_financials.json']
+            if skade.get('entity')!='Frende Skadeforsikring AS':
+                raise ValueError('Public Frende Skade entity identification missing')
+            skade_rows=skade.get('observations',[])
+            required={'insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'}
+            for q in (1,2,3):
+                for kind in ('quarter','ytd'):
+                    rows=[r for r in skade_rows if r.get('year')==2026 and r.get('quarter')==q
+                          and r.get('period_type')==kind]
+                    if {r.get('metric') for r in rows}!=required:
+                        raise ValueError(f'Frende Skade Q{q} 2026 {kind} source-verified metrics incomplete')
+                    if any(r.get('source_entity')!='Frende Skadeforsikring AS' or
+                           r.get('source_type')!='official_quarterly_report' or
+                           not str(r.get('source_url','')).lower().split('?')[0].endswith('.pdf') or
+                           len(str(r.get('source_sha256','')))!=64 for r in rows):
+                        raise ValueError('Frende Skade public source provenance is not original PDF')
+            print('PUBLIC_FRENDE_SKADE_PDF_Q1_Q3_VERIFIED',len(skade_rows),flush=True)
             readiness=public['investor_readiness.json']
             if readiness.get('schema_version')!=1 or len(readiness.get('companies',[]))!=7:
                 raise ValueError('Investor readiness manifest missing or structurally invalid')
