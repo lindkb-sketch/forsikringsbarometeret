@@ -7958,6 +7958,24 @@
       "year": 2025,
       "quarter": 3,
       "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "solvency_ratio",
+      "value": 229.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+      "source_page": 3,
+      "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+      "source_document_period": "Q3 2025",
+      "source_definition": "Reported quarter-end Group solvency ratio"
+    },
+    {
+      "company": "Protector",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "group",
       "period_type": "ytd",
       "metric": "insurance_revenue",
       "value": 10197,
@@ -15513,6 +15531,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 830,
+  "observation_count": 831,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
