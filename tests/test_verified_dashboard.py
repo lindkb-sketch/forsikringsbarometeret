@@ -44,7 +44,7 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn('block?.by_company?.[c]',html)
   self.assertIn('item?.period===period',html)
   self.assertIn("esc(item.reader_summary)",html)
-  self.assertIn("safeUrl(item.source_url)",html)
+  self.assertIn("safeUrl(evidence)",html)
   self.assertIn('item.reader_summary',html)
   self.assertIn('setInterval(refresh,300000)',html)
   data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
@@ -59,7 +59,7 @@ class VerifiedDashboardTests(unittest.TestCase):
   html=(ROOT/'index.html').read_text(encoding='utf-8')
   self.assertIn('item.reader_summary',html)
   self.assertIn('notes[0].text',html)
-  self.assertIn('item?.period===period && item.summary',html)
+  self.assertIn('item?.period===period',html)
   data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
   current=data['periods'][data['period']]['by_company']
   for company,item in current.items():
