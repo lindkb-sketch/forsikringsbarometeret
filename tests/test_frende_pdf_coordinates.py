@@ -1,4 +1,6 @@
-import unittest
+import unittest,sys
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from frende_skade_pdf_cells import extract_cells
 class Page:
  def extract_words(self,**kwargs):
