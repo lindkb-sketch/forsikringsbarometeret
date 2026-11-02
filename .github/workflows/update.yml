@@ -60,7 +60,7 @@ jobs:
       - name: Discover Frende Holding and Fremtind Holding official report candidates
         run: python scripts/discover_frende_fremtind.py || echo "::warning::Issuer archives unavailable; no unverified data imported"
       - name: Discover official Frende Skade quarterly PDF reports
-        run: python scripts/discover_frende_skade_reports.py
+        run: python scripts/discover_frende_skade_reports.py || echo '::warning::Frende Skade archive unavailable; retaining previously documented report links'
       - name: Fetch independent editorial media headlines
         run: python scripts/ingest_media_news.py || echo "::warning::Media RSS unavailable; retaining last verified news feed"
       - name: Fetch delayed public stock quotes (independent of financial import)
