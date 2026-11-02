@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Discover Frende Skadeforsikring quarterly PDF report references without Excel."""
+import html
 import json
 import re
 import urllib.parse
