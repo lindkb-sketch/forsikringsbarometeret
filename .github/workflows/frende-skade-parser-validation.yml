@@ -14,6 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install PDF parser
+        run: python -m pip install -r requirements-reports.txt
       - name: Validate official subsidiary report HTML and independent importer
         run: |
           python - <<'PY'
@@ -85,6 +87,29 @@ jobs:
                           for label,href in p.links:
                               if '.pdf' in (label+' '+href).lower():print('PDFLINK',repr(label[:70]),repr(href[:250]),flush=True)
               except Exception as e:print('PROBE_ERROR',url,str(e)[:200],flush=True)
+          import pdfplumber,io
+          for url in ('https://live.euronext.com/en/node/12903959','https://live.euronext.com/en/node/12919046'):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=25) as res:
+                      body=res.read(4_000_000).decode('utf-8','replace')
+                  matches=re.findall(r'''(?:href=["']([^"']+\.pdf[^"']*)["']|/sites/default/files/company_press_releases/attachments_oslo/[^"\s<>]+)''',body,re.I)
+                  print('NODE',url,'size',len(body),'pdf_matches',matches[:12],flush=True)
+                  for piece in ('Frende Skadeforsikring AS Q2','Frende Forsikring 2. kvartal','message/'):
+                      p=body.find(piece)
+                      if p>=0:print('NODE_CONTEXT',piece,repr(body[max(0,p-300):p+300]),flush=True)
+              except Exception as exc:print('NODE_ERROR',url,repr(exc),flush=True)
+          for q,url in ((1,'https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/04/29/671905_Frende%20Forsikring%201.%20kvartal%202026.pdf'),
+                        (3,'https://live.euronext.com/sites/default/files/company_press_releases/attachments_oslo/2026/10/28/684953_Frende%20Skadeforsikring%20AS%20Q3%202026.pdf')):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=35) as response:
+                      blob=response.read(28_000_000)
+                  with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                      print('PDF_DOC',q,len(pdf.pages),len(blob),flush=True)
+                      for n,page in enumerate(pdf.pages):
+                          txt=page.extract_text() or ''
+                          if 'Frende Skadeforsikring AS' in txt and ('Resultatregnskap' in txt or 'Nøkkelinformasjon' in txt):
+                              print('PDF_PAGE',q,n+1,repr(txt[:1800]),flush=True)
+              except Exception as exc:print('PDF_ERROR',q,repr(exc),flush=True)
           result=build(json.loads(REPORTS.read_text()))
           print('VERIFIED_ROWS',len(result['observations']),'ISSUES',result['diagnostics'][:5],flush=True)
           PY
