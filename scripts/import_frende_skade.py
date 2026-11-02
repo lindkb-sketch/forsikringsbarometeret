@@ -48,7 +48,7 @@ def parse_pdf_numbers(tail, count, percent=False):
             if size>1 and (not 1<=len(group[0].lstrip('-'))<=3 or
                             any(len(t)!=3 for t in group[1:])):continue
             value=int(''.join(group))
-            if not 1000<=value<=20_000_000:continue
+            if not 1000<=abs(value)<=20_000_000:continue
             for rest in split(index+size,remaining-1):
                 solutions.append((value,)+rest)
         return solutions[:2]
