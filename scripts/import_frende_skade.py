@@ -37,7 +37,7 @@ def observations(values,year,quarter,url,digest):
         pair=values[label]
         for y,raw in zip((year,year-1),pair):
             raw=str(raw).replace(' ','').replace('%','').replace(',','.')
-            if not re.fullmatch(r'-?\\d+(?:\\.\\d+)?',raw):
+            if not re.fullmatch(r'-?\d+(?:\.\d+)?',raw):
                 raise ValueError('Invalid amount '+label)
             value=float(raw)
             ratio=metric in ('expense_ratio','loss_ratio','combined_ratio')
