@@ -1853,7 +1853,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    // reports or investor presentations with source evidence.
    const notes=(item?.qualitative_notes||[]).filter(x=>
      x.text&&/^https:\/\//.test(x.source_url)&&x.source_page);
-   if(item?.period===period && /^https:\/\//.test(item.source_url||'') &&
+   if(item?.editorial_review?.verified && item.editorial_review.period===period){
+    const review=item.editorial_review;
+    body=review.text.split('\n\n').map(p=>'<p>'+esc(p)+'</p>').join('')+
+      '<p><a href="'+safeUrl(review.source_url)+'">Offisiell kvartalsomtale</a></p>';
+   }else if(item?.period===period && /^https:\/\//.test(item.source_url||'') &&
       (item.reader_summary || notes.length)){
     const main=item.reader_summary?'<p>'+esc(item.reader_summary)+'</p>':'';
     // One noteworthy event or strategic development, only if documented
