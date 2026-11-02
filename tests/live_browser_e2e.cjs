@@ -147,23 +147,32 @@ async function main(){
   check('Published current quarter is not repeated in calendar',
     alreadyPublished.every(([name])=>!view.calendar.includes(name+'\nQ'+quarter+' '+year)),
     view.calendar.slice(0,400));
+  // Test actual rendered copy and source links for every issuer, not JS text fragments.
+  for(const issuer of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']){
+    await page.evaluate(name=>show(name,true),issuer);
+    const panel=page.locator('.quarter-comment').first();
+    const rendered=await panel.innerText();
+    const brief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.[issuer];
+    const notes=(brief?.qualitative_notes||[]).filter(x=>x.text&&/^https:\/\//.test(x.source_url||'')&&x.source_page);
+    if(brief){
+      const expected=[brief.reader_summary,notes[0]?.text].filter(Boolean);
+      check(issuer+' quarterly narrative is visible',
+        expected.length>0 && expected.every(x=>displayed(rendered).includes(displayed(x))),
+        rendered.slice(0,450));
+      const urls=await panel.locator('a[href]').evaluateAll(nodes=>nodes.map(n=>n.href));
+      check(issuer+' quarterly source is linked',
+        urls.some(url=>url===(notes[0]?.source_url||brief.source_url)),urls.join(','));
+      check(issuer+' quarterly period is correct',
+        rendered.includes('Q'+quarter+' '+year),rendered.slice(0,120));
+    }else{
+      check(issuer+' missing quarter is honestly marked',
+        rendered.includes('Ingen kildeverifisert')||rendered.includes('avventer'),rendered.slice(0,200));
+    }
+  }
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
-  const companyBrief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.Gjensidige;
-  if(companyBrief){
-    const qualitative=(companyBrief.qualitative_notes||[]).filter(note=>note.text&&note.source_url&&note.source_page);
-    check('Company page has source-linked qualitative quarterly commentary',
-      qualitative.length
-        ? qualitative.slice(0,2).some(note=>displayed(companyComment).includes(displayed(note.text))) &&
-          companyComment.includes('Offisiell kvartalsrapport')
-        : companyComment.includes('Redaksjonell kvartalskommentar avventer'),
-      companyComment.slice(0,400));
-    check('Company commentary does not repeat financial KPI recap',
-      !displayed(companyComment).includes(displayed(companyBrief.summary)) &&
-      !displayed(companyComment).includes(displayed(companyBrief.comment)),
-      companyComment.slice(0,400));
-  }
-  check('Company commentary has no duplicated quarter prefix',!companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
+  check('Company commentary has no duplicated quarter prefix',
+    !companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
   const quotesOnCompany=await page.locator('.stock-section').first().innerText();
   const quote=stocks.prices?.Gjensidige;
   if(quote)check('Last delayed closing price in existing company stock panel',

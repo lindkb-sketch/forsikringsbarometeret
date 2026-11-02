@@ -1853,17 +1853,16 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
    // reports or investor presentations with source evidence.
    const notes=(item?.qualitative_notes||[]).filter(x=>
      x.text&&/^https:\/\//.test(x.source_url)&&x.source_page);
-   if(notes.length){
-    body=notes.slice(0,2).map(x=>
-      '<p>'+esc(x.text)+'</p><p><a href="'+safeUrl(x.source_url)+
-      '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport, side '+
-      esc(x.source_page)+' ↗</a></p>').join('');
-   }else if(item?.period===period && item.summary && /^https:\/\//.test(item.source_url||'')){
-    // Source-backed numeric summary is useful, but must never be presented
-    // as qualitative issuer commentary or invented management explanation.
-    body='<p><strong>Oppsummering av rapporterte nøkkeltall:</strong> '+
-      esc(item.summary)+'</p><p><a href="'+safeUrl(item.source_url)+
-      '" target="_blank" rel="noopener noreferrer">Offisiell rapport ↗</a></p>';
+   if(item?.period===period && /^https:\/\//.test(item.source_url||'') &&
+      (item.reader_summary || notes.length)){
+    const main=item.reader_summary?'<p>'+esc(item.reader_summary)+'</p>':'';
+    // One noteworthy event or strategic development, only if documented
+    // in this issuer's official report with an exact source page.
+    const highlight=notes.length?'<p>'+esc(notes[0].text)+'</p>':'';
+    const evidence=notes.length?notes[0].source_url:item.source_url;
+    body=main+highlight+'<p><a href="'+safeUrl(evidence)+
+      '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport'+
+      (notes.length?', side '+esc(notes[0].source_page):'')+' ↗</a></p>';
    }else{
     body='<p>Ingen kildeverifisert kvartalsoppsummering tilgjengelig for valgt periode.</p>';
    }

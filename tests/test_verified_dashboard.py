@@ -42,10 +42,10 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn('const period=selectedLabel()',html)
   self.assertIn('const block=currentEditorial()',html)
   self.assertIn('block?.by_company?.[c]',html)
-  self.assertIn('item?.period===period && item.summary',html)
-  self.assertIn("esc(item.summary)",html)
-  self.assertIn("safeUrl(item.source_url)",html)
-  self.assertIn('Oppsummering av rapporterte nøkkeltall:',html)
+  self.assertIn('item?.period===period',html)
+  self.assertIn("esc(item.reader_summary)",html)
+  self.assertIn("safeUrl(evidence)",html)
+  self.assertIn('item.reader_summary',html)
   self.assertIn('setInterval(refresh,300000)',html)
   data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
   for label,block in data.get('periods',{}).items():
@@ -54,3 +54,17 @@ class VerifiedDashboardTests(unittest.TestCase):
      self.assertEqual(item.get('period'),label)
      self.assertTrue(item.get('summary'))
      self.assertTrue(item.get('source_url','').startswith('https://'))
+
+ def test_company_quarter_directional_summary_has_source_and_period(self):
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  self.assertIn('item.reader_summary',html)
+  self.assertIn('notes[0].text',html)
+  self.assertIn('item?.period===period',html)
+  data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
+  current=data['periods'][data['period']]['by_company']
+  for company,item in current.items():
+   with self.subTest(company=company):
+    self.assertEqual(item['period'],data['period'])
+    self.assertTrue(item['summary'])
+    self.assertTrue(item['source_url'].startswith('https://'))
+    self.assertTrue(item.get('comment'))
