@@ -29,12 +29,20 @@ jobs:
                       html=read_section(url,sec)
                       reader=TableReader();reader.feed(html)
                       print('SECTION',q,sec,'entity',('Frende Skadeforsikring' in html),'rows',len(reader.rows),flush=True)
-                      for row in reader.rows[:18]:print('ROW',q,sec,repr(row[:6]),flush=True)
+                      for row in reader.rows:print('ROW',q,sec,repr(row[:6]),flush=True)
                   except Exception as exc:print('SECTION_ERROR',q,sec,repr(exc),flush=True)
               try:
                   rows=verify_period(url,2026,q)
                   print('QUARTER_VERIFIED',q,len(rows),flush=True)
               except Exception as exc:print('QUARTER_ERROR',q,repr(exc),flush=True)
+          import urllib.request
+          from discover_frende_skade_reports import ARCHIVE,Links
+          with urllib.request.urlopen(urllib.request.Request(ARCHIVE,headers={'User-Agent':'Mozilla/5.0'}),timeout=30) as resp:
+              markup=resp.read(3_000_000).decode('utf-8','replace')
+          p=Links();p.feed(markup)
+          for href,label in p.links:
+              if ('Skadeforsikring' in label or '.pdf' in href.lower() or '2026' in label):
+                  print('ARCHIVE_LINK',repr(label[:120]),repr(href[:240]),flush=True)
           result=build(json.loads(REPORTS.read_text()))
           print('VERIFIED_ROWS',len(result['observations']),'ISSUES',result['diagnostics'][:5],flush=True)
           PY
