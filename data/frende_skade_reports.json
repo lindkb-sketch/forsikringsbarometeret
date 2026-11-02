@@ -1,6 +1,6 @@
 {
   "entity": "Frende Skadeforsikring AS",
-  "source_policy": "official PDF reports only",
+  "source_policy": "original official PDF reports only",
   "reports": [
     {
       "year": 2026,
@@ -51,217 +51,253 @@
       "year": 2024,
       "quarter": 4,
       "source_url": "https://www.frende.no/documents/311/Frende_Skadeforsikring_AS_-_4._kvartal_2024.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/311/Frende_Skadeforsikring_AS_-_4._kvartal_2024.pdf"
     },
     {
       "year": 2024,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/307/Frende_Skadeforsikring_AS_Kvartalsrapport_Q3_2024.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/307/Frende_Skadeforsikring_AS_Kvartalsrapport_Q3_2024.pdf"
     },
     {
       "year": 2024,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/302/Frende_Skadeforsikring_AS_Kvartalsrapport_Q2_2024.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/302/Frende_Skadeforsikring_AS_Kvartalsrapport_Q2_2024.pdf"
     },
     {
       "year": 2024,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/292/Frende_Skadeforsikring_AS_Kvartalsrapport_Q1_2024.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/292/Frende_Skadeforsikring_AS_Kvartalsrapport_Q1_2024.pdf"
     },
     {
       "year": 2023,
       "quarter": 4,
       "source_url": "https://www.frende.no/documents/280/Frende_Skadeforsikring_AS_-_kvartal_4_2023.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/280/Frende_Skadeforsikring_AS_-_kvartal_4_2023.pdf"
     },
     {
       "year": 2023,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/277/Kvartalsrapport_Frende_Skadeforsikring_AS_3._kvartal_2023.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/277/Kvartalsrapport_Frende_Skadeforsikring_AS_3._kvartal_2023.pdf"
     },
     {
       "year": 2023,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/270/Kvartalsrapport_Frende_Skadeforsikring_AS_Q2_2023.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/270/Kvartalsrapport_Frende_Skadeforsikring_AS_Q2_2023.pdf"
     },
     {
       "year": 2023,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/259/Kvartalsrapport_Frende_Skadeforsikring_AS_-_1._kvartal_2023.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/259/Kvartalsrapport_Frende_Skadeforsikring_AS_-_1._kvartal_2023.pdf"
     },
     {
       "year": 2022,
       "quarter": 4,
       "source_url": "https://www.frende.no/documents/245/Skadeforsikring_4kvartal_22.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/245/Skadeforsikring_4kvartal_22.pdf"
     },
     {
       "year": 2022,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/242/3_2022_Kvartalsrapport_Frende_Skadeforsikring_AS_3L9AwcG.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/242/3_2022_Kvartalsrapport_Frende_Skadeforsikring_AS_3L9AwcG.pdf"
     },
     {
       "year": 2022,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/232/2_2022_Kvartalsrapport_Frende_Skadeforsikring_AS.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/232/2_2022_Kvartalsrapport_Frende_Skadeforsikring_AS.pdf"
     },
     {
       "year": 2022,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/188/Q1-Skadeforsikring-2022.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/188/Q1-Skadeforsikring-2022.pdf"
     },
     {
       "year": 2021,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/167/Frende_Skadeforsikring_AS_Q3_2021.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/167/Frende_Skadeforsikring_AS_Q3_2021.pdf"
     },
     {
       "year": 2021,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/162/Q2_2021_skade.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/162/Q2_2021_skade.pdf"
     },
     {
       "year": 2021,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/154/Q1_2021_skade.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/154/Q1_2021_skade.pdf"
     },
     {
       "year": 2020,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/140/Frende_skadeforsikring_3._kvartal_2020.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/140/Frende_skadeforsikring_3._kvartal_2020.pdf"
     },
     {
       "year": 2020,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/137/Kvartalsrapport_Frende_Skadeforsikring_2._kvartal_2020.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/137/Kvartalsrapport_Frende_Skadeforsikring_2._kvartal_2020.pdf"
     },
     {
       "year": 2020,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/148/20-03_Kvartalsregnskap_publisert_Skade.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/148/20-03_Kvartalsregnskap_publisert_Skade.pdf"
     },
     {
       "year": 2019,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/126/19-09_Kvartalsregnskap_publisert.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/126/19-09_Kvartalsregnskap_publisert.pdf"
     },
     {
       "year": 2019,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/118/Frende_Skadeforsikring_AS_2._kvartal_2019.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/118/Frende_Skadeforsikring_AS_2._kvartal_2019.pdf"
     },
     {
       "year": 2019,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/116/Skadeforsikring_Q1.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/116/Skadeforsikring_Q1.pdf"
     },
     {
       "year": 2018,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/104/Frende_Skadeforsikring_3._kvartal_2018.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/104/Frende_Skadeforsikring_3._kvartal_2018.pdf"
     },
     {
       "year": 2018,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/101/18-06_Kvartalsregnskap_publisert.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/101/18-06_Kvartalsregnskap_publisert.pdf"
     },
     {
       "year": 2018,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/96/Frende_Skadeforsikring_AS_1._kvartal_2018.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/96/Frende_Skadeforsikring_AS_1._kvartal_2018.pdf"
     },
     {
       "year": 2017,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/82/Frende_Skadeforsikring_kvartalsrapport_3._kvartal_2017.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/82/Frende_Skadeforsikring_kvartalsrapport_3._kvartal_2017.pdf"
     },
     {
       "year": 2017,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/78/Frende_Skadeforsikring_kvartalsrapport_2._kvartal_2017.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/78/Frende_Skadeforsikring_kvartalsrapport_2._kvartal_2017.pdf"
     },
     {
       "year": 2017,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/72/Frende_Skadeforsikring_kvartalsrapport_1._kvartal_2017.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/72/Frende_Skadeforsikring_kvartalsrapport_1._kvartal_2017.pdf"
     },
     {
       "year": 2016,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/31/3._kvartal_2016.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/31/3._kvartal_2016.pdf"
     },
     {
       "year": 2016,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/27/2._kvartal_2016.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/27/2._kvartal_2016.pdf"
     },
     {
       "year": 2016,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/33/1._kvartal_2016.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/33/1._kvartal_2016.pdf"
     },
     {
       "year": 2015,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/30/3._kvartal_2015.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/30/3._kvartal_2015.pdf"
     },
     {
       "year": 2015,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/26/2._kvartal_2015.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/26/2._kvartal_2015.pdf"
     },
     {
       "year": 2015,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/32/1._kvartal_2015.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/32/1._kvartal_2015.pdf"
     },
     {
       "year": 2014,
       "quarter": 3,
       "source_url": "https://www.frende.no/documents/29/3._kvartal_2014.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/29/3._kvartal_2014.pdf"
     },
     {
       "year": 2014,
       "quarter": 2,
       "source_url": "https://www.frende.no/documents/25/2._kvartal_2014.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/25/2._kvartal_2014.pdf"
     },
     {
       "year": 2014,
       "quarter": 1,
       "source_url": "https://www.frende.no/documents/23/1._kvartal_2014.pdf",
-      "verification": "report_link_only_not_financial_values"
+      "verification": "report_link_only_not_financial_values",
+      "pdf_url": "https://www.frende.no/documents/23/1._kvartal_2014.pdf"
     }
   ]
 }
