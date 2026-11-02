@@ -434,12 +434,20 @@
     if(c==='Frende'){
       const subsidiary=document.createElement('section');
       subsidiary.className='panel frende-skade-pdf-disclosure';
-      subsidiary.setAttribute('aria-label','Frende Skadeforsikring AS – egen rapport');
-      subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egen rapport</h3>'+
-        '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er ulike rapporteringsenheter. Tallene over gjelder konsernet og skal ikke presenteres som tall for skadeforsikringsselskapet.</p>'+
-        '<p>Frende Skadeforsikring AS har offentliggjort en egen rapport for Q3 2026. '+
-        'Selskapets finansielle nøkkeltall vises ikke som verifiserte verdier før de er importert og kontrollert fra den separate PDF-rapporten.</p>'+
-        '<p><a href="https://newsweb.oslobors.no/message/684953" target="_blank" rel="noopener noreferrer">Åpne offisiell Q3 2026-melding med Frende Skadeforsikring AS PDF ↗</a></p>';
+      subsidiary.setAttribute('aria-label','Frende Skadeforsikring AS – separate kvartalsrapporter');
+      const escapeHtml=value=>String(value).replace(/[&<>"']/g,ch=>({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const reports=Array.isArray(frendeSkadeReports?.reports)
+        ?frendeSkadeReports.reports.filter(r=>Number.isInteger(r.year)&&r.quarter>=1&&r.quarter<=4&&
+            typeof r.source_url==='string'&&/^https:\/\//.test(r.source_url)).sort((a,b)=>b.year-a.year||b.quarter-a.quarter):[];
+      const links=reports.map(r=>'<li><a href="'+escapeHtml(r.source_url)+
+        '" target="_blank" rel="noopener noreferrer">Q'+r.quarter+' '+r.year+
+        ' – offisiell rapport / PDF-vedlegg ↗</a></li>').join('');
+      subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egne kvartalsrapporter</h3>'+
+        '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er forskjellige rapporteringsenheter. '+
+        'Konserntallene ovenfor gjelder ikke automatisk skadeforsikringsselskapet.</p>'+
+        (links?'<ul>'+links+'</ul>':'<p>Ingen separat rapportlenke er bekreftet.</p>')+
+        '<p>Skadeselskapets nøkkeltall publiseres først når de er kontrollert fra selskapets egen PDF.</p>';
       fragment.appendChild(subsidiary);
     }
     return fragment.innerHTML+growthMatrixHtml(c);
@@ -581,13 +589,16 @@
   }
   const oldTable=table;
   table=()=>normalizeRevenueTable(oldTable());
+  let frendeSkadeReports=null;
   async function refresh(){
     try{
-      const [response, calendarResponse]=await Promise.all([
+      const [response, calendarResponse, skadeResponse]=await Promise.all([
         fetch('data/verified_financial_feed.json?t='+Date.now(),{cache:'no-store'}),
-        fetch('data/calendar.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null)
+        fetch('data/calendar.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null),
+        fetch('data/frende_skade_reports.json?t='+Date.now(),{cache:'no-store'}).catch(()=>null)
       ]);
       if(calendarResponse?.ok)calendarData=await calendarResponse.json();
+      if(skadeResponse?.ok)frendeSkadeReports=await skadeResponse.json();
       if(!response.ok)throw Error('Verifisert finansfeed: HTTP '+response.status);
       const incoming=await response.json();
       if(!Array.isArray(incoming.observations))throw Error('Finansfeed mangler observasjoner');
