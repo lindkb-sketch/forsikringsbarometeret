@@ -1,0 +1,40 @@
+name: Frende Skade quarterly report parser validation
+on:
+  push:
+    branches: [feat/frende-skade-verified-quarter-import-20261102]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate official subsidiary report HTML and independent importer
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'scripts')
+          from import_frende_skade import read_section, verify_period, build, REPORTS
+          from import_frende_holding import TableReader
+          import json
+          for q in (1,2,3):
+              url=f'https://frende.wrep.it/q{q}-2026-frende-skadeforsikring-as'
+              for sec in (6,7):
+                  try:
+                      html=read_section(url,sec)
+                      reader=TableReader();reader.feed(html)
+                      print('SECTION',q,sec,'entity',('Frende Skadeforsikring' in html),'rows',len(reader.rows),flush=True)
+                      for row in reader.rows[:18]:print('ROW',q,sec,repr(row[:6]),flush=True)
+                  except Exception as exc:print('SECTION_ERROR',q,sec,repr(exc),flush=True)
+              try:
+                  rows=verify_period(url,2026,q)
+                  print('QUARTER_VERIFIED',q,len(rows),flush=True)
+              except Exception as exc:print('QUARTER_ERROR',q,repr(exc),flush=True)
+          result=build(json.loads(REPORTS.read_text()))
+          print('VERIFIED_ROWS',len(result['observations']),'ISSUES',result['diagnostics'][:5],flush=True)
+          PY
