@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install PDF and Excel dependencies
+      - name: Install official PDF report dependencies
         run: python -m pip install -r requirements-reports.txt
       - name: Run seven-insurer replay and prove boundaries
         run: python scripts/full_import_replay_evidence.py
