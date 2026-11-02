@@ -162,7 +162,8 @@ jobs:
           for pair in pairs:
               if pair['year']!=2026 or pair['quarter']!=3:continue
               print('TRYG_Q3_PDF',pair['report_pdf_url'])
-              print('TRYG_Q3_XLSX',pair['workbook_url'])
+              workbook_url=pair.get('workbook_url')
+              print('TRYG_Q3_XLSX',workbook_url or 'not supplied (PDF-only candidate)')
               with urllib.request.urlopen(pair['report_pdf_url'],timeout=40) as r:blob=r.read(35000000)
               with pdfplumber.open(io.BytesIO(blob)) as pdf:
                   for i,page in enumerate(pdf.pages[:15]):
@@ -171,7 +172,10 @@ jobs:
                       if matches:
                           print('PDF_PAGE',i+1,'HEAD',lines[:4])
                           for n,line in matches[:12]:print('PDF_ROW',n,repr(line[:210]))
-              with urllib.request.urlopen(pair['workbook_url'],timeout=40) as r:blob=r.read(25000000)
+              if not workbook_url:
+                  print('TRYG_Q3_XLSX_DIAGNOSTIC_SKIPPED: no workbook linked to this candidate')
+                  continue
+              with urllib.request.urlopen(workbook_url,timeout=40) as r:blob=r.read(25000000)
               p=Path('/tmp/tryg_q3_2026.xlsx');p.write_bytes(blob)
               sheets=load_sheets(p)
               print('XLSX_SHEETS',list(sheets))
