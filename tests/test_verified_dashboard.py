@@ -35,3 +35,22 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn("html+=monCalendar()",s)
   self.assertIn("data/live.json?ts=",s)
   self.assertIn("mon-cal-countdown",s)
+
+ def test_future_quarter_summaries_follow_selected_period(self):
+  """Newly published quarters must show source-backed summaries without curated notes."""
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  self.assertIn('const period=selectedLabel()',html)
+  self.assertIn('const block=currentEditorial()',html)
+  self.assertIn('block?.by_company?.[c]',html)
+  self.assertIn('item?.period===period && item.summary',html)
+  self.assertIn("esc(item.summary)",html)
+  self.assertIn("safeUrl(item.source_url)",html)
+  self.assertIn('Oppsummering av rapporterte nøkkeltall:',html)
+  self.assertIn('setInterval(refresh,300000)',html)
+  data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
+  for label,block in data.get('periods',{}).items():
+   for company,item in block.get('by_company',{}).items():
+    with self.subTest(period=label,company=company):
+     self.assertEqual(item.get('period'),label)
+     self.assertTrue(item.get('summary'))
+     self.assertTrue(item.get('source_url','').startswith('https://'))
