@@ -52,30 +52,36 @@ def run():
     count=0
     for company in COMPANIES:
         candidates=[r for r in rows if r.get('company')==company and
-            r.get('scope')=='group' and r.get('period_type')=='quarter'
-            and r.get('metric')=='insurance_revenue']
+            r.get('scope')=='group' and r.get('metric')=='insurance_revenue'
+            and r.get('period_type') in ('quarter','ytd')]
         if not candidates:continue
         year,quarter=max((r['year'],r['quarter']) for r in candidates)
-        if any(r.get('company')==company and r.get('scope')=='group'
-               and (r.get('year'),r.get('quarter'))==(year,quarter)
-               and r.get('metric')=='solvency_ratio' for r in rows):continue
-        source=next(r for r in candidates if (r['year'],r['quarter'])==(year,quarter)
-                    and r.get('source_type')=='official_quarterly_report')
-        try:
-            blob=download(source['source_url'])
-            page,value=extract(blob,company,year,quarter)
-        except Exception as exc:
-            print('::warning::SOLVENCY_PDF_UNVERIFIED',company,year,quarter,str(exc)[:180],flush=True)
-            continue
-        rows.append(dict(company=company,year=year,quarter=quarter,scope='group',
-             source_scope='group',period_type='quarter',metric='solvency_ratio',
-             value=value,unit='percent',status='reported',
-             source_type='official_quarterly_report',source_url=source['source_url'],
-             source_page=page,source_sha256=hashlib.sha256(blob).hexdigest(),
-             source_document_period=f'Q{quarter} {year}',
-             source_definition='Reported quarter-end Group solvency ratio'))
-        count+=1
-        print('OFFICIAL_GROUP_SOLVENCY',company,year,quarter,value,page,flush=True)
+        # Both current and same quarter last year are needed for comparison.
+        for target_year in (year-1,year):
+            if any(r.get('company')==company and r.get('scope')=='group'
+                   and (r.get('year'),r.get('quarter'))==(target_year,quarter)
+                   and r.get('metric')=='solvency_ratio' for r in rows):continue
+            sources=[r for r in candidates if (r['year'],r['quarter'])==(target_year,quarter)
+                     and r.get('source_type')=='official_quarterly_report'
+                     and str(r.get('source_url','')).startswith('https://')]
+            if not sources:continue
+            # Prefer the report issued in the target year over a newer comparative.
+            source=next((r for r in sources if str(target_year) in r['source_url']),sources[0])
+            try:
+                blob=download(source['source_url'])
+                page,value=extract(blob,company,target_year,quarter)
+            except Exception as exc:
+                print('::warning::SOLVENCY_PDF_UNVERIFIED',company,target_year,quarter,str(exc)[:180],flush=True)
+                continue
+            rows.append(dict(company=company,year=target_year,quarter=quarter,scope='group',
+                 source_scope='group',period_type='quarter',metric='solvency_ratio',
+                 value=value,unit='percent',status='reported',
+                 source_type='official_quarterly_report',source_url=source['source_url'],
+                 source_page=page,source_sha256=hashlib.sha256(blob).hexdigest(),
+                 source_document_period=f'Q{quarter} {target_year}',
+                 source_definition='Reported quarter-end Group solvency ratio'))
+            count+=1
+            print('OFFICIAL_GROUP_SOLVENCY',company,target_year,quarter,value,page,flush=True)
     if not audit(data)['ok']:raise ValueError('Solvency source audit failed')
     if count:atomic_write(DATA,data)
     print('SOLVENCY_QTR_PDF_ADDED',count,flush=True)
