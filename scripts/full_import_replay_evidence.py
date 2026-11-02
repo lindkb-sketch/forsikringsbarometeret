@@ -18,10 +18,10 @@ OUTPUT=ROOT/"data"/"full_import_replay_evidence.json"
 CHECKS={
  "Fremtind":{"suite":["test_fremtind_import","test_fremtind_archive_rows","test_frende_fremtind_discovery"],
    "source":"PDF layout samples, issuer archive unit tests","real_document":"not_proven","live_discovery":"not_proven"},
- "Gjensidige":{"suite":["test_import_gjensidige_latest","test_gjensidige_report_check","test_gjensidige_publish","test_gjensidige_norway_excel","test_publish_geographic_workbooks"],
-   "source":"PDF report parser and Norway XLSX workbook fixtures","real_document":"not_proven","live_discovery":"not_proven"},
- "Tryg":{"suite":["test_discover_tryg","test_tryg_q3_official","test_geographic_excel","test_tryg_ytd_ratios","test_publish_geographic_workbooks"],
-   "source":"Group PDF parsing and Norway XLSX workbook regressions","real_document":"not_proven","live_discovery":"not_proven"},
+ "Gjensidige":{"suite":["test_import_gjensidige_latest","test_gjensidige_report_check","test_gjensidige_publish","test_gjensidige_pdf_ratio_amounts","test_gjensidige_pipeline_wiring"],
+   "source":"Official quarterly PDF report and Norway PM/BM PDF regressions","real_document":"not_proven","live_discovery":"not_proven"},
+ "Tryg":{"suite":["test_discover_tryg","test_tryg_q3_official","test_tryg_norway_pdf","test_tryg_ytd_ratios","test_tryg_pdf_only_wiring"],
+   "source":"Group and Norway PDF parsing regressions","real_document":"not_proven","live_discovery":"not_proven"},
  "Sampo":{"suite":["test_sampo_real_q4","test_sampo_future"],
    "source":"Real issuer Q4 2025 PDF, downloaded and compared with golden values","real_document":"real_pdf","live_discovery":"not_proven"},
  "Frende":{"suite":["test_frende_import_gate","test_frende_fremtind_discovery"],
@@ -50,8 +50,7 @@ def run():
             "live_issuer_discovery_verified":False,
             "isolated_new_document_download_to_import_verified":False,
             "golden_financial_comparison_verified":passed and plan["real_document"]!="not_proven",
-            "norway_excel_parser_tested":passed and company in ("Gjensidige","Tryg"),
-            "norway_excel_live_download_verified":False,
+            "norway_pdf_parser_tested":passed and company in ("Gjensidige","Tryg"),
             "automatic_publication_verified_from_this_replay":False,
             "full_e2e_certified":False,
             "tests":plan["suite"],"error":error}
@@ -60,7 +59,7 @@ def run():
     result={
       "checked_at_utc":datetime.now(timezone.utc).isoformat(),
       "isolation":"Read-only regression; no production data or synthetic observations published",
-      "definition_of_full_e2e":"Live issuer index discovery -> download original official PDF/XLSX -> isolated parser/import -> provenance audit -> golden comparison -> staged browser verification",
+      "definition_of_full_e2e":"Live issuer index discovery -> download original official PDF -> isolated parser/import -> provenance audit -> golden comparison -> staged browser verification",
       "reporting_rule":"Never infer full end-to-end success from green unit or historical PDF parser tests",
       "all_regressions_passed":all(r["regression_suite_passed"] for r in results),
       "all_seven_full_e2e_certified":all(r["full_e2e_certified"] for r in results),
