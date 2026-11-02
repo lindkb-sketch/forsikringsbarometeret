@@ -54,3 +54,17 @@ class VerifiedDashboardTests(unittest.TestCase):
      self.assertEqual(item.get('period'),label)
      self.assertTrue(item.get('summary'))
      self.assertTrue(item.get('source_url','').startswith('https://'))
+
+ def test_company_quarter_directional_summary_has_source_and_period(self):
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  self.assertIn('Utvikling basert på rapporterte tall:',html)
+  self.assertIn('item.comment && item.comment!==item.summary',html)
+  self.assertIn('item?.period===period && item.summary',html)
+  data=json.loads((ROOT/'data/quarterly_editorial.json').read_text(encoding='utf-8'))
+  current=data['periods'][data['period']]['by_company']
+  for company,item in current.items():
+   with self.subTest(company=company):
+    self.assertEqual(item['period'],data['period'])
+    self.assertTrue(item['summary'])
+    self.assertTrue(item['source_url'].startswith('https://'))
+    self.assertTrue(item.get('comment'))
