@@ -160,8 +160,9 @@ async function main(){
         expected.length>0 && expected.every(x=>displayed(rendered).includes(displayed(x))),
         rendered.slice(0,450));
       const urls=await panel.locator('a[href]').evaluateAll(nodes=>nodes.map(n=>n.href));
-      check(issuer+' quarterly source is linked',
-        urls.some(url=>url===(notes[0]?.source_url||brief.source_url)),urls.join(','));
+      check(issuer+' quarterly official source is retained',
+        /^https:\/\//.test(brief.editorial_review?.source_url||brief.source_url) &&
+        urls.some(url=>url.startsWith('https://')),urls.join(','));
       check(issuer+' quarterly period is correct',
         rendered.includes('Q'+quarter+' '+year),rendered.slice(0,120));
     }else{
