@@ -24,6 +24,8 @@ def run(offline=False):
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_fremtind_holding.py')],cwd=ROOT,check=True)
   print('RUN import_frende_holding.py (verified official issuer publisher tables only)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'import_frende_holding.py')],cwd=ROOT,check=True)
+  print('RUN import_frende_skade.py (separate legal-entity first-page KPI import)',flush=True)
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'import_frende_skade.py')],cwd=ROOT,check=True)
  if not offline:
   print('RUN protector_publish.py (official KPI and PDF-verified prior-year comparisons)',flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/'protector_publish.py')],cwd=ROOT,check=True)
