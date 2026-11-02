@@ -43,7 +43,7 @@ class VerifiedDashboardTests(unittest.TestCase):
   self.assertIn('const block=currentEditorial()',html)
   self.assertIn('block?.by_company?.[c]',html)
   self.assertIn('item?.period===period',html)
-  self.assertIn("esc(item.summary)",html)
+  self.assertIn("esc(item.reader_summary)",html)
   self.assertIn("safeUrl(item.source_url)",html)
   self.assertIn('item.reader_summary',html)
   self.assertIn('setInterval(refresh,300000)',html)
