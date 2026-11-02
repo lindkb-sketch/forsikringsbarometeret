@@ -27,12 +27,12 @@ def parse_table(markup,year,quarter,url,source_hash):
             if text.strip():self.parts.append(text.strip())
     reader=Plain();reader.feed(markup)
     text=' '.join(reader.parts) if '<' in markup else markup
-    text=html.unescape(text).replace('\\u00a0',' ')
-    header=re.search(r'Resultatregnskap\\s+'+str(quarter)+r'\\.\\s*kv\\.\\s*'+str(year)+
-        r'\\s+'+str(quarter)+r'\\.\\s*kv\\.\\s*'+str(year-1),text,re.I)
+    text=html.unescape(text).replace('\u00a0',' ')
+    header=re.search(r'Resultatregnskap\s+'+str(quarter)+r'\.\s*kv\.\s*'+str(year)+
+        r'\s+'+str(quarter)+r'\.\s*kv\.\s*'+str(year-1),text,re.I)
     if not header:raise ValueError('Missing same-quarter current/prior header')
     # Thousands separated by whitespace, with negative signs sometimes adjacent.
-    amount=r'-?\\d{1,3}(?:\\s+\\d{3})+(?:[.,]\\d+)?|-?\\d+(?:[.,]\\d+)?'
+    amount=r'-?\d{1,3}(?:\s+\d{3})+(?:[.,]\d+)?|-?\d+(?:[.,]\d+)?'
     labels=list(METRICS)
     out=[]
     for label,metric in METRICS.items():
@@ -90,10 +90,10 @@ def parse(blob,year,quarter,url):
   header=f'Resultatregnskap {quarter}.kv.{year} {quarter}.kv.{year-1}'
   report_rows.append([header])
   for label in METRICS:
-   matching=[line for line in text.splitlines() if re.match(r'^\\s*'+re.escape(label)+r'\\s+',line,re.I)]
+   matching=[line for line in text.splitlines() if re.match(r'^\s*'+re.escape(label)+r'\s+',line,re.I)]
    if len(matching)!=1:raise ValueError('Missing or ambiguous PDF first-page row '+label)
-   tail=re.sub(r'^\\s*'+re.escape(label)+r'\\s+','',matching[0],flags=re.I)
-   values=re.findall(r'-?\\d{1,3}(?:[ \\u00a0]\\d{3})+(?:[.,]\\d+)?\\s*%?|-?\\d+(?:[.,]\\d+)?\\s*%?',tail)
+   tail=re.sub(r'^\s*'+re.escape(label)+r'\s+','',matching[0],flags=re.I)
+   values=re.findall(r'-?\d{1,3}(?:[ \u00a0]\d{3})+(?:[.,]\d+)?\s*%?|-?\d+(?:[.,]\d+)?\s*%?',tail)
    if len(values)<2:raise ValueError('Missing PDF comparison columns '+label)
    report_rows.append([label,values[0],values[1]])
   markup='<table>'+''.join('<tr>'+''.join('<td>'+html.escape(str(v))+'</td>' for v in row)+'</tr>' for row in report_rows)+'</table>'
