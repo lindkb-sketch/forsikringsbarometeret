@@ -87,8 +87,8 @@ def run():
  latest_year=candidates[0]['year']
  for item in (x for x in candidates if x['year']>=latest_year-1):
   try:
-   url=item['url'];blob=fetch(url)
-   new.extend(parse(blob,item['year'],item['quarter'],url))
+   url=item['url'];blob=fetch(url+'/sec/1' if 'frende.wrep.it' in url else url)
+   new.extend(parse(blob,item['year'],item['quarter'],url+'/sec/1' if 'frende.wrep.it' in url else url))
   except Exception as exc:
    print('::warning::FRENDE_SKADE_UNVERIFIED',item['year'],item['quarter'],str(exc)[:180],flush=True)
  keys={(r['company'],r['scope'],r['year'],r['quarter'],r['period_type'],r['metric']) for r in existing}
