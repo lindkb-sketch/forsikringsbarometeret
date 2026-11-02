@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-"""Conservative discovery of future quarterly Gjensidige XLSX and PDF URLs.
+"""Discover only official Gjensidige quarterly PDFs by explicit year and quarter.
 
-Scrapes issuer-controlled investor pages, never guesses asset URLs. A quarter is
-eligible only when exactly one XLSX and PDF are explicitly labelled with the
-same year and quarter in nearby page text. Unclear cases remain unpublished.
+Never guess document URLs; reject ambiguous issuer-controlled PDF candidates.
 """
 import html,json,re,urllib.parse,urllib.request
 from html.parser import HTMLParser
@@ -30,22 +28,19 @@ def discover(page,base=INDEX):
         url=urllib.parse.urljoin(base,html.unescape(href))
         parsed=urllib.parse.urlparse(url)
         if parsed.scheme!="https" or parsed.hostname not in ALLOWED:continue
-        extension=parsed.path.lower().rsplit(".",1)[-1]
-        if extension not in ("xlsx","pdf"):continue
+        if not parsed.path.lower().endswith(".pdf"):continue
         descriptor=html.unescape(label+" "+urllib.parse.unquote(parsed.path))
         period=re.search(r"(?:q([1-4])\D{0,8}(20\d{2})|(20\d{2})\D{0,8}q([1-4]))",descriptor,re.I)
         if not period:continue
         quarter=int(period.group(1) or period.group(4))
         year=int(period.group(2) or period.group(3))
-        if extension=="pdf" and not re.search(r"report|interim|quarter|delårs|kvartal",descriptor,re.I):continue
-        if extension=="xlsx" and not re.search(r"key.figures|investor|financial|nøkkeltall|excel",descriptor,re.I):continue
-        grouped.setdefault((year,quarter),{}).setdefault(extension,set()).add(url)
+        if not re.search(r"report|interim|quarter|delårs|kvartal",descriptor,re.I):continue
+        grouped.setdefault((year,quarter),set()).add(url)
     return [{"company":"Gjensidige","year":year,"quarter":quarter,
-             "workbook_url":next(iter(items["xlsx"])),"report_pdf_url":next(iter(items["pdf"])),
-             "segments":"gjensidige_pm_bm","approved":False,
+             "report_pdf_url":next(iter(items)),"approved":False,
              "source_index_url":base}
             for (year,quarter),items in sorted(grouped.items())
-            if len(items.get("xlsx",()))==len(items.get("pdf",()))==1]
+            if len(items)==1]
 
 def fetch(url=INDEX):
     req=urllib.request.Request(url,headers={"User-Agent":"Forsikringsbarometeret/1.0"})
@@ -60,4 +55,4 @@ if __name__=="__main__":
     candidates=discover(fetch())
     path=Path(__file__).resolve().parents[1]/"data"/"gjensidige_discovery_candidates.json"
     path.write_text(json.dumps({"index":INDEX,"candidates":candidates},indent=2)+"\n")
-    print(f"Found {len(candidates)} explicitly labelled official source pairs; candidates are NOT automatically approved")
+    print(f"Found {len(candidates)} explicitly labelled official PDF candidates; candidates are NOT automatically approved")

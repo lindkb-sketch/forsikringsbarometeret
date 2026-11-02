@@ -32,14 +32,10 @@ def audit(data):
         if r.get("source_type")=="official_quarterly_report" and r.get("status")=="reported" and r.get("source_scope")=="group" and r.get("scope")=="norway":
             errors.append(f"{label}: group source cannot support Norway value")
 
-        if r.get("source_type")=="official_investor_tables":
-            if r.get("company") not in ("Tryg","Gjensidige") or (r.get("scope")!="norway" and not (r.get("company")=="Gjensidige" and r.get("scope")=="reported_segment" and r.get("segment") in ("Private Norway","Commercial Norway"))):
-                errors.append(f"{label}: investor tables permitted only for Tryg/Gjensidige Norway")
-            if not str(r.get("source_url","")).lower().split("?")[0].endswith(".xlsx"):
-                errors.append(f"{label}: investor tables must be XLSX")
-            if not r.get("source_sheet") or not r.get("source_cell") or not r.get("source_document_url"):
-                errors.append(f"{label}: Excel provenance requires sheet, cell and corresponding PDF")
-        elif r.get("source_type")!="official_quarterly_report":errors.append(f"{label}: source is not official quarterly report")
+        if r.get("source_type")!="official_quarterly_report":
+            errors.append(f"{label}: source must be an official quarterly PDF report")
+        if str(r.get("source_url","")).lower().split("?")[0].endswith((".xlsx",".xls",".xlsm")):
+            errors.append(f"{label}: spreadsheet source URLs are forbidden")
         url=str(r.get("source_url","")).lower()
         if any(term in url for term in ("press-release","pressemelding","analyst-presentation","investor-presentation")):
             errors.append(f"{label}: prohibited non-quarterly-report document URL")

@@ -89,12 +89,12 @@ jobs:
           PY
       - name: Discover live official Tryg paired reports
         run: python scripts/discover_tryg.py
-      - name: Live Tryg PDF group and Norway Excel end-to-end import
+      - name: Live Tryg PDF group and Norway PDF end-to-end import
         run: |
           python scripts/import_tryg.py
           python scripts/audit_financials.py
           python scripts/verify_feed_coverage.py
-      - name: Audit Tryg group PDF and Norway Excel automation readiness
+      - name: Audit Tryg PDF group and Norway automation readiness
         run: python scripts/verify_tryg_end_to_end.py
       - name: Build final website data for browser regression
         run: |
@@ -129,7 +129,7 @@ jobs:
       - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
         continue-on-error: true
         run: PAGES_VERIFY_ATTEMPTS=1 python scripts/verify_public_pages.py
-      - name: Inspect official Tryg 2026 PDF and Excel archive links
+      - name: Inspect official Tryg 2026 PDF archive links
         run: |
           python - <<'PY'
           import urllib.request,re
@@ -147,22 +147,20 @@ jobs:
           parser=Links();parser.feed(markup)
           print('LINK_COUNT',len(parser.links))
           for url,label in parser.links:
-              if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and ('.pdf' in url.lower() or '.xlsx' in url.lower()):
+              if re.search(r'Q[123]|Interim report|Investor tables',url+' '+label,re.I) and ('.pdf' in url.lower()):
                   print('TRYG_LINK',repr(label[:110]),repr(url[:320]))
           PY
-      - name: Inspect official Tryg PDF group and Norway workbook schemas
+      - name: Inspect official Tryg PDF group schemas
         run: |
           python - <<'PY'
           import json,sys,urllib.request,io,re
           import pdfplumber
           sys.path.insert(0,'scripts')
-          from geographic_excel import load_sheets
           from pathlib import Path
           pairs=json.loads(Path('data/tryg_candidates.json').read_text())['pairs']
           for pair in pairs:
               if pair['year']!=2026 or pair['quarter']!=3:continue
               print('TRYG_Q3_PDF',pair['report_pdf_url'])
-              print('TRYG_Q3_XLSX',pair['workbook_url'])
               with urllib.request.urlopen(pair['report_pdf_url'],timeout=40) as r:blob=r.read(35000000)
               with pdfplumber.open(io.BytesIO(blob)) as pdf:
                   for i,page in enumerate(pdf.pages[:15]):
@@ -171,14 +169,6 @@ jobs:
                       if matches:
                           print('PDF_PAGE',i+1,'HEAD',lines[:4])
                           for n,line in matches[:12]:print('PDF_ROW',n,repr(line[:210]))
-              with urllib.request.urlopen(pair['workbook_url'],timeout=40) as r:blob=r.read(25000000)
-              p=Path('/tmp/tryg_q3_2026.xlsx');p.write_bytes(blob)
-              sheets=load_sheets(p)
-              print('XLSX_SHEETS',list(sheets))
-              for name,cells in sheets.items():
-                  if re.search('geograph',name,re.I):
-                      print('XLSX_GEO',name,'FIRST',list(cells.items())[:30])
-          PY
 
   browser-e2e:
     name: Render dashboard with PR changes (local Pages preview)

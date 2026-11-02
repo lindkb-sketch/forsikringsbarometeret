@@ -11,16 +11,17 @@ def collect(registry,fetch=None):
                 if not r.geturl().startswith("https://"):raise ValueError("Insecure redirect")
                 return r.read(30_000_001)
     sources=[]
-    for x in registry.get("workbooks",[]):
-        if not x.get("approved"):continue
-        url=x["report_pdf_url"]
+    for x in registry.get("sources",[]):
+        if x.get("document_type") != "official_quarterly_report":continue
+        url=x.get("document_url")
+        if not url:continue
         if not url.startswith("https://"):raise ValueError("PDF must use HTTPS")
         data=fetch(url)
         if len(data)>30_000_000 or not data.startswith(b"%PDF-"):raise ValueError("Not a valid bounded PDF")
         sources.append({"company":x["company"],"year":x["year"],"quarter":x["quarter"],"url":url,"sha256":hashlib.sha256(data).hexdigest(),"size":len(data)})
     return {"sources":sources,"note":"PDF provenance only; no unverified numerical observations"}
 def main():
-    a=argparse.ArgumentParser();a.add_argument("--registry",default=str(ROOT/"data/geographic_workbooks.json"));a.add_argument("--output",default=str(ROOT/"data/pdf_source_checks.json"));args=a.parse_args()
+    a=argparse.ArgumentParser();a.add_argument("--registry",default=str(ROOT/"data/report_sources.json"));a.add_argument("--output",default=str(ROOT/"data/pdf_source_checks.json"));args=a.parse_args()
     result=collect(json.loads(Path(args.registry).read_text()))
     Path(args.output).write_text(json.dumps(result,indent=2)+"\n")
     print("Checked",len(result["sources"]),"PDF files")

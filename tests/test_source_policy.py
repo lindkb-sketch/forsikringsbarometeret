@@ -6,11 +6,11 @@ class SourcePolicyTest(unittest.TestCase):
  def test_reject_pdf_norway_without_named_geography(self):
   self.assertTrue(validate_source_policy([dict(company='Gjensidige',scope='norway',source_type='official_quarterly_report')]))
   self.assertTrue(validate_source_policy([dict(company='Tryg',scope='norway',source_type='official_quarterly_report')]))
- def test_accept_verified_excel_norway(self):
+ def test_reject_excel_norway(self):
   row=dict(company='Gjensidige',scope='norway',source_type='official_investor_tables',
     source_url='https://issuer.example/figures.xlsx',source_sheet='Norway',
     source_cell='B12',source_document_url='https://issuer.example/report.pdf',source_sha256='a'*64)
-  self.assertFalse(validate_source_policy([row]))
+  self.assertTrue(validate_source_policy([row]))
   self.assertTrue(validate_source_policy([{**row,'source_cell':None}]))
  def test_accept_explicit_tryg_norway_geography_pdf(self):
   row=dict(company='Tryg',scope='norway',source_type='official_quarterly_report',
@@ -19,7 +19,7 @@ class SourcePolicyTest(unittest.TestCase):
   self.assertFalse(validate_source_policy([row]))
   self.assertTrue(validate_source_policy([{**row,'source_section':'Group summary'}]))
 class GjensidigeDerivedNorwayPolicy(unittest.TestCase):
- def test_derived_total_requires_both_official_segment_cells(self):
+ def test_reject_excel_based_derived_total_even_with_segment_cells(self):
   base=dict(company='Gjensidige',year=2026,quarter=3,period_type='quarter',
     metric='insurance_revenue',source_type='official_investor_tables',
     source_url='https://issuer.example/figures.xlsx',
@@ -28,7 +28,7 @@ class GjensidigeDerivedNorwayPolicy(unittest.TestCase):
     calculation='sum_official_norway_segments')
   segments=[dict(base,scope='reported_segment',segment=name,status='reported',
     source_sheet=name,source_cell='B12') for name in ('Private Norway','Commercial Norway')]
-  self.assertFalse(validate_source_policy([calculated]+segments))
+  self.assertTrue(validate_source_policy([calculated]+segments))
   self.assertTrue(validate_source_policy([calculated,segments[0]]))
   self.assertTrue(validate_source_policy([calculated,{**segments[0], 'source_sha256':'b'*64},segments[1]]))
 

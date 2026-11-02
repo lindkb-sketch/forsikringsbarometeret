@@ -14,13 +14,13 @@ class GeographicTests(unittest.TestCase):
    z.writestr('xl/_rels/workbook.xml.rels','<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Target="worksheets/sheet1.xml" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"/></Relationships>')
    z.writestr('xl/worksheets/sheet1.xml',f'<worksheet xmlns="{ns}"><sheetData>{"".join(rows)}</sheetData></worksheet>')
   return t,p
- def test_norway_not_sweden(self):
+ def test_legacy_excel_norway_rejected_by_audit(self):
   t,p=self.make()
   try:
    d=parse(p,'Tryg',2026,2,'https://tryg.com/tables.xlsx','https://tryg.com/report.pdf')
    self.assertEqual(d['observations'][0]['value'],123)
    self.assertEqual(d['observations'][0]['source_cell'],'B3')
-   self.assertTrue(audit(d)['ok'])
+   self.assertFalse(audit(d)['ok'])
   finally:t.cleanup()
  def test_ambiguous_header_blocks(self):
   t,p=self.make(True)

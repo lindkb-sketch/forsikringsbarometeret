@@ -1,4 +1,4 @@
-"""Automatic Tryg Norway YTD derived from complete isolated Excel quarters."""
+"""Derive Tryg Norway YTD only from official PDF-verified isolated quarters."""
 ADDITIVE={'insurance_revenue','insurance_service_result'}
 RATIOS={'combined_ratio','loss_ratio','expense_ratio'}
 def derive_ytd(observations,year,through_quarter,company='Tryg',scope='norway'):
@@ -34,15 +34,15 @@ def derive_ytd(observations,year,through_quarter,company='Tryg',scope='norway'):
     return output
 
 def add_tryg_ytd(observations):
-    """Recalculate Tryg YTD after each new Excel import, replacing stale derived rows."""
+    """Recalculate Tryg YTD from complete PDF-verified quarterly inputs."""
     base=[r for r in observations if not (r.get('company')=='Tryg' and r.get('scope')=='norway' and r.get('period_type')=='ytd' and r.get('calculation') in ('sum_of_complete_quarters','sum_of_isolated_quarters','insurance_revenue_weighted_ratio'))]
-    source=[r for r in base if r.get('company')=='Tryg' and r.get('scope')=='norway' and r.get('period_type')=='quarter' and r.get('source_sheet')]
+    source=[r for r in base if r.get('company')=='Tryg' and r.get('scope')=='norway' and r.get('period_type')=='quarter' and r.get('source_type')=='official_quarterly_report' and isinstance(r.get('source_page'),int) and r['source_page']>0]
     for year in sorted({r['year'] for r in source}):
         for q in range(1,5):
             for metric,derived in derive_ytd(source,year,q).items():
                 parts=[next(r for r in source if r['year']==year and r['quarter']==k and r['metric']==metric) for k in derived['quarters']]
-                row={k:v for k,v in parts[-1].items() if k not in ('value','quarter','source_cell','calculation')}
-                row.update(quarter=q,period_type='ytd',metric=metric,value=derived['value'],unit=derived['unit'],calculation=derived['method'],source_cell=','.join(r.get('source_cell','') for r in parts),inputs=[{'quarter':r['quarter'],'value':r['value'],'source_cell':r.get('source_cell')} for r in parts])
+                row={k:v for k,v in parts[-1].items() if k not in ('value','quarter','source_page','calculation')}
+                row.update(quarter=q,period_type='ytd',metric=metric,value=derived['value'],unit=derived['unit'],calculation=derived['method'],source_page=parts[-1].get('source_page'),inputs=[{'quarter':r['quarter'],'value':r['value'],'source_page':r.get('source_page'),'source_url':r.get('source_url')} for r in parts])
                 if any(r.get('company')=='Tryg' and r.get('scope')=='norway' and r.get('year')==year and r.get('quarter')==q and r.get('metric')==metric and r.get('period_type')=='ytd' for r in base):continue
                 base.append(row)
     return base

@@ -1,26 +1,36 @@
 #!/usr/bin/env python3
-"""Honest Tryg PDF-group/XLSX-Norway automation readiness gate."""
+"""Report Tryg's actual PDF-based group and Norway import coverage."""
 import json
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[1]
 
-def assess(sources,workbooks,observations):
-    group=[s for s in sources if s.get('company')=='Tryg' and s.get('document_url') and s.get('year') and s.get('quarter')]
-    norway=[w for w in workbooks if w.get('company')=='Tryg' and w.get('approved')]
-    periods={('group',r['year'],r['quarter']) for r in observations if r.get('company')=='Tryg' and r.get('scope')=='group' and r.get('period_type')=='quarter'}
-    periods|={('norway',r['year'],r['quarter']) for r in observations if r.get('company')=='Tryg' and r.get('scope')=='norway' and r.get('period_type')=='quarter'}
-    return {'registered_group_pdf_quarters':sorted({(s['year'],s['quarter']) for s in group}),
-            'registered_norway_xlsx_quarters':sorted({(w['year'],w['quarter']) for w in norway}),
-            'observed_group_quarters':sorted((y,q) for scope,y,q in periods if scope=='group'),
-            'observed_norway_quarters':sorted((y,q) for scope,y,q in periods if scope=='norway'),
-            'group_pdf_automatic':False,
-            'norway_xlsx_automatic':False,
-            'reason':'Tryg official quarterly PDF group parser and dynamically discovered Norway XLSX have not been end-to-end verified'}
+def assess(sources, observations):
+    group = [s for s in sources if s.get('company') == 'Tryg'
+             and str(s.get('document_url', '')).lower().split('?')[0].endswith('.pdf')
+             and s.get('year') and s.get('quarter')]
+    group_periods = sorted({(s['year'], s['quarter']) for s in group})
+    observed_group = sorted({(r['year'], r['quarter']) for r in observations
+                            if r.get('company') == 'Tryg' and r.get('scope') == 'group'
+                            and r.get('period_type') == 'quarter'})
+    observed_norway = sorted({(r['year'], r['quarter']) for r in observations
+                             if r.get('company') == 'Tryg' and r.get('scope') == 'norway'
+                             and r.get('period_type') == 'quarter'
+                             and r.get('source_type') == 'official_quarterly_report'})
+    return {
+        'registered_group_pdf_quarters': group_periods,
+        'observed_group_quarters': observed_group,
+        'observed_norway_pdf_quarters': observed_norway,
+        'pdf_only': True,
+        'group_pdf_automatic': bool(group_periods and observed_group),
+        'norway_pdf_automatic': bool(observed_norway),
+        'note': 'No spreadsheet candidate registry or workbook used for this diagnostic.'
+    }
 
 def run():
-    sources=json.loads((ROOT/'data/report_sources.json').read_text())['sources']
-    workbooks=json.loads((ROOT/'data/geographic_workbooks.json').read_text())['workbooks']
-    rows=json.loads((ROOT/'data/financial_observations.json').read_text())['observations']
-    print(json.dumps(assess(sources,workbooks,rows),ensure_ascii=False))
-if __name__=='__main__':run()
+    sources = json.loads((ROOT / 'data/report_sources.json').read_text())['sources']
+    rows = json.loads((ROOT / 'data/financial_observations.json').read_text())['observations']
+    print(json.dumps(assess(sources, rows), ensure_ascii=False))
+
+if __name__ == '__main__':
+    run()
