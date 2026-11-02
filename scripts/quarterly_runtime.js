@@ -431,6 +431,17 @@
       panel.innerHTML=profitabilityChart(c);
       cards.insertAdjacentElement('afterend',panel);
     }
+    if(c==='Frende'){
+      const subsidiary=document.createElement('section');
+      subsidiary.className='panel frende-skade-pdf-disclosure';
+      subsidiary.setAttribute('aria-label','Frende Skadeforsikring AS – egen rapport');
+      subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egen rapport</h3>'+
+        '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er ulike rapporteringsenheter. Tallene over gjelder konsernet og skal ikke presenteres som tall for skadeforsikringsselskapet.</p>'+
+        '<p>Frende Skadeforsikring AS har offentliggjort en egen rapport for Q3 2026. '+
+        'Selskapets finansielle nøkkeltall vises ikke som verifiserte verdier før de er importert og kontrollert fra den separate PDF-rapporten.</p>'+
+        '<p><a href="https://newsweb.oslobors.no/message/684953" target="_blank" rel="noopener noreferrer">Åpne offisiell Q3 2026-melding med Frende Skadeforsikring AS PDF ↗</a></p>';
+      fragment.appendChild(subsidiary);
+    }
     return fragment.innerHTML+growthMatrixHtml(c);
   }
   company=c=>companyWithVerifiedKpis(c);
