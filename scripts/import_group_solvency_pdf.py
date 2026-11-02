@@ -37,7 +37,7 @@ def extract(blob,company,year,quarter):
                 # take the first value after the current ratio label, not a
                 # parenthesized comparative or SCR amount.
                 if not re.search(r'Q\s*'+str(quarter)+r'\s*'+str(year),text,re.I):continue
-                patterns=[r'\bsolvency ratio\s*(?:was|of|:)??\s*(\d{2,3}(?:[.,]\d+)?)\s*%']
+                patterns=[r'\b(?:solvency ratio|SCR[ -]ratio)\s*(?:was|of|:)?\s*(\d{2,3}(?:[.,]\d+)?)\s*%']
             for pattern in patterns:
                 for hit in re.finditer(pattern,text,re.I):
                     value=float(hit.group(1).replace(',','.'))
