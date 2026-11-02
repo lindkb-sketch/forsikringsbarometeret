@@ -10,8 +10,10 @@ class FrendeSkadeDisclosure(unittest.TestCase):
         script=(ROOT/'scripts/quarterly_runtime.js').read_text(encoding='utf-8')
         self.assertIn("if(c==='Frende')",script)
         self.assertIn('frende-skade-pdf-disclosure',script)
-        self.assertIn('Frende Skadeforsikring AS – egen rapport',script)
-        self.assertIn('https://newsweb.oslobors.no/message/684953',script)
+        self.assertIn('Frende Skadeforsikring AS – egne kvartalsrapporter',script)
+        self.assertIn('data/frende_skade_reports.json',script)
+        reports=json.loads((ROOT/'data/frende_skade_reports.json').read_text())['reports']
+        self.assertTrue({(2026,1),(2026,2),(2026,3)} <= {(r['year'],r['quarter']) for r in reports})
     def test_holding_rows_not_relabelled_as_skade(self):
         observations=json.loads((ROOT/'data/financial_observations.json').read_text(encoding='utf-8'))['observations']
         holding=[r for r in observations if r.get('company')=='Frende']
