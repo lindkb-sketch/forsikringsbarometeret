@@ -35,4 +35,4 @@ class FrendeSkadeParserTests(unittest.TestCase):
  def test_reject_missing_kpi(self):
   with self.assertRaises(ValueError):parse_table(report_html().replace('Combined Ratio','Unknown'),2026,3,'https://frende.wrep.it/a','abc')
  def test_reject_mismatched_quarter(self):
-  with self.assertRaises(ValueError):parse_table(report(),2027,1,'https://frende.wrep.it/a','abc')
+  with self.assertRaises(ValueError):parse_table(report_html(),2027,1,'https://frende.wrep.it/a','abc')
