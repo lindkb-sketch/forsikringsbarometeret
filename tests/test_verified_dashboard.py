@@ -76,3 +76,11 @@ class VerifiedDashboardTests(unittest.TestCase):
   next_quarter=html.index("column('Neste rapporter · '")
   self.assertLess(current,next_quarter)
   self.assertIn('data-calendar-group=',html)
+
+ def test_next_quarter_has_distinct_bottom_section(self):
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  self.assertIn('mon-calendar-next-quarter',html)
+  self.assertIn('Neste kvartal – publiseringsdatoer',html)
+  self.assertIn('aria-label="Neste kvartals publiseringsdatoer"',html)
+  self.assertLess(html.index("column('Avventer kvartalstall'"),
+                  html.index("column('Neste rapporter · '"))
