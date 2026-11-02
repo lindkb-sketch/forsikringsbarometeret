@@ -4,7 +4,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from quarterly_ytd import add_tryg_ytd
 class TrygYTDTests(unittest.TestCase):
  def sample(self):
-  return [dict(company='Tryg',scope='norway',year=2025,quarter=q,period_type='quarter',metric=m,value=v,unit='DKKm' if m!='combined_ratio' else 'percent',source_sheet='Geographical - Quarterly Outlin',source_cell=f'D{q}') for q,vals in enumerate([(100,20,80),(200,50,75),(300,90,70)],1) for m,v in zip(('insurance_revenue','insurance_service_result','combined_ratio'),vals)]
+  return [dict(company='Tryg',scope='norway',year=2025,quarter=q,period_type='quarter',metric=m,value=v,unit='DKKm' if m!='combined_ratio' else 'percent',source_type='official_quarterly_report',source_page=36,source_url='https://tryg.com/example.pdf') for q,vals in enumerate([(100,20,80),(200,50,75),(300,90,70)],1) for m,v in zip(('insurance_revenue','insurance_service_result','combined_ratio'),vals)]
  def test_additive(self):
   rows=add_tryg_ytd(self.sample())
   get=lambda m:next(r for r in rows if r['period_type']=='ytd' and r['quarter']==3 and r['metric']==m)
