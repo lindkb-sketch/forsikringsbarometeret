@@ -93,7 +93,8 @@ def run():
  data=json.loads(DATA.read_text(encoding='utf-8'))
  existing=data['observations']
  new=[]
- for item in candidates:
+ latest_year=candidates[0]['year']
+ for item in (x for x in candidates if x['year']>=latest_year-1):
   try:
    url=item['url'];blob=fetch(url)
    new.extend(parse(blob,item['year'],item['quarter'],url))
