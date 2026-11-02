@@ -8742,6 +8742,24 @@
       "company": "Protector",
       "year": 2026,
       "quarter": 3,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "solvency_ratio",
+      "value": 231.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "source_page": 3,
+      "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+      "source_document_period": "Q3 2026",
+      "source_definition": "Reported quarter-end Group solvency ratio"
+    },
+    {
+      "company": "Protector",
+      "year": 2026,
+      "quarter": 3,
       "scope": "norway",
       "source_scope": "norway",
       "period_type": "quarter",
@@ -15495,6 +15513,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 829,
+  "observation_count": 830,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }

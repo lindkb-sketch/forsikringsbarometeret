@@ -15529,6 +15529,24 @@
         "operating_costs": -731.559
       },
       "source_sha256": "e4722273ff4efd314cf65e9bb690913f45e6bd46f4741ea7b9e82968387f6bd7"
+    },
+    {
+      "company": "Protector",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "source_scope": "group",
+      "period_type": "quarter",
+      "metric": "solvency_ratio",
+      "value": 231.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "source_page": 3,
+      "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+      "source_document_period": "Q3 2026",
+      "source_definition": "Reported quarter-end Group solvency ratio"
     }
   ],
   "market_share": {
