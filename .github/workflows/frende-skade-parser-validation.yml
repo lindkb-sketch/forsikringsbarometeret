@@ -43,6 +43,28 @@ jobs:
           for href,label in p.links:
               if ('Skadeforsikring' in label or '.pdf' in href.lower() or '2026' in label):
                   print('ARCHIVE_LINK',repr(label[:120]),repr(href[:240]),flush=True)
+          import urllib.request, re
+          from html.parser import HTMLParser
+          class A(HTMLParser):
+              def __init__(self):super().__init__();self.href=None;self.caption='';self.links=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='a':self.href=dict(attrs).get('href');self.caption=''
+              def handle_data(self,d):
+                  if self.href is not None:self.caption+=d
+              def handle_endtag(self,tag):
+                  if tag=='a' and self.href is not None:self.links.append((self.caption.strip(),self.href));self.href=None
+          for url in ('https://newsweb.oslobors.no/message/684953',
+                      'https://newsweb.oslobors.no/message/671905',
+                      'https://live.euronext.com/en/listview/company-press-release/600963'):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=25) as res:
+                      html=res.read(3_000_000).decode('utf-8','replace')
+                  p=A();p.feed(html)
+                  print('LOOKUP',url,'links',len(p.links),flush=True)
+                  for label,href in p.links:
+                      if re.search('pdf|frende|quarter|kvartal',label+' '+href,re.I):
+                          print('LINK',repr(label[:90]),repr(href[:350]),flush=True)
+              except Exception as e:print('LOOKUP_ERROR',url,str(e)[:200],flush=True)
           result=build(json.loads(REPORTS.read_text()))
           print('VERIFIED_ROWS',len(result['observations']),'ISSUES',result['diagnostics'][:5],flush=True)
           PY
