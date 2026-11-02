@@ -155,7 +155,7 @@ async function main(){
     const brief=editorial.periods?.['Q'+quarter+' '+year]?.by_company?.[issuer];
     const notes=(brief?.qualitative_notes||[]).filter(x=>x.text&&/^https:\/\//.test(x.source_url||'')&&x.source_page);
     if(brief){
-      const expected=[brief.reader_summary,notes[0]?.text].filter(Boolean);
+      const expected=brief.editorial_review?.verified ? [brief.editorial_review.text] : [brief.reader_summary,notes[0]?.text].filter(Boolean);
       check(issuer+' quarterly narrative is visible',
         expected.length>0 && expected.every(x=>displayed(rendered).includes(displayed(x))),
         rendered.slice(0,450));
