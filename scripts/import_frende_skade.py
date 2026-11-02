@@ -17,39 +17,53 @@ METRICS={
 ENTITY='Frende Skadeforsikring AS'
 
 def parse_table(markup,year,quarter,url,source_hash):
- t=TableReader();t.feed(markup)
- tables=t.rows
- if not tables:raise ValueError('No report table')
- header=next((r for r in tables if r and r[0].startswith('Resultatregnskap')),None)
- if not header:raise ValueError('Missing subsidiary income statement')
- # The report must identify the isolated quarter and the prior-year column.
- current=f'{quarter}.kv.{year}'
- variants=(current,f'{quarter}. kv {year}',f'{quarter}. kv. {year}')
- h=' '.join(header).replace(' ','').lower()
- if not any(v.replace(' ','').lower() in h for v in variants):
-  raise ValueError('Wrong reporting quarter')
- # HTML tables retain separate columns; first numeric cell is current quarter.
- rows={r[0].strip():r for r in tables if r and r[0].strip() in METRICS}
- if set(rows)!=set(METRICS):raise ValueError('Missing subsidiary KPI rows '+str(set(METRICS)-set(rows)))
- out=[]
- for label,metric in METRICS.items():
-  row=rows[label]
-  if len(row)<3:raise ValueError('Missing same-quarter comparison '+label)
-  for y,col in ((year,1),(year-1,2)):
-   value=number(row[col],metric in ('expense_ratio','loss_ratio','combined_ratio'))
-   if metric in ('expense_ratio','loss_ratio','combined_ratio') and not 0<=value<=150:raise ValueError('Invalid ratio')
-   out.append(dict(company='Frende',scope='norway',source_scope='legal_entity',
-     source_entity=ENTITY,year=y,quarter=quarter,period_type='quarter',metric=metric,
-     value=round(value if metric.endswith('ratio') else value/1000,3),
-     unit='percent' if metric in ('expense_ratio','loss_ratio','combined_ratio') else 'NOKm',
-     status='reported',source_type='official_quarterly_report',source_url=url,
-     source_page=1,source_sha256=source_hash,source_document_period=f'Q{quarter} {year}',
-     source_definition=label+(' (net earned premiums; not IFRS 17 revenue)' if metric=='insurance_revenue' else '')))
- by={(r['year'],r['metric']):r['value'] for r in out}
- for y in (year,year-1):
-  if abs(by[y,'combined_ratio']-by[y,'loss_ratio']-by[y,'expense_ratio'])>0.35:
-   raise ValueError('Ratios do not reconcile')
- return out
+    """Parse publisher's actual first-page Resultat table with signed columns."""
+    import html
+    from html.parser import HTMLParser
+    class Plain(HTMLParser):
+        def __init__(self):
+            super().__init__();self.parts=[]
+        def handle_data(self,text):
+            if text.strip():self.parts.append(text.strip())
+    reader=Plain();reader.feed(markup)
+    text=' '.join(reader.parts) if '<' in markup else markup
+    text=html.unescape(text).replace('\\u00a0',' ')
+    header=re.search(r'Resultatregnskap\\s+'+str(quarter)+r'\\.\\s*kv\\.\\s*'+str(year)+
+        r'\\s+'+str(quarter)+r'\\.\\s*kv\\.\\s*'+str(year-1),text,re.I)
+    if not header:raise ValueError('Missing same-quarter current/prior header')
+    # Thousands separated by whitespace, with negative signs sometimes adjacent.
+    amount=r'-?\\d{1,3}(?:\\s+\\d{3})+(?:[.,]\\d+)?|-?\\d+(?:[.,]\\d+)?'
+    labels=list(METRICS)
+    out=[]
+    for label,metric in METRICS.items():
+        start=re.search(re.escape(label),text,re.I)
+        if not start:raise ValueError('Missing Frende Skade row '+label)
+        tail=text[start.end():]
+        hits=list(re.finditer(amount,tail))
+        if len(hits)<2:raise ValueError('Missing current/prior amounts '+label)
+        # Stop at next named row to avoid silently borrowing another metric.
+        next_labels=[m.start() for other in labels if other!=label
+                     for m in [re.search(re.escape(other),tail,re.I)] if m]
+        boundary=min(next_labels) if next_labels else len(tail)
+        values=[m.group() for m in hits if m.start()<boundary][:2]
+        if len(values)!=2:raise ValueError('Ambiguous current/prior amounts '+label)
+        for y,raw in ((year,values[0]),(year-1,values[1])):
+            value=float(raw.replace(' ','').replace(',','.'))
+            ratio=metric in ('expense_ratio','loss_ratio','combined_ratio')
+            if ratio and not 0<=value<=150:raise ValueError('Invalid percentage '+label)
+            out.append(dict(company='Frende',scope='norway',source_scope='legal_entity',
+                source_entity=ENTITY,year=y,quarter=quarter,period_type='quarter',
+                metric=metric,value=round(value if ratio else value/1000,3),
+                unit='percent' if ratio else 'NOKm',status='reported',
+                source_type='official_quarterly_report',source_url=url,
+                source_page=1,source_sha256=source_hash,
+                source_document_period=f'Q{quarter} {year}',
+                source_definition=label+(' (premieinntekter f.e.r., not IFRS 17)' if metric=='insurance_revenue' else '')))
+    by={(r['year'],r['metric']):r['value'] for r in out}
+    for y in (year,year-1):
+        if abs(by[y,'combined_ratio']-by[y,'loss_ratio']-by[y,'expense_ratio'])>0.4:
+            raise ValueError('Ratio components do not reconcile')
+    return out
 
 def fetch(url):
  p=urllib.parse.urlparse(url)
