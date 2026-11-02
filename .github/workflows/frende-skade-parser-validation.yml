@@ -37,3 +37,17 @@ jobs:
                           tables=page.extract_tables()
                           for t in tables[:2]:print('PDF_TABLE',q,n+1,repr(t[:12]),flush=True)
           PY
+      - name: Verify Q1 Q2 Q3 2026 complete original-PDF-only financial imports
+        run: |
+          python -m unittest discover -s tests -p 'test_frende_skade_financial_import.py' -v
+          python scripts/import_frende_skade.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('data/frende_skade_financials.json').read_text())
+          for q in (1,2,3):
+              rows=[r for r in d['observations'] if r['year']==2026 and r['quarter']==q]
+              print('SUBSIDIARY_PDF_FINANCIALS',q,[(r['period_type'],r['metric'],r['value']) for r in rows],flush=True)
+              assert len(rows)==10
+              assert all(r['source_url'].lower().split('?')[0].endswith('.pdf') for r in rows)
+          PY
