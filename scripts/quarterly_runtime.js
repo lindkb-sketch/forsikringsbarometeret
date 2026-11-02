@@ -440,9 +440,16 @@
       const reports=Array.isArray(frendeSkadeReports?.reports)
         ?frendeSkadeReports.reports.filter(r=>Number.isInteger(r.year)&&r.quarter>=1&&r.quarter<=4&&
             typeof r.source_url==='string'&&/^https:\/\//.test(r.source_url)).sort((a,b)=>b.year-a.year||b.quarter-a.quarter):[];
-      const links=reports.map(r=>'<li><a href="'+escapeHtml(r.source_url)+
-        '" target="_blank" rel="noopener noreferrer">Q'+r.quarter+' '+r.year+
-        ' – offisiell rapport / PDF-vedlegg ↗</a></li>').join('');
+      const link=r=>'<a href="'+escapeHtml(r.source_url)+
+        '" target="_blank" rel="noopener noreferrer">Q'+r.quarter+' '+r.year+' <span aria-hidden="true">↗</span></a>';
+      const currentYear=selection?.year||new Date().getFullYear();
+      const recent=reports.filter(r=>r.year===currentYear);
+      const archived=reports.filter(r=>r.year!==currentYear);
+      const recentLinks=recent.length?'<nav class="frende-skade-report-links" aria-label="Kvartalsrapporter for '+currentYear+'">'+
+        recent.map(link).join('')+'</nav>':'<p>Ingen kvartalsrapport registrert for '+currentYear+'.</p>';
+      const archiveLinks=archived.length?'<details class="frende-skade-history"><summary>Eldre kvartalsrapporter ('+
+        archived.length+')</summary><nav class="frende-skade-report-links" aria-label="Eldre rapporter">'+
+        archived.map(link).join('')+'</nav></details>':'';
       const financialRows=Array.isArray(frendeSkadeFinancials?.observations)
         ?frendeSkadeFinancials.observations.filter(r=>r.year===selection.year&&r.quarter===selection.quarter&&
           r.period_type===(ytdMode()?'ytd':'quarter')&&r.source_entity==='Frende Skadeforsikring AS'):[];
@@ -459,7 +466,7 @@
       subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egne kvartalsrapporter</h3>'+
         '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er forskjellige rapporteringsenheter. '+
         'Konserntallene ovenfor gjelder ikke automatisk skadeforsikringsselskapet.</p>'+
-        detail+(links?'<ul>'+links+'</ul>':'<p>Ingen separat rapportlenke er bekreftet.</p>')+
+        detail+recentLinks+archiveLinks+
         '<p>Skadeselskapets tall har egen juridisk enhet og egen rapportkilde, uavhengig av Frende Holding.</p>';
       fragment.appendChild(subsidiary);
     }
