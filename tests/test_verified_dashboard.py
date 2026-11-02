@@ -68,3 +68,11 @@ class VerifiedDashboardTests(unittest.TestCase):
     self.assertTrue(item['summary'])
     self.assertTrue(item['source_url'].startswith('https://'))
     self.assertTrue(item.get('comment'))
+
+ def test_next_quarter_calendar_is_below_current_quarter(self):
+  html=(ROOT/'index.html').read_text(encoding='utf-8')
+  self.assertIn('.mon-calendar .mon-cal-split{display:grid;grid-template-columns:minmax(0,1fr)',html)
+  current=html.index("column('Avventer kvartalstall'")
+  next_quarter=html.index("column('Neste rapporter · '")
+  self.assertLess(current,next_quarter)
+  self.assertIn('data-calendar-group=',html)
