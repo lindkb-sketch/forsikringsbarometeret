@@ -1,0 +1,24 @@
+{
+  "entity": "Frende Skadeforsikring AS",
+  "source_policy": "official PDF reports only",
+  "reports": [
+    {
+      "year": 2026,
+      "quarter": 3,
+      "source_url": "https://newsweb.oslobors.no/message/684953",
+      "verification": "report_link_only_not_financial_values"
+    },
+    {
+      "year": 2026,
+      "quarter": 2,
+      "source_url": "https://www.frende.no/om-oss/finansiell-informasjon/frende-skadeforsikring/",
+      "verification": "report_link_only_not_financial_values"
+    },
+    {
+      "year": 2026,
+      "quarter": 1,
+      "source_url": "https://newsweb.oslobors.no/message/671905",
+      "verification": "report_link_only_not_financial_values"
+    }
+  ]
+}
