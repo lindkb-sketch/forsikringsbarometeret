@@ -173,6 +173,18 @@ def run():
         if set(REQUIRED)-metrics:
             raise ValueError(f'Frende Skade Q{q} 2026 PDF import incomplete: {sorted(set(REQUIRED)-metrics)}; '
                              +str(result['diagnostics'][:5]))
+    # Any newly linked official PDF must be fully parsed before publication.
+    # Do not silently retain an old quarter when its original report changes.
+    for item in index['reports']:
+        if item['year']<2026 or not item.get('pdf_url'):continue
+        key=(item['year'],item['quarter'])
+        metrics={r['metric'] for r in result['observations'] if
+                 (r['year'],r['quarter'],r['period_type'])==(key[0],key[1],'quarter')}
+        errors=[e['reason'] for e in result['diagnostics'] if
+                (e['year'],e['quarter'])==key]
+        if set(REQUIRED)-metrics or errors:
+            raise ValueError('Frende Skade original PDF import blocked for '
+                             +str(key)+': '+str(errors or sorted(set(REQUIRED)-metrics)))
     fd,tmp=tempfile.mkstemp(prefix='.frende-skade-',suffix='.json',dir=OUTPUT.parent)
     try:
         with os.fdopen(fd,'w',encoding='utf-8') as out:
