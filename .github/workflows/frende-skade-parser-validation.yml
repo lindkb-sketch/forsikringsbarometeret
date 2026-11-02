@@ -30,10 +30,10 @@ jobs:
               with pdfplumber.open(io.BytesIO(blob)) as pdf:
                   print('PDF_VERIFIED',q,len(blob),len(pdf.pages),flush=True)
                   for n,page in enumerate(pdf.pages):
-                      txt=page.extract_text(layout=False) or ''
+                      txt=page.extract_text(layout=True) or ''
                       if 'Premieinntekter for egen regning' in txt and ('Resultatregnskap' in txt or 'Nøkkelinformasjon' in txt):
                           print('PDF_TARGET_PAGE',q,n+1,flush=True)
-                          print('PDF_CONTENT',q,n+1,repr(txt[:5000]),flush=True)
+                          print('PDF_CONTENT',q,n+1,repr(txt[:6500]),flush=True)
                           tables=page.extract_tables()
                           for t in tables[:2]:print('PDF_TABLE',q,n+1,repr(t[:12]),flush=True)
           PY
