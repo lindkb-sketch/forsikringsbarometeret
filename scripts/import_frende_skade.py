@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Independent, fail-closed Frende Skadeforsikring AS quarterly financial importer.
+"""Independent PDF-only Frende Skadeforsikring AS quarterly financial importer.
 
-Only issuer-hosted report sections containing an explicit subsidiary identity,
-period headers and recognizable tables qualify. Missing evidence never creates
-estimated values or reuses Frende Holding group observations.
+Never use Frende Holding figures or publisher HTML for numerical observations.
+Every published observation is attributed to its exact downloaded official PDF,
+SHA256 digest, physical PDF page, legal entity and reporting period.
 """
 import hashlib
+import io
 import json
 import os
 import re
@@ -13,149 +14,147 @@ import tempfile
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from import_frende_holding import TableReader, number
+import pdfplumber
 
 ROOT=Path(__file__).resolve().parents[1]
 REPORTS=ROOT/'data/frende_skade_reports.json'
 OUTPUT=ROOT/'data/frende_skade_financials.json'
 ENTITY='Frende Skadeforsikring AS'
-FIELDS={'Kostnads %':'expense_ratio','Skadeprosent f.e.r':'loss_ratio',
-        'Combined ratio':'combined_ratio'}
-REQUIRED={'combined_ratio','loss_ratio','expense_ratio','insurance_revenue'}
-HOST='frende.wrep.it'
+REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
+PDF_HOSTS={'live.euronext.com','www.frende.no','frende.no'}
+LABELS={
+ 'insurance_revenue':'Premieinntekter for egen regning',
+ 'insurance_service_result':'Resultat av teknisk regnskap i skadeforsikring',
+ 'loss_ratio':'Skade % E/R',
+ 'expense_ratio':'Kostnadsandel %',
+ 'combined_ratio':'Combined Ratio',
+}
+NUM=re.compile(r'(?<!\S)-?\d+(?:[ \u00a0]\d{3})*(?:,\d+)?\s*%?')
 
-def read_section(base, section):
-    parsed=urllib.parse.urlparse(base)
-    if parsed.scheme!='https' or parsed.hostname!=HOST or not re.fullmatch(
-            r'/q[1-4]-20\d{2}-frende-skadeforsikring-as', parsed.path):
-        raise ValueError('Not a trusted Frende Skade publisher report')
-    req=urllib.request.Request(base+'/sec/'+str(section),
-                               headers={'User-Agent':'Mozilla/5.0'})
-    with urllib.request.urlopen(req,timeout=30) as resp:
-        if urllib.parse.urlparse(resp.geturl()).hostname!=HOST:
-            raise ValueError('Untrusted report redirect')
-        blob=resp.read(1_000_001)
-    if len(blob)>1_000_000:raise ValueError('Oversized publisher section')
-    return blob.decode('utf-8')
+def number(value):
+    return float(value.strip().rstrip('%').replace(' ','').replace('\u00a0','').replace(',','.'))
 
-def parse_kpis(html, url, year, quarter):
-    if not re.search(r'Nøkkeltall',html,re.I):
-        raise ValueError('Missing KPI heading')
-    reader=TableReader();reader.feed(html)
-    rows=[r for r in reader.rows if r]
-    header=next((r for r in rows if len(r)>2 and r[0] in ('Tall i 1000','Nøkkeltall')
-                 and r[1]==f'Q{quarter} {year}'),None)
-    if header is None:raise ValueError('KPI heading does not match report quarter')
-    mapping={r[0]:r for r in rows if r[0] in FIELDS}
-    if not all(label in mapping for label in ('Skadeprosent f.e.r','Combined ratio')):
-        raise ValueError('Missing official claims/combined ratio')
-    digest=hashlib.sha256(html.encode()).hexdigest()
-    result=[]
-    cols=[('quarter',1)]
-    if quarter==1:cols.append(('ytd',1))
-    elif f'Pr Q{quarter} {year}' in header:cols.append(('ytd',header.index(f'Pr Q{quarter} {year}')))
-    elif quarter==4 and str(year) in header:cols.append(('ytd',header.index(str(year))))
-    for period,col in cols:
-        vals={metric:number(mapping[label][col],True) for label,metric in FIELDS.items() if label in mapping}
-        calculated='expense_ratio' not in vals
-        if calculated: vals['expense_ratio']=round(vals['combined_ratio']-vals['loss_ratio'],3)
-        if abs(vals['combined_ratio']-vals['loss_ratio']-vals['expense_ratio'])>0.25:
-            raise ValueError('Subsidiary combined ratio does not reconcile')
-        for label,metric in FIELDS.items():
-            result.append(dict(year=year,quarter=quarter,period_type=period,
-                metric=metric,value=vals[metric],unit='percent',
-                status='calculated' if calculated and metric=='expense_ratio' else 'reported',
-                source_definition=label,
-                **({'calculation':'combined_ratio - loss_ratio'} if calculated and metric=='expense_ratio' else {}),
-                source_url=url,source_sha256=digest,source_section='Nøkkeltall',
-                source_entity=ENTITY,source_type='official_quarterly_report'))
-    return result
+def download_pdf(url):
+    parsed=urllib.parse.urlparse(url)
+    if parsed.scheme!='https' or parsed.hostname not in PDF_HOSTS or not parsed.path.lower().endswith('.pdf'):
+        raise ValueError('Official issuer/exchange PDF URL required')
+    req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+    with urllib.request.urlopen(req,timeout=45) as response:
+        actual=urllib.parse.urlparse(response.geturl())
+        if actual.scheme!='https' or actual.hostname not in PDF_HOSTS:
+            raise ValueError('PDF redirect to untrusted host')
+        blob=response.read(30_000_001)
+    if len(blob)>30_000_000 or not blob.startswith(b'%PDF-'):
+        raise ValueError('Missing or invalid official PDF bytes')
+    return blob
 
-def parse_income(html,url,year,quarter):
-    reader=TableReader();reader.feed(html)
-    rows=[r for r in reader.rows if r]
-    head=next((r for r in rows if len(r)>1 and r[0]=='Resultatregnskap'
-               and r[1]==f'{quarter}. kv {year}'),None)
-    if head is None:raise ValueError('Subsidiary income table / period not verified')
-    data={r[0]:r for r in rows}
-    # Unlike Holding, do not call total operating revenue IFRS 17 insurance revenue.
-    label=next((x for x in ('Sum driftsinntekter','Premieinntekter for egen regning')
-                if x in data),None)
-    if label is None:raise ValueError('No verified subsidiary revenue row')
-    cols=[('quarter',1)]
-    if quarter==1:cols.append(('ytd',1))
-    else:
-        date={2:'30.06.',3:'30.09.',4:'31.12.'}[quarter]+str(year)[2:]
-        indexes=[i for i,h in enumerate(head) if h in (date,'01.01-'+date)]
-        if len(indexes)>1:raise ValueError('Ambiguous YTD revenue column')
-        if indexes:cols.append(('ytd',indexes[0]))
-    digest=hashlib.sha256(html.encode()).hexdigest()
-    out=[]
-    for period,col in cols:
-        value=number(data[label][col])/1000
-        if value<=0:raise ValueError('Nonpositive reported revenue')
-        out.append(dict(year=year,quarter=quarter,period_type=period,metric='insurance_revenue',
-                        value=round(value,3),unit='NOKm',status='reported',
-                        source_definition=label+' (Frende Skadeforsikring AS, NOKm; not group)',
-                        source_url=url,source_sha256=digest,source_section='Resultatregnskap',
-                        source_entity=ENTITY,source_type='official_quarterly_report'))
-    return out
-
-def verify_period(base,year,quarter,reader=read_section):
-    m=re.fullmatch(r'https://frende\.wrep\.it/q([1-4])-(20\d{2})-frende-skadeforsikring-as',base)
-    if not m or (int(m[2]),int(m[1]))!=(year,quarter):
-        raise ValueError('Wrong subsidiary or quarter URL')
-    kpis=reader(base,6)
-    income=reader(base,7)
-    # Require explicit legal entity in at least one report section.
-    if 'Frende Skadeforsikring' not in kpis+' '+income:
-        raise ValueError('Subsidiary legal entity absent from report')
-    rows=parse_kpis(kpis,base+'/sec/6',year,quarter)
-    rows+=parse_income(income,base+'/sec/7',year,quarter)
-    metrics={r['metric'] for r in rows if r['period_type']=='quarter'}
-    if not REQUIRED<=metrics:raise ValueError('Incomplete subsidiary KPI quarter')
+def parse_page(text,year,quarter,pdf_url,pdf_sha,page):
+    if ('Teknisk regnskap for skadeforsikring' not in text or
+        'Premieinntekter for egen regning' not in text or
+        'Nøkkelinformasjon' not in text):
+        raise ValueError('No standalone non-life income/KPI table on PDF page')
+    lines=text.splitlines()
+    period=f'{quarter}.kv.{year}'
+    if not any(re.search(rf'\b{quarter}\.\s*kv\.?\s*{year}\b',line,re.I) for line in lines[:5]):
+        raise ValueError('PDF income table year/quarter mismatch')
+    data={}
+    for metric,label in LABELS.items():
+        candidates=[line for line in lines if line.startswith(label+' ') or line==label]
+        if len(candidates)!=1:raise ValueError('Missing/ambiguous PDF row '+label)
+        tail=candidates[0][len(label):].strip()
+        values=[number(v) for v in NUM.findall(tail)]
+        expected=3 if quarter==1 else 5
+        if len(values)!=expected:
+            raise ValueError(f'PDF {label}: expected {expected} columns, got {len(values)}')
+        data[metric]=values
+    claims=[line for line in lines if line.startswith('Erstatningskostnader for egen regning ')]
+    expenses=[line for line in lines if line.startswith('Forskringsrelaterte driftskostnader ')]
+    if len(claims)!=1 or len(expenses)!=1:raise ValueError('Missing PDF technical cost lines')
+    claims_vals=[number(v) for v in NUM.findall(claims[0].split('Erstatningskostnader for egen regning ',1)[1])]
+    expenses_vals=[number(v) for v in NUM.findall(expenses[0].split('Forskringsrelaterte driftskostnader ',1)[1])]
+    if len(claims_vals)!=len(data['insurance_revenue']) or len(expenses_vals)!=len(claims_vals):
+        raise ValueError('PDF costs and revenue columns differ')
+    cols=[('quarter',0)]+([('ytd',0)] if quarter==1 else [('ytd',2)])
+    rows=[]
+    for period_type,idx in cols:
+        revenue=data['insurance_revenue'][idx]
+        technical=data['insurance_service_result'][idx]
+        if revenue<=0 or abs(revenue-claims_vals[idx]-expenses_vals[idx]-technical)>3:
+            raise ValueError('PDF technical result does not reconcile')
+        if abs(data['loss_ratio'][idx]+data['expense_ratio'][idx]-data['combined_ratio'][idx])>0.16:
+            raise ValueError('PDF combined ratio does not reconcile')
+        for metric in REQUIRED:
+            value=data[metric][idx]
+            unit='percent' if metric.endswith('ratio') else 'NOKm'
+            if unit=='NOKm':value=round(value/1000,3)
+            rows.append(dict(company='Frende',source_entity=ENTITY,scope='subsidiary',
+                year=year,quarter=quarter,period_type=period_type,metric=metric,
+                value=value,unit=unit,status='reported',source_type='official_quarterly_report',
+                source_url=pdf_url,source_page=page,source_sha256=pdf_sha,
+                source_section='Frende Skadeforsikring AS – Resultat / Nøkkelinformasjon',
+                source_document_period=f'Q{quarter} {year}',
+                source_definition=LABELS[metric]))
     return rows
 
-def build(report_index, previous=None, reader=read_section):
-    observations={}
-    for row in (previous or {}).get('observations',[]):
-        observations[(row['year'],row['quarter'],row['period_type'],row['metric'])]=row
-    problems=[]
-    for record in report_index['reports']:
-        year,quarter=record['year'],record['quarter']
+def verify_pdf(blob,url,year,quarter):
+    digest=hashlib.sha256(blob).hexdigest()
+    with pdfplumber.open(io.BytesIO(blob)) as pdf:
+        texts=[p.extract_text(layout=False) or '' for p in pdf.pages]
+        full='\n'.join(texts)
+        if ENTITY not in full:
+            raise ValueError('Frende Skadeforsikring legal entity not found in official PDF')
+        matches=[]
+        for page,text in enumerate(texts,1):
+            if ('Teknisk regnskap for skadeforsikring' in text and
+                'Premieinntekter for egen regning' in text and 'Nøkkelinformasjon' in text):
+                matches.append(parse_page(text,year,quarter,url,digest,page))
+    if len(matches)!=1:
+        raise ValueError('Ambiguous or missing standalone Frende Skade PDF financial page')
+    return matches[0]
+
+def build(report_index,previous=None,downloader=download_pdf):
+    observations={(r['year'],r['quarter'],r['period_type'],r['metric']):r
+                  for r in (previous or {}).get('observations',[])}
+    failures=[]
+    for item in report_index.get('reports',[]):
+        year,quarter=item['year'],item['quarter']
         if year<2025:continue
-        url=record['source_url']
-        # Publisher HTML is useful for layout diagnostics but is NOT a PDF
-        # source. Refuse numerical publication until the original issuer PDF
-        # is separately downloaded, parsed and its values corroborated.
-        if not str(record.get('pdf_url','')).lower().split('?')[0].endswith('.pdf'):
-            problems.append({'year':year,'quarter':quarter,'reason':'Original issuer PDF not verified; Wrepit HTML cannot authorize figures'})
+        pdf=item.get('pdf_url')
+        if not pdf:
+            failures.append({'year':year,'quarter':quarter,'reason':'No original PDF attachment verified'})
             continue
-        if not url.startswith('https://frende.wrep.it/'):continue
         try:
-            rows=verify_period(url,year,quarter,reader)
+            rows=verify_pdf(downloader(pdf),pdf,year,quarter)
             for row in rows:
-                key=(row['year'],row['quarter'],row['period_type'],row['metric'])
-                if key in observations and observations[key]['value']!=row['value']:
-                    raise ValueError('Verified subsidiary financial value changed: '+str(key))
+                key=row['year'],row['quarter'],row['period_type'],row['metric']
+                if key in observations and abs(observations[key]['value']-row['value'])>0.000001:
+                    raise ValueError('Previously verified subsidiary value conflicts: '+str(key))
             for row in rows:
                 observations[(row['year'],row['quarter'],row['period_type'],row['metric'])]=row
         except (OSError,ValueError,IndexError,KeyError) as exc:
-            problems.append({'year':year,'quarter':quarter,'reason':str(exc)[:180]})
-    return {'entity':ENTITY,'source_policy':'issuer report only, never Excel',
-            'observations':sorted(observations.values(),key=lambda r:(r['year'],r['quarter'],r['period_type'],r['metric'])),
-            'diagnostics':problems}
+            failures.append({'year':year,'quarter':quarter,'reason':str(exc)[:200]})
+    result={'entity':ENTITY,'source_policy':'official PDFs only; independent non-life subsidiary',
+        'observations':sorted(observations.values(),key=lambda r:(r['year'],r['quarter'],r['period_type'],r['metric'])),
+        'diagnostics':failures}
+    return result
 
 def run():
-    reports=json.loads(REPORTS.read_text(encoding='utf-8'))
-    previous=json.loads(OUTPUT.read_text(encoding='utf-8')) if OUTPUT.exists() else None
-    result=build(reports,previous)
+    index=json.loads(REPORTS.read_text(encoding='utf-8'))
+    old=json.loads(OUTPUT.read_text(encoding='utf-8')) if OUTPUT.exists() else None
+    result=build(index,old)
+    # Once 2026 Q1–Q3 are available, never silently lose a verified period.
+    for q in (1,2,3):
+        metrics={r['metric'] for r in result['observations']
+                 if (r['year'],r['quarter'],r['period_type'])==(2026,q,'quarter')}
+        if set(REQUIRED)-metrics:
+            raise ValueError(f'Frende Skade Q{q} 2026 PDF import incomplete: {sorted(set(REQUIRED)-metrics)}; '
+                             +str(result['diagnostics'][:5]))
     fd,tmp=tempfile.mkstemp(prefix='.frende-skade-',suffix='.json',dir=OUTPUT.parent)
     try:
-        with os.fdopen(fd,'w',encoding='utf-8') as output:
-            json.dump(result,output,ensure_ascii=False,indent=2);output.write('\n')
+        with os.fdopen(fd,'w',encoding='utf-8') as out:
+            json.dump(result,out,ensure_ascii=False,indent=2);out.write('\n')
         os.replace(tmp,OUTPUT)
     finally:
         if os.path.exists(tmp):os.unlink(tmp)
-    print('FRENDE_SKADE_VERIFIED',len(result['observations']),'issues',len(result['diagnostics']))
+    print('FRENDE_SKADE_PDF_VERIFIED',len(result['observations']),'diagnostics',len(result['diagnostics']))
 if __name__=='__main__':run()
