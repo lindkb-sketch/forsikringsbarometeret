@@ -13,6 +13,16 @@ def report(year=2026,q=3):
  ['Combined Ratio','85,0 %','90,0 %']]
  return '<table>'+''.join('<tr>'+''.join('<td>'+x+'</td>' for x in row)+'</tr>' for row in rows)+'</table>'
 class FrendeSkadeParserTests(unittest.TestCase):
+ def test_real_report_layout_q1_2026(self):
+  report='Resultatregnskap 1.kv.2026 1.kv.2025 31.12.2025 I tusen kroner Teknisk regnskap for skadeforsikring Premieinntekter for egen regning 893 535 773 391 3 275 575 Erstatningskostnader for egen regning 685 018 649 203 2 231 872 Forskringsrelaterte driftskostnader 150 421 140 599 598 135 Resultat av teknisk regnskap i skadeforsikring 58 095-16 410 445 567 Nøkkelinformasjon Kostnadsandel %16,8 %18,2 %18,3 % Skade % E/R 76,7 %83,9 %68,1 % Combined Ratio 93,5 %102,1 %86,4 %'
+  rows=parse_table(report,2026,1,'https://frende.wrep.it/q1-2026-frende-skadeforsikring-as','abc')
+  by={(r['year'],r['metric']):r['value'] for r in rows}
+  self.assertEqual(by[2026,'insurance_revenue'],893.535)
+  self.assertEqual(by[2025,'insurance_service_result'],-16.41)
+  self.assertEqual(by[2026,'expense_ratio'],16.8)
+  self.assertEqual(by[2026,'loss_ratio'],76.7)
+  self.assertEqual(by[2026,'combined_ratio'],93.5)
+
  def test_current_and_prior_same_quarter_separate_entity(self):
   rows=parse_table(report(),2026,3,'https://frende.wrep.it/q3-2026-frende-skadeforsikring-as','abc')
   self.assertEqual(len(rows),10)
