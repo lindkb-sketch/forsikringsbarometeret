@@ -143,6 +143,27 @@ def concise_brief(items, limit=220, max_paragraphs=4):
   selected=[min(items,key=lambda item:len(item['text'].split()))]
  return selected
 
+def reader_summary(company, label, rev, prior_rev, cr, previous_cr, last_cr):
+ """Short source-derived reading; never attribute causes without issuer evidence."""
+ sentences=[]
+ if cr:
+  compare=previous_cr or last_cr
+  if compare and cr.get('unit')==compare.get('unit'):
+   change=cr['value']-compare['value']
+   if change < -0.25:
+    sentences.append('Forsikringslønnsomheten bedret seg sammenlignet med '+('samme kvartal i fjor' if previous_cr else 'forrige kvartal')+'.')
+   elif change > 0.25:
+    sentences.append('Forsikringslønnsomheten svekket seg sammenlignet med '+('samme kvartal i fjor' if previous_cr else 'forrige kvartal')+'.')
+   else:sentences.append('Forsikringslønnsomheten var om lag uendret.')
+  else:sentences.append('Selskapet rapporterte positivt forsikringsresultat i kvartalet.' if cr['value']<100 else 'Selskapet rapporterte svak forsikringslønnsomhet i kvartalet.')
+ if rev and same_basis(rev,prior_rev) and prior_rev['value']>0:
+  growth=(rev['value']/prior_rev['value']-1)*100
+  if growth>1:sentences.append('Forsikringsinntektene økte fra samme kvartal i fjor.' if revenue_label(rev)=='forsikringsinntekter' else 'Rapporterte segmentpremier økte fra samme kvartal i fjor.')
+  elif growth< -1:sentences.append('Forsikringsinntektene falt fra samme kvartal i fjor.' if revenue_label(rev)=='forsikringsinntekter' else 'Rapporterte segmentpremier falt fra samme kvartal i fjor.')
+  else:sentences.append('Inntektsnivået var om lag uendret fra året før.')
+ elif rev:sentences.append('Selskapet har rapportert inntekter for kvartalet, men sammenlignbar vekst er ikke verifisert.')
+ return ' '.join(sentences)
+
 def build(feed,news):
  rows=[r for r in feed.get('observations',[]) if
        r.get('status','reported') in ('reported','calculated') and r.get('scope')=='group'
@@ -215,6 +236,7 @@ def build(feed,news):
    by_company[company]={
     'summary':fact['text'],'comment':comment or fact['text'],
     'ytd':ytd_note,'source_url':source,'period':label,
+    'reader_summary':reader_summary(company,label,rev,previous_rev,cr,previous_cr,last_cr),
     'has_comparative':bool(previous_cr or (rev and same_basis(rev,previous_rev)))}
   documented=documented_report_insights(label,by_company) or []
   # Preserve report-grounded qualitative notes per issuer independently
