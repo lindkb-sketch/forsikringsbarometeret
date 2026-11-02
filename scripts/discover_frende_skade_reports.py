@@ -112,7 +112,7 @@ def build(html,previous=None,pdf_links=None):
     for (y,q),url in sorted(candidates.items(),reverse=True):
         item={'year':y,'quarter':q,'source_url':url,
               'verification':'report_link_only_not_financial_values'}
-        pdf=(pdf_links or {}).get((y,q)) or prior.get((y,q),{}).get('pdf_url')
+        pdf=(pdf_links or {}).get((y,q)) or (url if url.lower().split('?')[0].endswith('.pdf') else None) or prior.get((y,q),{}).get('pdf_url')
         if pdf:item['pdf_url']=pdf
         output.append(item)
     return {'entity':'Frende Skadeforsikring AS',
