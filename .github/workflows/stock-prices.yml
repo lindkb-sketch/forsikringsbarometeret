@@ -1,0 +1,85 @@
+name: Oppdater forsinkede aksjekurser (egen pipeline)
+on:
+  workflow_dispatch:
+  schedule:
+    # UTC; the exchange-local Python guard handles winter/summer time.
+    - cron: '6,21,36,51 6-18 * * 1-5'
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  # Serialize with the full financial deployment; avoid overwriting its Pages artifact.
+  group: forsikringsbarometeret-publish
+  cancel-in-progress: false
+jobs:
+  quote-refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Nordic weekday session windows
+        id: window
+        run: python scripts/stock_market_window.py
+      - name: Preflight market-data quality and schedule contracts
+        if: steps.window.outputs.active == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          python -m unittest discover -s tests -p 'test_stock_quote_integrity.py' -v
+          python -m unittest discover -s tests -p 'test_stock_market_schedule.py' -v
+          python scripts/verify_deployment_tree.py
+      - name: Fetch delayed quotes independently of issuer reports
+        if: steps.window.outputs.active == 'true' || github.event_name == 'workflow_dispatch'
+        run: python scripts/update_stock_prices.py
+      - name: Validate downloaded quote payload before publication
+        if: steps.window.outputs.active == 'true' || github.event_name == 'workflow_dispatch'
+        run: python scripts/verify_stock_feed.py
+      - name: Publish only changed quote feed to main
+        id: changes
+        if: steps.window.outputs.active == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          if git diff --quiet -- data/stock_prices.json; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo 'No new market observations; skip duplicate publication'
+            exit 0
+          fi
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo '::error::Main advanced during stock validation. Refuse stale quote overwrite.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- data/stock_prices.json
+          git commit -m 'Refresh delayed dated stock observations [skip ci]'
+          git push origin HEAD:main
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Verify publishing snapshot includes complete website
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+          python scripts/verify_deployment_tree.py
+      - uses: actions/configure-pages@v5
+        if: steps.changes.outputs.changed == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.changes.outputs.changed == 'true'
+        with:
+          name: github-pages-stocks-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .
+      - uses: actions/deploy-pages@v4
+        if: steps.changes.outputs.changed == 'true'
+        id: deployment
+        with:
+          artifact_name: github-pages-stocks-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Confirm public stock JSON matches the quote snapshot
+        if: steps.changes.outputs.changed == 'true'
+        run: python scripts/verify_public_stock_prices.py
