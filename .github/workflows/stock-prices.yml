@@ -1,6 +1,18 @@
 name: Oppdater forsinkede aksjekurser (egen pipeline)
 on:
   workflow_dispatch:
+  # Smoke-test stock-only workflow automatically after relevant code changes.
+  # Do not include data/stock_prices.json, preventing self-triggering loops.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/stock-prices.yml'
+      - 'scripts/update_stock_prices.py'
+      - 'scripts/verify_stock_feed.py'
+      - 'scripts/stock_market_window.py'
+      - 'scripts/verify_public_stock_prices.py'
+      - 'tests/test_stock_quote_integrity.py'
+      - 'tests/test_stock_market_schedule.py'
   schedule:
     # UTC; the exchange-local Python guard handles winter/summer time.
     - cron: '6,21,36,51 6-18 * * 1-5'
