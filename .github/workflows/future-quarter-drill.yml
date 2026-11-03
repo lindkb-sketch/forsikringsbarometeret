@@ -46,7 +46,8 @@ jobs:
           from pathlib import Path
           p=Path(sys.argv[1])/'data/next_quarter_drill.json'
           result=json.loads(p.read_text())
-          assert result['synthetic_observations']==35 and result['editorial_companies']==7
+          assert result['synthetic_observations']==45 and result['editorial_companies']==7
+          assert result['sampo_segments']==['Private Nordic','Nordic Commercial']
           assert result['negative_cases_passed']==3
           print('SEVEN_QUARTER_SIMULATION PASS',result)
           PY
