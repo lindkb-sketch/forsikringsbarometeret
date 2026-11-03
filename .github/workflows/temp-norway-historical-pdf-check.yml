@@ -20,13 +20,13 @@ jobs:
           python - <<'PY'
           import sys,io,urllib.request,pdfplumber,json
           sys.path.insert(0,'scripts')
-          from import_frende_skade import verify_pdf,download_pdf
+          from import_frende_skade import verify_pdf,verify_legacy_2024_revenue,download_pdf
           sources=json.load(open('data/frende_skade_reports.json'))['reports']
           for quarter in (1,2,3):
               row=next(r for r in sources if (r['year'],r['quarter'])==(2024,quarter))
               try:
                   blob=download_pdf(row['pdf_url'])
-                  rows=verify_pdf(blob,row['pdf_url'],2024,quarter)
+                  rows=verify_legacy_2024_revenue(blob,row['pdf_url'],quarter)
                   print('FRENDE2024',quarter,[(r['year'],r['period_type'],r['metric'],r['value']) for r in rows],flush=True)
               except Exception as exc:
                   print('FRENDE2024_ERROR',quarter,type(exc).__name__,str(exc)[:300],flush=True)
@@ -51,5 +51,9 @@ jobs:
                       text=page.extract_text(layout=False) or ''
                       if 'Segment information - Q3' in text:
                           print('PROTECTOR2024_Q3_PAGE',i+1,repr(text[:8000]),flush=True)
+                          from import_protector_norway_historical_pdf import parse_norway_revenue
+                          import hashlib
+                          data=parse_norway_revenue([(i+1,text)],url,hashlib.sha256(blob).hexdigest())
+                          print('PROTECTOR_HISTORICAL_IMPORT',[(r['year'],r['value']) for r in data],flush=True)
           except Exception as exc:print('PROTECTOR2024_ERROR',type(exc).__name__,str(exc)[:250],flush=True)
           PY
