@@ -100,6 +100,7 @@ def check():
             if not {(2026,1),(2026,2),(2026,3)} <= {
                     (r['year'],r['quarter']) for r in pdf_reports}:
                 raise ValueError('Frende Skade 2026 Q1-Q3 official PDF registry missing')
+            registered_pdfs={(r['year'],r['quarter']):r['pdf_url'] for r in pdf_reports}
             # Each new official report must automatically supply its own period
             # AND same-period prior-year comparators, for both quarter and YTD.
             for report in pdf_reports:
@@ -112,12 +113,21 @@ def check():
                         if {r.get('metric') for r in rows}!=required:
                             raise ValueError(f'Frende Skade Q{q} {year} {kind} '
                                              f'{observed_year} comparable metrics incomplete')
-                        if any(r.get('source_entity')!='Frende Skadeforsikring AS' or
-                               r.get('source_type')!='official_quarterly_report' or
-                               not str(r.get('source_url','')).lower().split('?')[0].endswith('.pdf') or
-                               len(str(r.get('source_sha256','')))!=64 or
-                               r.get('source_document_period')!=f'Q{q} {year}' for r in rows):
-                            raise ValueError('Frende Skade public PDF comparative provenance invalid')
+                        # On a future Q3 2027 report, the same Q3 2026
+                        # observation may be corroborated/replaced by its
+                        # comparative column. Both registered PDF vintages
+                        # are valid: year Y and year Y+1, same quarter.
+                        for row in rows:
+                            valid_sources={(f'Q{q} {doc_year}',url)
+                                for doc_year in (observed_year,observed_year+1)
+                                for url in [registered_pdfs.get((doc_year,q))]
+                                if url}
+                            if (row.get('source_entity')!='Frende Skadeforsikring AS' or
+                                row.get('source_type')!='official_quarterly_report' or
+                                len(str(row.get('source_sha256','')))!=64 or
+                                (row.get('source_document_period'),row.get('source_url'))
+                                not in valid_sources):
+                                raise ValueError('Frende Skade public PDF comparative provenance invalid')
             print('PUBLIC_FRENDE_SKADE_PDF_CURRENT_AND_PRIOR_VERIFIED',
                   len(skade_rows),'reports',len(pdf_reports),flush=True)
             readiness=public['investor_readiness.json']
