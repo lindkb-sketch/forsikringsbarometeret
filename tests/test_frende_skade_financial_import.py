@@ -1,6 +1,6 @@
 """Regression contract for Frende Skade PDF extraction, separate from Holding."""
 import unittest
-from scripts.import_frende_skade import parse_page,parse_pdf_numbers,build
+from scripts.import_frende_skade import parse_page,parse_pdf_numbers,parse_legacy_2024_revenue,build
 
 PDF='https://live.euronext.com/offisielt.pdf'
 Q3='''Kvartalsrapport, tredje kvartal 2026|Resultat
@@ -75,6 +75,29 @@ Combined Ratio 93,5% 102,1% 86,4%'''
             next(r['value'] for r in rows if r['year']==2025 and
                  r['period_type']=='quarter' and r['metric']=='combined_ratio'),
             102.1)
+
+    def test_2024_issuer_pdf_revenue_for_2025_growth_percentages(self):
+        cases=[
+            (1,'01.01-31.03.2024 01.01-31.03.2023 31.12.2023',
+             '642 453 585 130 2 444 087',642.453,585.13),
+            (2,'2.kv.2024 2.kv.2023 01.01-30.06.2024 01.01-30.06.2023 31.12.2023',
+             '6 65 117 604 296 1 307 570 1 189 426 2 444 087',665.117,604.296),
+            (3,'3.kv.2024 3.kv.2023 01.01-30.09.2024 01.01-30.09.2023 31.12.2023',
+             '6 88 230 6 21 760 1 995 800 1 811 186 2 444 087',688.23,621.76)]
+        for quarter,heading,values,expected,previous in cases:
+            with self.subTest(quarter=quarter):
+                html=('Frende Skadeforsikring AS\nResultatregnskap '+heading+
+                      '\nTeknisk regnskap for skadeforsikring\n'
+                      'Premieinntekter for egen regning '+values)
+                rows=parse_legacy_2024_revenue(
+                    html,2024,quarter,PDF,'d'*64,4)
+                byyear={(r['year'],r['period_type']):r['value'] for r in rows}
+                self.assertEqual(byyear[(2024,'quarter')],expected)
+                self.assertEqual(byyear[(2023,'quarter')],previous)
+                self.assertEqual(byyear[(2024,'ytd')],expected if quarter==1 else
+                                 {2:1307.57,3:1995.8}[quarter])
+                self.assertTrue(all(r['source_entity']=='Frende Skadeforsikring AS'
+                                    for r in rows))
 
     def test_wrong_period_and_mismatching_ratio_rejected(self):
         with self.assertRaisesRegex(ValueError,'year/quarter mismatch'):

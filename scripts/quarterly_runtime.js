@@ -476,10 +476,8 @@
               const strong=document.createElement('strong');
               strong.textContent=fmt(growth,true);
               cell.appendChild(strong);
-              // When two historical years have been verified, compare the
-              // current premium growth RATE with last year's growth rate,
-              // exactly as the other insurers do. Before that, show the
-              // previous year's premium AMOUNT, not a fabricated growth rate.
+              // Compare current revenue growth to the previous year's RATE.
+              // Never substitute an insurance-premium amount for a percentage.
               const older=metricRow(priorYear-1,'insurance_revenue');
               const priorGrowth=older?.unit==='NOKm'&&older.value>0
                 ?100*(previous.value/older.value-1):null;
@@ -487,27 +485,20 @@
               comparison.className='table-prior';
               comparison.textContent=priorGrowth!==null
                 ?'('+fmt(priorGrowth,true)+')'
-                :'(premier '+priorYear+': '+formatValue(previous)+')';
+                :'('+'—'+')';
               cell.appendChild(comparison);
-              const arrow=document.createElement('span');
-              arrow.innerHTML=priorGrowth!==null
-                ?trendArrow(growth,priorGrowth)
-                :trendArrow(current.value,previous.value);
-              const marker=arrow.firstElementChild;
-              if(marker){
-                if(priorGrowth!==null){
+              if(priorGrowth!==null){
+                const wrapper=document.createElement('span');
+                wrapper.innerHTML=trendArrow(growth,priorGrowth);
+                const marker=wrapper.firstElementChild;
+                if(marker){
                   marker.title='Endring i premieinntektsvekst mot fjorårets vekst';
                   marker.setAttribute('aria-label',
                     growth>priorGrowth?'Inntektsveksten har økt fra fjoråret':
                     growth<priorGrowth?'Inntektsveksten har avtatt fra fjoråret':
                     'Inntektsveksten er uendret');
-                }else{
-                  marker.title='Endring i premieinntekter mot samme periode i fjor';
-                  marker.setAttribute('aria-label',
-                    growth>0?'Premieinntekter økt mot fjoråret':
-                    growth<0?'Premieinntekter redusert mot fjoråret':'Premieinntekter uendret');
+                  cell.appendChild(marker);
                 }
-                cell.appendChild(marker);
               }
             }else cell.textContent='—';
           }else{
@@ -547,6 +538,81 @@
           caption.appendChild(link);
           segmentRow.cells[0].appendChild(caption);
           segmentRow.setAttribute('data-financial-source','verified-frende-skade-pdf');
+        }
+      }
+    }
+    if(c==='Protector'&&selection){
+      // Populate the existing Norge total row using NORWAY-scoped official
+      // financial observations. Never reuse the Protector group KPI values.
+      const segment=[...fragment.querySelectorAll('.tablewrap tbody tr')].find(tr=>
+        (tr.cells[0]?.textContent||'').trim().includes('Norge total'));
+      if(segment){
+        const evidence=(verified?.observations||[]).filter(r=>r.company==='Protector'&&
+          r.scope==='norway'&&r.source_scope==='norway'&&r.period_type===(ytdMode()?'ytd':'quarter')&&
+          r.quarter===selection.quarter&&r.status==='reported'&&
+          Number.isFinite(r.value)&&r.source_type==='official_quarterly_report'&&
+          /^https:\/\//.test(r.source_url||'')&&/\.pdf(?:\?|$)/i.test(r.source_url||'')&&
+          /^[a-f0-9]{64}$/i.test(r.source_sha256||'')&&r.source_page>=1);
+        const metric=(year,name)=>evidence.find(r=>r.year===year&&r.metric===name);
+        const names=['insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
+        const unit=(name)=>name==='insurance_service_result'?'MNOK':'percent';
+        const print=r=>fmt(r.value,r.unit==='percent')+(r.unit==='MNOK'?' MNOK':'');
+        const render=(cell,current,prior,lowerIsBetter)=>{
+          cell.replaceChildren();
+          if(!current){cell.textContent='—';return;}
+          const value=document.createElement('strong');
+          value.textContent=print(current);cell.appendChild(value);
+          const comparison=document.createElement('div');
+          comparison.className='table-prior';
+          comparison.textContent=prior?.unit===current.unit?'('+print(prior)+')':'(—)';
+          cell.appendChild(comparison);
+          if(prior?.unit===current.unit){
+            const wrap=document.createElement('span');
+            wrap.innerHTML=trendArrow(current.value,prior.value,lowerIsBetter);
+            if(wrap.firstElementChild)cell.appendChild(wrap.firstElementChild);
+          }
+        };
+        const thisYear=selection.year,previousYear=thisYear-1;
+        const revenue=metric(thisYear,'insurance_revenue');
+        const prevRevenue=metric(previousYear,'insurance_revenue');
+        const oldRevenue=metric(previousYear-1,'insurance_revenue');
+        const growthCell=segment.cells[1];
+        growthCell.replaceChildren();
+        if(revenue?.unit==='MNOK'&&prevRevenue?.unit==='MNOK'&&prevRevenue.value>0){
+          const now=100*(revenue.value/prevRevenue.value-1);
+          const previous=oldRevenue?.unit==='MNOK'&&oldRevenue.value>0
+            ?100*(prevRevenue.value/oldRevenue.value-1):null;
+          const value=document.createElement('strong');
+          value.textContent=fmt(now,true);growthCell.appendChild(value);
+          const reference=document.createElement('div');
+          reference.className='table-prior';
+          reference.textContent=previous===null?'(—)':'('+fmt(previous,true)+')';
+          growthCell.appendChild(reference);
+          if(previous!==null){
+            const wrap=document.createElement('span');
+            wrap.innerHTML=trendArrow(now,previous);
+            if(wrap.firstElementChild)growthCell.appendChild(wrap.firstElementChild);
+          }
+        }else growthCell.textContent='—';
+        growthCell.setAttribute('data-protector-norway-metric','growth');
+        for(const [i,name] of names.entries()){
+          const target=segment.cells[i+2];
+          if(!target)continue;
+          const current=metric(thisYear,name),prior=metric(previousYear,name);
+          render(target,current?.unit===unit(name)?current:null,prior,i>0);
+          target.setAttribute('data-protector-norway-metric',name);
+        }
+        segment.classList.add('protector-norway-verified-row');
+        const source=metric(thisYear,'insurance_revenue');
+        if(source){
+          const small=document.createElement('small');
+          small.className='frende-skade-source';
+          const link=document.createElement('a');
+          link.href=source.source_url;link.target='_blank';link.rel='noopener noreferrer';
+          link.textContent='Offisiell PDF · Q'+selection.quarter+' '+selection.year+' ↗';
+          link.setAttribute('aria-label','Protector Norge offisiell PDF');
+          small.appendChild(link);segment.cells[0].appendChild(small);
+          segment.setAttribute('data-financial-source','verified-protector-norway-pdf');
         }
       }
     }

@@ -21,7 +21,8 @@ REPORTS=ROOT/'data/frende_skade_reports.json'
 OUTPUT=ROOT/'data/frende_skade_financials.json'
 ENTITY='Frende Skadeforsikring AS'
 REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
-PDF_HOSTS={'live.euronext.com','www.frende.no','frende.no'}
+PDF_HOSTS={'live.euronext.com','www.frende.no','frende.no',
+           'frende-cms-prod.s3.eu-central-1.amazonaws.com'}
 LABELS={
  'insurance_revenue':'Premieinntekter for egen regning',
  'insurance_service_result':'Resultat av teknisk regnskap i skadeforsikring',
@@ -69,6 +70,9 @@ def download_pdf(url):
         actual=urllib.parse.urlparse(response.geturl())
         if actual.scheme!='https' or actual.hostname not in PDF_HOSTS:
             raise ValueError('PDF redirect to untrusted host')
+        if (actual.hostname=='frende-cms-prod.s3.eu-central-1.amazonaws.com' and
+                not actual.path.startswith('/documents/')):
+            raise ValueError('PDF redirect outside Frende document bucket')
         blob=response.read(30_000_001)
     if len(blob)>30_000_000 or not blob.startswith(b'%PDF-'):
         raise ValueError('Missing or invalid official PDF bytes')
@@ -148,19 +152,89 @@ def verify_pdf(blob,url,year,quarter):
         raise ValueError('Ambiguous or missing standalone Frende Skade PDF financial page')
     return matches[0]
 
+def parse_legacy_2024_revenue(page_text,year,quarter,url,digest,page_number):
+    """Older issuer PDFs have visually split thousand groups (e.g. 6 88 230).
+
+    Read only the uniquely reconcilable row 'Premieinntekter for egen regning'.
+    Never reinterpret Frende Holding figures or derive revenue from a ratio.
+    """
+    if year!=2024 or 'Teknisk regnskap for skadeforsikring' not in page_text:
+        raise ValueError('Not Frende Skade 2024 income statement')
+    lines=page_text.splitlines()
+    heading=next((line for line in lines if line.startswith('Resultatregnskap ')),None)
+    if not heading or str(year) not in heading or str(year-1) not in heading:
+        raise ValueError('Missing dated 2024 and 2023 columns')
+    if quarter==1:
+        if not ('01.01-31.03.2024' in heading or '1.kv.2024' in heading):
+            raise ValueError('Wrong Q1 source period')
+    elif not re.search(rf'\b{quarter}\.\s*kv\.?\s*2024\b',heading):
+        raise ValueError('Wrong legacy Q2/Q3 source period')
+    source=[line for line in lines if line.startswith('Premieinntekter for egen regning ')]
+    if len(source)!=1:raise ValueError('Missing or ambiguous historical premium source')
+    tokens=re.findall(r'\d+',source[0].split('Premieinntekter for egen regning ',1)[1])
+    expected=3 if quarter==1 else 5
+    from functools import lru_cache
+    @lru_cache(None)
+    def split(index,remain):
+        if not remain:return [()] if index==len(tokens) else []
+        variants=[]
+        for size in (1,2,3):
+            group=tokens[index:index+size]
+            if len(group)!=size or len(group[-1])!=3 or len(group[0])>3:
+                continue
+            number=int(''.join(group))
+            if not 500_000<=number<=5_000_000:continue
+            for rest in split(index+size,remain-1):
+                variants.append((number,)+rest)
+        return variants[:2]
+    variants=split(0,expected)
+    if len(variants)!=1:raise ValueError('Ambiguous historical PDF income columns')
+    values=variants[0]
+    if len(values)!=expected:raise ValueError('Wrong number of historical PDF columns')
+    columns=[(year,'quarter',0),(year-1,'quarter',1)]
+    columns.extend([(year,'ytd',0),(year-1,'ytd',1)] if quarter==1 else
+                   [(year,'ytd',2),(year-1,'ytd',3)])
+    return [dict(company='Frende',source_entity=ENTITY,scope='subsidiary',
+             year=observed_year,quarter=quarter,period_type=period,metric='insurance_revenue',
+             value=round(values[col]/1000,3),unit='NOKm',status='reported',
+             source_type='official_quarterly_report',source_url=url,source_page=page_number,
+             source_sha256=digest,source_document_period=f'Q{quarter} 2024',
+             source_section='Frende Skadeforsikring 2024 Resultatregnskap',
+             source_definition='Premieinntekter for egen regning (2024 issuer report)'
+             +(' – 2023 comparative' if observed_year!=year else ''))
+             for observed_year,period,col in columns]
+
+def verify_legacy_2024_revenue(blob,url,quarter):
+    digest=hashlib.sha256(blob).hexdigest()
+    with pdfplumber.open(io.BytesIO(blob)) as pdf:
+        texts=[page.extract_text(layout=False) or '' for page in pdf.pages]
+    if ENTITY not in '\n'.join(texts):
+        raise ValueError('Original 2024 PDF does not identify Frende Skadeforsikring AS')
+    matches=[]
+    for page,text in enumerate(texts,1):
+        if 'Premieinntekter for egen regning' not in text or 'Teknisk regnskap for skadeforsikring' not in text:
+            continue
+        matches.append(parse_legacy_2024_revenue(text,2024,quarter,url,digest,page))
+    if len(matches)!=1:raise ValueError('Ambiguous historical Frende Skade PDF income page')
+    return matches[0]
+
 def build(report_index,previous=None,downloader=download_pdf):
     observations={(r['year'],r['quarter'],r['period_type'],r['metric']):r
                   for r in (previous or {}).get('observations',[])}
     failures=[]
     for item in report_index.get('reports',[]):
         year,quarter=item['year'],item['quarter']
-        if year<2025:continue
+        # Include original 2024 issuer PDFs to calculate 2025 year-on-year
+        # growth percentages (2025/2024), rather than showing 2025 premiums.
+        if year<2024 or (year==2024 and quarter==4):continue
         pdf=item.get('pdf_url')
         if not pdf:
             failures.append({'year':year,'quarter':quarter,'reason':'No original PDF attachment verified'})
             continue
         try:
-            rows=verify_pdf(downloader(pdf),pdf,year,quarter)
+            blob=downloader(pdf)
+            rows=(verify_legacy_2024_revenue(blob,pdf,quarter) if year==2024
+                  else verify_pdf(blob,pdf,year,quarter))
             for row in rows:
                 key=row['year'],row['quarter'],row['period_type'],row['metric']
                 if key in observations and abs(observations[key]['value']-row['value'])>0.000001:

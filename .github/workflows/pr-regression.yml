@@ -120,6 +120,19 @@ jobs:
                       assert all(r['source_url'].lower().endswith('.pdf') and len(r['source_sha256'])==64 for r in current)
           print('FRENDE_SKADE_PRIOR_YEAR_PDF_COMPARATIVES_VERIFIED',len(rows),flush=True)
           PY
+      - name: Import verified Protector Norway Q3 2024 comparative from PDF
+        run: |
+          python scripts/import_protector_norway_historical_pdf.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          finance=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          rows=[r for r in finance if r.get('company')=='Protector' and
+                r.get('scope')=='norway' and r.get('year')==2024 and
+                r.get('quarter')==3 and r.get('metric')=='insurance_revenue']
+          assert len(rows)==1 and rows[0]['value']==589,rows
+          print('PROTECTOR_NORWAY_2024_PDF_VERIFIED',rows[0]['value'])
+          PY
       - name: Build final website data for browser regression
         run: |
           python scripts/build_verified_feed.py
