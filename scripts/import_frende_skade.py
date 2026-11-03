@@ -154,7 +154,9 @@ def build(report_index,previous=None,downloader=download_pdf):
     failures=[]
     for item in report_index.get('reports',[]):
         year,quarter=item['year'],item['quarter']
-        if year<2025:continue
+        # Include original 2024 issuer PDFs to calculate 2025 year-on-year
+        # growth percentages (2025/2024), rather than showing 2025 premiums.
+        if year<2024 or (year==2024 and quarter==4):continue
         pdf=item.get('pdf_url')
         if not pdf:
             failures.append({'year':year,'quarter':quarter,'reason':'No original PDF attachment verified'})
