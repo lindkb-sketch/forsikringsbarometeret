@@ -34,7 +34,7 @@ jobs:
                       with urllib.request.urlopen(row['pdf_url'],timeout=15) as resp:
                           print('FRENDE_REDIRECT',quarter,resp.geturl(),resp.headers.get('Content-Type'),flush=True)
                   except Exception as e:print('FRENDE_REDIRECT_ERROR',repr(e),flush=True)
-          url='https://protectorforsikring.no/getfile.php/138558-1729702164/Documents/Investor%20Relation/Interim%20Reports/2024%20Interim%20Report%20Q3.pdf'
+          url='https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf'
           try:
               with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=18) as resp:
                   blob=resp.read(20_000_000)
