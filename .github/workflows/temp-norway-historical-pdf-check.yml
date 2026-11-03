@@ -30,12 +30,18 @@ jobs:
                   print('FRENDE2024',quarter,[(r['year'],r['period_type'],r['metric'],r['value']) for r in rows],flush=True)
               except Exception as exc:
                   print('FRENDE2024_ERROR',quarter,type(exc).__name__,str(exc)[:300],flush=True)
+                  try:
+                      with urllib.request.urlopen(row['pdf_url'],timeout=15) as resp:
+                          print('FRENDE_REDIRECT',quarter,resp.geturl(),resp.headers.get('Content-Type'),flush=True)
+                  except Exception as e:print('FRENDE_REDIRECT_ERROR',repr(e),flush=True)
           url='https://protectorforsikring.no/getfile.php/138558-1729702164/Documents/Investor%20Relation/Interim%20Reports/2024%20Interim%20Report%20Q3.pdf'
-          with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=40) as resp:
-              blob=resp.read(20_000_000)
-          with pdfplumber.open(io.BytesIO(blob)) as pdf:
-              for i,page in enumerate(pdf.pages):
-                  text=page.extract_text(layout=False) or ''
-                  if 'Segment information - Q3' in text:
-                      print('PROTECTOR2024_Q3_PAGE',i+1,repr(text[:8000]),flush=True)
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=18) as resp:
+                  blob=resp.read(20_000_000)
+              with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                  for i,page in enumerate(pdf.pages):
+                      text=page.extract_text(layout=False) or ''
+                      if 'Segment information - Q3' in text:
+                          print('PROTECTOR2024_Q3_PAGE',i+1,repr(text[:8000]),flush=True)
+          except Exception as exc:print('PROTECTOR2024_ERROR',type(exc).__name__,str(exc)[:250],flush=True)
           PY
