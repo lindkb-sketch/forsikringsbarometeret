@@ -8,8 +8,8 @@ permissions:
   contents: write
   pages: write
   id-token: write
+# Serialize with the full financial deployment; avoid overwriting its Pages artifact.
 concurrency:
-  # Serialize with the full financial deployment; avoid overwriting its Pages artifact.
   group: forsikringsbarometeret-publish
   cancel-in-progress: false
 jobs:
