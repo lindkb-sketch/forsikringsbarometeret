@@ -27,7 +27,7 @@ class IndependentStockScheduleTests(unittest.TestCase):
     def test_workflow_is_independent_and_serialized_with_financial_publish(self):
         quote=(ROOT/'.github/workflows/stock-prices.yml').read_text()
         financial=(ROOT/'.github/workflows/update.yml').read_text()
-        self.assertIn("cron: '6,21,36,51 6-18 * * 1-5'",quote)
+        self.assertIn("cron: '7,22,37,52 6-18 * * 1-5'",quote)
         self.assertIn('forsikringsbarometeret-publish',quote)
         self.assertIn('forsikringsbarometeret-publish',financial)
         self.assertIn("paths-ignore:",financial)
