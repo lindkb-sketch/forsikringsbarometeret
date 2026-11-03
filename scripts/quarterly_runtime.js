@@ -476,10 +476,8 @@
               const strong=document.createElement('strong');
               strong.textContent=fmt(growth,true);
               cell.appendChild(strong);
-              // When two historical years have been verified, compare the
-              // current premium growth RATE with last year's growth rate,
-              // exactly as the other insurers do. Before that, show the
-              // previous year's premium AMOUNT, not a fabricated growth rate.
+              // Compare current revenue growth to the previous year's RATE.
+              // Never substitute an insurance-premium amount for a percentage.
               const older=metricRow(priorYear-1,'insurance_revenue');
               const priorGrowth=older?.unit==='NOKm'&&older.value>0
                 ?100*(previous.value/older.value-1):null;
@@ -487,27 +485,20 @@
               comparison.className='table-prior';
               comparison.textContent=priorGrowth!==null
                 ?'('+fmt(priorGrowth,true)+')'
-                :'(premier '+priorYear+': '+formatValue(previous)+')';
+                :'('+'—'+')';
               cell.appendChild(comparison);
-              const arrow=document.createElement('span');
-              arrow.innerHTML=priorGrowth!==null
-                ?trendArrow(growth,priorGrowth)
-                :trendArrow(current.value,previous.value);
-              const marker=arrow.firstElementChild;
-              if(marker){
-                if(priorGrowth!==null){
+              if(priorGrowth!==null){
+                const wrapper=document.createElement('span');
+                wrapper.innerHTML=trendArrow(growth,priorGrowth);
+                const marker=wrapper.firstElementChild;
+                if(marker){
                   marker.title='Endring i premieinntektsvekst mot fjorårets vekst';
                   marker.setAttribute('aria-label',
                     growth>priorGrowth?'Inntektsveksten har økt fra fjoråret':
                     growth<priorGrowth?'Inntektsveksten har avtatt fra fjoråret':
                     'Inntektsveksten er uendret');
-                }else{
-                  marker.title='Endring i premieinntekter mot samme periode i fjor';
-                  marker.setAttribute('aria-label',
-                    growth>0?'Premieinntekter økt mot fjoråret':
-                    growth<0?'Premieinntekter redusert mot fjoråret':'Premieinntekter uendret');
+                  cell.appendChild(marker);
                 }
-                cell.appendChild(marker);
               }
             }else cell.textContent='—';
           }else{
