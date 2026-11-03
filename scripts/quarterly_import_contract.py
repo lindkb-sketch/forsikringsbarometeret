@@ -14,6 +14,38 @@ COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebra
 BASE={'insurance_revenue','combined_ratio','loss_ratio','expense_ratio'}
 RESULT_REQUIRED={'Fremtind','Gjensidige','Tryg','Sampo','Protector'}
 AS_OF={'solvency_ratio'}
+SAMPO_SEGMENTS=('Private Nordic','Nordic Commercial')
+SAMPO_REQUIRED={'insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'}
+
+def verify_sampo_nordic_segments(source, feed, year, quarter):
+    """Fail closed if a released Sampo group quarter lacks either Nordic segment.
+
+    Separate source and feed checks prevent a valid imported report from being
+    silently dropped in the website feed. Prior-unreleased quarters are ignored.
+    """
+    errors=[]
+    for segment in SAMPO_SEGMENTS:
+        for dataset, name in ((source,'source'), (feed,'published feed')):
+            rows=[r for r in dataset if r.get('company')=='Sampo'
+                  and r.get('scope')=='reported_segment' and r.get('segment')==segment
+                  and r.get('period_type')=='quarter' and
+                  (r.get('year'),r.get('quarter'))==(year,quarter)
+                  and r.get('status','reported') in ('reported','calculated')]
+            metrics={r['metric'] for r in rows}
+            absent=SAMPO_REQUIRED-metrics
+            if absent:
+                errors.append(f'Sampo {segment} Q{quarter} {year} {name} missing {sorted(absent)}')
+            if name=='published feed':
+                source_by_metric={r['metric']:r for r in source if r.get('company')=='Sampo'
+                    and r.get('scope')=='reported_segment' and r.get('segment')==segment
+                    and (r.get('year'),r.get('quarter'))==(year,quarter)
+                    and r.get('period_type')=='quarter'}
+                for r in rows:
+                    if source_by_metric.get(r['metric'])!=r:
+                        errors.append(f'Sampo {segment} Q{quarter} {year} published value/provenance changed: {r["metric"]}')
+    if errors:
+        raise ValueError('; '.join(errors))
+    return True
 def key(r):
     return (r['company'],r['year'],r['quarter'],r['scope'],r['period_type'],r['metric'],r.get('segment'))
 
@@ -71,6 +103,11 @@ def verify(source,feed,require_norway=True):
             if {'loss_ratio','expense_ratio','combined_ratio'}<=ratios.keys():
                 if abs(ratios['loss_ratio']+ratios['expense_ratio']-ratios['combined_ratio'])>0.02:
                     errors.append(f'Gjensidige Norway CR is not loss ratio + expense ratio: Q{date[1]} {date[0]}')
+        if company=='Sampo' and date>=(2026,3):
+            try:
+                verify_sampo_nordic_segments(source,feed,*date)
+            except ValueError as exc:
+                errors.append(str(exc))
         revenue=next((r for r in latest if r['metric']=='insurance_revenue'),None)
         if company=='Frende' and (not revenue or 'Sum driftsinntekter' not in revenue.get('source_definition','')):
             errors.append('Frende: revenue must be the reported Sum driftsinntekter, not IFRS insurance revenue')
