@@ -86,8 +86,8 @@ Combined Ratio 93,5% 102,1% 86,4%'''
              '6 88 230 6 21 760 1 995 800 1 811 186 2 444 087',688.23,621.76)]
         for quarter,heading,values,expected,previous in cases:
             with self.subTest(quarter=quarter):
-                html=('Frende Skadeforsikring AS\\nResultatregnskap '+heading+
-                      '\\nTeknisk regnskap for skadeforsikring\\n'
+                html=('Frende Skadeforsikring AS\nResultatregnskap '+heading+
+                      '\nTeknisk regnskap for skadeforsikring\n'
                       'Premieinntekter for egen regning '+values)
                 rows=parse_legacy_2024_revenue(
                     html,2024,quarter,PDF,'d'*64,4)
