@@ -21,17 +21,29 @@ class FrendeSkadePDFTests(unittest.TestCase):
     def test_pdf_thousands_grouping_has_unique_five_columns(self):
         s='961 391 825 529 2 787 759 2 420 547 3 275 575'
         self.assertEqual(parse_pdf_numbers(s,5),[961391,825529,2787759,2420547,3275575])
-    def test_actual_q3_reported_and_ytd_numbers(self):
+    def test_actual_q3_reported_ytd_and_same_period_last_year(self):
         rows=parse_page(Q3,2026,3,PDF,'a'*64,3)
-        self.assertEqual(len(rows),10)
-        d={(r['period_type'],r['metric']):r['value'] for r in rows}
-        self.assertEqual(d[('quarter','insurance_revenue')],961.391)
-        self.assertEqual(d[('ytd','insurance_revenue')],2787.759)
-        self.assertEqual(d[('quarter','insurance_service_result')],192.667)
-        self.assertEqual(d[('quarter','combined_ratio')],80.0)
-        self.assertEqual(d[('ytd','combined_ratio')],84.2)
+        self.assertEqual(len(rows),20)
+        d={(r['year'],r['period_type'],r['metric']):r['value'] for r in rows}
+        self.assertEqual(d[(2026,'quarter','insurance_revenue')],961.391)
+        self.assertEqual(d[(2025,'quarter','insurance_revenue')],825.529)
+        self.assertEqual(d[(2026,'quarter','insurance_service_result')],192.667)
+        self.assertEqual(d[(2025,'quarter','insurance_service_result')],167.938)
+        self.assertEqual(d[(2026,'quarter','combined_ratio')],80.0)
+        self.assertEqual(d[(2025,'quarter','combined_ratio')],79.7)
+        self.assertEqual(d[(2025,'quarter','loss_ratio')],62.2)
+        self.assertEqual(d[(2025,'quarter','expense_ratio')],17.4)
+        self.assertEqual(d[(2026,'ytd','insurance_revenue')],2787.759)
+        self.assertEqual(d[(2025,'ytd','insurance_revenue')],2420.547)
+        self.assertEqual(d[(2026,'ytd','combined_ratio')],84.2)
+        self.assertEqual(d[(2025,'ytd','combined_ratio')],87.4)
+        self.assertEqual({r['year'] for r in rows},{2025,2026})
         self.assertTrue(all(r['source_entity']=='Frende Skadeforsikring AS' for r in rows))
         self.assertTrue(all(r['source_url']==PDF for r in rows))
+        self.assertTrue(all(r['source_document_period']=='Q3 2026' for r in rows))
+        self.assertTrue(all(r['source_sha256']=='a'*64 for r in rows))
+        self.assertTrue(all('fjorårskolonne' in r['source_definition'] for r in rows if r['year']==2025))
+
     def test_wrong_period_and_mismatching_ratio_rejected(self):
         with self.assertRaisesRegex(ValueError,'year/quarter mismatch'):
             parse_page(Q3,2026,2,PDF,'a'*64,3)
