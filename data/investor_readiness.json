@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-11-03",
+  "as_of": "2026-11-04",
   "reference_quarter": "Q3 2026",
   "investor_ready": false,
   "status": "NOT_APPROVED_FOR_INVESTOR_USE",
@@ -67,7 +67,7 @@
       "company": "Sampo",
       "quarter": "Q3 2026",
       "latest_source_located_quarter": "Q2 2026",
-      "status": "awaiting_official_publication",
+      "status": "missing_after_calendar_date",
       "source_located_metrics": [],
       "missing_metrics": [
         "insurance_revenue",
@@ -140,31 +140,31 @@
     {
       "company": "Gjensidige",
       "trading_date": "2026-11-03",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Protector",
       "trading_date": "2026-11-03",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Storebrand",
       "trading_date": "2026-11-03",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Tryg",
       "trading_date": "2026-11-03",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Sampo / If",
       "trading_date": "2026-11-03",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     }
   ],
