@@ -1,0 +1,41 @@
+name: Validate historical Frende and Protector Norway PDF revenue
+on:
+  push:
+    branches: [fix/norway-frende-protector-yoy-growth-20261103]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pdfplumber
+      - name: Inspect source-verified prior-year Norway revenue
+        run: |
+          python - <<'PY'
+          import sys,io,urllib.request,pdfplumber,json
+          sys.path.insert(0,'scripts')
+          from import_frende_skade import verify_pdf,download_pdf
+          sources=json.load(open('data/frende_skade_reports.json'))['reports']
+          for quarter in (1,2,3):
+              row=next(r for r in sources if (r['year'],r['quarter'])==(2024,quarter))
+              try:
+                  blob=download_pdf(row['pdf_url'])
+                  rows=verify_pdf(blob,row['pdf_url'],2024,quarter)
+                  print('FRENDE2024',quarter,[(r['year'],r['period_type'],r['metric'],r['value']) for r in rows],flush=True)
+              except Exception as exc:
+                  print('FRENDE2024_ERROR',quarter,type(exc).__name__,str(exc)[:300],flush=True)
+          url='https://protectorforsikring.no/getfile.php/138558-1729702164/Documents/Investor%20Relation/Interim%20Reports/2024%20Interim%20Report%20Q3.pdf'
+          with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'}),timeout=40) as resp:
+              blob=resp.read(20_000_000)
+          with pdfplumber.open(io.BytesIO(blob)) as pdf:
+              for i,page in enumerate(pdf.pages):
+                  text=page.extract_text(layout=False) or ''
+                  if 'Segment information - Q3' in text:
+                      print('PROTECTOR2024_Q3_PAGE',i+1,repr(text[:8000]),flush=True)
+          PY
