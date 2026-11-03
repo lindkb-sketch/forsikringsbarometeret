@@ -36,6 +36,18 @@ class IndependentStockScheduleTests(unittest.TestCase):
         self.assertNotIn('python scripts/update_stock_prices.py',financial)
         self.assertIn('verify_public_stock_prices.py',quote)
 
+    def test_both_publishers_use_multi_pending_fifo_queue_and_same_lock(self):
+        quote=(ROOT/'.github/workflows/stock-prices.yml').read_text(encoding='utf-8')
+        finance=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
+        for name,workflow in (('stock',quote),('financial',finance)):
+            concurrency=workflow.split('concurrency:',1)[1].split('jobs:',1)[0]
+            self.assertIn('group: forsikringsbarometeret-publish',concurrency,name)
+            self.assertIn('queue: max',concurrency,name)
+            self.assertIn('cancel-in-progress: false',concurrency,name)
+            self.assertNotIn('cancel-in-progress: true',concurrency,name)
+        self.assertIn('actions/deploy-pages@v4',quote)
+        self.assertIn('actions/deploy-pages@v4',finance)
+
     def test_quote_poll_reusing_same_source_data_does_not_rewrite_file(self):
         with tempfile.TemporaryDirectory() as directory:
             file=Path(directory)/'prices.json'
