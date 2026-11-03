@@ -96,7 +96,7 @@ async function main(){
     r.source_entity==='Frende Skadeforsikring AS'&&r.period_type==='quarter');
   const sourceMetric=(year,metric)=>skadeRows.find(r=>r.year===year&&r.metric===metric)?.value;
   const numeric=value=>{
-    const match=norm(value).replace(/\\s/g,'').replace(',','.').match(/-?\\d+(?:\\.\\d+)?/);
+    const match=norm(value).replace(/\s/g,'').replace(',','.').match(/-?\d+(?:\.\d+)?/);
     return match?Number(match[0]):NaN;
   };
   check('Frende Skade sits in existing Norway segment table, no second panel',
@@ -105,11 +105,11 @@ async function main(){
   const fields=['insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
   check('Frende subsidiary current values reflect PDF in existing Norway row',
     fields.every((metric,i)=>Math.abs(numeric(subsidiary.current[i+2])-
-      sourceMetric(year,metric))<(i===0?.06:.11)),
+      sourceMetric(year,metric))<(i===0 ? .06 : .11)),
     JSON.stringify(subsidiary).slice(0,950));
   check('Frende subsidiary same-quarter prior-year comparisons are visible',
     fields.every((metric,i)=>Number.isFinite(sourceMetric(year-1,metric))&&
-      Math.abs(numeric(subsidiary.prior[i+2])-sourceMetric(year-1,metric))<(i===0?.06:.11))&&
+      Math.abs(numeric(subsidiary.prior[i+2])-sourceMetric(year-1,metric))<(i===0 ? .06 : .11))&&
     subsidiary.prior[1].includes(String(year-1)),
     JSON.stringify(subsidiary).slice(0,1150));
   check('Frende subsidiary current/prior trend arrows have correct directions and colours',
