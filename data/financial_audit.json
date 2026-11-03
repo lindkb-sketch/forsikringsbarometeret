@@ -867,7 +867,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 831,
+  "observation_count": 832,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -1822,6 +1822,21 @@
       "period_type": "quarter",
       "metric": "insurance_revenue_growth",
       "value": 17.5549633577615,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+        "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Protector",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 12.903225806451623,
       "calculation": "(current/prior-1)*100",
       "inputs": [
         "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",

@@ -7772,6 +7772,25 @@
     },
     {
       "company": "Protector",
+      "year": 2024,
+      "quarter": 3,
+      "scope": "norway",
+      "source_scope": "norway",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 589,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+      "source_page": 14,
+      "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+      "source_document_period": "Q3 2025",
+      "source_section": "Segment information - Q3 / Norway",
+      "source_definition": "Official Norway insurance revenue, prior-year comparative column"
+    },
+    {
+      "company": "Protector",
       "year": 2025,
       "quarter": 1,
       "scope": "group",
@@ -15531,6 +15550,6 @@
     }
   ],
   "coverage_complete": false,
-  "observation_count": 831,
+  "observation_count": 832,
   "note": "Only reported, source-validated official quarterly reports and approved geographical workbooks; missing observations are not zero"
 }
