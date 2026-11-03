@@ -61,22 +61,30 @@ def download():
         raise ValueError('Missing official Protector PDF')
     return blob
 
+def merge_observations(existing, additions):
+    """Identity preserves issuer segment; fail rather than drop source rows."""
+    identity=('company','scope','segment','year','quarter','period_type','metric')
+    records=existing['observations']
+    index={tuple(r.get(k) for k in identity):r for r in records}
+    if len(index)!=len(records):
+        raise ValueError('Duplicate financial observation identities before Protector backfill')
+    for row in additions:
+        key=tuple(row.get(k) for k in identity)
+        previous=index.get(key)
+        if previous and abs(previous['value']-row['value'])>0.001:
+            raise ValueError('Protector Norway historical PDF disagrees with existing verified amount')
+        if not previous:index[key]=row
+    if len(index)<len(records):
+        raise ValueError('Historical Protector backfill discarded existing observations')
+    return {**existing,'observations':list(index.values())}
+
 def run():
     blob=download()
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
         pages=[(n+1,page.extract_text(layout=False) or '') for n,page in enumerate(pdf.pages)]
     rows=parse_norway_revenue(pages,SOURCE,hashlib.sha256(blob).hexdigest())
     data=json.loads(OUTPUT.read_text(encoding='utf-8'))
-    index={(r['company'],r['scope'],r['year'],r['quarter'],r['period_type'],r['metric']):r
-           for r in data['observations']}
-    for row in rows:
-        key=tuple(row[k] for k in ('company','scope','year','quarter','period_type','metric'))
-        existing=index.get(key)
-        if existing and abs(existing['value']-row['value'])>0.001:
-            raise ValueError('Protector Norway historical PDF disagrees with existing verified amount')
-        if not existing:index[key]=row
-    # Store only the missing prior-year observation, and do not overwrite 2025 provenance.
-    data['observations']=list(index.values())
+    data=merge_observations(data,rows)
     from audit_financials import audit
     if not audit(data)['ok']:raise ValueError('Protector Norway historic source audit rejected')
     from publish_geographic_workbooks import atomic_write
