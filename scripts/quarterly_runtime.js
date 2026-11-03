@@ -440,43 +440,76 @@
         const periodType=ytdMode()?'ytd':'quarter';
         const all=Array.isArray(frendeSkadeFinancials?.observations)
           ?frendeSkadeFinancials.observations:[];
-        const observations=all.filter(r=>r.year===selection.year&&
+        const verifiedSubsidiary=(r,year,metric)=>r&&r.year===year&&
           r.quarter===selection.quarter&&r.period_type===periodType&&
-          r.scope==='subsidiary'&&r.source_entity==='Frende Skadeforsikring AS'&&
-          r.status==='reported'&&Number.isFinite(r.value)&&
-          r.source_type==='official_quarterly_report'&&
+          r.metric===metric&&r.scope==='subsidiary'&&
+          r.source_entity==='Frende Skadeforsikring AS'&&r.status==='reported'&&
+          Number.isFinite(r.value)&&r.source_type==='official_quarterly_report'&&
           /^https:\/\//.test(r.source_url||'')&&
           /\.pdf(?:\?|$)/i.test(r.source_url||'')&&
-          /^[a-f0-9]{64}$/i.test(r.source_sha256||'')&&r.source_page>=1);
-        const metrics=Object.fromEntries(observations.map(r=>[r.metric,r]));
-        const formatMetric=(metric,unit)=>{
-          const r=metrics[metric];
-          if(!r||r.unit!==unit)return null;
-          return fmt(r.value,unit==='percent')+(unit==='NOKm'?' MNOK':'');
-        };
-        const cells=[
-          null,
-          formatMetric('insurance_service_result','NOKm'),
-          formatMetric('combined_ratio','percent'),
-          formatMetric('loss_ratio','percent'),
-          formatMetric('expense_ratio','percent')
-        ];
-        // No fabricated year-on-year revenue growth: there are no independently
-        // audited subsidiary 2025 comparison observations in this feed yet.
-        const prior=all.find(r=>r.year===selection.year-1&&r.quarter===selection.quarter&&
-          r.period_type===periodType&&r.scope==='subsidiary'&&
-          r.source_entity==='Frende Skadeforsikring AS'&&
-          r.metric==='insurance_revenue'&&r.status==='reported'&&Number.isFinite(r.value)&&
-          r.unit==='NOKm'&&/\.pdf(?:\?|$)/i.test(r.source_url||''));
-        const revenue=metrics.insurance_revenue;
-        if(revenue?.unit==='NOKm'&&prior?.value>0)
-          cells[0]=fmt(100*(revenue.value/prior.value-1),true);
-        for(let i=0;i<cells.length;i++){
+          /^[a-f0-9]{64}$/i.test(r.source_sha256||'')&&r.source_page>=1;
+        const metricRow=(year,metric)=>all.find(r=>verifiedSubsidiary(r,year,metric));
+        const metrics=Object.fromEntries(
+          ['insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio']
+            .map(metric=>[metric,metricRow(selection.year,metric)]));
+        const priorYear=selection.year-1;
+        const formatValue=r=>r?fmt(r.value,r.unit==='percent')+
+          (r.unit==='NOKm'?' MNOK':''):'—';
+        const metricNames=['growth','insurance_service_result','combined_ratio',
+          'loss_ratio','expense_ratio'];
+        // Render same-quarter, same-entity prior-year comparisons from the
+        // original PDF comparison columns. Colours reflect desirability:
+        // falling claims/expense/combined ratios are green, rising is red.
+        for(let i=0;i<metricNames.length;i++){
           const cell=segmentRow.cells[i+1];
           if(!cell)continue;
-          cell.textContent=cells[i]||'—';
-          cell.setAttribute('data-frende-skade-metric',
-            ['growth','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'][i]);
+          const metric=metricNames[i];
+          cell.replaceChildren();
+          if(i===0){
+            const current=metrics.insurance_revenue;
+            const previous=metricRow(priorYear,'insurance_revenue');
+            if(current?.unit==='NOKm'&&previous?.unit==='NOKm'&&previous.value>0){
+              const growth=100*(current.value/previous.value-1);
+              const strong=document.createElement('strong');
+              strong.textContent=fmt(growth,true);
+              cell.appendChild(strong);
+              const comparison=document.createElement('div');
+              comparison.className='table-prior';
+              comparison.textContent='(premier '+priorYear+': '+formatValue(previous)+')';
+              cell.appendChild(comparison);
+              // This arrow indicates premium-revenue movement, NOT growth
+              // acceleration (which would additionally require 2024 revenue).
+              const arrow=document.createElement('span');
+              arrow.innerHTML=trendArrow(current.value,previous.value);
+              const marker=arrow.firstElementChild;
+              if(marker){
+                marker.title='Endring i premieinntekter mot samme periode i fjor';
+                marker.setAttribute('aria-label',
+                  growth>0?'Premieinntekter økt mot fjoråret':
+                  growth<0?'Premieinntekter redusert mot fjoråret':'Premieinntekter uendret');
+                cell.appendChild(marker);
+              }
+            }else cell.textContent='—';
+          }else{
+            const current=metrics[metric];
+            const previous=metricRow(priorYear,metric);
+            const expectedUnit=i===1?'NOKm':'percent';
+            if(current?.unit!==expectedUnit){cell.textContent='—';continue;}
+            const strong=document.createElement('strong');
+            strong.textContent=formatValue(current);
+            cell.appendChild(strong);
+            const comparison=document.createElement('div');
+            comparison.className='table-prior';
+            comparison.textContent=previous?.unit===expectedUnit
+              ?'('+formatValue(previous)+')':'(—)';
+            cell.appendChild(comparison);
+            if(previous?.unit===expectedUnit){
+              const wrapper=document.createElement('span');
+              wrapper.innerHTML=trendArrow(current.value,previous.value,i>=2);
+              if(wrapper.firstElementChild)cell.appendChild(wrapper.firstElementChild);
+            }
+          }
+          cell.setAttribute('data-frende-skade-metric',metric);
         }
         segmentRow.classList.add('frende-skade-verified-row');
         segmentRow.setAttribute('data-frende-skade-period',
