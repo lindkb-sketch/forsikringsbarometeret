@@ -21,7 +21,8 @@ REPORTS=ROOT/'data/frende_skade_reports.json'
 OUTPUT=ROOT/'data/frende_skade_financials.json'
 ENTITY='Frende Skadeforsikring AS'
 REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
-PDF_HOSTS={'live.euronext.com','www.frende.no','frende.no'}
+PDF_HOSTS={'live.euronext.com','www.frende.no','frende.no',
+           'frende-cms-prod.s3.eu-central-1.amazonaws.com'}
 LABELS={
  'insurance_revenue':'Premieinntekter for egen regning',
  'insurance_service_result':'Resultat av teknisk regnskap i skadeforsikring',
@@ -69,6 +70,9 @@ def download_pdf(url):
         actual=urllib.parse.urlparse(response.geturl())
         if actual.scheme!='https' or actual.hostname not in PDF_HOSTS:
             raise ValueError('PDF redirect to untrusted host')
+        if (actual.hostname=='frende-cms-prod.s3.eu-central-1.amazonaws.com' and
+                not actual.path.startswith('/documents/')):
+            raise ValueError('PDF redirect outside Frende document bucket')
         blob=response.read(30_000_001)
     if len(blob)>30_000_000 or not blob.startswith(b'%PDF-'):
         raise ValueError('Missing or invalid official PDF bytes')
