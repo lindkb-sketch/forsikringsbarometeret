@@ -31,6 +31,14 @@ jobs:
               except Exception as exc:
                   print('FRENDE2024_ERROR',quarter,type(exc).__name__,str(exc)[:300],flush=True)
                   try:
+                      with urllib.request.urlopen(row['pdf_url'],timeout=20) as response:blob=response.read(10_000_000)
+                      with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                          for i,page in enumerate(pdf.pages):
+                              content=page.extract_text(layout=False) or ''
+                              if 'Premieinntekter for egen regning' in content and 'Teknisk regnskap for skadeforsikring' in content:
+                                  print('FRENDE2024_PDF_PAGE',quarter,i+1,repr(content[:3400]),flush=True)
+                  except Exception as err:print('FRENDE2024_READ_ERROR',repr(err),flush=True)
+                  try:
                       with urllib.request.urlopen(row['pdf_url'],timeout=15) as resp:
                           print('FRENDE_REDIRECT',quarter,resp.geturl(),resp.headers.get('Content-Type'),flush=True)
                   except Exception as e:print('FRENDE_REDIRECT_ERROR',repr(e),flush=True)
