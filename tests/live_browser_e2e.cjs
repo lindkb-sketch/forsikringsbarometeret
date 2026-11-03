@@ -100,7 +100,7 @@ async function main(){
     Math.abs(numeric(subsidiary.cells[5])-sourceMetric('expense_ratio'))<.11,
     JSON.stringify(subsidiary).slice(0,750));
   check('Frende subsidiary row links to original official PDF',
-    subsidiary.source.startsWith('https://')&&/\\.pdf(?:\\?|$)/i.test(subsidiary.source)&&
+    subsidiary.source.startsWith('https://')&&/\.pdf(?:\?|$)/i.test(subsidiary.source)&&
     subsidiary.label.includes('Frende Skadeforsikring AS'),
     JSON.stringify(subsidiary).slice(0,750));
   await page.screenshot({path:'data/browser_frende_skade.png',fullPage:true});
