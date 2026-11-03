@@ -25,6 +25,9 @@ permissions:
 # Serialize with the full financial deployment; avoid overwriting its Pages artifact.
 concurrency:
   group: forsikringsbarometeret-publish
+  # GitHub's default queue=single cancels an older pending publication.
+  # queue=max preserves pending runs while keeping Pages deployment serialized.
+  queue: max
   cancel-in-progress: false
 jobs:
   quote-refresh:
