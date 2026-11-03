@@ -1,6 +1,15 @@
 name: Seven-insurer synthetic future-quarter end-to-end drill
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/future_quarter_e2e_drill.py'
+      - 'scripts/quarterly_import_contract.py'
+      - 'scripts/verify_expected_published_quarters.py'
+      - 'tests/test_sampo_nordic_release_gate.py'
+      - 'tests/future_quarter_browser.cjs'
+      - '.github/workflows/future-quarter-drill.yml'
   schedule:
     - cron: '35 5 * * 1'
   push:
