@@ -123,11 +123,17 @@ async function main(){
     }),JSON.stringify(subsidiary).slice(0,1150));
   const thisRevenue=sourceMetric(year,'insurance_revenue');
   const priorRevenue=sourceMetric(year-1,'insurance_revenue');
-  check('Frende premium income growth is source-verified and shows prior-year premium and arrow',
-    priorRevenue>0&&Math.abs(numeric(subsidiary.current[1])-
-      100*(thisRevenue/priorRevenue-1))<.11&&
-    Math.abs(numeric(subsidiary.prior[1].split(':').at(-1))-priorRevenue)<.06&&
-    subsidiary.arrow[1].icon===(thisRevenue>=priorRevenue?'▲':'▼'),
+  const oldRevenue=skadeFeed.observations.find(r=>r.year===year-2&&
+    r.quarter===quarter&&r.period_type==='quarter'&&
+    r.source_entity==='Frende Skadeforsikring AS'&&
+    r.metric==='insurance_revenue')?.value;
+  const previousGrowth=oldRevenue>0?100*(priorRevenue/oldRevenue-1):null;
+  check('Frende Q3 prior-year growth is percentage, never prior-year premium amount',
+    priorRevenue>0&&previousGrowth!==null&&
+    Math.abs(numeric(subsidiary.current[1])-100*(thisRevenue/priorRevenue-1))<.11&&
+    Math.abs(numeric(subsidiary.prior[1])-previousGrowth)<.11&&
+    subsidiary.prior[1].includes('%')&&!subsidiary.prior[1].includes('premier')&&
+    subsidiary.arrow[1].icon===(100*(thisRevenue/priorRevenue-1)>previousGrowth?'▲':'▼'),
     JSON.stringify(subsidiary).slice(0,950));
   check('Frende subsidiary row links to original official PDF',
     subsidiary.source.startsWith('https://')&&/\.pdf(?:\?|$)/i.test(subsidiary.source)&&
@@ -135,6 +141,40 @@ async function main(){
     JSON.stringify(subsidiary).slice(0,750));
   await page.screenshot({path:'data/browser_frende_skade.png',fullPage:true});
   report.screenshots.push('data/browser_frende_skade.png');
+  // Protector Norway must be populated from NORWAY data, including
+  // verified current/prior-year ratios and previous-year GROWTH rate.
+  await page.evaluate(()=>show('Protector',true));
+  await page.locator('tr.protector-norway-verified-row').waitFor({state:'visible',timeout:15000});
+  const protector=await page.evaluate(()=>{
+    const row=document.querySelector('tr.protector-norway-verified-row');
+    return {count:document.querySelectorAll('tr.protector-norway-verified-row').length,
+      cells:[...(row?.cells||[])].map(c=>({main:c.querySelector('strong')?.innerText||'',
+        prior:c.querySelector('.table-prior')?.innerText||'',text:c.innerText,
+        arrow:c.querySelector('.qoq')?.innerText||''})),
+      pdf:row?.querySelector('a[aria-label="Protector Norge offisiell PDF"]')?.href||''};
+  });
+  const protFeed=feed.observations.filter(r=>r.company==='Protector'&&
+    r.scope==='norway'&&r.quarter===quarter&&r.period_type==='quarter');
+  const protMetric=(year,metric)=>protFeed.find(r=>r.year===year&&r.metric===metric)?.value;
+  const p2024=protMetric(year-2,'insurance_revenue');
+  const p2025=protMetric(year-1,'insurance_revenue');
+  const p2026=protMetric(year,'insurance_revenue');
+  const priorPct=p2024>0?100*(p2025/p2024-1):null;
+  check('Protector Norway has real revenue growth % in 2026 and 2025',
+    protector.count===1&&priorPct!==null&&
+    Math.abs(numeric(protector.cells[1].main)-100*(p2026/p2025-1))<.11&&
+    Math.abs(numeric(protector.cells[1].prior)-priorPct)<.11&&
+    protector.cells[1].prior.includes('%')&&protector.cells[1].arrow,
+    JSON.stringify(protector).slice(0,1150));
+  check('Protector Norway ratio comparisons and PDF source shown in Norway row',
+    ['insurance_service_result','combined_ratio','loss_ratio','expense_ratio']
+      .every((name,i)=>Math.abs(numeric(protector.cells[i+2].main)-protMetric(year,name))<.12&&
+        Math.abs(numeric(protector.cells[i+2].prior)-protMetric(year-1,name))<.12&&
+        !!protector.cells[i+2].arrow)&&
+    protector.pdf.toLowerCase().includes('.pdf'),
+    JSON.stringify(protector).slice(0,1150));
+  await page.screenshot({path:'data/browser_protector_norway.png',fullPage:true});
+  report.screenshots.push('data/browser_protector_norway.png');
   await page.evaluate(()=>show('home',true));
   const metrics={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',
       insurance_revenue:'revenue',insurance_service_result:'result'};
