@@ -167,11 +167,11 @@ def parse_legacy_2024_revenue(page_text,year,quarter,url,digest,page_number):
     if quarter==1:
         if not ('01.01-31.03.2024' in heading or '1.kv.2024' in heading):
             raise ValueError('Wrong Q1 source period')
-    elif not re.search(rf'\\b{quarter}\\.\\s*kv\\.?\\s*2024\\b',heading):
+    elif not re.search(rf'\b{quarter}\.\s*kv\.?\s*2024\b',heading):
         raise ValueError('Wrong legacy Q2/Q3 source period')
     source=[line for line in lines if line.startswith('Premieinntekter for egen regning ')]
     if len(source)!=1:raise ValueError('Missing or ambiguous historical premium source')
-    tokens=re.findall(r'\\d+',source[0].split('Premieinntekter for egen regning ',1)[1])
+    tokens=re.findall(r'\d+',source[0].split('Premieinntekter for egen regning ',1)[1])
     expected=3 if quarter==1 else 5
     from functools import lru_cache
     @lru_cache(None)
@@ -208,7 +208,7 @@ def verify_legacy_2024_revenue(blob,url,quarter):
     digest=hashlib.sha256(blob).hexdigest()
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
         texts=[page.extract_text(layout=False) or '' for page in pdf.pages]
-    if ENTITY not in '\\n'.join(texts):
+    if ENTITY not in '\n'.join(texts):
         raise ValueError('Original 2024 PDF does not identify Frende Skadeforsikring AS')
     matches=[]
     for page,text in enumerate(texts,1):
