@@ -23,6 +23,28 @@ assert(Math.abs(parse(view.cr)-(80+i))<0.15,c+' CR mismatch: '+view.cr);
 assert(Math.abs(parse(view.revenue)-(1000+110*i))<0.6,c+' revenue mismatch: '+view.revenue);
 assert(view.source?.includes('simulation.invalid'),c+' missing isolated synthetic source');
 }
+// Sampo Q4 must show real quarter-bound Nordic segment values in the UI,
+// not stale static values or values borrowed from group totals.
+const sampoSegments=await page.evaluate(()=>JSON.parse(JSON.stringify(segmentData.Sampo)));
+for(const [segment,expectedRevenue,expectedCR] of [
+  ['Private Nordic',700,82],['Nordic Commercial',800,83]
+]){
+ const view=sampoSegments.find(x=>x.name===segment);
+ assert(view,'Sampo segment missing in actual browser: '+segment);
+ assert(Math.abs(Number(view.cr.replace(/[^0-9,]/g,'').replace(',','.'))-expectedCR)<0.15,
+   segment+' combined ratio is not current Q4: '+view.cr);
+ assert(view.note?.includes('Q4 2026')&&view.note?.includes('simulation.invalid'),
+   segment+' lacks quarter-specific source evidence');
+}
+const sampoFeed=await page.evaluate(()=>FBQuarterly.verified.observations.filter(r=>
+ r.company==='Sampo'&&r.year===2026&&r.quarter===4&&
+ r.period_type==='quarter'&&r.test_only_synthetic));
+for(const segment of [null,'Private Nordic','Nordic Commercial']){
+ const scope=segment===null?'group':'reported_segment';
+ const rows=sampoFeed.filter(r=>r.scope===scope&&(segment===null||r.segment===segment));
+ assert(new Set(rows.map(r=>r.metric)).size===5,
+   'Sampo '+(segment||'Group')+' missing metrics in browser verified feed');
+}
 for(const mode of ['quarter','ytd']){
  for(const company of companies){
   const detail=await page.evaluate(({mode,company})=>{

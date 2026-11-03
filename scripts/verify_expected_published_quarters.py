@@ -46,6 +46,13 @@ def validate(rows):
                         errors.append(f'Tryg Q{quarter} {year} {scope} revenue growth units missing/incompatible')
                     if current and not prior:
                         errors.append(f'Tryg Q{quarter} {year} {scope} revenue growth prior period missing')
+            if company=='Sampo' and (year,quarter)>=(2026,3):
+                # A newly released group result cannot be published without
+                # Private Nordic and Nordic Commercial in the same official quarter.
+                for segment in ('Private Nordic','Nordic Commercial'):
+                    absent=METRICS-metrics(company,year,quarter,'reported_segment',segment)
+                    if absent:
+                        errors.append(f'Sampo Q{quarter} {year} {segment} missing {sorted(absent)}')
             if company=='Gjensidige':
                 for scope,segment in [('norway',None),('reported_segment','Private Norway'),
                                       ('reported_segment','Commercial Norway')]:

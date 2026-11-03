@@ -33,6 +33,28 @@ def decode_report(company,raw):
                  source_url=source,source_type="official_quarterly_report",
                  source_scope="group",source_page=1,source_sha256=digest,
                  status="reported",test_only_synthetic=True) for m,v in doc["metrics"].items()]
+SAMPO_SEGMENTS=('Private Nordic','Nordic Commercial')
+def sampo_segment_observations():
+    """Synthetic issuer-segment payload in the same source schema as production."""
+    rows=[]
+    for index,segment in enumerate(SAMPO_SEGMENTS):
+        values={'insurance_revenue':700+100*index,
+                'insurance_service_result':126+18*index,
+                'combined_ratio':82+index,'loss_ratio':68+index,
+                'expense_ratio':14}
+        raw=json.dumps({'issuer':'Sampo','segment':segment,'year':YEAR,
+                        'quarter':QUARTER,'metrics':values},sort_keys=True).encode()
+        for metric,value in values.items():
+            rows.append(dict(company='Sampo',year=YEAR,quarter=QUARTER,
+                scope='reported_segment',segment=segment,source_scope='reported_segment',
+                period_type='quarter',metric=metric,value=value,
+                unit='percent' if metric.endswith('ratio') else 'EURm',
+                source_url='https://simulation.invalid/sampo/q4-2026.pdf',
+                source_type='official_quarterly_report',source_page=2+index,
+                source_sha256=hashlib.sha256(raw).hexdigest(),
+                status='reported',test_only_synthetic=True))
+    return rows
+
 def exercise(original):
     baseline=copy.deepcopy(original)
     observed=[]
@@ -40,6 +62,7 @@ def exercise(original):
     for i,c in enumerate(COMPANIES):
         report_bytes=fixture(c,i)
         observed.extend(decode_report(c,report_bytes))
+    observed.extend(sampo_segment_observations())
     prepared=copy.deepcopy(baseline)
     prepared["observations"].extend(observed)
     validation=audit(prepared)
@@ -51,6 +74,16 @@ def exercise(original):
         raise AssertionError("Not all seven simulated reports reached verified feed")
     if set(editorial["periods"]["Q4 2026"]["by_company"])!=set(COMPANIES):
         raise AssertionError("Not all seven simulated reports reached quarterly brief")
+    # Reported Nordic segments must survive source -> audit -> feed. Group
+    # and both Nordic segments are independent official-report views.
+    for segment in SAMPO_SEGMENTS:
+        matching=[r for r in feed['observations'] if
+                  r.get('test_only_synthetic') and r.get('company')=='Sampo'
+                  and r.get('scope')=='reported_segment' and
+                  r.get('segment')==segment and
+                  (r.get('year'),r.get('quarter'))==(YEAR,QUARTER)]
+        if {r['metric'] for r in matching}!=set(METRICS):
+            raise AssertionError('Sampo '+segment+' missing from published feed')
     # Negative drill: wrong issuer, absent ratio, and invalid combined-ratio arithmetic.
     for mutated in (
         {**json.loads(fixture(COMPANIES[0],0)),"issuer":"Untrusted"},
@@ -63,7 +96,7 @@ def exercise(original):
     next(x for x in damaged["observations"] if x.get("test_only_synthetic") and x["metric"]=="combined_ratio")["value"]=12
     if audit(damaged)["ok"]:raise AssertionError("Contradictory ratio did not fail closed")
     return feed,editorial,{"simulation":True,"report_transport":"synthetic_in_memory_not_official_pdf","real_issuer_parser_verified":False,
-              "companies":list(COMPANIES),"quarter":"Q4 2026","synthetic_observations":len(observed),
+              "companies":list(COMPANIES),"quarter":"Q4 2026","synthetic_observations":len(observed),"sampo_segments":list(SAMPO_SEGMENTS),
               "audit_ok":True,"editorial_companies":len(editorial["periods"]["Q4 2026"]["by_company"]),
               "negative_cases_passed":3,"production_data_modified":False}
 def main():

@@ -1,6 +1,15 @@
 name: Seven-insurer synthetic future-quarter end-to-end drill
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/future_quarter_e2e_drill.py'
+      - 'scripts/quarterly_import_contract.py'
+      - 'scripts/verify_expected_published_quarters.py'
+      - 'tests/test_sampo_nordic_release_gate.py'
+      - 'tests/future_quarter_browser.cjs'
+      - '.github/workflows/future-quarter-drill.yml'
   schedule:
     - cron: '35 5 * * 1'
   push:
@@ -46,7 +55,8 @@ jobs:
           from pathlib import Path
           p=Path(sys.argv[1])/'data/next_quarter_drill.json'
           result=json.loads(p.read_text())
-          assert result['synthetic_observations']==35 and result['editorial_companies']==7
+          assert result['synthetic_observations']==45 and result['editorial_companies']==7
+          assert result['sampo_segments']==['Private Nordic','Nordic Commercial']
           assert result['negative_cases_passed']==3
           print('SEVEN_QUARTER_SIMULATION PASS',result)
           PY
