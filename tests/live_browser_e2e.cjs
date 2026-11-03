@@ -284,9 +284,25 @@ async function main(){
     !companyComment.includes('Q'+quarter+' Q'+quarter+' '+(year-1)),companyComment.slice(0,350));
   const quotesOnCompany=await page.locator('.stock-section').first().innerText();
   const quote=stocks.prices?.Gjensidige;
-  if(quote)check('Last delayed closing price in existing company stock panel',
-       quotesOnCompany.includes(String(quote.close))&&quotesOnCompany.includes(quote.trading_date),
+  // A legacy or stale quote cannot be presented as a current graph.
+  // A current validated quote must display its source date and ticker.
+  const validStockQuote=quote?.availability==='available'&&
+    quote.symbol==='GJF.OL'&&quote.currency==='NOK'&&
+    Array.isArray(quote.history)&&quote.history.length>=2&&
+    quote.history.every(row=>/^\\d{4}-\\d{2}-\\d{2}$/.test(row.date)&&
+      Number.isFinite(row.price)&&row.price>0)&&
+    quote.history.at(-1).price===quote.close;
+  if(validStockQuote){
+    check('Verified daily quotes show ticker and source observation date',
+       quotesOnCompany.includes('GJF.OL')&&
+       quotesOnCompany.includes(quote.history.at(-1).date),
        quotesOnCompany.slice(0,420));
+  }else{
+    check('Unavailable or legacy quotes never render fabricated prices',
+       quotesOnCompany.includes('Ingen pålitelige, oppdaterte kursdata')&&
+       !quotesOnCompany.includes('SISTE KURSOBSERVASJON'),
+       quotesOnCompany.slice(0,420));
+  }
   // Each company detail must show its own profitability graph and source-derived
   // prior-year revenue growth; do not accept the homepage's selected issuer.
   for(const issuer of ['Gjensidige','Protector']){

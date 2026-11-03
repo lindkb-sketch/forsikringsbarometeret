@@ -17,5 +17,5 @@ class AutomationTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    out=Path(d)/'stocks.json';out.write_text(json.dumps({'prices':{'Tryg':{'close':100,'trading_date':'2026-10-01'}}}))
    def fail(symbol):raise ConnectionError('Offline')
-   result=update(fail,out);self.assertEqual(result['prices']['Tryg']['close'],100);self.assertEqual(len(result['errors']),5)
+   result=update(fail,out);self.assertNotIn('Tryg',result['prices']);self.assertEqual(len(result['errors']),5)
 if __name__=='__main__':unittest.main()

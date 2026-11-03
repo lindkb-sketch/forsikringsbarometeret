@@ -16,15 +16,24 @@ class FutureAutomation(unittest.TestCase):
    original={"prices":{"Gjensidige":{"symbol":"GJF.OL","close":200,"currency":"NOK","trading_date":"2026-10-20","source_url":"https://query1.finance.yahoo.com/previous","price_type":"delayed_daily_close"}}}
    path.write_text(json.dumps(original))
    result=stocks.update(fetcher=lambda symbol: (_ for _ in ()).throw(ConnectionError("503")),out=path)
-   self.assertEqual(result["prices"]["Gjensidige"],original["prices"]["Gjensidige"])
+   self.assertEqual(result["prices"]["Gjensidige"]["close"],200)
+   self.assertEqual(result["prices"]["Gjensidige"]["availability"],"stale")
+   self.assertEqual(result["prices"]["Gjensidige"]["stale_reason"],"503")
    self.assertEqual(set(result["errors"]),set(stocks.SYMBOLS))
    self.assertEqual(result["unlisted"],["Fremtind","Frende"])
  def test_stock_prices_new_verified_closes_and_idempotence(self):
   with tempfile.TemporaryDirectory() as d:
    path=Path(d)/"stocks.json"
-   def sample(symbol):return {"symbol":symbol,"close":101.25,"currency":"NOK","trading_date":"2026-10-23","source_url":"https://query1.finance.yahoo.com/chart","price_type":"delayed_daily_close"}
-   a=stocks.update(fetcher=sample,out=path)
-   b=stocks.update(fetcher=sample,out=path)
+   now=dt.datetime(2026,11,3,12,tzinfo=dt.timezone.utc)
+   def sample(symbol):
+    suffix=next(s for s in stocks.MARKETS if symbol.endswith(s))
+    return {"symbol":symbol,"close":101.25,
+      "currency":stocks.MARKETS[suffix][2],"trading_date":"2026-11-03",
+      "observed_at":now.isoformat(),"source_url":"https://finance.yahoo.com",
+      "history":[{"date":"2026-11-02","price":100},{"date":"2026-11-03","price":101.25}],
+      "price_type":"delayed_daily_observation"}
+   a=stocks.update(fetcher=sample,out=path,now=now)
+   b=stocks.update(fetcher=sample,out=path,now=now)
    self.assertEqual(a["prices"],b["prices"])
    self.assertEqual(len(b["prices"]),len(stocks.SYMBOLS))
  def test_news_rejects_untrusted_and_unrelated(self):
