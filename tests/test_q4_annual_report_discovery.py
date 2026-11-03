@@ -1,7 +1,6 @@
 """Q4 reports and annual reports must supply an explicit isolated quarter."""
 import unittest
 import subprocess
-import json
 from pathlib import Path
 from scripts.discover_reports import discover
 
@@ -27,7 +26,7 @@ class Q4AnnualDiscoveryTests(unittest.TestCase):
  def test_q4_guard_is_executable_not_hidden_inside_comment(self):
   runtime=(ROOT/'scripts/quarterly_runtime.js').read_text(encoding='utf-8')
   fn='  function addQuarter('+runtime.split('  function addQuarter(',1)[1].split('  function addYtd(',1)[0]
-  self.assertNotIn(r'\\n',fn)
+  self.assertNotIn(r'\n',fn)
   js=r"""
   const feed = new Map([
     ['2026:3:insurance_revenue', {value:300,unit:'NOKm',scope:'group'}],
