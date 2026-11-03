@@ -58,11 +58,15 @@ class MarketDataTests(unittest.TestCase):
         browser=(ROOT/'tests/live_browser_e2e.cjs').read_text(encoding='utf-8')
         self.assertIn(r'/^\d{4}-\d{2}-\d{2}$/',browser)
         self.assertNotIn(r'/^\\d{4}-\\d{2}-\\d{2}$/',browser)
-    def test_stock_refresh_remains_part_of_automatic_pipeline(self):
-        workflow=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
+    def test_stock_refresh_is_independent_of_quarterly_pipeline(self):
+        workflow=(ROOT/'.github/workflows/stock-prices.yml').read_text(encoding='utf-8')
+        quarterly=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
         self.assertIn('python scripts/update_stock_prices.py',workflow)
-        self.assertLess(workflow.index('python scripts/update_stock_prices.py'),
-                        workflow.index('actions/deploy-pages@v4'))
+        self.assertIn('python scripts/verify_stock_feed.py',workflow)
+        self.assertIn('actions/deploy-pages@v4',workflow)
+        self.assertIn('forsikringsbarometeret-publish',workflow)
+        self.assertNotIn('python scripts/update_stock_prices.py',quarterly)
+        self.assertIn("'data/stock_prices.json'",quarterly)
 
 if __name__=='__main__':
     unittest.main()

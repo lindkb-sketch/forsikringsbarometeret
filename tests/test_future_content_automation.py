@@ -64,7 +64,11 @@ class FutureAutomation(unittest.TestCase):
  def test_automatic_workflow_preserved(self):
   workflow=(ROOT/".github/workflows/update.yml").read_text()
   self.assertIn("cron: '17,47 * * * *'",workflow)
-  for name in ("ingest_media_news.py","update_stock_prices.py","run_pipeline.py","live_browser_e2e.cjs"):
+  for name in ("ingest_media_news.py","run_pipeline.py","live_browser_e2e.cjs"):
    self.assertIn(name,workflow)
+  quote_workflow=(ROOT/".github/workflows/stock-prices.yml").read_text()
+  self.assertIn("update_stock_prices.py",quote_workflow)
+  self.assertIn("verify_public_stock_prices.py",quote_workflow)
+  self.assertNotIn("python scripts/update_stock_prices.py",workflow)
 
 if __name__=="__main__":unittest.main()

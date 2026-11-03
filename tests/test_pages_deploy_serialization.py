@@ -16,6 +16,16 @@ class DeployConcurrencyTests(unittest.TestCase):
    publishing.append(path.name)
    self.assertRegex(text,r'(?m)^concurrency:\s*\n\s*group:\s*'+re.escape(GROUP)+r'\s*$')
    self.assertRegex(text,r'(?m)^\s*cancel-in-progress:\s*false\s*$')
-  self.assertEqual(publishing,['update.yml'],publishing)
+  self.assertEqual(sorted(publishing),['stock-prices.yml','update.yml'],publishing)
+  quote=(WORKFLOWS/'stock-prices.yml').read_text(encoding='utf-8')
+  full=(WORKFLOWS/'update.yml').read_text(encoding='utf-8')
+  # The lightweight job may only write verified stock JSON, never financial observations.
+  self.assertIn('python scripts/verify_stock_feed.py',quote)
+  self.assertIn('python scripts/verify_deployment_tree.py',quote)
+  self.assertIn('python scripts/verify_public_stock_prices.py',quote)
+  self.assertIn('if: steps.changes.outputs.changed',quote)
+  self.assertNotIn('python scripts/run_pipeline.py',quote)
+  self.assertIn('python scripts/run_pipeline.py',full)
+  self.assertIn('python scripts/verify_public_pages.py',full)
 
 if __name__=='__main__': unittest.main()

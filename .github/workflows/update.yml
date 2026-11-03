@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths-ignore:
+      - 'data/stock_prices.json'
 permissions:
   contents: write
   pages: write
@@ -65,8 +67,6 @@ jobs:
         run: python scripts/import_frende_skade.py
       - name: Fetch independent editorial media headlines
         run: python scripts/ingest_media_news.py || echo "::warning::Media RSS unavailable; retaining last verified news feed"
-      - name: Fetch delayed public stock quotes (independent of financial import)
-        run: python scripts/update_stock_prices.py
       - name: Batch verify missing official PDF fingerprints (11 unique documents)
         run: python scripts/backfill_source_pdf_fingerprints.py
       - name: Integrated quarterly pipeline (fail closed)
