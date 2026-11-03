@@ -54,7 +54,8 @@ jobs:
 
               from import_protector_norway_historical_pdf import parse_norway_revenue
               import hashlib
-              all_pages=[(n+1,p.extract_text(layout=False) or '') for n,p in enumerate(pdf.pages)]
+              with pdfplumber.open(io.BytesIO(blob)) as pdf:
+                  all_pages=[(n+1,p.extract_text(layout=False) or '') for n,p in enumerate(pdf.pages)]
               data=parse_norway_revenue(all_pages,url,hashlib.sha256(blob).hexdigest())
               print('PROTECTOR_HISTORICAL_IMPORT',[(r['year'],r['value']) for r in data],flush=True)
           except Exception as exc:print('PROTECTOR2024_ERROR',type(exc).__name__,str(exc)[:250],flush=True)
