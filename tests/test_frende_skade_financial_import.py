@@ -44,6 +44,38 @@ class FrendeSkadePDFTests(unittest.TestCase):
         self.assertTrue(all(r['source_sha256']=='a'*64 for r in rows))
         self.assertTrue(all('fjorårskolonne' in r['source_definition'] for r in rows if r['year']==2025))
 
+    def test_future_2027_quarter_automatically_imports_2026_comparisons(self):
+        # The importer must not contain a hardcoded 2026 period boundary.
+        future=Q3.replace('2026','2027').replace('2025','2026')
+        rows=parse_page(future,2027,3,PDF,'b'*64,3)
+        self.assertEqual({r['year'] for r in rows},{2026,2027})
+        self.assertEqual(len(rows),20)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2026 and
+                 r['period_type']=='quarter' and r['metric']=='combined_ratio'),
+            79.7)
+    def test_q1_negative_prior_year_result_is_preserved(self):
+        q1='''Resultatregnskap 1.kv.2026 1.kv.2025 31.12.2025
+Teknisk regnskap for skadeforsikring
+Premieinntekter for egen regning 893535 773391 3275575
+Erstatningskostnader for egen regning 685018 649203 2231872
+Forskringsrelaterte driftskostnader 150421 140599 598135
+Resultat av teknisk regnskap i skadeforsikring 58095 -16410 445567
+Nøkkelinformasjon
+Kostnadsandel % 16,8% 18,2% 18,3%
+Skade % E/R 76,7% 83,9% 68,1%
+Combined Ratio 93,5% 102,1% 86,4%'''
+        rows=parse_page(q1,2026,1,PDF,'c'*64,18)
+        self.assertEqual(len(rows),20)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2025 and
+                 r['period_type']=='quarter' and r['metric']=='insurance_service_result'),
+            -16.41)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2025 and
+                 r['period_type']=='quarter' and r['metric']=='combined_ratio'),
+            102.1)
+
     def test_wrong_period_and_mismatching_ratio_rejected(self):
         with self.assertRaisesRegex(ValueError,'year/quarter mismatch'):
             parse_page(Q3,2026,2,PDF,'a'*64,3)
