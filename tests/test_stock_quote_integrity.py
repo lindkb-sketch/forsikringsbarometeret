@@ -53,7 +53,6 @@ class MarketDataTests(unittest.TestCase):
                           '01.01–19.10.2026','stockCsvInput('):
             self.assertNotIn(forbidden,html)
         self.assertIn("quote?.availability==='available'",html)
-        self.assertIn("quote.history",html) if False else None
         self.assertIn("stockCSV[c]=history.map(",html)
     def test_stock_refresh_remains_part_of_automatic_pipeline(self):
         workflow=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
