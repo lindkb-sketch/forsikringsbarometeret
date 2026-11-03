@@ -432,43 +432,70 @@
       cards.insertAdjacentElement('afterend',panel);
     }
     if(c==='Frende'){
-      const subsidiary=document.createElement('section');
-      subsidiary.className='panel frende-skade-pdf-disclosure';
-      subsidiary.setAttribute('aria-label','Frende Skadeforsikring AS – separate kvartalsrapporter');
-      const escapeHtml=value=>String(value).replace(/[&<>"']/g,ch=>({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-      const reports=Array.isArray(frendeSkadeReports?.reports)
-        ?frendeSkadeReports.reports.filter(r=>Number.isInteger(r.year)&&r.quarter>=1&&r.quarter<=4&&
-            typeof r.source_url==='string'&&/^https:\/\//.test(r.source_url)).sort((a,b)=>b.year-a.year||b.quarter-a.quarter):[];
-      const link=r=>'<a href="'+escapeHtml(r.source_url)+
-        '" target="_blank" rel="noopener noreferrer">Q'+r.quarter+' '+r.year+' <span aria-hidden="true">↗</span></a>';
-      const currentYear=selection?.year||new Date().getFullYear();
-      const recent=reports.filter(r=>r.year===currentYear);
-      const archived=reports.filter(r=>r.year!==currentYear);
-      const recentLinks=recent.length?'<nav class="frende-skade-report-links" aria-label="Kvartalsrapporter for '+currentYear+'">'+
-        recent.map(link).join('')+'</nav>':'<p>Ingen kvartalsrapport registrert for '+currentYear+'.</p>';
-      const archiveLinks=archived.length?'<details class="frende-skade-history"><summary>Eldre kvartalsrapporter ('+
-        archived.length+')</summary><nav class="frende-skade-report-links" aria-label="Eldre rapporter">'+
-        archived.map(link).join('')+'</nav></details>':'';
-      const financialRows=Array.isArray(frendeSkadeFinancials?.observations)
-        ?frendeSkadeFinancials.observations.filter(r=>r.year===selection.year&&r.quarter===selection.quarter&&
-          r.period_type===(ytdMode()?'ytd':'quarter')&&r.source_entity==='Frende Skadeforsikring AS'):[];
-      const wanted=[['insurance_revenue','Rapporterte inntekter'],['combined_ratio','Combined ratio'],
-                    ['loss_ratio','Skadeprosent'],['expense_ratio','Kostnadsprosent']];
-      const metrics=Object.fromEntries(financialRows.map(r=>[r.metric,r]));
-      const complete=wanted.every(([key])=>metrics[key]&&Number.isFinite(metrics[key].value));
-      const detail=complete?'<div class="tablewrap"><table><thead><tr><th>Måltall</th><th>Q'+selection.quarter+
-        ' '+selection.year+(ytdMode()?' HIÅ':'')+'</th><th>Kilde</th></tr></thead><tbody>'+
-        wanted.map(([key,label])=>'<tr><td>'+label+'</td><td>'+
-          escapeHtml(fmt(metrics[key].value))+' '+escapeHtml(metrics[key].unit||'')+'</td><td><a href="'+
-          escapeHtml(metrics[key].source_url)+'" target="_blank" rel="noopener noreferrer">Rapport ↗</a></td></tr>').join('')+
-        '</tbody></table></div>':'<p>Ingen fullstendig kildekontrollert tallserie for valgt kvartal. Konserntall brukes ikke som erstatning.</p>';
-      subsidiary.innerHTML='<h3>Frende Skadeforsikring AS – egne kvartalsrapporter</h3>'+
-        '<p>Frende Holding AS konsern og Frende Skadeforsikring AS er forskjellige rapporteringsenheter. '+
-        'Konserntallene ovenfor gjelder ikke automatisk skadeforsikringsselskapet.</p>'+
-        detail+recentLinks+archiveLinks+
-        '<p>Skadeselskapets tall har egen juridisk enhet og egen rapportkilde, uavhengig av Frende Holding.</p>';
-      fragment.appendChild(subsidiary);
+      // Frende Skadeforsikring belongs IN the existing Norge segment row.
+      // Never duplicate the source numbers in a separate standalone table.
+      const segmentRow=[...fragment.querySelectorAll('.tablewrap tbody tr')].find(tr=>
+        /Frende Skadeforsikring AS/.test(tr.cells[0]?.textContent||''));
+      if(segmentRow&&selection){
+        const periodType=ytdMode()?'ytd':'quarter';
+        const all=Array.isArray(frendeSkadeFinancials?.observations)
+          ?frendeSkadeFinancials.observations:[];
+        const observations=all.filter(r=>r.year===selection.year&&
+          r.quarter===selection.quarter&&r.period_type===periodType&&
+          r.scope==='subsidiary'&&r.source_entity==='Frende Skadeforsikring AS'&&
+          r.status==='reported'&&Number.isFinite(r.value)&&
+          r.source_type==='official_quarterly_report'&&
+          /^https:\/\//.test(r.source_url||'')&&
+          /\.pdf(?:\?|$)/i.test(r.source_url||'')&&
+          /^[a-f0-9]{64}$/i.test(r.source_sha256||'')&&r.source_page>=1);
+        const metrics=Object.fromEntries(observations.map(r=>[r.metric,r]));
+        const formatMetric=(metric,unit)=>{
+          const r=metrics[metric];
+          if(!r||r.unit!==unit)return null;
+          return fmt(r.value,unit==='percent')+(unit==='NOKm'?' MNOK':'');
+        };
+        const cells=[
+          null,
+          formatMetric('insurance_service_result','NOKm'),
+          formatMetric('combined_ratio','percent'),
+          formatMetric('loss_ratio','percent'),
+          formatMetric('expense_ratio','percent')
+        ];
+        // No fabricated year-on-year revenue growth: there are no independently
+        // audited subsidiary 2025 comparison observations in this feed yet.
+        const prior=all.find(r=>r.year===selection.year-1&&r.quarter===selection.quarter&&
+          r.period_type===periodType&&r.scope==='subsidiary'&&
+          r.source_entity==='Frende Skadeforsikring AS'&&
+          r.metric==='insurance_revenue'&&r.status==='reported'&&Number.isFinite(r.value)&&
+          r.unit==='NOKm'&&/\.pdf(?:\?|$)/i.test(r.source_url||''));
+        const revenue=metrics.insurance_revenue;
+        if(revenue?.unit==='NOKm'&&prior?.value>0)
+          cells[0]=fmt(100*(revenue.value/prior.value-1),true);
+        for(let i=0;i<cells.length;i++){
+          const cell=segmentRow.cells[i+1];
+          if(!cell)continue;
+          cell.textContent=cells[i]||'—';
+          cell.setAttribute('data-frende-skade-metric',
+            ['growth','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'][i]);
+        }
+        segmentRow.classList.add('frende-skade-verified-row');
+        segmentRow.setAttribute('data-frende-skade-period',
+          'Q'+selection.quarter+' '+selection.year+(ytdMode()?' HIÅ':''));
+        const source=metrics.insurance_service_result||metrics.combined_ratio;
+        if(source){
+          const caption=document.createElement('small');
+          caption.className='frende-skade-source';
+          const link=document.createElement('a');
+          link.href=source.source_url;
+          link.target='_blank';link.rel='noopener noreferrer';
+          link.textContent='Offisiell PDF · Q'+selection.quarter+' '+selection.year+' ↗';
+          link.setAttribute('aria-label','Frende Skadeforsikring AS offisiell PDF');
+          caption.appendChild(document.createTextNode(' '));
+          caption.appendChild(link);
+          segmentRow.cells[0].appendChild(caption);
+          segmentRow.setAttribute('data-financial-source','verified-frende-skade-pdf');
+        }
+      }
     }
     return fragment.innerHTML+growthMatrixHtml(c);
   }
