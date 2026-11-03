@@ -17,6 +17,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_verified_dashboard.py' -v
           python -m unittest discover -s tests -p 'test_q4_runtime_safety.py' -v
+          python -m unittest discover -s tests -p 'test_stock_quote_integrity.py' -v
           node --check scripts/quarterly_runtime.js
           python -m py_compile scripts/build_editorial.py
           node --check tests/live_browser_e2e.cjs
