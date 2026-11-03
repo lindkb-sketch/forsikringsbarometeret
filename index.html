@@ -711,6 +711,16 @@ main{padding:30px clamp(20px,3vw,46px) 60px}
  margin:0 0 0 7px!important;border-radius:4px!important;
  font-size:12px!important;line-height:1!important;font-weight:800!important;
 }
+</style><style id="stock-verified-dashboard-2026">
+.stock-section .stock-figures{display:grid;grid-template-columns:1fr;gap:9px}
+.stock-section .stock-figure{min-height:90px;padding:13px 15px;border:1px solid #e0e9ed}
+.stock-section .stock-figure strong{font-size:clamp(20px,2vw,27px);font-variant-numeric:tabular-nums}
+.stock-section [data-stock-range][aria-pressed="true"]{background:#e5f3f5!important;border-color:#13818b!important;color:#076873;font-weight:750}
+.stock-section .stock-chart-actions[aria-label="Velg kursperiode"]{justify-content:flex-start;gap:6px;margin:10px 0 16px}
+.stock-section .stock-chart-actions[aria-label="Velg kursperiode"] button:focus-visible{outline:3px solid #13818b;outline-offset:2px}
+.stock-section .stock-fineprint{line-height:1.6}
+@media(max-width:1050px){.stock-section .stock-year-grid{grid-template-columns:1fr}.stock-section .stock-figures{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.stock-section .stock-figures{grid-template-columns:1fr}}
 </style></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><div class="label">KONKURRENTER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
 const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');companies.forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
 const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c==='Fremtind'?'home':c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
@@ -992,10 +1002,17 @@ function drawStockYear(c,rows,label){
  const meta=stockMarketConfig[c], currency=meta.currency;
  const price=stockFmt(last.price),change=(pct>=0?'+':'')+stockFmt(pct)+' %';
  const stats=document.getElementById('stock-stats-'+c);
- if(stats)stats.innerHTML='<div class="stock-figure"><span>SISTE REGISTRERTE OBSERVASJON</span><strong>'+
-   price+' <small>'+currency+'</small></strong><span>'+last.date+' · forsinket, ikke sanntid</span></div>'+
-   '<div class="stock-figure"><span>ENDRING '+range+'</span><strong style="color:'+
-   (pct<0?'#b75050':'#087e69')+'">'+change+'</strong><span>Kursavkastning uten utbytte · fra '+baseline.date+'</span></div>';
+ const previous=rows[rows.length-2];
+ const dayPct=(last.price/previous.price-1)*100;
+ const dayChange=(dayPct>=0?'+':'')+stockFmt(dayPct)+' %';
+ const sign=v=>v<0?'#b75050':'#087e69';
+ if(stats)stats.innerHTML=
+   '<div class="stock-figure"><span>SISTE KURSOBSERVASJON</span><strong>'+price+
+   ' <small>'+currency+'</small></strong><span>'+last.date+' · ikke sanntid</span></div>'+
+   '<div class="stock-figure"><span>SISTE HANDELSDAGS ENDRING</span><strong style="color:'+
+   sign(dayPct)+'">'+dayChange+'</strong><span>Mot '+previous.date+' · uten utbytte</span></div>'+
+   '<div class="stock-figure"><span>KURSUTVIKLING '+range+'</span><strong style="color:'+
+   sign(pct)+'">'+change+'</strong><span>Fra '+baseline.date+' · uten utbytte</span></div>';
  const X0=78,X1=874,Y0=32,Y1=268;
  const firstTime=Date.parse(series[0].date+'T12:00:00Z'),lastTime=now;
  const xx=date=>X0+(X1-X0)*(Date.parse(date+'T12:00:00Z')-firstTime)/Math.max(86400000,lastTime-firstTime);
