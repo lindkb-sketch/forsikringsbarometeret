@@ -60,3 +60,20 @@ jobs:
               print('PROTECTOR_HISTORICAL_IMPORT',[(r['year'],r['value']) for r in data],flush=True)
           except Exception as exc:print('PROTECTOR2024_ERROR',type(exc).__name__,str(exc)[:250],flush=True)
           PY
+      - name: Verify real historical import data and audit
+        run: |
+          python scripts/import_frende_skade.py
+          python scripts/import_protector_norway_historical_pdf.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          skade=json.loads(Path('data/frende_skade_financials.json').read_text())['observations']
+          protector=json.loads(Path('data/financial_observations.json').read_text())['observations']
+          for q,amount in ((1,642.453),(2,665.117),(3,688.23)):
+              rows=[r for r in skade if (r['year'],r['quarter'],r['period_type'],r['metric'])==(2024,q,'quarter','insurance_revenue')]
+              assert len(rows)==1 and rows[0]['value']==amount, (q,rows)
+          rows=[r for r in protector if (r['company'],r['scope'],r['year'],r['quarter'],r['metric'])==
+                ('Protector','norway',2024,3,'insurance_revenue')]
+          assert len(rows)==1 and rows[0]['value']==589,rows
+          print('HISTORICAL_SUBSIDIARY_NORWAY_IMPORT_PASS')
+          PY
