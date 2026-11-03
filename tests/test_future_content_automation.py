@@ -16,7 +16,9 @@ class FutureAutomation(unittest.TestCase):
    original={"prices":{"Gjensidige":{"symbol":"GJF.OL","close":200,"currency":"NOK","trading_date":"2026-10-20","source_url":"https://query1.finance.yahoo.com/previous","price_type":"delayed_daily_close"}}}
    path.write_text(json.dumps(original))
    result=stocks.update(fetcher=lambda symbol: (_ for _ in ()).throw(ConnectionError("503")),out=path)
-   self.assertEqual(result["prices"]["Gjensidige"]["close"],200)\n   self.assertEqual(result["prices"]["Gjensidige"]["availability"],"stale")\n   self.assertEqual(result["prices"]["Gjensidige"]["stale_reason"],"503")
+   self.assertEqual(result["prices"]["Gjensidige"]["close"],200)
+   self.assertEqual(result["prices"]["Gjensidige"]["availability"],"stale")
+   self.assertEqual(result["prices"]["Gjensidige"]["stale_reason"],"503")
    self.assertEqual(set(result["errors"]),set(stocks.SYMBOLS))
    self.assertEqual(result["unlisted"],["Fremtind","Frende"])
  def test_stock_prices_new_verified_closes_and_idempotence(self):
