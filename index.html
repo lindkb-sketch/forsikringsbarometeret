@@ -979,7 +979,7 @@ function setStockRange(c,range){
 function drawStockYear(c,rows,label){
  const el=document.getElementById('stock-plot-'+c);
  if(!el||!Array.isArray(rows)||rows.length<2)return;
- rows=rows.filter(r=>/^\\d{4}-\\d{2}-\\d{2}$/.test(r.date)&&
+ rows=rows.filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&
    Number.isFinite(r.price)&&r.price>0).slice().sort((a,b)=>a.date.localeCompare(b.date));
  if(rows.length<2)return;
  const last=rows[rows.length-1],now=Date.parse(last.date+'T12:00:00Z');
@@ -1963,7 +1963,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
   const price=stocks?.prices?.[c==='Sampo'?'Sampo / If':c];
   const valid=price&&price.availability==='available'&&
     Array.isArray(price.history)&&price.history.length>=2&&
-    price.history.every(row=>/^\\d{4}-\\d{2}-\\d{2}$/.test(row.date)&&
+    price.history.every(row=>/^\d{4}-\d{2}-\d{2}$/.test(row.date)&&
       Number.isFinite(row.price)&&row.price>0);
   if(!valid){
     delete stockCSV[c];
@@ -1993,9 +1993,9 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     ' Ikke sanntid. Kurser i lokal børsvaluta. Kursavkastning ekskluderer utbytte.'+
     ' Tjenesten er ikke en lisensiert sanntidsfeed eller tilstrekkelig alene for handelsbeslutninger.'+
     ' <a href="'+esc(price.source_url||'#')+'" target="_blank" rel="noopener noreferrer">Kilde og markedsinformasjon</a></div>';
-  let updated=html.replace(/<p class="stock-lead">[\\s\\S]*?<\\/p>/,head);
-  updated=updated.replace(/<div class="stock-fineprint">[\\s\\S]*?<\\/div>/,footer);
-  updated=updated.replace(/<details class="stock-csv-details">[\\s\\S]*?<\\/details>/,'');
+  let updated=html.replace(/<p class="stock-lead">[\s\\S]*?<\/p>/,head);
+  updated=updated.replace(/<div class="stock-fineprint">[\s\\S]*?<\/div>/,footer);
+  updated=updated.replace(/<details class="stock-csv-details">[\s\\S]*?<\/details>/,'');
   return updated;
  };
 
