@@ -437,8 +437,6 @@
       const segmentRow=[...fragment.querySelectorAll('.tablewrap tbody tr')].find(tr=>
         /Frende Skadeforsikring AS/.test(tr.cells[0]?.textContent||''));
       if(segmentRow&&selection){
-        const escapeHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({
-          '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
         const periodType=ytdMode()?'ytd':'quarter';
         const all=Array.isArray(frendeSkadeFinancials?.observations)
           ?frendeSkadeFinancials.observations:[];
