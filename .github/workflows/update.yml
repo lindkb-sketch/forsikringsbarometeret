@@ -13,6 +13,9 @@ permissions:
   id-token: write
 concurrency:
   group: forsikringsbarometeret-publish
+  # GitHub's default queue=single cancels an older pending publication.
+  # queue=max preserves pending runs while keeping Pages deployment serialized.
+  queue: max
   cancel-in-progress: false
 jobs:
   validate-and-deploy:
