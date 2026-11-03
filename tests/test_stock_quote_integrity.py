@@ -54,6 +54,10 @@ class MarketDataTests(unittest.TestCase):
             self.assertNotIn(forbidden,html)
         self.assertIn("quote?.availability==='available'",html)
         self.assertIn("stockCSV[c]=history.map(",html)
+    def test_browser_quote_validation_accepts_iso_date_regex(self):
+        browser=(ROOT/'tests/live_browser_e2e.cjs').read_text(encoding='utf-8')
+        self.assertIn(r'/^\d{4}-\d{2}-\d{2}$/',browser)
+        self.assertNotIn(r'/^\\d{4}-\\d{2}-\\d{2}$/',browser)
     def test_stock_refresh_remains_part_of_automatic_pipeline(self):
         workflow=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
         self.assertIn('python scripts/update_stock_prices.py',workflow)
