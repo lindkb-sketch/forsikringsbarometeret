@@ -110,7 +110,7 @@ async function main(){
   check('Frende subsidiary same-quarter prior-year comparisons are visible',
     fields.every((metric,i)=>Number.isFinite(sourceMetric(year-1,metric))&&
       Math.abs(numeric(subsidiary.prior[i+2])-sourceMetric(year-1,metric))<(i===0 ? .06 : .11))&&
-    subsidiary.prior[1].includes(String(year-1)),
+    subsidiary.prior[1].includes('%')&&!subsidiary.prior[1].includes('premier'),
     JSON.stringify(subsidiary).slice(0,1150));
   check('Frende subsidiary current/prior trend arrows have correct directions and colours',
     fields.every((metric,i)=>{
