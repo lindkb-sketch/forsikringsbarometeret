@@ -289,7 +289,7 @@ async function main(){
   const validStockQuote=quote?.availability==='available'&&
     quote.symbol==='GJF.OL'&&quote.currency==='NOK'&&
     Array.isArray(quote.history)&&quote.history.length>=2&&
-    quote.history.every(row=>/^\\d{4}-\\d{2}-\\d{2}$/.test(row.date)&&
+    quote.history.every(row=>/^\d{4}-\d{2}-\d{2}$/.test(row.date)&&
       Number.isFinite(row.price)&&row.price>0)&&
     quote.history.at(-1).price===quote.close;
   if(validStockQuote){
