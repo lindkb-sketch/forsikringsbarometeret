@@ -126,7 +126,7 @@ async function main(){
   check('Frende premium income growth is source-verified and shows prior-year premium and arrow',
     priorRevenue>0&&Math.abs(numeric(subsidiary.current[1])-
       100*(thisRevenue/priorRevenue-1))<.11&&
-    Math.abs(numeric(subsidiary.prior[1])-priorRevenue)<.06&&
+    Math.abs(numeric(subsidiary.prior[1].split(':').at(-1))-priorRevenue)<.06&&
     subsidiary.arrow[1].icon===(thisRevenue>=priorRevenue?'▲':'▼'),
     JSON.stringify(subsidiary).slice(0,950));
   check('Frende subsidiary row links to original official PDF',
