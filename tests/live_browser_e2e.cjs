@@ -83,22 +83,52 @@ async function main(){
       label:cells[0]||'',cells,period:row?.getAttribute('data-frende-skade-period'),
       source:source?.href||'',inNorwayTable:!!row?.closest('.panel .tablewrap'),
       position:[...row?.parentElement?.children||[]].indexOf(row),
+      current:[...(row?.cells||[])].map(cell=>cell.querySelector('strong')?.innerText||''),
+      prior:[...(row?.cells||[])].map(cell=>cell.querySelector('.table-prior')?.innerText||''),
+      arrow:[...(row?.cells||[])].map(cell=>({
+        icon:cell.querySelector('.qoq')?.innerText||'',
+        className:cell.querySelector('.qoq')?.className||''
+      }))
     };
   });
   const skadeFeed=await (await page.request.get(BASE+'data/frende_skade_financials.json')).json();
-  const skadeQ=skadeFeed.observations.filter(r=>r.year===year&&r.quarter===quarter&&
-    r.period_type==='quarter'&&r.source_entity==='Frende Skadeforsikring AS');
-  const sourceMetric=name=>skadeQ.find(r=>r.metric===name)?.value;
-  const numeric=(value)=>Number(norm(value).replace(/[^0-9,.-]/g,'').replace(',','.'));
+  const skadeRows=skadeFeed.observations.filter(r=>r.quarter===quarter&&
+    r.source_entity==='Frende Skadeforsikring AS'&&r.period_type==='quarter');
+  const sourceMetric=(year,metric)=>skadeRows.find(r=>r.year===year&&r.metric===metric)?.value;
+  const numeric=value=>{
+    const match=norm(value).replace(/\s/g,'').replace(',','.').match(/-?\d+(?:\.\d+)?/);
+    return match?Number(match[0]):NaN;
+  };
   check('Frende Skade sits in existing Norway segment table, no second panel',
     subsidiary.count===1&&subsidiary.inNorwayTable&&subsidiary.separatePanels===0&&
     subsidiary.cells.length===6,JSON.stringify(subsidiary).slice(0,750));
-  check('Frende subsidiary ratios and insurance result shown in Norway row',
-    Math.abs(numeric(subsidiary.cells[2])-sourceMetric('insurance_service_result'))<.05&&
-    Math.abs(numeric(subsidiary.cells[3])-sourceMetric('combined_ratio'))<.11&&
-    Math.abs(numeric(subsidiary.cells[4])-sourceMetric('loss_ratio'))<.11&&
-    Math.abs(numeric(subsidiary.cells[5])-sourceMetric('expense_ratio'))<.11,
-    JSON.stringify(subsidiary).slice(0,750));
+  const fields=['insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
+  check('Frende subsidiary current values reflect PDF in existing Norway row',
+    fields.every((metric,i)=>Math.abs(numeric(subsidiary.current[i+2])-
+      sourceMetric(year,metric))<(i===0 ? .06 : .11)),
+    JSON.stringify(subsidiary).slice(0,950));
+  check('Frende subsidiary same-quarter prior-year comparisons are visible',
+    fields.every((metric,i)=>Number.isFinite(sourceMetric(year-1,metric))&&
+      Math.abs(numeric(subsidiary.prior[i+2])-sourceMetric(year-1,metric))<(i===0 ? .06 : .11))&&
+    subsidiary.prior[1].includes(String(year-1)),
+    JSON.stringify(subsidiary).slice(0,1150));
+  check('Frende subsidiary current/prior trend arrows have correct directions and colours',
+    fields.every((metric,i)=>{
+      const arrow=subsidiary.arrow[i+2];
+      const now=sourceMetric(year,metric),prior=sourceMetric(year-1,metric);
+      const expected=now>prior?'▲':now<prior?'▼':'→';
+      const favourable=i===0?now>prior:now<prior;
+      return arrow.icon===expected&&
+        arrow.className.includes(now===prior?'flat':favourable?'good':'bad');
+    }),JSON.stringify(subsidiary).slice(0,1150));
+  const thisRevenue=sourceMetric(year,'insurance_revenue');
+  const priorRevenue=sourceMetric(year-1,'insurance_revenue');
+  check('Frende premium income growth is source-verified and shows prior-year premium and arrow',
+    priorRevenue>0&&Math.abs(numeric(subsidiary.current[1])-
+      100*(thisRevenue/priorRevenue-1))<.11&&
+    Math.abs(numeric(subsidiary.prior[1].split(':').at(-1))-priorRevenue)<.06&&
+    subsidiary.arrow[1].icon===(thisRevenue>=priorRevenue?'▲':'▼'),
+    JSON.stringify(subsidiary).slice(0,950));
   check('Frende subsidiary row links to original official PDF',
     subsidiary.source.startsWith('https://')&&/\.pdf(?:\?|$)/i.test(subsidiary.source)&&
     subsidiary.label.includes('Frende Skadeforsikring AS'),

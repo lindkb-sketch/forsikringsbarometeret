@@ -101,6 +101,23 @@ jobs:
           python scripts/verify_feed_coverage.py
       - name: Audit Tryg PDF-only group and Norway automation readiness
         run: python scripts/verify_tryg_end_to_end.py
+      - name: Import Frende Skade 2025 comparative PDF columns before browser regression
+        run: |
+          python scripts/import_frende_skade.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('data/frende_skade_financials.json').read_text())
+          rows=data['observations']
+          metrics={'insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'}
+          for q in (1,2,3):
+              for year in (2025,2026):
+                  for period in ('quarter','ytd'):
+                      current=[r for r in rows if (r['year'],r['quarter'],r['period_type'])==(year,q,period)]
+                      assert {r['metric'] for r in current}==metrics,(year,q,period)
+                      assert all(r['source_url'].lower().endswith('.pdf') and len(r['source_sha256'])==64 for r in current)
+          print('FRENDE_SKADE_PRIOR_YEAR_PDF_COMPARATIVES_VERIFIED',len(rows),flush=True)
+          PY
       - name: Build final website data for browser regression
         run: |
           python scripts/build_verified_feed.py

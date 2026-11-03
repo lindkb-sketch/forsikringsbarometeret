@@ -21,17 +21,61 @@ class FrendeSkadePDFTests(unittest.TestCase):
     def test_pdf_thousands_grouping_has_unique_five_columns(self):
         s='961 391 825 529 2 787 759 2 420 547 3 275 575'
         self.assertEqual(parse_pdf_numbers(s,5),[961391,825529,2787759,2420547,3275575])
-    def test_actual_q3_reported_and_ytd_numbers(self):
+    def test_actual_q3_reported_ytd_and_same_period_last_year(self):
         rows=parse_page(Q3,2026,3,PDF,'a'*64,3)
-        self.assertEqual(len(rows),10)
-        d={(r['period_type'],r['metric']):r['value'] for r in rows}
-        self.assertEqual(d[('quarter','insurance_revenue')],961.391)
-        self.assertEqual(d[('ytd','insurance_revenue')],2787.759)
-        self.assertEqual(d[('quarter','insurance_service_result')],192.667)
-        self.assertEqual(d[('quarter','combined_ratio')],80.0)
-        self.assertEqual(d[('ytd','combined_ratio')],84.2)
+        self.assertEqual(len(rows),20)
+        d={(r['year'],r['period_type'],r['metric']):r['value'] for r in rows}
+        self.assertEqual(d[(2026,'quarter','insurance_revenue')],961.391)
+        self.assertEqual(d[(2025,'quarter','insurance_revenue')],825.529)
+        self.assertEqual(d[(2026,'quarter','insurance_service_result')],192.667)
+        self.assertEqual(d[(2025,'quarter','insurance_service_result')],167.938)
+        self.assertEqual(d[(2026,'quarter','combined_ratio')],80.0)
+        self.assertEqual(d[(2025,'quarter','combined_ratio')],79.7)
+        self.assertEqual(d[(2025,'quarter','loss_ratio')],62.2)
+        self.assertEqual(d[(2025,'quarter','expense_ratio')],17.4)
+        self.assertEqual(d[(2026,'ytd','insurance_revenue')],2787.759)
+        self.assertEqual(d[(2025,'ytd','insurance_revenue')],2420.547)
+        self.assertEqual(d[(2026,'ytd','combined_ratio')],84.2)
+        self.assertEqual(d[(2025,'ytd','combined_ratio')],87.4)
+        self.assertEqual({r['year'] for r in rows},{2025,2026})
         self.assertTrue(all(r['source_entity']=='Frende Skadeforsikring AS' for r in rows))
         self.assertTrue(all(r['source_url']==PDF for r in rows))
+        self.assertTrue(all(r['source_document_period']=='Q3 2026' for r in rows))
+        self.assertTrue(all(r['source_sha256']=='a'*64 for r in rows))
+        self.assertTrue(all('fjorårskolonne' in r['source_definition'] for r in rows if r['year']==2025))
+
+    def test_future_2027_quarter_automatically_imports_2026_comparisons(self):
+        # The importer must not contain a hardcoded 2026 period boundary.
+        future=Q3.replace('2026','2027').replace('2025','2026')
+        rows=parse_page(future,2027,3,PDF,'b'*64,3)
+        self.assertEqual({r['year'] for r in rows},{2026,2027})
+        self.assertEqual(len(rows),20)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2026 and
+                 r['period_type']=='quarter' and r['metric']=='combined_ratio'),
+            79.7)
+    def test_q1_negative_prior_year_result_is_preserved(self):
+        q1='''Resultatregnskap 1.kv.2026 1.kv.2025 31.12.2025
+Teknisk regnskap for skadeforsikring
+Premieinntekter for egen regning 893535 773391 3275575
+Erstatningskostnader for egen regning 685018 649203 2231872
+Forskringsrelaterte driftskostnader 150421 140599 598135
+Resultat av teknisk regnskap i skadeforsikring 58095 -16410 445567
+Nøkkelinformasjon
+Kostnadsandel % 16,8% 18,2% 18,3%
+Skade % E/R 76,7% 83,9% 68,1%
+Combined Ratio 93,5% 102,1% 86,4%'''
+        rows=parse_page(q1,2026,1,PDF,'c'*64,18)
+        self.assertEqual(len(rows),20)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2025 and
+                 r['period_type']=='quarter' and r['metric']=='insurance_service_result'),
+            -16.41)
+        self.assertEqual(
+            next(r['value'] for r in rows if r['year']==2025 and
+                 r['period_type']=='quarter' and r['metric']=='combined_ratio'),
+            102.1)
+
     def test_wrong_period_and_mismatching_ratio_rejected(self):
         with self.assertRaisesRegex(ValueError,'year/quarter mismatch'):
             parse_page(Q3,2026,2,PDF,'a'*64,3)

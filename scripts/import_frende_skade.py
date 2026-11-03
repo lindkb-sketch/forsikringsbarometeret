@@ -98,26 +98,38 @@ def parse_page(text,year,quarter,pdf_url,pdf_sha,page):
     expenses_vals=parse_pdf_numbers(expenses[0].split('Forskringsrelaterte driftskostnader ',1)[1],3 if quarter==1 else 5)
     if len(claims_vals)!=len(data['insurance_revenue']) or len(expenses_vals)!=len(claims_vals):
         raise ValueError('PDF costs and revenue columns differ')
-    cols=[('quarter',0)]+([('ytd',0)] if quarter==1 else [('ytd',2)])
+    # The audited PDF explicitly identifies two independent same-quarter
+    # columns (current year and prior year), plus two YTD columns from Q2 on.
+    # Import ALL of them: a newly released quarter automatically supplies
+    # the comparison data for the following year's display.
+    columns=[(year,'quarter',0),(year-1,'quarter',1)]
+    if quarter==1:
+        columns.extend([(year,'ytd',0),(year-1,'ytd',1)])
+    else:
+        columns.extend([(year,'ytd',2),(year-1,'ytd',3)])
     rows=[]
-    for period_type,idx in cols:
+    for observed_year,period_type,idx in columns:
         revenue=data['insurance_revenue'][idx]
         technical=data['insurance_service_result'][idx]
         if revenue<=0 or abs(revenue-claims_vals[idx]-expenses_vals[idx]-technical)>3:
-            raise ValueError('PDF technical result does not reconcile')
+            raise ValueError('PDF technical result does not reconcile: '
+                             +str((observed_year,period_type)))
         if abs(data['loss_ratio'][idx]+data['expense_ratio'][idx]-data['combined_ratio'][idx])>0.16:
-            raise ValueError('PDF combined ratio does not reconcile')
+            raise ValueError('PDF combined ratio does not reconcile: '
+                             +str((observed_year,period_type)))
         for metric in REQUIRED:
             value=data[metric][idx]
             unit='percent' if metric.endswith('ratio') else 'NOKm'
             if unit=='NOKm':value=round(value/1000,3)
             rows.append(dict(company='Frende',source_entity=ENTITY,scope='subsidiary',
-                year=year,quarter=quarter,period_type=period_type,metric=metric,
+                year=observed_year,quarter=quarter,period_type=period_type,metric=metric,
                 value=value,unit=unit,status='reported',source_type='official_quarterly_report',
                 source_url=pdf_url,source_page=page,source_sha256=pdf_sha,
                 source_section='Frende Skadeforsikring AS – Resultat / Nøkkelinformasjon',
                 source_document_period=f'Q{quarter} {year}',
-                source_definition=LABELS[metric]))
+                source_definition=(LABELS[metric]+
+                    (' (sammenlignbar fjorårskolonne)' if observed_year!=year else ''))))
+
     return rows
 
 def verify_pdf(blob,url,year,quarter):
