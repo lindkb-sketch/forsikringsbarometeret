@@ -70,7 +70,7 @@ class SampoNordicReleaseTests(unittest.TestCase):
         workflow=(ROOT/'.github/workflows/update.yml').read_text()
         self.assertIn('schedule:',workflow)
         self.assertIn('python scripts/quarterly_import_contract.py',workflow)
-        self.assertIn('python scripts/verify_expected_published_quarters.py',pipeline)
+        self.assertIn("'verify_expected_published_quarters.py'",pipeline)
         self.assertLess(workflow.index('python scripts/quarterly_import_contract.py'),
                         workflow.index('actions/deploy-pages@v4'))
 
