@@ -68,25 +68,41 @@ async function main(){
      technical:!!document.querySelector('#verified-financial-panel, #automated-editorial, .live-market-updates')
   }));
   check('Original KPI card/grid design remains intact',!view.oldReplacement&&view.kpis>=6&&view.tableRows>=7,JSON.stringify({kpis:view.kpis,rows:view.tableRows}));
-  // Regression: visiting Frende must display the non-life subsidiary data
-  // directly below the KPI section, never at the bottom of the long page.
+  // Frende Skade figures belong inside the EXISTING Norway segment table,
+  // not in a second standalone table lower down the company page.
   await page.evaluate(()=>show('Frende',true));
-  await page.locator('.frende-skade-pdf-disclosure').waitFor({state:'visible',timeout:15000});
-  const frendeSkade=await page.evaluate(()=>{
-    const node=document.querySelector('.frende-skade-pdf-disclosure');
-    const kpis=document.querySelector('.dynamic-kpis');
-    const box=node?.getBoundingClientRect();
-    return {present:!!node,visible:!!node&&box.width>0&&box.height>0,
-      afterKpis:node?.previousElementSibling===kpis||
-        node?.previousElementSibling?.classList.contains('company-profitability'),
-      labels:node?.innerText||'',links:node?.querySelectorAll('.frende-skade-report-links a').length||0,
-      tables:node?.querySelectorAll('table tbody tr').length||0};
+  const frendeSegment=page.locator('.tablewrap tbody tr.frende-skade-verified-row');
+  await frendeSegment.waitFor({state:'visible',timeout:15000});
+  const subsidiary=await page.evaluate(()=>{
+    const row=document.querySelector('tr.frende-skade-verified-row');
+    const cells=[...(row?.cells||[])].map(cell=>cell.innerText.trim());
+    const source=row?.querySelector('a[aria-label="Frende Skadeforsikring AS offisiell PDF"]');
+    return {
+      count:document.querySelectorAll('tr.frende-skade-verified-row').length,
+      separatePanels:document.querySelectorAll('.frende-skade-pdf-disclosure').length,
+      label:cells[0]||'',cells,period:row?.getAttribute('data-frende-skade-period'),
+      source:source?.href||'',inNorwayTable:!!row?.closest('.panel .tablewrap'),
+      position:[...row?.parentElement?.children||[]].indexOf(row),
+    };
   });
-  check('Frende Skade visibly positioned next to main KPI cards',
-    frendeSkade.visible&&frendeSkade.afterKpis,JSON.stringify(frendeSkade).slice(0,650));
-  check('Frende Skade PDF figures and report links visible',
-    frendeSkade.labels.includes('Frende Skadeforsikring AS')&&frendeSkade.links>=3&&
-    frendeSkade.tables>=4,JSON.stringify(frendeSkade).slice(0,650));
+  const skadeFeed=await (await page.request.get(BASE+'data/frende_skade_financials.json')).json();
+  const skadeQ=skadeFeed.observations.filter(r=>r.year===year&&r.quarter===quarter&&
+    r.period_type==='quarter'&&r.source_entity==='Frende Skadeforsikring AS');
+  const sourceMetric=name=>skadeQ.find(r=>r.metric===name)?.value;
+  const numeric=(value)=>Number(norm(value).replace(/[^0-9,.-]/g,'').replace(',','.'));
+  check('Frende Skade sits in existing Norway segment table, no second panel',
+    subsidiary.count===1&&subsidiary.inNorwayTable&&subsidiary.separatePanels===0&&
+    subsidiary.cells.length===6,JSON.stringify(subsidiary).slice(0,750));
+  check('Frende subsidiary ratios and insurance result shown in Norway row',
+    Math.abs(numeric(subsidiary.cells[2])-sourceMetric('insurance_service_result'))<.05&&
+    Math.abs(numeric(subsidiary.cells[3])-sourceMetric('combined_ratio'))<.11&&
+    Math.abs(numeric(subsidiary.cells[4])-sourceMetric('loss_ratio'))<.11&&
+    Math.abs(numeric(subsidiary.cells[5])-sourceMetric('expense_ratio'))<.11,
+    JSON.stringify(subsidiary).slice(0,750));
+  check('Frende subsidiary row links to original official PDF',
+    subsidiary.source.startsWith('https://')&&/\\.pdf(?:\\?|$)/i.test(subsidiary.source)&&
+    subsidiary.label.includes('Frende Skadeforsikring AS'),
+    JSON.stringify(subsidiary).slice(0,750));
   await page.screenshot({path:'data/browser_frende_skade.png',fullPage:true});
   report.screenshots.push('data/browser_frende_skade.png');
   await page.evaluate(()=>show('home',true));
