@@ -113,6 +113,14 @@ def update(fetcher=fetch,out=OUT,now=None):
     payload={'updated_at':now.isoformat(),'prices':prices,
        'unlisted':UNLISTED,'errors':errors,
        'source':'Best-effort Yahoo Finance daily chart; delayed, non-licensed demonstration feed. Not real-time or certified for investment use.'}
+    # Do not create a new repository commit when the provider returned the
+    # exact same observations or the same already-reported error state.
+    # A monitoring poll is not itself a quote update.
+    prior_content={k:old.get(k) for k in ('prices','unlisted','errors','source')}
+    new_content={k:payload.get(k) for k in ('prices','unlisted','errors','source')}
+    if prior_content==new_content and old.get('updated_at'):
+        payload['updated_at']=old['updated_at']
+        return payload
     out.parent.mkdir(parents=True,exist_ok=True)
     fd,tmp=tempfile.mkstemp(prefix='.stocks-',dir=out.parent)
     try:
