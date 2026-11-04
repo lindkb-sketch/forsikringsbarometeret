@@ -23,7 +23,9 @@ class PDFLinks(HTMLParser):
    if href:self.links.append(href)
 def discover(year,quarter):
  # Use the issuer's live report archive. Ambiguity blocks publication.
- indexes=['https://www.sampo.com/investors/financial-information/quarterly-reporting/',
+ indexes=['https://www.sampo.com/investors/quarterly-reporting/',
+          'https://www.sampo.com/result',
+          'https://www.sampo.com/investors/financial-information/quarterly-reporting/',
           f'https://www.sampo.com/investors/financial-information/quarterly-reporting/{year}/']
  urls=set()
  for index in indexes:
