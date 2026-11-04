@@ -11,6 +11,7 @@ import re
 from pathlib import Path
 import pdfplumber
 from ingest_official_pdf import download
+from replay_historical_return_tables import extract as extract_return
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGETS={('Fremtind',2025,3),('Fremtind',2025,4),
@@ -37,6 +38,17 @@ def examine(row,fetch=download):
                                for i in selected]
             result['page_opening']=' | '.join(lines[:5])[:300]
             result['status']='verified_original_pdf'
+            try:
+                parsed_page,parsed_value,definition=extract_return(
+                    blob,row['company'],row['year'],row['quarter'])
+                result['parse_ok']=(parsed_page==page and abs(parsed_value-row['value'])<0.01)
+                result['parsed_page']=parsed_page
+                result['parsed_value']=parsed_value
+                if not result['parse_ok']:
+                    result['parse_error']='Parsed return does not match original page/value'
+            except Exception as exc:
+                result['parse_ok']=False
+                result['parse_error']=type(exc).__name__+': '+str(exc)[:200]
     except Exception as exc:
         result['status']='source_unavailable_or_invalid'
         result['error']=type(exc).__name__+': '+str(exc)[:250]
@@ -53,4 +65,6 @@ def main():
     print('ORIGINAL_RETURN_LAYOUTS',json.dumps(results,ensure_ascii=False))
     Path(ROOT/'data/remaining_return_source_diagnostics.json').write_text(
         json.dumps({'results':results,'diagnostic_only':True},ensure_ascii=False,indent=2)+'\n')
+    if any(not r.get('parse_ok') for r in results):
+        raise SystemExit('One or more original historical returns could not be re-parsed')
 if __name__=='__main__':main()
