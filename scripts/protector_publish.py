@@ -60,7 +60,14 @@ def discover_pdf(year,quarter,fetch=download):
   # The issuer KPI values are still matched to their source PDF pages.
   links=['https://storage.mfn.se/1bc26b42-d94f-4e91-a87f-6c3cc87478d8/interim-report-q4-2025-prot.pdf']
  links=list(dict.fromkeys(links))
- if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}')
+ if (year,quarter)==(2025,3) and len(links)>1:
+  # Two historical issuer-linked Q3 files can be advertised. Prefer the
+  # independently source-verified MFN interim report already used for the
+  # Norway 2024 comparative backfill; never choose an arbitrary first PDF.
+  approved='https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf'
+  if approved in links:
+   links=[approved]
+ if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}: {links}')
  return links[0]
 def parse_pdf(blob,year,quarter):
  import io,pdfplumber
