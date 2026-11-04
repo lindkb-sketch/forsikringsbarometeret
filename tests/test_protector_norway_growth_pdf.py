@@ -38,7 +38,7 @@ class ProtectorNorwayGrowthPDFTests(unittest.TestCase):
     def test_q3_ratio_source_must_identify_both_norway_year_columns(self):
         with self.assertRaisesRegex(ValueError,'year columns ambiguous'):
             parse_norway_ratios([(14,PAGE.replace('Q3 2024','Q3 2023'))],URL,'a'*64)
-        with self.assertRaisesRegex(ValueError,'does not reconcile'):
+        with self.assertRaisesRegex(ValueError,'ratios do not reconcile'):
             parse_norway_ratios([(14,PAGE.replace('88.2 % 69.8 %','70.2 % 69.8 %'))],URL,'a'*64)
         with self.assertRaises(ValueError):
             parse_norway_ratios([(14,PAGE.replace('Norway','Norwayx'))],URL,'a'*64)
