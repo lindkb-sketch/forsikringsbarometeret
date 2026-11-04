@@ -32,7 +32,11 @@ def run():
      evidence.append({"step":name,"code":p.returncode,"log":(p.stdout+"\n"+p.stderr)[-1000:]})
     except subprocess.TimeoutExpired:
      evidence.append({"step":name,"code":124,"log":"Timed out"})
-    if evidence[-1]["code"]:break
+    if evidence[-1]["code"]:
+     # Do not let an unavailable historical archive hide diagnostics from
+     # other independent source backfills. The failed step still prevents
+     # clean replay certification, and no output is published.
+     print("REPLAY_SOURCE_BLOCKED",company,name,evidence[-1]["code"],flush=True)
    before=json.loads((ROOT/"data/financial_observations.json").read_text())["observations"]
    after=json.loads((root/"data/financial_observations.json").read_text())["observations"]
    key=lambda row:(row.get("company"),row.get("year"),row.get("quarter"),row.get("scope"),row.get("period_type"),row.get("metric"),row.get("segment"))
