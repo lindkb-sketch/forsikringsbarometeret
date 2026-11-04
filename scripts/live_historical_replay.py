@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 PLANS={
 "Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py"],
-"Gjensidige":["import_gjensidige_latest.py","migrate_gjensidige_ytd_pdf.py","import_gjensidige_pdf_norway.py","gjensidige_norway_excel.py"],
+"Gjensidige":["import_gjensidige_latest.py","migrate_gjensidige_ytd_pdf.py","import_gjensidige_pdf_norway.py","replay_gjensidige_ytd_pdf.py"],
 "Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
