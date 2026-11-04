@@ -51,6 +51,62 @@ def parse_norway_revenue(pages,url,sha):
         for year,value in ((2025,current),(2024,prior))
     ]
 
+
+def parse_norway_ratios(pages,url,sha):
+    """Extract official Norway Q3 service result and ratios for 2025 and 2024."""
+    labels={
+        'insurance_service_result':'Insurance service result',
+        'loss_ratio':'Loss ratio, net of reinsurance',
+        'expense_ratio':'Cost ratio',
+        'combined_ratio':'Combined ratio',
+    }
+    matches=[]
+    for page,text in pages:
+        if not re.search(r'^Segment information\s*-\s*Q3\s*$',text,re.M):
+            continue
+        if not re.search(r'UK\s+Sweden\s+Norway\s+Denmark\s+France',text):
+            continue
+        if len(re.findall(r'Q3\s+2025\s+Q3\s+2024',text))!=5:
+            raise ValueError('Protector Norway ratio year columns ambiguous')
+        values={}
+        for metric,label in labels.items():
+            pattern=(r'^'+re.escape(label)+r'[¹²³⁴⁵⁶⁷⁸⁹*]?\s+'
+                     r'(?=[\d(−-])([^\n]+)$')
+            lines=re.findall(pattern,text,re.I|re.M)
+            if len(lines)!=1:
+                raise ValueError('Missing or ambiguous Norway '+metric+' row')
+            tokens=re.findall(r'\(?-?\d[\d,]*(?:\.\d+)?\)?',lines[0])
+            if len(tokens)!=9:
+                raise ValueError('Protector Norway '+metric+' geography columns missing')
+            def numeric(token):
+                negative=token.startswith('(')
+                value=float(token.strip('()').replace(',',''))
+                return -value if negative else value
+            numbers=[numeric(token) for token in tokens]
+            values[metric]=(numbers[4],numbers[5])
+        for i in (0,1):
+            if abs(values['loss_ratio'][i]+values['expense_ratio'][i]-
+                   values['combined_ratio'][i])>0.21:
+                raise ValueError('Protector Norway Q3 ratios do not reconcile')
+        matches.append((page,values))
+    if len(matches)!=1:
+        raise ValueError('Expected exactly one Norway Q3 financial table')
+    page,values=matches[0]
+    result=[]
+    for metric,(current,prior) in values.items():
+        for year,value in ((2025,current),(2024,prior)):
+            result.append(dict(company='Protector',year=year,quarter=3,
+                scope='norway',source_scope='norway',period_type='quarter',
+                metric=metric,value=value,
+                unit='MNOK' if metric=='insurance_service_result' else 'percent',
+                status='reported',source_type='official_quarterly_report',
+                source_url=url,source_page=page,source_sha256=sha,
+                source_document_period='Q3 2025',
+                source_section='Segment information - Q3 / Norway',
+                source_definition='Official Norway Q3 '+metric+
+                    (' (2024 comparative column)' if year==2024 else ' (2025 column)')))
+    return result
+
 def download():
     request=urllib.request.Request(SOURCE,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
     with urllib.request.urlopen(request,timeout=50) as response:
@@ -82,7 +138,8 @@ def run():
     blob=download()
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
         pages=[(n+1,page.extract_text(layout=False) or '') for n,page in enumerate(pdf.pages)]
-    rows=parse_norway_revenue(pages,SOURCE,hashlib.sha256(blob).hexdigest())
+    digest=hashlib.sha256(blob).hexdigest()
+    rows=parse_norway_revenue(pages,SOURCE,digest)+parse_norway_ratios(pages,SOURCE,digest)
     data=json.loads(OUTPUT.read_text(encoding='utf-8'))
     data=merge_observations(data,rows)
     from audit_financials import audit
