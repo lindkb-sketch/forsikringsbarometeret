@@ -21,7 +21,7 @@ for event in cal.get('Sampo / If',{}).get('events',[]):
   rows=json.load(response)['observations']
  required={'insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'}
  for scope,segment in [('group',None),('reported_segment','Private Nordic'),('reported_segment','Nordic Commercial')]:
-  found={r.get('metric') for r in rows if r.get('company')=='Sampo' and r.get('year')==year and r.get('quarter')==quarter and r.get('period_type')=='quarter' and r.get('scope')==scope and r.get('segment')==segment and r.get('status')=='reported' and r.get('source_url') and r.get('source_page')}
+  found={r.get('metric') for r in rows if r.get('company')=='Sampo' and r.get('year')==year and r.get('quarter')==quarter and r.get('period_type')=='quarter' and r.get('scope')==scope and r.get('segment')==segment and r.get('status')=='reported' and r.get('source_type')=='official_quarterly_report' and str(r.get('source_url','')).startswith('https://') and r.get('source_page') and r.get('source_sha256')}
   if required-found:
    raise SystemExit('Public Sampo '+event['period']+' '+str(segment or 'group')+' missing: '+str(sorted(required-found)))
 print('Public Sampo report coverage OK or not yet due')
