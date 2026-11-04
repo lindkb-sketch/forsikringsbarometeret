@@ -19,7 +19,7 @@ class SampoReleaseGateTests(unittest.TestCase):
   rows=[]
   for scope,segment in [('group',None),('reported_segment','Private Nordic'),('reported_segment','Nordic Commercial')]:
    for metric in ['insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio']:
-    rows.append(dict(company='Sampo',year=2019,quarter=3,scope=scope,segment=segment,period_type='quarter',metric=metric,status='reported',source_sha256='abc',source_page=1))
+    rows.append(dict(company='Sampo',year=2019,quarter=3,scope=scope,segment=segment,period_type='quarter',metric=metric,status='reported',source_sha256='abc',source_page=1,source_type='official_quarterly_report',source_url='https://www.sampo.com/report.pdf'))
   self.assertEqual(self.run_gate(rows).returncode,0)
  def test_unreleased_quarter_not_red(self):
   self.assertEqual(self.run_gate([],date='2099-11-04').returncode,0)
