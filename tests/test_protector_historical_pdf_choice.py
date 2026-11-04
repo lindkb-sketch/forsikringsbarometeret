@@ -18,4 +18,12 @@ class TestNonIssuerDocumentRejection(unittest.TestCase):
  def test_analyst_consensus_not_a_quarterly_report(self):
   self.assertEqual(discover_pdf(2025,3,fetch=consensus_fetch),P)
 
+
+def bond_and_consensus(*args):
+ return ('<a href="https://cdn.prod.website-files.com/2025_Q3_Contemplated%20Perpetual%20RT1%20Bond%20Issue.pdf">Q3 2025 Bond update</a>'
+         '<a href="https://cdn.prod.website-files.com/2025_Q3_Consensus%20Estimates.pdf">Q3 2025 Consensus Estimates</a>').encode()
+class TestNonFinancialAttachments(unittest.TestCase):
+ def test_bond_update_and_consensus_cannot_substitute_for_q3_report(self):
+  self.assertEqual(discover_pdf(2025,3,fetch=bond_and_consensus),P)
+
 if __name__=='__main__':unittest.main()
