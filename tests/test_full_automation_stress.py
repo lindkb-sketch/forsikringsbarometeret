@@ -65,6 +65,15 @@ class StressContracts(unittest.TestCase):
    self.assertTrue(set(PLANS[company]).issubset(completed),
                    company+" replay exited before all historical sources were attempted")
 
+ def test_all_unrecovered_return_issuers_have_fingerprinted_source_replay(self):
+  for company in ("Fremtind","Gjensidige","Tryg"):
+   with self.subTest(company=company):
+    self.assertIn("replay_original_reported_returns.py --company "+company,PLANS[company])
+  self.assertIn("import_reported_returns.py",PLANS["Fremtind"])
+  self.assertIn("import_reported_returns.py",PLANS["Tryg"])
+  self.assertIn("import_group_solvency_pdf.py",PLANS["Tryg"])
+  self.assertIn("replay_storebrand_roe_q2_2025.py",PLANS["Storebrand"])
+
  def test_same_source_build_is_idempotent(self):
   original=json.loads(SOURCE.read_text())
   first=build(original)
