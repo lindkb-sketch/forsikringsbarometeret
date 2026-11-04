@@ -37,6 +37,8 @@ def examine(row,fetch=download):
             result['matches']=[{'line':i+1,'context':' | '.join(lines[max(0,i-1):min(len(lines),i+3)])[:420]}
                                for i in selected]
             result['page_opening']=' | '.join(lines[:5])[:300]
+            if (row['company'],row['year'],row['quarter'])==('Fremtind',2025,3):
+                result['adjusted_return_context']=[{'line':i+1,'text':line[:240]} for i,line in enumerate(lines) if 38<=i<=56]
             result['status']='verified_original_pdf'
             try:
                 parsed_page,parsed_value,definition=extract_return(
