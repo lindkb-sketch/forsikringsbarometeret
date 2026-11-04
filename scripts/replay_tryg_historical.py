@@ -20,6 +20,8 @@ def main():
   spec=mapping.get((y,q))
   if spec is None:
    report["unresolved"].append({"year":y,"quarter":q,"reason":"Issuer-linked paired PDF/XLSX not discovered"});continue
+  if not spec.get("workbook_url"):
+   report["unresolved"].append({"year":y,"quarter":q,"reason":"Issuer archive supplied a PDF but no period-specific verified XLSX workbook; Norway XLSX replay is not certified"});continue
   try:
    content=download(spec["workbook_url"])
    with tempfile.TemporaryDirectory() as d:

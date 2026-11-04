@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """Run real issuer import programs in temporary, isolated repository copies."""
-import json,shutil,subprocess,sys,tempfile
+import json,shlex,shutil,subprocess,sys,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 PLANS={
-"Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py"],
-"Gjensidige":["import_gjensidige_latest.py","migrate_gjensidige_ytd_pdf.py","import_gjensidige_pdf_norway.py","replay_gjensidige_ytd_pdf.py","import_reported_returns.py"],
-"Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py"],
+"Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py","import_reported_returns.py","replay_original_reported_returns.py --company Fremtind"],
+"Gjensidige":["import_gjensidige_latest.py","migrate_gjensidige_ytd_pdf.py","import_gjensidige_pdf_norway.py","replay_gjensidige_ytd_pdf.py","import_reported_returns.py","replay_original_reported_returns.py --company Gjensidige"],
+"Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py","import_reported_returns.py","import_group_solvency_pdf.py","replay_original_reported_returns.py --company Tryg"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py","import_protector_norway_historical_pdf.py","protector_2025_pdf_backfill.py","protector_2024_official_backfill.py","import_reported_returns.py","import_group_solvency_pdf.py"],
-"Storebrand":["storebrand_publish_q3.py","storebrand_q4_group.py","replay_storebrand_early.py","storebrand_2025_growth_backfill.py","storebrand_2024_official_backfill.py","replay_storebrand_roe_diagnostics.py"]}
+"Storebrand":["storebrand_publish_q3.py","storebrand_q4_group.py","replay_storebrand_early.py","storebrand_2025_growth_backfill.py","storebrand_2024_official_backfill.py","replay_storebrand_roe_diagnostics.py","replay_storebrand_roe_q2_2025.py"]}
 def run():
  results=[]
  restored=[]
@@ -27,8 +27,9 @@ def run():
    dataset.write_text(json.dumps(snapshot,ensure_ascii=False)+"\n")
    evidence=[]
    for name in steps:
+    args=shlex.split(name)
     try:
-     p=subprocess.run([sys.executable,str(root/"scripts"/name)],cwd=root,capture_output=True,text=True,timeout=150)
+     p=subprocess.run([sys.executable,str(root/"scripts"/args[0]),*args[1:]],cwd=root,capture_output=True,text=True,timeout=150)
      evidence.append({"step":name,"code":p.returncode,"log":(p.stdout+"\n"+p.stderr)[-1000:]})
     except subprocess.TimeoutExpired:
      evidence.append({"step":name,"code":124,"log":"Timed out"})
