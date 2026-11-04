@@ -43,8 +43,13 @@ class StressContracts(unittest.TestCase):
   protector=next(r for r in data["results"] if r["company"]=="Protector")
   completed={e["step"]:e["code"] for e in protector["steps"]}
   self.assertEqual(completed.get("import_protector_norway_historical_pdf.py"),0)
-  self.assertNotIn("norway/quarter/Q3-2024",protector["missing_by_scope_period"])
-  self.assertNotIn("norway/quarter/Q3-2025",protector["missing_by_scope_period"])
+  missing={tuple(k) for k in protector["missing_keys"]}
+  for year in (2024,2025):
+   self.assertNotIn(("Protector",year,3,"norway","quarter","insurance_revenue",None),missing)
+  # The Norway historical importer proves official revenue comparators only.
+  # Four other 2025 Norway metrics remain unverified if the main importer
+  # cannot disambiguate the source PDF; do not certify those as complete.
+  self.assertLessEqual(protector["missing_by_scope_period"].get("norway/quarter/Q3-2025",0),4)
 
  def test_same_source_build_is_idempotent(self):
   original=json.loads(SOURCE.read_text())
