@@ -130,6 +130,13 @@
       "type": "rule_based_interpretation"
     },
     {
+      "text": "Sampo: combined ratio 82.6 % i Q3 2026, forbedret med 0.3 prosentpoeng fra Q2 2026 (82.9 %).",
+      "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+      "company": "Sampo",
+      "period": "Q3 2026",
+      "type": "rule_based_interpretation"
+    },
+    {
       "text": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
       "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
       "company": "Frende",
@@ -220,6 +227,16 @@
       },
       "qualitative_notes": []
     },
+    "Sampo": {
+      "summary": "Sampo: forsikringsinntekter 2503 EURm (+8.7 % mot Q3 2025), forsikringsresultat 435 EURm, combined ratio 82.6 % (Q3 2025: 83 %) i Q3 2026.",
+      "comment": "Sampo: combined ratio 82.6 % i Q3 2026, forbedret med 0.3 prosentpoeng fra Q2 2026 (82.9 %).",
+      "ytd": "",
+      "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+      "period": "Q3 2026",
+      "reader_summary": "Forsikringslønnsomheten bedret seg sammenlignet med samme kvartal i fjor. Forsikringsinntektene økte fra samme kvartal i fjor.",
+      "has_comparative": true,
+      "qualitative_notes": []
+    },
     "Frende": {
       "summary": "Frende: forsikringsinntekter 973.443 NOKm (+19.0 % mot Q3 2025), forsikringsresultat 184.381 NOKm, combined ratio 84 % (Q3 2025: 85.3 %) i Q3 2026.",
       "comment": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
@@ -276,11 +293,12 @@
     "Fremtind": "featured",
     "Gjensidige": "featured",
     "Tryg": "featured",
+    "Sampo": "awaiting_curated_commentary",
     "Frende": "awaiting_curated_commentary",
     "Protector": "awaiting_curated_commentary",
     "Storebrand": "awaiting_curated_commentary"
   },
-  "reported_company_count": 6,
+  "reported_company_count": 7,
   "periods": {
     "Q3 2026": {
       "brief": [
@@ -413,6 +431,13 @@
           "type": "rule_based_interpretation"
         },
         {
+          "text": "Sampo: combined ratio 82.6 % i Q3 2026, forbedret med 0.3 prosentpoeng fra Q2 2026 (82.9 %).",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "company": "Sampo",
+          "period": "Q3 2026",
+          "type": "rule_based_interpretation"
+        },
+        {
           "text": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
           "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
           "company": "Frende",
@@ -503,6 +528,16 @@
           },
           "qualitative_notes": []
         },
+        "Sampo": {
+          "summary": "Sampo: forsikringsinntekter 2503 EURm (+8.7 % mot Q3 2025), forsikringsresultat 435 EURm, combined ratio 82.6 % (Q3 2025: 83 %) i Q3 2026.",
+          "comment": "Sampo: combined ratio 82.6 % i Q3 2026, forbedret med 0.3 prosentpoeng fra Q2 2026 (82.9 %).",
+          "ytd": "",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "period": "Q3 2026",
+          "reader_summary": "Forsikringslønnsomheten bedret seg sammenlignet med samme kvartal i fjor. Forsikringsinntektene økte fra samme kvartal i fjor.",
+          "has_comparative": true,
+          "qualitative_notes": []
+        },
         "Frende": {
           "summary": "Frende: forsikringsinntekter 973.443 NOKm (+19.0 % mot Q3 2025), forsikringsresultat 184.381 NOKm, combined ratio 84 % (Q3 2025: 85.3 %) i Q3 2026.",
           "comment": "Frende: combined ratio 84 % i Q3 2026, svekket med 2.7 prosentpoeng fra Q2 2026 (81.3 %).",
@@ -559,11 +594,12 @@
         "Fremtind": "featured",
         "Gjensidige": "featured",
         "Tryg": "featured",
+        "Sampo": "awaiting_curated_commentary",
         "Frende": "awaiting_curated_commentary",
         "Protector": "awaiting_curated_commentary",
         "Storebrand": "awaiting_curated_commentary"
       },
-      "reported_company_count": 6
+      "reported_company_count": 7
     },
     "Q2 2026": {
       "brief": [

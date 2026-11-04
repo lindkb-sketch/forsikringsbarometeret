@@ -4,7 +4,7 @@
   "reference_quarter": "Q3 2026",
   "investor_ready": false,
   "status": "NOT_APPROVED_FOR_INVESTOR_USE",
-  "financial_quarter_complete": false,
+  "financial_quarter_complete": true,
   "all_seven_automated": false,
   "definitions_comparable": false,
   "market_data_fresh": true,
@@ -66,16 +66,16 @@
     {
       "company": "Sampo",
       "quarter": "Q3 2026",
-      "latest_source_located_quarter": "Q2 2026",
-      "status": "missing_after_calendar_date",
-      "source_located_metrics": [],
-      "missing_metrics": [
+      "latest_source_located_quarter": "Q3 2026",
+      "status": "source_located_quarter",
+      "source_located_metrics": [
+        "combined_ratio",
+        "expense_ratio",
         "insurance_revenue",
         "insurance_service_result",
-        "combined_ratio",
-        "loss_ratio",
-        "expense_ratio"
+        "loss_ratio"
       ],
+      "missing_metrics": [],
       "invalid_metrics": [],
       "expected_report_date": "2026-11-04",
       "revenue_not_ifrs_comparable": false,

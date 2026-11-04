@@ -312,6 +312,125 @@
           }
         ],
         "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "large_claims",
+        "text": "Sampo omtaler i kvartalsrapporten: «This was supported by cost- efficiency improvements and a favourable large claims outcome.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 4,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "growth",
+        "text": "Sampo omtaler i kvartalsrapporten: «While the previous strategy period was all about transformation into a pure-play P&C group and building a solid foundation, this period focused on delivering attractive and durable organic growth at high margins through sustained underwriting discipline.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 5,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "operations",
+        "text": "Sampo omtaler i kvartalsrapporten: «It is the result of our consistent investments in our operational capabilities, cost efficiency, and customer proposition over a much longer period.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 5,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "weather",
+        "text": "Sampo omtaler i kvartalsrapporten: «Any forecast of Sampo’s underwriting result is subject to estimates for weather claims, large claims, prior year development, and certain other items that may vary periodically and are out of Sampo’s control.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 6,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "investment",
+        "text": "Sampo omtaler i kvartalsrapporten: «This in turn creates uncertainty on the future path for interest rates.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 6,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "competition",
+        "text": "Sampo omtaler i kvartalsrapporten: «Price competition remained intense among larger corporate customers, affecting the operating environment in Nordic Industrial.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 10,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
+      },
+      {
+        "theme": "profitability",
+        "text": "Sampo omtaler i kvartalsrapporten: «Overall, the third quarter benefitted from lower claims frequency, partly reflecting changes in driving patterns following a period of elevated fuel prices.»",
+        "companies": [
+          "Sampo"
+        ],
+        "sources": [
+          {
+            "company": "Sampo",
+            "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+            "kind": "official_quarterly_report",
+            "page": 13,
+            "sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861"
+          }
+        ],
+        "basis": "issuer_pdf_verbatim"
       }
     ],
     "Q2 2026": [
@@ -1212,6 +1331,7 @@
     "Q1 2026|Protector": "https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf",
     "Q1 2026|Sampo": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf",
     "Q1 2026|Storebrand": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
-    "Q1 2026|Tryg": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf"
+    "Q1 2026|Tryg": "https://tryg.com/sites/tryg.com/files/2026-04/Q1%20Interim%20Report%202026%20-%20TRYG%20A_S_7jvxgee5_0.pdf",
+    "Q3 2026|Sampo": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf"
   }
 }
