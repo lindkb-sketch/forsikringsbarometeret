@@ -51,6 +51,20 @@ class StressContracts(unittest.TestCase):
   self.assertNotIn("norway/quarter/Q3-2025",protector["missing_by_scope_period"])
   self.assertNotIn("norway/quarter/Q3-2024",protector["missing_by_scope_period"])
 
+ def test_replay_uses_live_official_importers_for_three_priority_issuers(self):
+  self.assertIn("import_gjensidige_pdf_norway.py",PLANS["Gjensidige"])
+  self.assertIn("migrate_gjensidige_ytd_pdf.py",PLANS["Gjensidige"])
+  self.assertIn("storebrand_q4_group.py",PLANS["Storebrand"])
+  self.assertIn("protector_2025_pdf_backfill.py",PLANS["Protector"])
+  self.assertIn("protector_2024_official_backfill.py",PLANS["Protector"])
+  if not REPORT.exists():
+   return
+  results={r["company"]:r for r in json.loads(REPORT.read_text())["results"]}
+  for company in ("Gjensidige","Storebrand","Protector"):
+   completed={e["step"] for e in results[company]["steps"]}
+   self.assertTrue(set(PLANS[company]).issubset(completed),
+                   company+" replay exited before all historical sources were attempted")
+
  def test_same_source_build_is_idempotent(self):
   original=json.loads(SOURCE.read_text())
   first=build(original)

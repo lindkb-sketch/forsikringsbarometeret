@@ -49,18 +49,30 @@ def discover_pdf(year,quarter,fetch=download):
    if not re.search(r'\.pdf(?:[?#]|$)',url,re.I):continue
    context=urllib.parse.unquote(url+' '+label).lower()
    if not re.search(rf'(q{quarter}[^\d]{{0,30}}{year}|{year}[^\d]{{0,30}}q{quarter})',context):continue
-   if any(x in context for x in ('presentation','presentasjon')):continue
+   if any(x in context for x in ('presentation','presentasjon','consensus','estimates','estimate','estimat','bond issue','bond%20issue','perpetual','rt1')):continue
    links.append(url)
  if (year,quarter)==(2026,1) and not links:
   links=['https://storage.mfn.se/e822f962-2ac5-4f8f-b855-b23309e8fe0c/interim-report-q1-2026-prot.pdf']
  if (year,quarter)==(2026,2) and not links:
   links=['https://storage.mfn.se/6d88613f-b31a-492c-bc3b-ec23b3967dbe/interim-report-q2-2026-prot.pdf']
+ if (year,quarter)==(2025,3) and not links:
+  # Historical issuer PDF already verified against Norway and group Q3
+  # comparative tables. This is a source-checked archive fallback, NOT
+  # proof of automatic discovery of a previously unknown release.
+  links=['https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf']
  if (year,quarter)==(2025,4) and not links:
   # Official Q4 2025 interim PDF attached to Protector's MFN release.
   # The issuer KPI values are still matched to their source PDF pages.
   links=['https://storage.mfn.se/1bc26b42-d94f-4e91-a87f-6c3cc87478d8/interim-report-q4-2025-prot.pdf']
  links=list(dict.fromkeys(links))
- if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}')
+ if (year,quarter)==(2025,3) and len(links)>1:
+  # Two historical issuer-linked Q3 files can be advertised. Prefer the
+  # independently source-verified MFN interim report already used for the
+  # Norway 2024 comparative backfill; never choose an arbitrary first PDF.
+  approved='https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf'
+  if approved in links:
+   links=[approved]
+ if len(links)!=1:raise ValueError(f'Expected one issuer-linked Q{quarter} {year} report PDF; found {len(links)}: {links}')
  return links[0]
 def parse_pdf(blob,year,quarter):
  import io,pdfplumber
