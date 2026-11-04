@@ -9,7 +9,7 @@ PLANS={
 "Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
-"Protector":["protector_publish.py"],
+"Protector":["protector_publish.py","import_protector_norway_historical_pdf.py"],
 "Storebrand":["storebrand_publish_q3.py","replay_storebrand_early.py","replay_storebrand_roe_diagnostics.py"]}
 def run():
  results=[]
