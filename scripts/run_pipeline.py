@@ -84,6 +84,10 @@ def run(offline=False):
  for name in ['enforce_source_policy.py','audit_financials.py','build_verified_feed.py','refresh_report_commentary.py','build_editorial.py','build_strategic_market.py','update.py','verify_feed_coverage.py','verify_expected_published_quarters.py','check_reported_returns_coverage.py']:
   print('RUN',name,flush=True)
   subprocess.run([sys.executable,str(ROOT/'scripts'/name)],cwd=ROOT,check=True)
+ if not offline:
+  # An overdue published Sampo quarter must never be hidden behind a green pipeline.
+  # Offline builds remain deterministic and do not impose live release deadlines.
+  subprocess.run([sys.executable,str(ROOT/'scripts'/'check_sampo_release.py')],cwd=ROOT,check=True)
  print('Pipeline complete. Coverage is reported separately; it is not implied.')
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('--offline',action='store_true');run(ap.parse_args().offline)
