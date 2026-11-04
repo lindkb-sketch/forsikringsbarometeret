@@ -34,6 +34,18 @@ class StressContracts(unittest.TestCase):
       r["import_commands_passed"] and r["historical_rows_missing"]==0
       and not r["golden_value_mismatches"] and r["staged_feed_parity"] and r["historical_rows_expected"]>0)
 
+ def test_protector_replay_restores_official_norway_comparatives(self):
+  self.assertEqual(PLANS["Protector"][:2],
+                   ["protector_publish.py","import_protector_norway_historical_pdf.py"])
+  if not REPORT.exists():
+   return
+  data=json.loads(REPORT.read_text())
+  protector=next(r for r in data["results"] if r["company"]=="Protector")
+  completed={e["step"]:e["code"] for e in protector["steps"]}
+  self.assertEqual(completed.get("import_protector_norway_historical_pdf.py"),0)
+  self.assertNotIn("norway/quarter/Q3-2024",protector["missing_by_scope_period"])
+  self.assertNotIn("norway/quarter/Q3-2025",protector["missing_by_scope_period"])
+
  def test_same_source_build_is_idempotent(self):
   original=json.loads(SOURCE.read_text())
   first=build(original)
