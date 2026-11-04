@@ -33,11 +33,19 @@ def from_page(text,company,year,quarter):
             # Only the row completing the Eika-adjusted caption is eligible.
             # Footnotes can intervene; avoid unadjusted ROE or unrelated ratios.
             block='\n'.join(lines[i:i+12])
-            values=re.findall(
-                r'(?im)^\s*(?:transaksjonen\s+med\s+)?(?:Eika\s+)?Forsikring\s+AS\s+'
+            # The issuer's Q3 2025 PDF interleaves a footnote and the
+            # caption in one physical line. Accept an in-line match ONLY
+            # with the complete "transaksjonen med Eika Forsikring AS"
+            # caption, never a stray company name or nearby percentage.
+            in_line=re.findall(
+                r'transaksjonen\s+med\s+Eika\s+Forsikring\s+AS\s+'
+                r'(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%',
+                block,re.I)
+            wrapped=re.findall(
+                r'(?im)^\s*(?:Eika\s+)?Forsikring\s+AS\s+'
                 r'(-?\d{1,3}(?:[.,]\d{1,2})?)\s*%',
                 block)
-            candidates.extend(map(number,values))
+            candidates.extend(map(number,in_line+wrapped))
         definition='Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS'
     elif company=='Gjensidige':
         if 'Gjensidige Forsikring Group' not in text:
