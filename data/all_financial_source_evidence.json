@@ -1,15 +1,15 @@
 {
-  "observation_count": 847,
+  "observation_count": 851,
   "source_types": {
-    "official_quarterly_report": 847
+    "official_quarterly_report": 851
   },
-  "comparative_period_rows": 305,
+  "comparative_period_rows": 309,
   "comparative_periods_by_company": {
     "Storebrand": 50,
     "Tryg": 110,
     "Fremtind": 66,
     "Gjensidige": 45,
-    "Protector": 13,
+    "Protector": 17,
     "Frende": 20,
     "Sampo": 1
   },
