@@ -84,21 +84,40 @@ def exercise(original):
                   (r.get('year'),r.get('quarter'))==(YEAR,QUARTER)]
         if {r['metric'] for r in matching}!=set(METRICS):
             raise AssertionError('Sampo '+segment+' missing from published feed')
-    # Negative drill: wrong issuer, absent ratio, and invalid combined-ratio arithmetic.
-    for mutated in (
-        {**json.loads(fixture(COMPANIES[0],0)),"issuer":"Untrusted"},
-        {**json.loads(fixture(COMPANIES[0],0)),"metrics":{"insurance_revenue":5}},
-    ):
-        try:decode_report(COMPANIES[0],json.dumps(mutated).encode())
-        except ValueError:pass
-        else:raise AssertionError("Invalid report was accepted")
-    damaged=copy.deepcopy(prepared)
-    next(x for x in damaged["observations"] if x.get("test_only_synthetic") and x["metric"]=="combined_ratio")["value"]=12
-    if audit(damaged)["ok"]:raise AssertionError("Contradictory ratio did not fail closed")
+    # One independent bad-arrival matrix per issuer. A faulty report must not
+    # reach the shared financial feed even when the other six issuers are valid.
+    negatives={}
+    for position, company in enumerate(COMPANIES):
+        base=json.loads(fixture(company,position))
+        cases={
+            'wrong_issuer':{**base,'issuer':'Untrusted issuer'},
+            'wrong_period':{**base,'quarter':3},
+            'missing_required_metric':{**base,'metrics':{'insurance_revenue':5}},
+        }
+        for reason, payload in cases.items():
+            try:
+                decode_report(company,json.dumps(payload).encode())
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(company+' invalid '+reason+' report accepted')
+        damaged=copy.deepcopy(prepared)
+        target=next(x for x in damaged['observations']
+                    if x.get('test_only_synthetic') and
+                    x['company']==company and x['scope']=='group' and
+                    x['metric']=='combined_ratio')
+        target['value']=12
+        if audit(damaged)['ok']:
+            raise AssertionError(company+' contradictory ratio passed audit')
+        negatives[company]=list(cases)+['invalid_ratio']
+    if set(negatives)!=set(COMPANIES):
+        raise AssertionError('A company was skipped in the negative test matrix')
+
     return feed,editorial,{"simulation":True,"report_transport":"synthetic_in_memory_not_official_pdf","real_issuer_parser_verified":False,
               "companies":list(COMPANIES),"quarter":"Q4 2026","synthetic_observations":len(observed),"sampo_segments":list(SAMPO_SEGMENTS),
               "audit_ok":True,"editorial_companies":len(editorial["periods"]["Q4 2026"]["by_company"]),
-              "negative_cases_passed":3,"production_data_modified":False}
+              "negative_cases_passed":sum(map(len,negatives.values())),
+              "negative_cases_by_company":negatives,"production_data_modified":False}
 def main():
     baseline=json.loads((ROOT/"data/financial_observations.json").read_text())
     feed,editorial,result=exercise(baseline)
