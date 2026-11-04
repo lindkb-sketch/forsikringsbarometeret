@@ -11,7 +11,8 @@ import json
 from pathlib import Path
 
 from audit_financials import DATA, audit
-from import_reported_returns import LABELS, extract
+from import_reported_returns import LABELS
+from replay_historical_return_tables import extract
 from ingest_official_pdf import download
 from publish_geographic_workbooks import atomic_write
 
