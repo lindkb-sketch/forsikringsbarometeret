@@ -17,3 +17,5 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_sampo_release_gate.py' -v
       - name: Fail when a released Sampo report is still absent
         run: python scripts/check_sampo_release.py
+      - name: Fail if the released Sampo quarter has not reached GitHub Pages
+        run: python scripts/check_sampo_public_release.py
