@@ -53,12 +53,7 @@ def parse_norway_revenue(pages,url,sha):
 
 
 def parse_norway_ratios(pages,url,sha):
-    """Read reported Q3 Norway service result and ratios, never group totals.
-
-    The issuer PDF has five geography pairs ordered UK, Sweden, Norway,
-    Denmark and France. Require the Q3 2025 and Q3 2024 header on the
-    uniquely identified segment page before choosing Norway columns 5-6.
-    """
+    """Extract official Norway Q3 service result and ratios for 2025 and 2024."""
     labels={
         'insurance_service_result':'Insurance service result',
         'loss_ratio':'Loss ratio, net of reinsurance',
@@ -67,121 +62,40 @@ def parse_norway_ratios(pages,url,sha):
     }
     matches=[]
     for page,text in pages:
-        if not re.search(r'^Segment information\s*-\s*Q3\s*
-    request=urllib.request.Request(SOURCE,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
-    with urllib.request.urlopen(request,timeout=50) as response:
-        if response.geturl().split('/')[2]!='storage.mfn.se':
-            raise ValueError('Untrusted PDF redirect')
-        blob=response.read(20_000_001)
-    if len(blob)>20_000_000 or not blob.startswith(b'%PDF-'):
-        raise ValueError('Missing official Protector PDF')
-    return blob
-
-def merge_observations(existing, additions):
-    """Identity preserves issuer segment; fail rather than drop source rows."""
-    identity=('company','scope','segment','year','quarter','period_type','metric')
-    records=existing['observations']
-    index={tuple(r.get(k) for k in identity):r for r in records}
-    if len(index)!=len(records):
-        raise ValueError('Duplicate financial observation identities before Protector backfill')
-    for row in additions:
-        key=tuple(row.get(k) for k in identity)
-        previous=index.get(key)
-        if previous and abs(previous['value']-row['value'])>0.001:
-            raise ValueError('Protector Norway historical PDF disagrees with existing verified amount')
-        if not previous:index[key]=row
-    if len(index)<len(records):
-        raise ValueError('Historical Protector backfill discarded existing observations')
-    return {**existing,'observations':list(index.values())}
-
-def run():
-    blob=download()
-    with pdfplumber.open(io.BytesIO(blob)) as pdf:
-        pages=[(n+1,page.extract_text(layout=False) or '') for n,page in enumerate(pdf.pages)]
-    digest=hashlib.sha256(blob).hexdigest()
-    rows=parse_norway_revenue(pages,SOURCE,digest)+parse_norway_ratios(pages,SOURCE,digest)
-    data=json.loads(OUTPUT.read_text(encoding='utf-8'))
-    data=merge_observations(data,rows)
-    from audit_financials import audit
-    if not audit(data)['ok']:raise ValueError('Protector Norway historic source audit rejected')
-    from publish_geographic_workbooks import atomic_write
-    atomic_write(OUTPUT,data)
-    print('PROTECTOR_NORWAY_Q3_2024_VERIFIED',rows[1]['value'],'PDF_PAGE',rows[1]['source_page'])
-if __name__=='__main__':run()
-,text,re.M):
+        if not re.search(r'^Segment information\s*-\s*Q3\s*$',text,re.M):
             continue
         if not re.search(r'UK\s+Sweden\s+Norway\s+Denmark\s+France',text):
             continue
         if len(re.findall(r'Q3\s+2025\s+Q3\s+2024',text))!=5:
-            raise ValueError('Protector Norway Q3 ratio year columns ambiguous')
+            raise ValueError('Protector Norway ratio year columns ambiguous')
         values={}
         for metric,label in labels.items():
             pattern=(r'^'+re.escape(label)+r'[¹²³⁴⁵⁶⁷⁸⁹*]?\s+'
-                     r'(?=[\d(−-])([^\n]+)
-    request=urllib.request.Request(SOURCE,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
-    with urllib.request.urlopen(request,timeout=50) as response:
-        if response.geturl().split('/')[2]!='storage.mfn.se':
-            raise ValueError('Untrusted PDF redirect')
-        blob=response.read(20_000_001)
-    if len(blob)>20_000_000 or not blob.startswith(b'%PDF-'):
-        raise ValueError('Missing official Protector PDF')
-    return blob
-
-def merge_observations(existing, additions):
-    """Identity preserves issuer segment; fail rather than drop source rows."""
-    identity=('company','scope','segment','year','quarter','period_type','metric')
-    records=existing['observations']
-    index={tuple(r.get(k) for k in identity):r for r in records}
-    if len(index)!=len(records):
-        raise ValueError('Duplicate financial observation identities before Protector backfill')
-    for row in additions:
-        key=tuple(row.get(k) for k in identity)
-        previous=index.get(key)
-        if previous and abs(previous['value']-row['value'])>0.001:
-            raise ValueError('Protector Norway historical PDF disagrees with existing verified amount')
-        if not previous:index[key]=row
-    if len(index)<len(records):
-        raise ValueError('Historical Protector backfill discarded existing observations')
-    return {**existing,'observations':list(index.values())}
-
-def run():
-    blob=download()
-    with pdfplumber.open(io.BytesIO(blob)) as pdf:
-        pages=[(n+1,page.extract_text(layout=False) or '') for n,page in enumerate(pdf.pages)]
-    rows=parse_norway_revenue(pages,SOURCE,hashlib.sha256(blob).hexdigest())
-    data=json.loads(OUTPUT.read_text(encoding='utf-8'))
-    data=merge_observations(data,rows)
-    from audit_financials import audit
-    if not audit(data)['ok']:raise ValueError('Protector Norway historic source audit rejected')
-    from publish_geographic_workbooks import atomic_write
-    atomic_write(OUTPUT,data)
-    print('PROTECTOR_NORWAY_Q3_2024_VERIFIED',rows[1]['value'],'PDF_PAGE',rows[1]['source_page'])
-if __name__=='__main__':run()
-)
+                     r'(?=[\d(−-])([^\n]+)$')
             lines=re.findall(pattern,text,re.I|re.M)
             if len(lines)!=1:
-                raise ValueError('Missing or ambiguous official Norway '+metric+' row')
+                raise ValueError('Missing or ambiguous Norway '+metric+' row')
             tokens=re.findall(r'\(?-?\d[\d,]*(?:\.\d+)?\)?',lines[0])
             if len(tokens)!=9:
                 raise ValueError('Protector Norway '+metric+' geography columns missing')
             def numeric(token):
                 negative=token.startswith('(')
-                number=float(token.strip('()').replace(',',''))
-                return -number if negative else number
+                value=float(token.strip('()').replace(',',''))
+                return -value if negative else value
             numbers=[numeric(token) for token in tokens]
             values[metric]=(numbers[4],numbers[5])
-        for index in (0,1):
-            if abs(values['loss_ratio'][index]+values['expense_ratio'][index]-
-                   values['combined_ratio'][index])>0.21:
+        for i in (0,1):
+            if abs(values['loss_ratio'][i]+values['expense_ratio'][i]-
+                   values['combined_ratio'][i])>0.21:
                 raise ValueError('Protector Norway Q3 ratios do not reconcile')
         matches.append((page,values))
     if len(matches)!=1:
-        raise ValueError('Expected one unambiguous Norway Q3 ratio source table')
+        raise ValueError('Expected exactly one Norway Q3 financial table')
     page,values=matches[0]
-    rows=[]
+    result=[]
     for metric,(current,prior) in values.items():
         for year,value in ((2025,current),(2024,prior)):
-            rows.append(dict(company='Protector',year=year,quarter=3,
+            result.append(dict(company='Protector',year=year,quarter=3,
                 scope='norway',source_scope='norway',period_type='quarter',
                 metric=metric,value=value,
                 unit='MNOK' if metric=='insurance_service_result' else 'percent',
@@ -191,7 +105,7 @@ if __name__=='__main__':run()
                 source_section='Segment information - Q3 / Norway',
                 source_definition='Official Norway Q3 '+metric+
                     (' (2024 comparative column)' if year==2024 else ' (2025 column)')))
-    return rows
+    return result
 
 def download():
     request=urllib.request.Request(SOURCE,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
@@ -224,7 +138,8 @@ def run():
     blob=download()
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
         pages=[(n+1,page.extract_text(layout=False) or '') for n,page in enumerate(pdf.pages)]
-    rows=parse_norway_revenue(pages,SOURCE,hashlib.sha256(blob).hexdigest())
+    digest=hashlib.sha256(blob).hexdigest()
+    rows=parse_norway_revenue(pages,SOURCE,digest)+parse_norway_ratios(pages,SOURCE,digest)
     data=json.loads(OUTPUT.read_text(encoding='utf-8'))
     data=merge_observations(data,rows)
     from audit_financials import audit
