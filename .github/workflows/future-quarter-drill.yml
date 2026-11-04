@@ -57,7 +57,8 @@ jobs:
           result=json.loads(p.read_text())
           assert result['synthetic_observations']==45 and result['editorial_companies']==7
           assert result['sampo_segments']==['Private Nordic','Nordic Commercial']
-          assert result['negative_cases_passed']==3
+          assert result['negative_cases_passed']==28
+          assert len(result['negative_cases_by_company'])==7
           print('SEVEN_QUARTER_SIMULATION PASS',result)
           PY
       - name: Verify Q4 seven-company figures and graphs in actual Chrome
