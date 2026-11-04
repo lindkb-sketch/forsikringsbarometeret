@@ -83,11 +83,12 @@ def from_page(text,company,year,quarter):
     return value,definition
 
 def extract(blob,company,year,quarter):
-    try:
+    # For five audited historical layouts the generic prose parser may return
+    # a DIFFERENT valid period's value (e.g. FY 2025 instead of Q4 2025).
+    # Prefer the explicitly quarter-labelled table; never accept a generic
+    # result merely because it appeared earlier in the document.
+    if (company,year,quarter) not in SPECIAL:
         return standard_extract(blob,company,year,quarter)
-    except ValueError:
-        if (company,year,quarter) not in SPECIAL:
-            raise
     if not blob.startswith(b'%PDF-'):
         raise ValueError('Original historical source not PDF')
     with pdfplumber.open(io.BytesIO(blob)) as pdf:
