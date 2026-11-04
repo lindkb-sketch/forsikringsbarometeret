@@ -1,0 +1,25 @@
+name: Seven-insurer Q4 release coverage watchdog
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '24 8 * * *'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/check_seven_q4_release_coverage.py'
+      - 'tests/test_seven_q4_release_coverage.py'
+      - '.github/workflows/seven-q4-release-watchdog.yml'
+permissions:
+  contents: read
+jobs:
+  check-q4-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test all seven release conditions
+        run: python -m unittest discover -s tests -p 'test_seven_q4_release_coverage.py' -v
+      - name: Check scheduled Q4 releases and evidence
+        run: python scripts/check_seven_q4_release_coverage.py
