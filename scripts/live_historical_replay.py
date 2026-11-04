@@ -4,9 +4,9 @@ import json,shutil,subprocess,sys,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 PLANS={
-"Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py"],
+"Fremtind":["discover_frende_fremtind.py","import_fremtind_holding.py","import_reported_returns.py"],
 "Gjensidige":["import_gjensidige_latest.py","migrate_gjensidige_ytd_pdf.py","import_gjensidige_pdf_norway.py","replay_gjensidige_ytd_pdf.py","import_reported_returns.py"],
-"Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py"],
+"Tryg":["discover_tryg.py","import_tryg.py","replay_tryg_historical.py","import_reported_returns.py","import_group_solvency_pdf.py"],
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py","import_protector_norway_historical_pdf.py","protector_2025_pdf_backfill.py","protector_2024_official_backfill.py","import_reported_returns.py","import_group_solvency_pdf.py"],
