@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/diagnose_remaining_returns.py'
+      - 'scripts/replay_historical_return_tables.py'
+      - 'tests/test_replay_historical_return_tables.py'
       - '.github/workflows/diagnose-historical-returns.yml'
 permissions:
   contents: read
