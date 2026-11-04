@@ -1,0 +1,17 @@
+name: Sampo published report coverage
+on:
+  schedule:
+    - cron: '43 8,10,13 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fail when a released Sampo report is still absent
+        run: python scripts/check_sampo_release.py
