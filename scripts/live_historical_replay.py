@@ -61,7 +61,20 @@ def run():
    recovered=sum(k in new for k in old)
    missing=sum(k not in new for k in old)
    added=sum(k not in old for k in new)
-   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"missing_by_scope_period":missing_by_scope,"missing_keys":[list(k) for k in missing_keys],"golden_value_mismatches":mismatches[:15],"staged_feed_parity":feed_ok,"staged_feed_error":feed_error,"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and feed_ok and len(old)>0,"full_website_e2e_certified":False})
+   latest=max(((r["year"],r["quarter"]) for r in old.values()
+               if r.get("scope")=="group" and r.get("period_type")=="quarter"),default=None)
+   latest_keys=[k for k in old if latest and k[1:3]==latest and k[3]=="group" and k[4]=="quarter"]
+   latest_recovered=sum(k in new for k in latest_keys)
+   latest_golden_matches=sum(k in new and
+       (not isinstance(new[k].get("value"),(int,float)) or
+        not isinstance(old[k].get("value"),(int,float)) or
+        abs(new[k]["value"]-old[k]["value"])<=max(.15,abs(old[k]["value"])*.00025))
+       for k in latest_keys)
+   discovery_steps=[e for e in evidence if e["step"].startswith("discover_")]
+   live_discovery_step_passed=bool(discovery_steps) and all(e["code"]==0 for e in discovery_steps)
+   discovery_proven=live_discovery_step_passed and latest_recovered==len(latest_keys) and bool(latest_keys)
+   reconstructed_latest=bool(latest_keys) and latest_recovered==len(latest_keys) and latest_golden_matches==len(latest_keys) and feed_ok
+   results.append({"company":company,"steps":evidence,"import_commands_passed":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence),"new_imported_rows":added,"historical_rows_expected":len(old),"historical_rows_recovered":recovered,"historical_rows_missing":missing,"missing_by_scope_period":missing_by_scope,"missing_keys":[list(k) for k in missing_keys],"golden_value_mismatches":mismatches[:15],"staged_feed_parity":feed_ok,"staged_feed_error":feed_error,"latest_group_quarter":latest,"latest_group_rows_expected":len(latest_keys),"latest_group_rows_recovered":latest_recovered,"latest_group_golden_values_match":latest_golden_matches,"latest_group_replay_verified":reconstructed_latest,"explicit_live_discovery_step_passed":live_discovery_step_passed,"live_discovery_to_latest_import_proven":discovery_proven,"clean_replay_certified":len(evidence)==len(steps) and all(e["code"]==0 for e in evidence) and missing==0 and not mismatches and feed_ok and len(old)>0,"full_website_e2e_certified":False})
    print("REPLAY",company,"PASS" if results[-1]["clean_replay_certified"] else "INCOMPLETE","recovered",recovered,"expected",len(old),"feed",feed_ok,flush=True)
  stage_error=''
  stage_path=ROOT/'data/replay_only_verified_feed.json'
