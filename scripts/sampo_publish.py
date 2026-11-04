@@ -37,7 +37,8 @@ def discover(year,quarter):
     url=urllib.parse.urljoin(index,href)
     label=urllib.parse.unquote(url).lower()
     if not re.search(r'\.pdf(?:$|[?#])',label):continue
-    if not re.search(rf'(q{quarter}[^0-9]{{0,20}}{year}|{year}[^0-9]{{0,20}}q{quarter}|interim.statement.q{quarter}.{year}|half.year.financial.report.{year})',label):continue
+    names={1:'january.march',2:'january.june',3:'january.september',4:'january.december'}
+    if not re.search(rf'(q{quarter}[^0-9]{{0,30}}{year}|{year}[^0-9]{{0,30}}q{quarter}|interim.statement.q{quarter}.{year}|half.year.financial.report.{year}|{names[quarter]}.{year})',label):continue
     if 'presentation' in label:continue
     urls.add(url)
   except Exception:continue
