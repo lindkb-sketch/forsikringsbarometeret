@@ -14,6 +14,7 @@ SOURCES={
  (2025,4):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q4/financial-statement-release-2025.pdf',
  (2026,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q1/interim-statement-q1-2026.pdf',
  (2026,2):'https://attachment.news.eu.nasdaq.com/a036fbfb26e58152a2998c5090e90d969',
+ (2026,3):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf',
 }
 class PDFLinks(HTMLParser):
  def __init__(self):super().__init__();self.links=[]
@@ -42,7 +43,7 @@ def discover(year,quarter):
     if not re.search(r'\.pdf(?:$|[?#])',label):continue
     names={1:'january.march',2:'january.june',3:'january.september',4:'january.december'}
     if not re.search(rf'(q{quarter}[^0-9]{{0,30}}{year}|{year}[^0-9]{{0,30}}q{quarter}|interim.statement.q{quarter}.{year}|half.year.financial.report.{year}|{names[quarter]}.{year})',label):continue
-    if 'presentation' in label:continue
+    if any(word in label for word in ('presentation','sustainability','factbook','transcript','supplement')):continue
     urls.add(url)
   except Exception:continue
  if len(urls)>1:raise ValueError(f'Ambiguous Sampo official PDF Q{quarter}/{year}: {sorted(urls)}')
