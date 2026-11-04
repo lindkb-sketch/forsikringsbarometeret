@@ -12,6 +12,13 @@ class HistoricalReturnTableTests(unittest.TestCase):
         '3) Skattekostnaden er estimert\n'
         'transaksjonen med Eika Forsikring AS 41,4 % 24,2 %\n')
   self.assertEqual(from_page(text,'Fremtind',2025,3)[0],41.4)
+ def test_fremtind_q3_2025_inline_adjusted_row_after_footnote(self):
+  text=('Fremtind Holding konsern Q3 2025\n'
+        'Annualisert egenkapitalavkastning 26,4 % 24,2 %\n'
+        '01.01.2025. Bestandsmålingen er justert. Annualisert egenkapitalavkastning justert for\n'
+        'Fremtind Forsikring AS, og bidrar til konsistens. Endringen medfører en økning '
+        'i bestandspremie. transaksjonen med Eika Forsikring AS 41,4 % 34,0 % 34,5 %\n')
+  self.assertEqual(from_page(text,'Fremtind',2025,3)[0],41.4)
  def test_fremtind_q4_2025_wrapped_entity_label(self):
   text=('Fremtind Holding Q4 2025\n'
         'Annualisert egenkapitalavkastning 24,8 %\n'
