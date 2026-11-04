@@ -33,8 +33,11 @@ def discover(year,quarter):
    with urllib.request.urlopen(urllib.request.Request(index,headers={'User-Agent':'Mozilla/5.0'}),timeout=20) as response:
     markup=response.read(4_000_000).decode('utf-8')
    parser=PDFLinks();parser.feed(markup)
-   for href in parser.links:
+   # Some issuer archives embed report URLs in JSON rather than HTML anchors.
+   embedded=re.findall(r'https?://[^\s"\'<>]+?\.pdf(?:\?[^\s"\'<>]*)?',markup.replace('\\/','/'),re.I)
+   for href in parser.links+embedded:
     url=urllib.parse.urljoin(index,href)
+    if urllib.parse.urlparse(url).hostname not in ('www.sampo.com','sampo.com'):continue
     label=urllib.parse.unquote(url).lower()
     if not re.search(r'\.pdf(?:$|[?#])',label):continue
     names={1:'january.march',2:'january.june',3:'january.september',4:'january.december'}
