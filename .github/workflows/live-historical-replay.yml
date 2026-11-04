@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/live_historical_replay.py'
+      - 'scripts/replay_original_reported_returns.py'
+      - 'scripts/replay_historical_return_tables.py'
+      - 'tests/test_replay_historical_return_tables.py'
       - 'tests/test_full_automation_stress.py'
       - '.github/workflows/live-historical-replay.yml'
   push:
