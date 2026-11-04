@@ -10,7 +10,7 @@ PLANS={
 "Sampo":["sampo_publish.py"],
 "Frende":["discover_frende_fremtind.py","import_frende_holding.py"],
 "Protector":["protector_publish.py","import_protector_norway_historical_pdf.py","protector_2025_pdf_backfill.py","protector_2024_official_backfill.py","import_reported_returns.py","import_group_solvency_pdf.py"],
-"Storebrand":["storebrand_publish_q3.py","storebrand_q4_group.py","replay_storebrand_early.py","storebrand_2025_growth_backfill.py","storebrand_2024_official_backfill.py","replay_storebrand_roe_diagnostics.py"]}
+"Storebrand":["storebrand_publish_q3.py","storebrand_q4_group.py","replay_storebrand_early.py","storebrand_2025_growth_backfill.py","storebrand_2024_official_backfill.py","replay_storebrand_roe_diagnostics.py","replay_storebrand_roe_q2_2025.py"]}
 def run():
  results=[]
  restored=[]
