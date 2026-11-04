@@ -9,4 +9,13 @@ def fetch(*args):
 class TestProtectorArchive(unittest.TestCase):
  def test_duplicate_pdf_discovery_selects_issuer_verified_q3(self):
   self.assertEqual(discover_pdf(2025,3,fetch=fetch),P)
+
+def consensus_fetch(*args):
+ return ('<a href="'+P+'">Q3 2025 interim report</a>'
+         '<a href="https://cdn.prod.website-files.com/estimates_q3_2025_consensus.pdf">Q3 2025 Consensus Estimates</a>').encode()
+
+class TestNonIssuerDocumentRejection(unittest.TestCase):
+ def test_analyst_consensus_not_a_quarterly_report(self):
+  self.assertEqual(discover_pdf(2025,3,fetch=consensus_fetch),P)
+
 if __name__=='__main__':unittest.main()
