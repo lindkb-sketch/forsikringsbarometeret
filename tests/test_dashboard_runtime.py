@@ -100,7 +100,7 @@ if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
   self.assertIn("quarterChanges=function(){return '';};",html)
   self.assertIn('const strategic=groups.official.map(x=>',html)
   self.assertIn('const articles=groups.other.map(x=>',html)
-  self.assertIn('Nyheter og kildeverifisert innsikt i konkurransebildet',html)
+  self.assertIn('Nyheter og innsikt i konkurransebildet',html)
   self.assertIn('Les primærkilden',html)
   self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertIn('const other=all.slice(0,4);',html)
@@ -183,7 +183,7 @@ if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
   self.assertIn("const currentGrowth=currentReported?d.growth:null",runtime)
   self.assertIn("const previousGrowth=currentReported?d.growthPrev:null",runtime)
   self.assertIn("if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)",runtime)
-  self.assertIn("if(localStorebrand&&bucket.Storebrand?.revenue)",runtime)
+  self.assertNotIn("if(localStorebrand&&bucket.Storebrand?.revenue)",runtime)
 
  def test_storebrand_explanation_below_table_and_frende_ifrs4_label(self):
   runtime=RUNTIME.read_text()

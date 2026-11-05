@@ -197,7 +197,7 @@ async function main(){
   }
   check('Five chronological quarters on chart',view.graph.length===5&&view.graph[4]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
   check('Five quarter labels remain when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
-  check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og kildeverifisert innsikt'),view.media.slice(0,200));
+  check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og innsikt'),view.media.slice(0,200));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
      ['Protector','Storebrand'].every(c=>editorial.periods?.['Q3 2026']?.by_company?.[c])){
@@ -331,12 +331,15 @@ async function main(){
     const older=feed.observations.find(r=>r.company===issuer&&r.year===year-2&&
       r.quarter===quarter&&r.scope==='group'&&r.period_type==='quarter'&&
       r.metric==='insurance_revenue');
+    check(issuer+' has no duplicate revenue growth section',
+      await page.locator('.source-growth-matrix').count()===0,issuer);
     if(prior&&older&&older.value>0&&prior.unit===older.unit){
       const expected=((prior.value/older.value-1)*100).toLocaleString('nb-NO',
         {minimumFractionDigits:1,maximumFractionDigits:1});
-      const card=page.locator('.source-growth-matrix [data-growth-period="quarter-prior"] .value');
-      check(issuer+' displays verified last-year revenue growth',
-        (await card.innerText()).includes(expected),expected);
+      const card=page.locator('.dynamic-kpis > .metric').filter({has:page.locator('.name', {hasText:'Inntektsvekst'})}).first();
+      const cardText=await card.innerText();
+      check(issuer+' displays verified last-year revenue growth in result overview',
+        cardText.includes(expected),JSON.stringify({expected,cardText}));
     }
   }
   await page.evaluate(()=>show('home',true));
@@ -359,11 +362,8 @@ async function main(){
     check(c+' source-based growth in first metric column',txt.includes('%'),txt.slice(0,250));
    }
   }
-  const subsidiaryQ=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
-     r.source_entity==='Storebrand Forsikring AS'&&r.year===year&&r.quarter===quarter&&
-     r.period_type==='quarter'&&r.metric==='insurance_revenue');
-  if(subsidiaryQ)check('Storebrand Forsikring AS IFRS17 quarter revenue beside group APM',
-    norm(await page.locator('body').innerText()).includes(nf(subsidiaryQ.value))&&norm(await page.locator('body').innerText()).includes('Storebrand Forsikring AS')&&norm(await page.locator('body').innerText()).includes('IFRS 17'),tableQ.slice(-900));
+  check('Storebrand duplicate quarterly note removed',
+    !tableQ.includes('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter'),'Quarterly table');
   await page.screenshot({path:'data/browser_home_q3.png',fullPage:true});
   report.screenshots.push('data/browser_home_q3.png');
   await page.selectOption('#results-comparison select','H3');
@@ -374,11 +374,8 @@ async function main(){
    if(metric)check(c+' HIÅ insurance result visible',ytdText.includes(nf(metric.value)),ytdText.slice(-300));
   }
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
-  const subsidiaryYTD=feed.observations.find(r=>r.company==='Storebrand'&&r.scope==='norway'&&
-      r.source_entity==='Storebrand Forsikring AS'&&r.year===year&&r.quarter===quarter&&
-      r.period_type==='ytd'&&r.metric==='insurance_revenue');
-  if(subsidiaryYTD)check('Storebrand Forsikring AS IFRS17 HIÅ in original table',
-      ytdText.includes(nf(subsidiaryYTD.value))&&ytdText.includes('Storebrand Forsikring AS'),ytdText.slice(-850));
+  check('Storebrand duplicate HIÅ note removed',
+    !ytdText.includes('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter'),'HIÅ table');
   for(const company of companies){
    const prior=feed.observations.find(r=>r.company===company&&r.year===year-1&&r.quarter===quarter&&
      r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
