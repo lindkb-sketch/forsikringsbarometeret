@@ -14,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'data/newsweb_notices.json'
 BASE='https://newsweb.oslobors.no'
 # Explicit issuer signs only. Do not infer Frende/Fremtind/If/Tryg issuer identities.
-ISSUERS={'Gjensidige':'GJF','Protector':'PROT','Storebrand':'STB'}
+ISSUERS={'Gjensidige':('11217','GJF')}  # Verified NewsWeb numeric issuer ID and exact ticker
 COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand')
 AGE=dt.timedelta(days=92)
 
@@ -63,7 +63,7 @@ def parse(page,issuer,now):
                   key=lambda n:n['published_at'],reverse=True)
 
 def fetch(issuer):
-    url=BASE+'/search?'+urllib.parse.urlencode({'issuer':issuer})
+    url=BASE+'/search?'+urllib.parse.urlencode({'category':'','fromDate':'','issuer':issuer,'market':'','messageTitle':'','toDate':''})
     request=urllib.request.Request(url,headers={'User-Agent':'Forsikringsbarometeret/1.0'})
     with urllib.request.urlopen(request,timeout=20) as response:
         if urllib.parse.urlsplit(response.geturl()).hostname!='newsweb.oslobors.no':
@@ -77,9 +77,9 @@ def update(fetcher=fetch,now=None):
     old=json.loads(OUT.read_text(encoding='utf-8'))
     notices={c:[] for c in COMPANIES}
     errors={}
-    for company,sign in ISSUERS.items():
+    for company,(issuer_id,sign) in ISSUERS.items():
         try:
-            found=parse(fetcher(sign),sign,now)
+            found=parse(fetcher(issuer_id),sign,now)
             if not found:raise ValueError('No parseable official notice; retaining prior records')
             notices[company]=found[:15]
         except Exception as exc:
@@ -100,5 +100,13 @@ def update(fetcher=fetch,now=None):
     return result
 
 if __name__=='__main__':
-    data=update()
-    print('NEWSWEB_FEED',data['updated_at'],{k:len(v) for k,v in data['notices'].items()})
+    import sys
+    if '--probe' in sys.argv:
+        page=fetch('11217')
+        found=parse(page,'GJF',dt.datetime.now(dt.timezone.utc))
+        if not found:
+            raise SystemExit('NEWSWEB_PROBE_FAILED: no verified GJF notices parsed from NewsWeb HTML')
+        print('NEWSWEB_PROBE_OK',len(found),found[0]['published_at'],found[0]['url'])
+    else:
+        data=update()
+        print('NEWSWEB_FEED',data['updated_at'],{k:len(v) for k,v in data['notices'].items()})
