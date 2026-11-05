@@ -106,6 +106,12 @@ if __name__=='__main__':
         found=parse(page,'GJF',dt.datetime.now(dt.timezone.utc))
         if not found:
             raise SystemExit('NEWSWEB_PROBE_FAILED: no verified GJF notices parsed from NewsWeb HTML')
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'newsweb_notices.json'
+            path.write_text(json.dumps({'source':'NewsWeb','notices':{'Gjensidige':found}},
+                                       ensure_ascii=False),encoding='utf-8')
+            loaded=json.loads(path.read_text(encoding='utf-8'))
+            assert loaded['notices']['Gjensidige'][0]['url']==found[0]['url']
         print('NEWSWEB_PROBE_OK',len(found),found[0]['published_at'],found[0]['url'])
     else:
         data=update()
