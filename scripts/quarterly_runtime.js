@@ -657,21 +657,6 @@
           ?'<span class="qoq '+(now>then?'good':now<then?'bad':'flat')+
            '" aria-label="Endring mot samme periode i fjor">'+
            (now>then?'▲':now<then?'▼':'→')+'</span>':'';
-        let subsidiary='';
-        if(name==='Storebrand'){
-          const local=(verified?.observations||[]).find(r=>
-            r.company==='Storebrand'&&r.scope==='norway'&&
-            r.source_entity==='Storebrand Forsikring AS'&&
-            r.year===year&&r.quarter===q&&
-            r.period_type===(isYtd?'ytd':'quarter')&&
-            r.metric==='insurance_revenue'&&valid(r)&&
-            /IFRS\s*17/i.test(r.source_definition||''));
-          if(local){
-            subsidiary='<div class="table-prior">Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+
-              fmt(local.value)+' '+escape(local.unit||'MNOK')+
-              ' · <a href="'+escape(local.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></div>';
-          }
-        }
         td.innerHTML='<strong>'+title+'</strong>'+basis+prior+delta;
       }else td.innerHTML='<span class="muted">Ikke publisert</span>';
       tr.insertBefore(td,tr.cells[2]||null);
@@ -721,22 +706,11 @@
           trendArrow(d[key],prior,['cr','loss','cost'].includes(key));
       }
     }
-    // Preserve the verifiable local IFRS 17 disclosure, outside the group
-    // income cell, where it cannot be mistaken for group APM revenue.
-    const localStorebrand=(verified?.observations||[]).find(r=>
-      r.company==='Storebrand'&&r.scope==='norway'&&
-      r.source_entity==='Storebrand Forsikring AS'&&
-      r.year===year&&r.quarter===q&&r.period_type===(isYtd?'ytd':'quarter')&&
-      r.metric==='insurance_revenue'&&valid(r)&&
-      /IFRS\s*17/i.test(r.source_definition||''));
     const bucket=(isYtd?MON_YTD_Q3:MON_Q3);
     const notes=[];
     for(const company of ['Storebrand','Frende']){
       if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)
         notes.push(company+' – '+bucket[company].revenueBasis);
-    }
-    if(localStorebrand&&bucket.Storebrand?.revenue){
-      notes.push('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter: '+fmt(localStorebrand.value)+' '+(localStorebrand.unit||'MNOK'));
     }
     if(notes.length){
       const notesRow=document.createElement('div');
