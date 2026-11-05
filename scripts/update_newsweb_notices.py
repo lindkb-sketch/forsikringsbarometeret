@@ -105,7 +105,18 @@ if __name__=='__main__':
         page=fetch('11217')
         found=parse(page,'GJF',dt.datetime.now(dt.timezone.utc))
         if not found:
-            raise SystemExit('NEWSWEB_PROBE_FAILED: no verified GJF notices parsed from NewsWeb HTML')
+            import hashlib
+            parser=Rows()
+            parser.feed(page)
+            print('NEWSWEB_DIAGNOSTIC',json.dumps({
+                'response_bytes':len(page.encode('utf-8')),
+                'html_table_rows':len(parser.rows),
+                'contains_issuer_code':bool(re.search(r'\\bGJF\\b',page)),
+                'contains_message_path':'/message/' in page,
+                'contains_js_app':any(x in page.lower() for x in ('__next_data__','<app-root','id="root"','id="app"')),
+                'sha256':hashlib.sha256(page.encode('utf-8')).hexdigest()[:16]
+            }),flush=True)
+            raise SystemExit('NEWSWEB_PROBE_FAILED: source structure not verified; publication blocked')
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'newsweb_notices.json'
             path.write_text(json.dumps({'source':'NewsWeb','notices':{'Gjensidige':found}},
