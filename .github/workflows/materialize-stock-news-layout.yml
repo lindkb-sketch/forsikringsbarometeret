@@ -1,0 +1,64 @@
+name: Materialize tested stock and news layout (one-time)
+on:
+  push:
+    branches: [ui/kursutvikling-borsnytt-20261105-publish]
+    paths: ['.github/workflows/materialize-stock-news-layout.yml']
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Apply exact locally tested patch with input and output hash guards
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, subprocess, tempfile
+          from pathlib import Path
+          before = {'index.html':'42abbd6de94d15817418721ee6c54d1b1379ab6a','tests/test_company_exchange_notices.py':'8aedf707de5795230a4049b83b4816c4f0a3eae6'}
+          after = {'index.html':'15d1bad760d170c103660b257c6ca5b845d98d1f','tests/test_company_exchange_notices.py':'3b19283915f01d2899a5592fc96d9f8c6d279ebf','tests/test_stock_news_layout.py':'ccd00089115a2deeaebdb8f55d0934830cc3cfd6'}
+          def blob(path):
+              data=Path(path).read_bytes()
+              return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          for path,sha in before.items():
+              assert blob(path)==sha, 'Base changed: '+path
+          assert not Path('tests/test_stock_news_layout.py').exists()
+          encoded='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'
+          patch=gzip.decompress(base64.b64decode(encoded))
+          assert hashlib.sha256(patch).hexdigest()=='21e836534da6cdb75e273913811d9829dae5f1ffb9b369602f28dc658a5d627b'
+          with tempfile.NamedTemporaryFile() as file:
+              file.write(patch); file.flush()
+              subprocess.run(['git','apply','--check','--unidiff-zero',file.name],check=True)
+              subprocess.run(['git','apply','--unidiff-zero',file.name],check=True)
+          for path,sha in after.items():
+              assert blob(path)==sha, 'Output differs from locally tested file: '+path
+          print('EXACT_TESTED_LAYOUT_APPLIED',after)
+          PY
+      - name: Verify syntax, NewsWeb integration and unchanged stock calculations
+        run: |
+          python -m unittest discover -s tests -p 'test_company_exchange_notices.py' -v
+          python -m unittest discover -s tests -p 'test_stock_news_layout.py' -v
+          python -m unittest discover -s tests -p 'test_stock_quote_integrity.py' -v
+          python -m unittest discover -s tests -p 'test_dashboard_runtime.py' -v
+          python tests/check_dashboard.py
+          git diff --check
+      - name: Commit only the three validated files to this delivery branch
+        run: |
+          set -euo pipefail
+          branch='ui/kursutvikling-borsnytt-20261105-publish'
+          test "$GITHUB_REF" = "refs/heads/$branch"
+          git fetch origin "$branch"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "origin/$branch")"
+          git add -- index.html tests/test_company_exchange_notices.py tests/test_stock_news_layout.py
+          python - <<'PY'
+          import subprocess
+          changed=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          assert changed=={'index.html','tests/test_company_exchange_notices.py','tests/test_stock_news_layout.py'},changed
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Integrer kursgraf og siste NewsWeb-melding i responsivt sidepanel'
+          git push origin "HEAD:refs/heads/$branch"
