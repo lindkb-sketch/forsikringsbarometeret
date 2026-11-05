@@ -1,13 +1,134 @@
 {
   "source": "NewsWeb",
-  "updated_at": null,
+  "updated_at": "2026-11-05T12:14:16.718250+00:00",
   "notices": {
-    "Fremtind": [],
-    "Gjensidige": [],
-    "Tryg": [],
+    "Fremtind": [
+      {
+        "source": "NewsWeb",
+        "id": "684332",
+        "title": "Resultat 3. kvartal 2026",
+        "url": "https://newsweb.oslobors.no/message/684332",
+        "published_at": "2026-10-19T12:15:00+00:00",
+        "issuer_id": 12473,
+        "issuer_sign": "FTFOR",
+        "issuer_name": "Fremtind Forsikring AS",
+        "identity_url": "https://newsweb.oslobors.no/message/683603"
+      }
+    ],
+    "Gjensidige": [
+      {
+        "source": "NewsWeb",
+        "id": "685479",
+        "title": "Rentefastsettelse",
+        "url": "https://newsweb.oslobors.no/message/685479",
+        "published_at": "2026-11-03T12:46:51.207000+00:00",
+        "issuer_id": 11217,
+        "issuer_sign": "GJF",
+        "issuer_name": "Gjensidige Forsikring ASA",
+        "identity_url": "https://newsweb.oslobors.no/message/685479"
+      }
+    ],
+    "Tryg": [
+      {
+        "source": "NewsWeb",
+        "id": "684542",
+        "title": "Tryg Forsikring A/S prices Tier 2 Capital Notes",
+        "url": "https://newsweb.oslobors.no/message/684542",
+        "published_at": "2026-10-21T15:23:57.038000+00:00",
+        "issuer_id": 11334,
+        "issuer_sign": "TRYG",
+        "issuer_name": "Tryg Forsikring A/S",
+        "identity_url": "https://newsweb.oslobors.no/message/684542"
+      }
+    ],
     "Sampo": [],
-    "Frende": [],
-    "Protector": [],
-    "Storebrand": []
-  }
+    "Frende": [
+      {
+        "source": "NewsWeb",
+        "id": "684953",
+        "title": "Frende Forsikring 3. kvartal 2026",
+        "url": "https://newsweb.oslobors.no/message/684953",
+        "published_at": "2026-10-28T06:00:00+00:00",
+        "issuer_id": 13019,
+        "issuer_sign": "FRSK",
+        "issuer_name": "Frende Skadeforsikring AS",
+        "identity_url": "https://newsweb.oslobors.no/message/684953"
+      }
+    ],
+    "Protector": [
+      {
+        "source": "NewsWeb",
+        "id": "685366",
+        "title": "Ny rente",
+        "url": "https://newsweb.oslobors.no/message/685366",
+        "published_at": "2026-11-02T13:08:54.177000+00:00",
+        "issuer_id": 8322,
+        "issuer_sign": "PROT",
+        "issuer_name": "Protector Forsikring ASA",
+        "identity_url": "https://newsweb.oslobors.no/message/685366"
+      }
+    ],
+    "Storebrand": [
+      {
+        "source": "NewsWeb",
+        "id": "685311",
+        "title": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
+        "url": "https://newsweb.oslobors.no/message/685311",
+        "published_at": "2026-11-02T07:30:16.922000+00:00",
+        "issuer_id": 1955,
+        "issuer_sign": "STB",
+        "issuer_name": "Storebrand ASA",
+        "identity_url": "https://newsweb.oslobors.no/message/685311"
+      }
+    ]
+  },
+  "coverage": {
+    "Fremtind": {
+      "issuer_id": 12473,
+      "issuer_sign": "FTFOR",
+      "issuer_name": "Fremtind Forsikring AS",
+      "identity_url": "https://newsweb.oslobors.no/message/683603",
+      "status": "ok"
+    },
+    "Gjensidige": {
+      "issuer_id": 11217,
+      "issuer_sign": "GJF",
+      "issuer_name": "Gjensidige Forsikring ASA",
+      "identity_url": "https://newsweb.oslobors.no/message/685479",
+      "status": "ok"
+    },
+    "Tryg": {
+      "issuer_id": 11334,
+      "issuer_sign": "TRYG",
+      "issuer_name": "Tryg Forsikring A/S",
+      "identity_url": "https://newsweb.oslobors.no/message/684542",
+      "status": "ok"
+    },
+    "Sampo": {
+      "status": "unverified_issuer",
+      "reason": "No verified NewsWeb issuer for If/Sampo; no substitute source used"
+    },
+    "Frende": {
+      "issuer_id": 13019,
+      "issuer_sign": "FRSK",
+      "issuer_name": "Frende Skadeforsikring AS",
+      "identity_url": "https://newsweb.oslobors.no/message/684953",
+      "status": "ok"
+    },
+    "Protector": {
+      "issuer_id": 8322,
+      "issuer_sign": "PROT",
+      "issuer_name": "Protector Forsikring ASA",
+      "identity_url": "https://newsweb.oslobors.no/message/685366",
+      "status": "ok"
+    },
+    "Storebrand": {
+      "issuer_id": 1955,
+      "issuer_sign": "STB",
+      "issuer_name": "Storebrand ASA",
+      "identity_url": "https://newsweb.oslobors.no/message/685311",
+      "status": "ok"
+    }
+  },
+  "errors": {}
 }
