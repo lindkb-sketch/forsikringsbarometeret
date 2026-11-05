@@ -21,6 +21,8 @@ jobs:
           node --check scripts/quarterly_runtime.js
           python -m py_compile scripts/build_editorial.py
           node --check tests/live_browser_e2e.cjs
+      - name: Prove actual NewsWeb ingestion before merge
+        run: python scripts/update_newsweb_notices.py --probe
       - name: Install test dependencies
         run: python -m pip install -r requirements-reports.txt
       - name: Compile importers and discovery
