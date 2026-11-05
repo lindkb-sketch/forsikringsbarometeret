@@ -23,11 +23,11 @@ class ExchangeNoticesTests(unittest.TestCase):
                 self.assertTrue(row['title'].strip())
 
     def test_company_pages_include_newsweb_renderer(self):
-        self.assertIn('${stockMarketSection(c)}${companyExchangeNotices(c)}${companyMediaNews(c)}', HTML)
+        self.assertIn("${stockMarketSection(c)}${stockMarketConfig[c]?'':companyExchangeNotices(c)}${companyMediaNews(c)}", HTML)
         self.assertIn('data/newsweb_notices.json', HTML)
 
     def test_renderer_behavior_in_javascript(self):
-        start = HTML.index('function companyExchangeNotices(c)')
+        start = HTML.index('function companyExchangeNotices(')
         end = HTML.index('function company(c)', start)
         source = HTML[start:end]
         script = r'''
