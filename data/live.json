@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T07:35:59+00:00",
+  "updated_at": "2026-11-05T00:32:04+00:00",
   "companies": {
     "Storebrand": {
       "next_event": {
@@ -30,8 +30,8 @@
     },
     "Sampo / If": {
       "next_event": {
-        "period": "Q3 2026",
-        "date": "2026-11-04",
+        "period": "Q4 2026",
+        "date": "2027-02-04",
         "source_url": "https://www.sampo.com/investors/"
       },
       "locked_periods": [],
