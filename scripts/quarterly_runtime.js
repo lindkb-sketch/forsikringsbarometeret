@@ -616,7 +616,7 @@
         }
       }
     }
-    return fragment.innerHTML+growthMatrixHtml(c);
+    return fragment.innerHTML;
   }
   company=c=>companyWithVerifiedKpis(c);
   crPodium=()=>relabel(previousPodium());
