@@ -364,7 +364,6 @@ async function main(){
   }
   check('Storebrand duplicate quarterly note removed',
     !tableQ.includes('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter'),'Quarterly table');
-    norm(await page.locator('body').innerText()).includes(nf(subsidiaryQ.value))&&norm(await page.locator('body').innerText()).includes('Storebrand Forsikring AS')&&norm(await page.locator('body').innerText()).includes('IFRS 17'),tableQ.slice(-900));
   await page.screenshot({path:'data/browser_home_q3.png',fullPage:true});
   report.screenshots.push('data/browser_home_q3.png');
   await page.selectOption('#results-comparison select','H3');
@@ -377,7 +376,6 @@ async function main(){
   check('HIÅ heading and values',ytdText.includes('HIÅ')||ytdText.includes('Hiå'),ytdText.slice(0,190));
   check('Storebrand duplicate HIÅ note removed',
     !ytdText.includes('Storebrand Forsikring AS – IFRS 17-forsikringsinntekter'),'HIÅ table');
-      ytdText.includes(nf(subsidiaryYTD.value))&&ytdText.includes('Storebrand Forsikring AS'),ytdText.slice(-850));
   for(const company of companies){
    const prior=feed.observations.find(r=>r.company===company&&r.year===year-1&&r.quarter===quarter&&
      r.scope==='group'&&r.period_type==='ytd'&&r.metric==='insurance_revenue');
