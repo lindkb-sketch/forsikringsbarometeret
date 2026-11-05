@@ -11,7 +11,7 @@ class ExchangeNoticesTests(unittest.TestCase):
         self.assertIn('${stockMarketSection(c)}${companyExchangeNotices(c)}${companyMediaNews(c)}', HTML)
         self.assertIn('Siste børsmelding · ', HTML)
         self.assertIn("if(!recent.length)return ''", HTML)
-        self.assertIn('newsweb.oslobors.no', HTML)
+        self.assertIn('newsweb\\.oslobors\\.no', HTML)
         self.assertIn('92*24*60*60*1000', HTML)
         self.assertIn('Date.parse(b.published_at)-Date.parse(a.published_at)', HTML)
 
