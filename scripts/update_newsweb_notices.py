@@ -39,9 +39,9 @@ def parse(page,issuer,now):
     notices=[]
     for row in parser.rows:
         if len(row)<4:continue
-        fields=[re.sub(r'\\s+',' ',c['text']).strip() for c in row]
+        fields=[re.sub(r'\s+',' ',c['text']).strip() for c in row]
         if issuer not in fields:continue  # exact issuer sign, not title substring
-        date=next((x for x in fields if re.fullmatch(r'\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}',x)),None)
+        date=next((x for x in fields if re.fullmatch(r'\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}',x)),None)
         if not date:continue
         published=dt.datetime.strptime(date,'%d.%m.%Y %H:%M').replace(tzinfo=dt.timezone(dt.timedelta(hours=1)))
         # If the HTML lacks an explicit offset, do not claim a precise UTC instant.
@@ -55,7 +55,7 @@ def parse(page,issuer,now):
             url=urllib.parse.urljoin(BASE,href)
             u=urllib.parse.urlsplit(url)
             if u.scheme!='https' or u.hostname!='newsweb.oslobors.no':continue
-            title=re.sub(r'\\s+',' ',cell['text']).strip()
+            title=re.sub(r'\s+',' ',cell['text']).strip()
             if len(title)<5:continue
             notices.append({'source':'NewsWeb','title':title[:240],
               'url':url,'published_at':published.isoformat()})
@@ -93,7 +93,7 @@ def update(fetcher=fetch,now=None):
     if old.get('notices')==notices:return old
     fd,temp=tempfile.mkstemp(dir=OUT.parent,prefix='.newsweb-')
     try:
-        with os.fdopen(fd,'w',encoding='utf-8') as f:json.dump(result,f,ensure_ascii=False,indent=2);f.write('\\n')
+        with os.fdopen(fd,'w',encoding='utf-8') as f:json.dump(result,f,ensure_ascii=False,indent=2);f.write('\n')
         os.replace(temp,OUT)
     finally:
         if os.path.exists(temp):os.unlink(temp)
