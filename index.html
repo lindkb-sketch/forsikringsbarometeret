@@ -940,7 +940,7 @@ function mediaNews(){
 
  return `<section class="panel media-news" id="media-news"><div class="section-head"><div><h2>Forsikring i mediebildet</h2><p class="media-intro">Utvalgte mediesaker med strategisk relevans · Q2 2026 og etter kvartalsslutt</p></div></div><div class="media-news-grid">${cards}</div></section>`;
 }
-function home(){return shell('Forsikringsbarometeret','Finansiell innsikt i det nordiske og norske forsikringsmarkedet · Fremtind som referanse.')+quarterComment()+quarterChanges()+`<div class="section-head" style="margin:0 0 12px"><div><h2 style="margin:0;font-size:16px">Fremtind | Resultatoversikt</h2><p class="hint" style="margin:5px 0 0">Kvartalstall</p></div><span class="pill">Q2 2026</span></div>${typeof MON_QUARTER!=='undefined'&&MON_QUARTER==='Q3'?kpiCards('Fremtind'):q2Cards('Fremtind')}<div class="panel" id="results-comparison"><div class="section-head"><div><h2>Resultatsammenligning · konsern · ${period==='H1'?'Hiå':period} 2026</h2></div><select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period==='Q3'?'selected':''}>Q3 2026</option><option value="Q2" ${period==='Q2'?'selected':''}>Q2 2026</option><option value="H1" ${period==='H1'?'selected':''}>Hiå 2026</option></select></div>${table()}</div><div class="profitability-duo"><div class="panel" id="profitability-panel">${profitabilityChart()}</div><div class="panel" id="cr-podium-panel">${crPodium()}</div></div>`+q3Watch()+mediaNews()}
+function home(){return shell('Forsikringsbarometeret','Finansiell innsikt i det nordiske og norske forsikringsmarkedet.')+quarterComment()+quarterChanges()+`<div class="section-head" style="margin:0 0 12px"><div><h2 style="margin:0;font-size:16px">Fremtind | Resultatoversikt</h2><p class="hint" style="margin:5px 0 0">Kvartalstall</p></div><span class="pill">Q2 2026</span></div>${typeof MON_QUARTER!=='undefined'&&MON_QUARTER==='Q3'?kpiCards('Fremtind'):q2Cards('Fremtind')}<div class="panel" id="results-comparison"><div class="section-head"><div><h2>Resultatsammenligning · konsern · ${period==='H1'?'Hiå':period} 2026</h2></div><select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period==='Q3'?'selected':''}>Q3 2026</option><option value="Q2" ${period==='Q2'?'selected':''}>Q2 2026</option><option value="H1" ${period==='H1'?'selected':''}>Hiå 2026</option></select></div>${table()}</div><div class="profitability-duo"><div class="panel" id="profitability-panel">${profitabilityChart()}</div><div class="panel" id="cr-podium-panel">${crPodium()}</div></div>`+q3Watch()+mediaNews()}
 const sources={Gjensidige:'https://www.gjensidige.com/no/investorinformasjon/rapporter-og-presentasjoner',Tryg:'https://tryg.com/en/downloads-2026',Sampo:'https://www.sampo.com/investors/',Frende:'https://frende.wrep.it/q2-2026-frende-holding-as/sec/7#report-top',Protector:'https://investor.protectorforsikring.no/data',Storebrand:'https://www.storebrand.com/welcome/investor-relations'};
 // Separate group and geographic levels; no unverified values are substituted.
 const groupData={
@@ -1531,12 +1531,6 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
    const hint=document.createElement('p');hint.className='exec-scroll-hint';hint.textContent='← Sveip tabellen sidelengs for å se alle nøkkeltall →';
    table.insertAdjacentElement('afterend',hint);
   }
-  for(const title of app.querySelectorAll('#results-comparison .section-head')){
-   if(title.querySelector('.exec-scope-caption'))continue;
-   const note=document.createElement('div');note.className='exec-scope-caption';
-   note.innerHTML='<span>Konsern / rapportert segment</span><span>— = ikke rapportert eller ikke innarbeidet</span>';
-   title.insertAdjacentElement('afterend',note);
-  }
  }
  const previous=show;
  show=function(...args){const r=previous.apply(this,args);polishV2();return r};
@@ -1906,7 +1900,7 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     ' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+
     esc(x.headline)+' ↗</div></div></a>').join('');
   return '<section class="panel media-news" id="media-news"><div class="section-head">'+
-    '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Nyheter og kildeverifisert innsikt i konkurransebildet</p></div></div>'+
+    '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Nyheter og innsikt i konkurransebildet</p></div></div>'+
     '<div class="media-news-grid">'+(strategic+articles||
     '<p>Ingen aktuelle nyheter eller dokumenterte markedsoppdateringer.</p>')+
     '</div></section>';
