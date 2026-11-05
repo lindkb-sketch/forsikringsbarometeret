@@ -183,7 +183,7 @@ if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
   self.assertIn("const currentGrowth=currentReported?d.growth:null",runtime)
   self.assertIn("const previousGrowth=currentReported?d.growthPrev:null",runtime)
   self.assertIn("if(bucket[company]?.revenue&&bucket[company]?.revenueBasis)",runtime)
-  self.assertIn("if(localStorebrand&&bucket.Storebrand?.revenue)",runtime)
+  self.assertNotIn("if(localStorebrand&&bucket.Storebrand?.revenue)",runtime)
 
  def test_storebrand_explanation_below_table_and_frende_ifrs4_label(self):
   runtime=RUNTIME.read_text()
