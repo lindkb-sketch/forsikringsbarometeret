@@ -1,0 +1,7 @@
+name = "forsikringsbarometeret-stock-fallback"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+
+[triggers]
+crons = ["12,27,42,57 6-18 * * 1-5"]
