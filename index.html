@@ -1250,7 +1250,7 @@ mediaNews=()=>MON_QUARTER==='Q2'?MON_ORIG.mediaNews():'';
 companyMediaNews=c=>MON_QUARTER==='Q2'?MON_ORIG.companyMediaNews(c):'';
 const MON_ORIG_HOME=MON_ORIG.home,MON_ORIG_COMPANY=MON_ORIG.company;
 home=()=>{let h=MON_ORIG_HOME();h=h.replace('Fremtinds nøkkeltall som referanse for konkurrentene · velg Q2 eller Hiå.','Fremtinds nøkkeltall som referanse for konkurrentene');if(MON_QUARTER==='Q3'){h=h.replace(/Q2 2026 · Kildekontrollerte utdrag/g,'Q3 2026 · Kildekontrollerte utdrag').replace(/Q2 2026<\/span>/g,'Q3 2026</span>').replace('Viktig å følge i Q3','Viktig å følge videre').replace(/Resultatsammenligning · konsern · [^<]*2026/,'Resultatsammenligning · konsern · Q3 2026').replace(/<select aria-label="Rapporteringsperiode"[\s\S]*?<\/select>/,`<select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period!=='H3'?'selected':''}>Q3 2026</option><option value="H3" ${period==='H3'?'selected':''}>Hiå 2026</option></select>`);h=h.replace('Viktig å følge i Q3','Viktig å følge videre');}return MON_SELECT()+h};
-company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026 · kun kildebekreftede tall');h+=MON_SOURCE(c);}return MON_SELECT()+h};
+company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026');h+=MON_SOURCE(c);}return MON_SELECT()+h};
 if(!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
 
 
