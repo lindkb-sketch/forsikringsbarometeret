@@ -100,7 +100,7 @@ if(JSON.stringify(quarterTimeline({year:2026,quarter:4}))!==
   self.assertIn("quarterChanges=function(){return '';};",html)
   self.assertIn('const strategic=groups.official.map(x=>',html)
   self.assertIn('const articles=groups.other.map(x=>',html)
-  self.assertIn('Nyheter og kildeverifisert innsikt i konkurransebildet',html)
+  self.assertIn('Nyheter og innsikt i konkurransebildet',html)
   self.assertIn('Les primærkilden',html)
   self.assertNotIn('Mulig strategisk hendelse basert på overskrift.',html)
   self.assertIn('const other=all.slice(0,4);',html)
