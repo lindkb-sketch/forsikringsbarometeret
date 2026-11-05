@@ -20,7 +20,7 @@ class NewsWebImportTests(unittest.TestCase):
         self.assertEqual(rows[0]['url'],'https://newsweb.oslobors.no/message/123')
 
     def test_no_unverified_issuer_mapping(self):
-        self.assertEqual(set(mod.ISSUERS),{'Gjensidige','Protector','Storebrand'})
+        self.assertEqual(mod.ISSUERS,{'Gjensidige':('11217','GJF')})
         self.assertNotIn('Frende',mod.ISSUERS)
         self.assertNotIn('Fremtind',mod.ISSUERS)
 
