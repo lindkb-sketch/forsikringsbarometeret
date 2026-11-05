@@ -197,7 +197,7 @@ async function main(){
   }
   check('Five chronological quarters on chart',view.graph.length===5&&view.graph[4]==='Q'+quarter+' '+year,JSON.stringify(view.graph));
   check('Five quarter labels remain when data are missing',view.plotLabels.length===5,view.plotLabels.join(','));
-  check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og kildeverifisert innsikt'),view.media.slice(0,200));
+  check('One unified media and market insight section',!view.strategic&&view.media.includes('Forsikring i mediebildet')&&view.media.includes('Nyheter og innsikt'),view.media.slice(0,200));
   check('Quarterly brief actually rendered',editorial.brief.length===0||editorial.brief.some(x=>displayed(view.brief).includes(displayed(x.text))),view.brief.slice(0,250));
   if(year===2026 && quarter===3 && editorial.period==='Q3 2026' &&
      ['Protector','Storebrand'].every(c=>editorial.periods?.['Q3 2026']?.by_company?.[c])){
