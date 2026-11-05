@@ -331,12 +331,15 @@ async function main(){
     const older=feed.observations.find(r=>r.company===issuer&&r.year===year-2&&
       r.quarter===quarter&&r.scope==='group'&&r.period_type==='quarter'&&
       r.metric==='insurance_revenue');
+    check(issuer+' has no duplicate revenue growth section',
+      await page.locator('.source-growth-matrix').count()===0,issuer);
     if(prior&&older&&older.value>0&&prior.unit===older.unit){
       const expected=((prior.value/older.value-1)*100).toLocaleString('nb-NO',
         {minimumFractionDigits:1,maximumFractionDigits:1});
-      const card=page.locator('.source-growth-matrix [data-growth-period="quarter-prior"] .value');
-      check(issuer+' displays verified last-year revenue growth',
-        (await card.innerText()).includes(expected),expected);
+      const card=page.locator('.dynamic-kpis > .metric').filter({has:page.locator('.name', {hasText:'Inntektsvekst'})}).first();
+      const cardText=await card.innerText();
+      check(issuer+' displays verified last-year revenue growth in result overview',
+        cardText.includes(expected),JSON.stringify({expected,cardText}));
     }
   }
   await page.evaluate(()=>show('home',true));
