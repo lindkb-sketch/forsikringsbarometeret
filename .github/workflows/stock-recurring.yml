@@ -1,0 +1,30 @@
+name: Guard next 15-minute stock refresh
+on:
+  # Explicitly dispatched by the stock job. This works even when GitHub
+  # suppresses workflow_run from jobs started using GITHUB_TOKEN.
+  repository_dispatch:
+    types: [stock_next_check]
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: forsikringsbarometeret-next-stock-slot
+  cancel-in-progress: true
+jobs:
+  next-quote-attempt:
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'stock_next_check' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check and restart if prior stock attempt is older than 15 minutes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_STOCK_RUN_ID: ${{ github.event.client_payload.source_run_id }}
+        run: python scripts/continue_stock_interval.py

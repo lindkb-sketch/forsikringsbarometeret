@@ -58,17 +58,58 @@ class StockIntervalKeeperTests(unittest.TestCase):
                               clock=lambda: dt.datetime(2026, 11, 6, 10, 30, tzinfo=UTC),
                               sleeper=lambda _: None, dispatcher=lambda **_: 'dispatched')
 
-    def test_workflow_chains_completed_quotes_without_holding_pages_lock(self):
-        workflow = (ROOT / '.github/workflows/scheduled-import-watchdog.yml').read_text()
-        self.assertIn('workflow_run:', workflow)
-        self.assertIn('types: [completed]', workflow)
-        self.assertIn('Oppdater forsinkede aksjekurser (egen pipeline)', workflow)
-        self.assertIn('github.event.workflow_run.created_at', workflow)
-        self.assertIn('github.event.workflow_run.repository.full_name == github.repository', workflow)
-        self.assertIn('python scripts/continue_stock_interval.py', workflow)
-        self.assertIn('cancel-in-progress: true', workflow)
-        self.assertIn("github.event_name != 'workflow_run'", workflow)
-        self.assertNotIn('forsikringsbarometeret-publish', workflow)
+    def test_explicit_repository_dispatch_not_suppressed_workflow_run(self):
+        stock = (ROOT / '.github/workflows/stock-prices.yml').read_text()
+        recurring = (ROOT / '.github/workflows/stock-recurring.yml').read_text()
+        watchdog = (ROOT / '.github/workflows/scheduled-import-watchdog.yml').read_text()
+        self.assertIn('python scripts/arm_stock_interval.py',stock)
+        self.assertIn('always() && !cancelled()',stock)
+        self.assertIn('group: forsikringsbarometeret-publish',stock)
+        self.assertIn('repository_dispatch:',recurring)
+        self.assertIn('types: [stock_next_check]',recurring)
+        self.assertIn('github.event.client_payload.source_run_id',recurring)
+        self.assertIn('python scripts/continue_stock_interval.py',recurring)
+        self.assertIn('cancel-in-progress: true',recurring)
+        self.assertNotIn('forsikringsbarometeret-publish',recurring)
+        self.assertNotIn('actions/deploy-pages@',recurring)
+        self.assertNotIn('workflow_run:',watchdog)
+        self.assertIn('python scripts/check_stock_schedule.py',watchdog)
+
+    def test_explicit_arm_posts_run_id_with_repository_dispatch(self):
+        import json
+        from arm_stock_interval import arm
+        class Response:
+            status=204
+            def __enter__(self): return self
+            def __exit__(self,*args): return False
+        calls=[]
+        def opener(req,timeout):
+            calls.append(req)
+            return Response()
+        payload=arm('owner/repo','12345','test',opener=opener)
+        self.assertEqual(payload,{'event_type':'stock_next_check','client_payload':{'source_run_id':'12345'}})
+        self.assertEqual(calls[0].full_url,'https://api.github.com/repos/owner/repo/dispatches')
+        self.assertEqual(json.loads(calls[0].data),payload)
+        for bad in ('0','../123',''):
+            with self.assertRaises(ValueError):arm('owner/repo',bad,'test',opener=opener)
+
+    def test_source_stock_run_is_checked_against_github_api(self):
+        import json
+        from continue_stock_interval import fetch_stock_created_at
+        data={'id':12345,'name':'Oppdater forsinkede aksjekurser (egen pipeline)',
+              'head_branch':'main','created_at':'2026-11-06T09:15:00Z',
+              'repository':{'full_name':'owner/repo'}}
+        class Response:
+            def __init__(self,body):self.body=body
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+            def read(self):return json.dumps(self.body).encode('utf-8')
+        self.assertEqual(fetch_stock_created_at('12345','owner/repo','test',
+             opener=lambda *args,**kw:Response(data)),data['created_at'])
+        for key,bad in (('id',99),('name','Other'),('head_branch','other')):
+            with self.assertRaises(ValueError):
+                fetch_stock_created_at('12345','owner/repo','test',
+                    opener=lambda *args,**kw:Response({**data,key:bad}))
 
 
 if __name__ == '__main__':

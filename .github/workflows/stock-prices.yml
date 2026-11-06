@@ -109,3 +109,8 @@ jobs:
       - name: Confirm public stock JSON matches the quote snapshot
         if: steps.changes.outputs.changed == 'true'
         run: python scripts/verify_public_stock_prices.py
+      - name: Arm next stock refresh independently of GitHub schedule
+        if: ${{ always() && !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/arm_stock_interval.py
