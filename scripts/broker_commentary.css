@@ -1,0 +1,36 @@
+/* Broker commentary: public text only, private browser-local admin workspace. */
+.broker-summary-panel{margin:18px 0 24px;padding:22px}
+.broker-summary-panel[hidden]{display:none!important}
+.broker-summary-head{margin-bottom:14px}
+.broker-summary-head h2{margin:0 0 5px;font-size:19px;color:#153b4d}
+.broker-summary-head p{margin:0;color:#637b88;font-size:12px}
+.broker-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.broker-summary-grid>div{background:#f7fafb;border:1px solid #e1eaee;border-radius:10px;padding:15px 16px;min-width:0}
+.broker-summary-grid h3{font-size:14px;color:#165a69;margin:0 0 9px}
+.broker-summary-grid p{font-size:13px;line-height:1.62;margin:0;color:#213c4a;white-space:pre-wrap;overflow-wrap:anywhere}
+.broker-summary-note{margin:13px 0 0;font-size:11px;line-height:1.5;color:#657b87}
+#broker-admin-entry{margin:10px 12px;width:calc(100% - 24px);padding:10px;color:#fff;background:#135b69;border:1px solid #5b939e;border-radius:8px;cursor:pointer;font-size:12px}
+#broker-admin-dialog{width:min(900px,calc(100vw - 28px));max-height:min(90vh,850px);padding:0;border:1px solid #d3e1e8;border-radius:14px;color:#244353;background:#fff;box-shadow:0 22px 80px #10293b55;overflow:auto}
+#broker-admin-dialog::backdrop{background:#102a40a6}
+.broker-admin-wrap{padding:24px}
+.broker-admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}
+.broker-admin-head small{letter-spacing:.11em;font-size:10px;font-weight:800;color:#177d89}
+.broker-admin-head h2{font-size:22px;margin:6px 0}
+.broker-admin-head p{font-size:13px;line-height:1.5;margin:0;color:#647989}
+.broker-admin-head button,.broker-admin-actions button,.broker-private-row button{cursor:pointer;background:#f1f6f8;border:1px solid #cadbe3;padding:9px 12px;border-radius:8px;color:#184054}
+.broker-admin-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.broker-admin-controls label,.broker-admin-fields label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:7px;color:#284d60}
+.broker-admin-controls select,.broker-admin-controls input,.broker-admin-fields textarea{width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:10px;border:1px solid #cbdce4;border-radius:8px;background:#fff;color:#143b50;font:inherit;font-size:13px}
+.broker-admin-fields{display:grid;gap:13px;margin-top:18px}
+.broker-admin-fields textarea{line-height:1.6;resize:vertical}
+#broker-folder-label{display:block;font-size:13px;margin:12px 0 14px;color:#14576c}
+.broker-upload{display:block;padding:16px;border:1px dashed #8bb9c1;border-radius:9px;background:#f5fafb;font-weight:700;font-size:13px}
+.broker-upload input{display:block;margin-top:8px;max-width:100%}
+#broker-private-list{margin:12px 0;font-size:12px;line-height:1.5}
+.broker-private-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 0;padding:9px;background:#f7f9fa;border-radius:7px;overflow-wrap:anywhere}
+.broker-private-note{font-size:12px;line-height:1.55;color:#6b7f89;margin:12px 0}
+.broker-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.broker-admin-actions .broker-primary{background:#087486;color:#fff;border-color:#087486}
+#broker-admin-status{font-size:12px;line-height:1.5;color:#176577;margin:12px 0}
+#broker-admin-status.error{color:#b33b35}
+@media(max-width:760px){.broker-summary-grid{grid-template-columns:1fr}.broker-admin-controls{grid-template-columns:1fr}.broker-admin-wrap{padding:16px}.broker-summary-panel{padding:18px}}
