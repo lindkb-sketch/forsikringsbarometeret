@@ -20,4 +20,8 @@ class RegisteredSources(unittest.TestCase):
   workflow=(ROOT/'.github/workflows/update.yml').read_text()
   self.assertNotIn('continue-on-error: true',workflow)
   self.assertIn('python scripts/run_pipeline.py',workflow)
-  self.assertIn('quarterly_editorial.json',workflow)
+  # The output allowlist belongs to the isolated publish manifest now.
+  manifest=(ROOT/'scripts/publish_prepared_financial.py').read_text()
+  self.assertIn("'data/quarterly_editorial.json'",manifest)
+  self.assertIn('python scripts/publish_prepared_financial.py prepare',workflow)
+  self.assertIn('python scripts/publish_prepared_financial.py publish',workflow)
