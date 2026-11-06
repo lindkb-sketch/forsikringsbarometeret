@@ -30,7 +30,10 @@ class DeploymentTreeTests(unittest.TestCase):
   self.assertLess(workflow.index('python scripts/verify_deployment_tree.py'),
                   workflow.index('actions/upload-pages-artifact@v3'))
   self.assertIn('node tests/live_browser_e2e.cjs',workflow)
-  # The same generated audit is staged in both the initial and retry paths.
-  self.assertGreaterEqual(workflow.count('data/profitability_coverage.json'),2)
+  # One allowlisted manifest now stages generated outputs and never stocks.
+  helper=(ROOT/'scripts/publish_prepared_financial.py').read_text()
+  self.assertIn('data/profitability_coverage.json',helper)
+  self.assertIn('python scripts/publish_prepared_financial.py prepare',workflow)
+  self.assertIn('python scripts/publish_prepared_financial.py publish',workflow)
 
 if __name__=='__main__':unittest.main()
