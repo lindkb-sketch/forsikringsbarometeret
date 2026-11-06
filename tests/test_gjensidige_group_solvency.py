@@ -42,6 +42,12 @@ class GjensidigeGroupSolvency(unittest.TestCase):
  def test_conflicting_ratios_rejected(self):
   with self.assertRaisesRegex(ValueError,'ambiguous'):
    self.parse(['Approved Partial Internal Model 190 per cent','Approved Partial Internal Model 191 per cent'])
+ def test_group_apm_table_fallback_when_narrative_is_interleaved(self):
+  page=('Profit performance group\n'
+    'NOK millions Q3 2025 Q3 2024 YTD 2025 YTD 2024\n'
+    'Insurance revenue from general insurance 11,201.9 9,888.8 31,689.0 28,340.5\n'
+    'Solvency ratio⁶ % 191.2 164.3 184.9')
+  self.assertEqual(self.parse([page],2025),(2,191.2))
  def test_prior_year_uses_separate_official_source(self):
   source={'observations':[
    {'company':'Gjensidige','year':2026,'quarter':3,'scope':'group','metric':'insurance_revenue','period_type':'quarter','source_type':'official_quarterly_report','source_url':'https://mb.cision.com/new-q3-2026.pdf'},
