@@ -95,7 +95,9 @@ def publish(root: Path = ROOT) -> None:
     root = Path(root)
     manifest = verify_snapshot(root)
     base = manifest['base_sha']
-    expected_base = os.environ.get('GITHUB_SHA')
+    # GITHUB_SHA belongs to the real workflow checkout, not to temporary
+    # Git repositories supplied explicitly by isolated unit tests.
+    expected_base = os.environ.get('GITHUB_SHA') if root.resolve() == ROOT.resolve() else None
     if expected_base and base != expected_base:
         raise ValueError('Financial artifact does not match this workflow run')
     git('fetch', '--quiet', 'origin', 'main', root=root)
