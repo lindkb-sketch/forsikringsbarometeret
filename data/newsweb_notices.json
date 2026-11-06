@@ -1,6 +1,6 @@
 {
   "source": "NewsWeb",
-  "updated_at": "2026-11-05T15:52:07.856500+00:00",
+  "updated_at": "2026-11-06T09:22:13.933230+00:00",
   "notices": {
     "Fremtind": [
       {
@@ -58,10 +58,10 @@
     "Protector": [
       {
         "source": "NewsWeb",
-        "id": "685824",
+        "id": "685874",
         "title": "Mandatory notification of trade - Protector Forsikring ASA",
-        "url": "https://newsweb.oslobors.no/message/685824",
-        "published_at": "2026-11-05T15:52:04.745000+00:00",
+        "url": "https://newsweb.oslobors.no/message/685874",
+        "published_at": "2026-11-06T08:26:05.198000+00:00",
         "issuer_id": 8322,
         "issuer_sign": "PROT",
         "issuer_name": "Protector Forsikring ASA",
