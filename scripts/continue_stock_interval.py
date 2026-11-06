@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Continue intraday stock refreshes when GitHub silently drops cron events.
+"""Continue intraday stock refreshes if GitHub silently drops cron events.
 
-Each *completed* quote workflow triggers this independent, unlocked keeper
-through ``workflow_run``. It waits until 15 minutes after that run was created,
-then invokes the existing guarded dispatcher. A newer run cancels the old
-keeper, while the dispatch guard refuses duplicate or out-of-hours jobs.
-
-This increases reliability without an external scheduler. It cannot create a
-hard real-time SLA: GitHub may also delay or cancel workflow_run jobs.
+After a completed quote workflow, this independent keeper waits until roughly
+15 minutes after that run's start, then invokes the existing duplicate-safe
+GitHub dispatcher. It never holds the Pages publication lock and does not
+change price data itself. This is best-effort, not a hard timing guarantee.
 """
 from __future__ import annotations
 
@@ -43,7 +40,8 @@ def continue_interval(previous_created_at: str, *, clock=None, sleeper=time.slee
     now = clock()
     if now.tzinfo is None:
         raise ValueError('Current time must be timezone-aware')
-    # Avoid holding a runner into the weekend or past the market close.
+    # Do not retain an idle runner into the weekend or past the last
+    # Nordic market's broad weekday quote window.
     if not should_poll(due) and now < due:
         print('STOCK_INTERVAL next slot outside Nordic market window; stopping')
         return 'closed'
@@ -57,8 +55,8 @@ def continue_interval(previous_created_at: str, *, clock=None, sleeper=time.slee
     if not should_poll(current):
         print('STOCK_INTERVAL outside Nordic market hours; stopping')
         return 'closed'
-    # The existing watchdog checks *all* recent/active runs via GitHub API.
-    # When a normal scheduled run arrived during sleep this is a no-op.
+    # A newer scheduled or manually triggered stock workflow makes this a
+    # no-op. The API guard refuses duplicates and fails closed on errors.
     return dispatcher(now=current)
 
 

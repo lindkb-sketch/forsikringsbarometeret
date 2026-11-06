@@ -1,5 +1,11 @@
 name: Scheduled import watchdog
 on:
+  # A completed quote run starts an unlocked keeper for the next interval;
+  # scheduled runs remain a recovery mechanism if GitHub drops an event.
+  workflow_run:
+    workflows:
+      - Oppdater forsinkede aksjekurser (egen pipeline)
+    types: [completed]
   # A completed stock refresh can keep the next 15-minute slot alive even
   # when GitHub silently drops the schedule event. The wait job is NOT in
   # the shared Pages lock and is cancelled if a newer stock run completes.
@@ -16,6 +22,8 @@ on:
     paths:
       - 'scripts/check_scheduled_runs.py'
       - 'scripts/check_stock_schedule.py'
+      - 'scripts/continue_stock_interval.py'
+      - 'tests/test_stock_interval_keeper.py'
       - 'scripts/continue_stock_interval.py'
       - 'tests/test_stock_watchdog.py'
       - 'tests/test_stock_interval_keeper.py'
@@ -62,6 +70,28 @@ jobs:
         with:
           python-version: '3.12'
       - name: Recover next stock interval after a completed quote workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LAST_STOCK_RUN_CREATED_AT: ${{ github.event.workflow_run.created_at }}
+        run: python scripts/continue_stock_interval.py
+
+  continue-stock-interval:
+    # Only stock events from this repository's default branch may requeue.
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: forsikringsbarometeret-stock-interval
+      # A more recent completed stock run supersedes the earlier wait.
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Request next stock interval without occupying the Pages lock
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LAST_STOCK_RUN_CREATED_AT: ${{ github.event.workflow_run.created_at }}
