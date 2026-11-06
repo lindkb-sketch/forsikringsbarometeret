@@ -60,6 +60,26 @@ def extract(blob,company,year,quarter):
                 for hit in re.finditer(pattern,text,re.I):
                     value=float(hit.group(1).replace(',','.'))
                     if 100<=value<=400:candidates.append((page_num,value))
+        if company=='Gjensidige' and not candidates:
+            # Group highlights contain the exact quarter-end APM ratio.
+            # Two-column PDF extraction can interleave the rounded narrative.
+            # Do not read Gjensidige Forsikring ASA or pension tables.
+            for page_num,page in enumerate(pdf.pages,1):
+                raw=page.extract_text() or ''
+                if not ('Profit performance group' in raw and
+                        'Insurance revenue from general insurance' in raw):
+                    continue
+                lines=raw.splitlines()
+                for i,line in enumerate(lines):
+                    m=re.match(r'^\s*Solvency\s+ratio(?:[⁰¹²³⁴⁵⁶⁷⁸⁹⁰]|\d{1,2}(?=\s))?\s*%?\s*(.*)',line,re.I)
+                    if not m:continue
+                    cell=m.group(1)
+                    if not re.search(r'(?<!\d)\d{3}(?:[.,]\d+)?',cell) and i+1<len(lines):
+                        cell+=' '+lines[i+1]
+                    match=re.search(r'(?<!\d)(\d{3}(?:[.,]\d+)?)',cell)
+                    if match:
+                        value=float(match.group(1).replace(',','.'))
+                        if 100<=value<=400:candidates.append((page_num,value))
     values={v for _,v in candidates}
     if len(values)!=1:raise ValueError('Missing or ambiguous quarter-specific solvency '+str(sorted(values)))
     return candidates[0]
