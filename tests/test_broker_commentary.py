@@ -62,7 +62,7 @@ class BrokerCommentaryTests(unittest.TestCase):
         data=json.loads((ROOT/'data/broker_commentary.json').read_text(encoding='utf-8'))
         self.assertFalse(data['entries'])
         self.assertIn('Ingen lokale PDF-er i denne mappen.',JS)
-        self.assertIn('Inntil da kan du sende PDF-ene til ChatGPT',JS)
+        self.assertIn('Ikke del dem med ChatGPT eller andre AI-tjenester uten tillatelse',JS)
 
 
 if __name__=='__main__':
