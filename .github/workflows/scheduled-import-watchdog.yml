@@ -2,11 +2,14 @@ name: Scheduled import watchdog
 on:
   schedule:
     - cron: '13 * * * *'
+    - cron: '28,43,58 6-18 * * 1-5'
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'scripts/check_scheduled_runs.py'
+      - 'scripts/check_stock_schedule.py'
+      - 'tests/test_stock_watchdog.py'
       - 'tests/test_scheduled_watchdog_recovery.py'
       - '.github/workflows/scheduled-import-watchdog.yml'
 permissions:
@@ -23,6 +26,11 @@ jobs:
       - name: Test missing-schedule recovery and duplicate prevention
         run: python -m unittest discover -s tests -p 'test_scheduled_watchdog_recovery.py' -v
       - name: Check last scheduled half-hour importer execution
+        if: ${{ github.event_name != 'schedule' || github.event.schedule == '13 * * * *' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/check_scheduled_runs.py
+      - name: Recover missed stock price refresh without duplicate jobs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check_stock_schedule.py
