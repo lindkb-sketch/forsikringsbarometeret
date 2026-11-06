@@ -11,14 +11,8 @@ permissions:
   contents: write
   pages: write
   id-token: write
-concurrency:
-  group: forsikringsbarometeret-publish
-  # GitHub's default queue=single cancels an older pending publication.
-  # queue=max preserves pending runs while keeping Pages deployment serialized.
-  queue: max
-  cancel-in-progress: false
 jobs:
-  validate-and-deploy:
+  validate-and-prepare:
     runs-on: ubuntu-latest
     env:
       BAROMETER_PDF_RUN_CACHE: /tmp/forsikringsbarometeret-pdf-${{ github.run_id }}-${{ github.run_attempt }}
@@ -155,54 +149,46 @@ jobs:
         with:
           name: quarterly-pipeline-diagnostics
           path: data/financial_audit.json
-      - name: Refuse stale generated-data publication
-        run: |
-          git fetch origin main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "::error::Main advanced while this run was validating. Refusing stale data overwrite."
-            exit 1
-          fi
-      - name: Commit generated financial feed and calendar
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/quarterly_insights.json data/strategic_market.json data/official_news.json data/newsweb_notices.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/prior_year_growth_coverage.json data/profitability_coverage.json data/publication_provenance.json data/investor_readiness.json data/frende_fremtind_candidates.json data/frende_skade_reports.json data/frende_skade_financials.json data/all_financial_source_evidence.json; do
-            if [ -f "$file" ]; then git add -- "$file"; fi
-          done
-          if ! git diff --cached --quiet; then
-            # Stage only generated data against newest main; a soft reset would also stage\n            # newer workflow/code changes that this token cannot push.\n            # Generated files are the output of this validated run. Never rebase a
-            # generated-data commit across a newer generated-data commit: it
-            # creates deterministic JSON conflicts and blocks Pages deployment.
-            for attempt in 1 2 3; do
-              git fetch origin main
-              if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-                echo "::error::Main changed after validation. Refusing outdated generated data."
-                exit 1
-              fi
-              git reset --mixed origin/main
-              for file in data/live.json data/financial_audit.json data/verified_financial_feed.json data/financial_observations.json data/geographic_import_status.json data/quarterly_editorial.json data/quarterly_insights.json data/strategic_market.json data/official_news.json data/newsweb_notices.json data/stock_prices.json data/report_candidates.json data/report_coverage.json data/prior_year_growth_coverage.json data/profitability_coverage.json data/publication_provenance.json data/investor_readiness.json data/frende_fremtind_candidates.json data/frende_skade_reports.json data/frende_skade_financials.json data/all_financial_source_evidence.json; do
-                if [ -f "$file" ]; then git add -- "$file"; fi
-              done
-              if git diff --cached --quiet; then
-                echo 'Validated artifacts already current'
-                break
-              fi
-              git commit -m 'Update verified financial feed and report calendar'
-              if git push origin HEAD:main; then
-                echo 'Published validated artifacts'
-                break
-              fi
-              if [ "$attempt" -eq 3 ]; then
-                echo '::error::Could not publish validated feed after three attempts'
-                exit 1
-              fi
-              sleep 5
-            done
-          fi
+      - name: Package validated financial data outside the Pages lock
+        run: python scripts/publish_prepared_financial.py prepare
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-financial-${{ github.run_id }}-${{ github.run_attempt }}
+          path: prepared-financial/
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: validate-and-prepare
+    runs-on: ubuntu-latest
+    # PDF downloads/tests do NOT hold this lock. Only committing and
+    # deploying prepared data shares it with the stock-price workflow.
+    concurrency:
+      group: forsikringsbarometeret-publish
+      queue: max
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-financial-${{ github.run_id }}-${{ github.run_attempt }}
+          path: prepared-financial/
+      - name: Publish validated finance without overwriting newer stock quotes
+        run: python scripts/publish_prepared_financial.py publish
+      - name: Remove temporary finance artifact from Pages tree
+        run: rm -rf prepared-financial
       - name: Refresh deployment tree from published main
         run: |
-          # The workflow may have started before newer UI commits. Deploy the
-          # actual latest main HTML and the exact JSON committed above.
+          # Deploy the latest audited finance data AND latest independent quotes.
           git fetch origin main
           git reset --hard origin/main
       - name: Confirm complete static site and source feeds before packaging
@@ -218,6 +204,10 @@ jobs:
           artifact_name: github-pages-${{ github.run_attempt }}
       - name: Verify actual public finance, news, stock and editorial JSON
         run: python scripts/verify_public_pages.py
+      - name: Prepare post-deploy browser checks
+        run: |
+          npm install --no-save playwright
+          google-chrome --version
       - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
         run: node tests/live_browser_e2e.cjs
       - name: Save browser screenshots and audit

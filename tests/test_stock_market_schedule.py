@@ -39,8 +39,12 @@ class IndependentStockScheduleTests(unittest.TestCase):
     def test_both_publishers_use_multi_pending_fifo_queue_and_same_lock(self):
         quote=(ROOT/'.github/workflows/stock-prices.yml').read_text(encoding='utf-8')
         finance=(ROOT/'.github/workflows/update.yml').read_text(encoding='utf-8')
-        for name,workflow in (('stock',quote),('financial',finance)):
-            concurrency=workflow.split('concurrency:',1)[1].split('jobs:',1)[0]
+        # Stock retains its short top-level lock; finance takes the same lock
+        # only after preparing and auditing the snapshot.
+        self.assertNotIn('\nconcurrency:', '\n'+finance)
+        concurrency_quote=quote.split('concurrency:',1)[1].split('jobs:',1)[0]
+        concurrency_finance=finance.split('  publish:',1)[1].split('    steps:',1)[0]
+        for name,concurrency in (('stock',concurrency_quote),('financial',concurrency_finance)):
             self.assertIn('group: forsikringsbarometeret-publish',concurrency,name)
             self.assertIn('queue: max',concurrency,name)
             self.assertIn('cancel-in-progress: false',concurrency,name)
