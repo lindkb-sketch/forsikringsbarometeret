@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-07",
   "reference_quarter": "Q3 2026",
   "investor_ready": false,
   "status": "NOT_APPROVED_FOR_INVESTOR_USE",
   "financial_quarter_complete": true,
   "all_seven_automated": false,
   "definitions_comparable": false,
-  "market_data_fresh": true,
+  "market_data_fresh": false,
   "companies": [
     {
       "company": "Fremtind",
@@ -140,37 +140,37 @@
     {
       "company": "Gjensidige",
       "trading_date": "2026-11-06",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Protector",
       "trading_date": "2026-11-06",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Storebrand",
       "trading_date": "2026-11-06",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Tryg",
       "trading_date": "2026-11-06",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     },
     {
       "company": "Sampo / If",
       "trading_date": "2026-11-06",
-      "calendar_days_old": 0,
+      "calendar_days_old": 1,
       "status": "dated_delayed_close"
     }
   ],
   "news": {
     "latest_headline_date": "2026-10-23",
-    "recent_attributed_headlines": true
+    "recent_attributed_headlines": false
   },
   "limitations": [
     "Technical verification is not independent manual review of issuer report cells.",
