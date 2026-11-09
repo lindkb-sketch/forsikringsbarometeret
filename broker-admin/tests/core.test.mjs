@@ -89,5 +89,5 @@ test('manifest never exposes secrets in checked-in config',()=>{
   assert.match(config,/binding = "BROKER_JOBS"/);
   assert.doesNotMatch(config,/OPENAI_API_KEY\s*=/);
   assert.doesNotMatch(config,/GITHUB_TOKEN\s*=/);
-  assert.match(config,/00000000-0000-0000-0000-000000000000/);
+  assert.match(config,/database_id = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/);
 });
