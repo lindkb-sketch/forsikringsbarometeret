@@ -17,6 +17,8 @@ ESSENTIAL=(
  'scripts/broker_commentary.js',
  'scripts/broker_commentary.css',
  'data/broker_commentary.json',
+ 'data/broker_admin_config.json',
+ 'scripts/broker_admin_link.js',
  'data/strategic_market.json',
  'data/investor_readiness.json',
  'data/frende_skade_reports.json',
