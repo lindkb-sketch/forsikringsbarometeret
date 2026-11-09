@@ -1,0 +1,39 @@
+name = "forsikringsbarometeret-broker-admin"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+workers_dev = true
+
+# Replace the placeholder ID after creating D1 in your Cloudflare account.
+# This Worker MUST be fronted by a Cloudflare Access application in production.
+[[d1_databases]]
+binding = "DB"
+database_name = "forsikringsbarometeret-broker-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# No public R2 endpoint or custom domain should be enabled for this bucket.
+[[r2_buckets]]
+binding = "REPORTS"
+bucket_name = "forsikringsbarometeret-broker-private"
+
+[[queues.producers]]
+binding = "BROKER_JOBS"
+queue = "forsikringsbarometeret-broker-analysis"
+
+[[queues.consumers]]
+queue = "forsikringsbarometeret-broker-analysis"
+max_batch_size = 1
+max_batch_timeout = 1
+max_retries = 3
+max_concurrency = 1
+dead_letter_queue = "forsikringsbarometeret-broker-deadletter"
+
+[triggers]
+crons = ["13 1 * * *"]
+
+[vars]
+GITHUB_REPO = "lindkb-sketch/forsikringsbarometeret"
+OPENAI_MODEL = "gpt-4.1"
+# ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS are required runtime configuration
+# (non-secret but sensitive); provide through Cloudflare dashboard/secret put.
+# OPENAI_API_KEY and GITHUB_TOKEN are secrets. NEVER put their values here.

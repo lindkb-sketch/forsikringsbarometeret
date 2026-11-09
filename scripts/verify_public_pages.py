@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/data/'
-FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_financial_feed.json','stock_prices.json','broker_commentary.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json']
+FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_financial_feed.json','stock_prices.json','broker_commentary.json','broker_admin_config.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json']
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 

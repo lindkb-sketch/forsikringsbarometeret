@@ -1,0 +1,42 @@
+name: Verify private broker AI portal
+on:
+  pull_request:
+    paths:
+      - 'broker-admin/**'
+      - 'scripts/broker_admin_link.js'
+      - 'data/broker_admin_config.json'
+      - '.github/workflows/broker-admin-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'broker-admin/**'
+      - 'scripts/broker_admin_link.js'
+      - 'data/broker_admin_config.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  broker-admin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: broker-admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install private worker dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test contracts, privacy, approvals, and client JavaScript
+        run: npm test
+      - name: Validate Worker and UI JavaScript syntax
+        run: npm run check
+      - name: Ensure no public PDF or secret is checked in
+        run: |
+          if git ls-files | grep -Ei '^(data/.*\.pdf|broker-admin/\.dev\.vars|broker-admin/\.env)'; then
+            echo "::error::Private PDF or secret fixture must not be committed"
+            exit 1
+          fi
+          node -e "const f=require('fs').readFileSync('wrangler.toml','utf8'); if (/^(OPENAI_API_KEY|GITHUB_TOKEN)\s*=/m.test(f)) process.exit(1)"
