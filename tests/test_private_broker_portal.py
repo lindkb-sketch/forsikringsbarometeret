@@ -16,7 +16,7 @@ class PrivateBrokerPortalWiringTests(unittest.TestCase):
         script=(ROOT/'scripts/broker_admin_link.js').read_text(encoding='utf-8')
         self.assertIn("config.enabled!==true",script)
         self.assertIn("url.protocol!=='https:'",script)
-        self.assertIn("new URLSearchParams(location.search).get('admin')==='1'",script)
+        self.assertIn("new URLSearchParams(location.search).get('admin')!=='1'",script)
         self.assertNotIn('OPENAI_API_KEY',html)
         self.assertNotIn('GITHUB_TOKEN',html)
     def test_public_publisher_requires_broker_summary_but_not_pdfs(self):
