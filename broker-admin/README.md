@@ -20,7 +20,7 @@ Først: Kontroller meglerhusenes konfidensialitets- og bruksvilkår. AI-behandli
 2. Kjør i mappen broker-admin:
     npm install
     npx wrangler login
-    npx wrangler r2 bucket create forsikringsbarometeret-broker-private
+    \# R2-bucketen forsikringsbarometeret-rapporter finnes allerede; ikke opprett en ny.
     npx wrangler d1 create forsikringsbarometeret-broker-db
     npx wrangler queues create forsikringsbarometeret-broker-analysis
     npx wrangler queues create forsikringsbarometeret-broker-deadletter
@@ -50,3 +50,11 @@ Først: Kontroller meglerhusenes konfidensialitets- og bruksvilkår. AI-behandli
 - Godkjenning oppdaterer kun data/broker_commentary.json. GitHub Pages republiseres via eksisterende publiseringsjobb; det kan ta flere minutter før teksten er synlig.
 
 **Fullført i drift først når ressursene er opprettet, hemmelige innstillinger er satt inn og en ende-til-ende-test med ekte innlogging, AI-behandling og publisering er bestått.**
+
+## Eksisterende R2-rapporter – nødvendig integrasjonsarbeid
+
+Denne endringen peker R2-bindingen mot den eksisterende private bucketen `forsikringsbarometeret-rapporter`. **Den importerer ikke automatisk gamle PDF-er.** Den nåværende administrasjonsappen registrerer bare opplastinger via eget skjema i D1, under `broker-reports/...`; eksisterende objekter som `Gjensidige/2026/Q3/*.pdf` er ikke registrert i D1 og vises derfor ikke ennå.
+
+Før produksjonssetting må det implementeres en autorisert **Importer eksisterende rapporter**-handling som lister objekter under en validert `Selskap/YYYY/QN/`-prefiks, kontrollerer PDF-signatur og størrelse, oppretter dedupliserte D1-poster med original R2-nøkkel og kølegger manglende analyser. Ikke slett eller flytt originalene. Behandle én fil per køjobb og oppdater ett samlet utkast først når alle analyser er ferdige. Ikke publiser automatisk. Legg til støtte for den avtalte malen: konsensus vs egne estimater, positive/negative overraskelser, kursmål og endringer, estimatrevisjoner og utsikter.
+
+**Merk:** Den eksisterende implementasjonen bruker Cloudflare Queues, ikke Workflows. Gjenbruk av køen er det minste inngrepet. Eventuell overgang til Workflows bør skje som en separat, testet endring. `OPENAI_API_KEY` og `ADMIN_TEST_TOKEN` på den eksisterende `forsikringsbarometeret-api` overføres ikke automatisk til `forsikringsbarometeret-broker-admin`. Den nye admin-Workeren krever Cloudflare Access, D1, Queue og egne nødvendige Secrets.
