@@ -2,6 +2,9 @@ name = "forsikringsbarometeret-broker-admin"
 main = "src/index.js"
 compatibility_date = "2026-07-01"
 workers_dev = true
+# Preserve runtime variables set through Cloudflare dashboard on GitHub deploy.
+# This includes ACCESS_AUD, ACCESS_TEAM_DOMAIN and ADMIN_EMAILS.
+keep_vars = true
 
 # Replace the placeholder ID after creating D1 in your Cloudflare account.
 # This Worker MUST be fronted by a Cloudflare Access application in production.
@@ -36,6 +39,6 @@ crons = ["13 1 * * *"]
 [vars]
 GITHUB_REPO = "lindkb-sketch/forsikringsbarometeret"
 OPENAI_MODEL = "gpt-4.1"
-# ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS are required runtime configuration
-# (non-secret but sensitive); provide through Cloudflare dashboard/secret put.
+# ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS are managed in the Cloudflare dashboard.
+# keep_vars preserves them across Wrangler deployments. Do not commit personal emails.
 # OPENAI_API_KEY and GITHUB_TOKEN are secrets. NEVER put their values here.
