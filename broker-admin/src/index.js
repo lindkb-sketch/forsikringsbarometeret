@@ -296,7 +296,7 @@ function decodeBase64Utf8(text){
   return new TextDecoder().decode(bytes);
 }
 async function publishGitHub(env,company,quarter,summary){
-  if(!env.GITHUB_TOKEN)throw Error('GITHUB_TOKEN not configured');
+  if(!env.GITHUB_TOKEN)throw Object.assign(Error('GitHub-publisering mangler GITHUB_TOKEN i Cloudflare'),{status:503});
   const repo=env.GITHUB_REPO||'lindkb-sketch/forsikringsbarometeret';
   if(repo!=='lindkb-sketch/forsikringsbarometeret')throw Error('Unexpected GitHub destination');
   const base='https://api.github.com/repos/'+repo+'/contents/'+GH_FILE;
@@ -304,7 +304,7 @@ async function publishGitHub(env,company,quarter,summary){
     'X-GitHub-Api-Version':'2022-11-28','User-Agent':'Forsikringsbarometeret-broker-admin'};
   for(let i=0;i<3;i++){
     const current=await fetch(base+'?ref=main',{headers:{...headers,'Cache-Control':'no-cache'}});
-    if(!current.ok)throw Error('Could not fetch current public summary: '+current.status);
+    if(!current.ok)throw Object.assign(Error('GitHub kunne ikke lese publiseringsfilen (HTTP '+current.status+'). Kontroller tokenets Contents-tilgang og valgt repository.'),{status:503});
     const remote=await current.json();
     const existing=JSON.parse(decodeBase64Utf8(remote.content));
     const document=mergePublicFeed(existing,company,quarter,summary,now());
@@ -315,9 +315,9 @@ async function publishGitHub(env,company,quarter,summary){
         branch:'main',sha:remote.sha,content:toBase64Utf8(JSON.stringify(document,null,2)+'\n')})
     });
     if(next.ok)return {published:true};
-    if(next.status!==409&&next.status!==422)throw Error('GitHub declined publication: '+next.status);
+    if(next.status!==409&&next.status!==422)throw Object.assign(Error('GitHub avviste publisering (HTTP '+next.status+'). Kontroller Contents: Read and write og tokenets gyldighet.'),{status:503});
   }
-  throw Error('Concurrent publication conflict; retry after refreshing');
+  throw Object.assign(Error('GitHub-publisering fikk en konflikt. Oppdater siden og prøv igjen.'),{status:409});
 }
 async function approve(req,env,actor){
   const body=await getJson(req);
@@ -377,7 +377,14 @@ export default {
       return fail('Ikke funnet',404);
     }catch(e){
       const status=[400,401,403,404,409,413,415,503].includes(e.status)?e.status:500;
-      // Never return internal AI/GitHub credentials, PDF contents or stack traces.
+      // Log only the failure category, never request bodies, tokens, PDFs or stack traces.
+      if(status===500){
+        const stage=new URL(req.url).pathname==='/api/publish'?'publish':'request';
+        const category=String(e?.message||'').startsWith('Private data detected')?'privacy-check':
+          String(e?.message||'').startsWith('GitHub')?'github':
+          String(e?.message||'').includes('JSON')?'data-format':'internal';
+        console.error('Broker admin '+stage+' failed; category='+category);
+      }
       return fail(status===500?'Intern feil. Se administrasjonsloggen.':e.message,status);
     }
   },
