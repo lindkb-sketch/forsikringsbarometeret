@@ -1,6 +1,6 @@
 {
   "source": "NewsWeb",
-  "updated_at": "2026-11-06T09:22:13.933230+00:00",
+  "updated_at": "2026-11-09T08:01:58.865795+00:00",
   "notices": {
     "Fremtind": [
       {
@@ -71,10 +71,10 @@
     "Storebrand": [
       {
         "source": "NewsWeb",
-        "id": "685311",
-        "title": "STOREBRAND ASA: Status tilbakekjøp av egne aksjer",
-        "url": "https://newsweb.oslobors.no/message/685311",
-        "published_at": "2026-11-02T07:30:16.922000+00:00",
+        "id": "685981",
+        "title": "STOREBRAND ASA: Status share buyback program",
+        "url": "https://newsweb.oslobors.no/message/685981",
+        "published_at": "2026-11-09T07:30:09.404000+00:00",
         "issuer_id": 1955,
         "issuer_sign": "STB",
         "issuer_name": "Storebrand ASA",
