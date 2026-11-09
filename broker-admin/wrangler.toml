@@ -8,7 +8,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "forsikringsbarometeret-broker-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "c24e4e43-aa0d-4932-9dd4-0914e276ebeb"
 migrations_dir = "migrations"
 
 # Reuse the existing private R2 bucket. Do not enable public R2 access.
