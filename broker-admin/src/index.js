@@ -278,7 +278,7 @@ async function updateDraft(env,company,quarter){
     'To rapporter fra samme meglerhus er ikke to uavhengige stemmer. '+
     'Ikke finn på enighet, estimater eller kursmål; utelat detaljer som ikke er oppgitt. '+
     'Unngå unødvendig innledning, gjentakelser og oppsummerende kildeparenteser. '+
-    'Totalt 250–350 ord, korte lesbare avsnitt. Kildemateriale (kun intern arbeidsgrunnlag):\\n'+
+    'Totalt 150–200 ord fordelt på tre korte avsnitt. Prioriter de to-tre viktigste fellesfunnene og vesentlig uenighet. Ta med anbefalinger og kursmål kun når de gir leseren viktig ny informasjon. Fjern gjentakelser, lange tallrekker, mindre estimatjusteringer og detaljer uten vesentlig betydning. Hvert felt skal kunne leses raskt og bygge naturlig på forrige felt. Kildemateriale (kun intern arbeidsgrunnlag):\\n'+
     JSON.stringify(outline).slice(0,68000)});
   await execute(env,
     'INSERT INTO drafts(company,quarter,reaction,drivers,outlook,report_count,status,updated_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(company,quarter) DO UPDATE SET reaction=excluded.reaction,drivers=excluded.drivers,outlook=excluded.outlook,report_count=excluded.report_count,status=excluded.status,updated_at=excluded.updated_at',
