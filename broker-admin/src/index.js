@@ -215,6 +215,19 @@ async function reanalyzeFolder(req,env,actor){
   await audit(env,actor,'reanalyze',company,quarter);
   return {queued,total:reports.length,status:'queued',message:'Ny analyse startet; publisering er sperret inntil alle er ferdige'};
 }
+// Regenerate the editorial draft from stored private AI analyses, without
+// reprocessing PDFs. Never publish automatically; approval is still required.
+async function rewriteDraft(req,env,actor){
+  const {company,quarter}=await getJson(req);
+  assertFolder(company,quarter);
+  const pending=await row(env,"SELECT COUNT(*) AS n FROM reports WHERE company=? AND quarter=? AND status!='analyzed'",company,quarter);
+  if(pending.n)throw Object.assign(Error('Vent til alle rapportene er ferdig analysert'),{status:409});
+  const count=await row(env,"SELECT COUNT(*) AS n FROM reports WHERE company=? AND quarter=? AND status='analyzed'",company,quarter);
+  if(!count.n)throw Object.assign(Error('Ingen ferdig analyserte rapporter'),{status:409});
+  await updateDraft(env,company,quarter);
+  await audit(env,actor,'rewrite_draft',company,quarter);
+  return {status:'draft',report_count:count.n,message:'Nytt redaksjonelt utkast er klart til gjennomgang. Ingen publisering er utført.'};
+}
 function b64(bytes){
   const b=new Uint8Array(bytes);let output='';
   for(let i=0;i<b.length;i+=16384)output+=String.fromCharCode(...b.subarray(i,i+16384));
@@ -249,19 +262,24 @@ async function updateDraft(env,company,quarter){
     summary:JSON.parse(r.analysis_json)
   }));
   const summary=await aiCall(env,{prompt:
-    'Lag et presist samlet meglerhussammendrag for '+company+' '+quarter+
-    ' basert KUN på de '+analyzed.length+' rapportanalysene nedenfor. Returner tre tekstfelt: '+
-    'reaction: Anbefaling og kursmål per navngitt meglerhus (gammelt/nytt når kjent), '+
-    'og resultat mot MARKEDSKONSENSUS separat fra meglerens eget estimat. '+
-    'drivers: Hva overrasket positivt og negativt? Nevn hvilke meglerhus som mener hva, '+
-    'og konkret uenighet. '+
-    'outlook: Estimatendringer, årsaker, fremtidsutsikter og en kort konklusjon. '+
-    'Bruk korte setninger og kildeangivelse (Rapport 1, 2 osv. og sidetall der det finnes). '+
-    'To rapporter fra samme meglerhus er ikke to uavhengige stemmer; nyeste daterte '+
-    'anbefaling gjelder hvis dette kan dokumenteres. '+
-    'IKKE finn på tall, enighet, oppgraderinger, anbefalinger eller kursmål. '+
-    'Hvis data mangler, skriv Ikke oppgitt. Ikke bruk generelle bransjeantakelser. '+
-    'Maks 350 ord totalt. Kildemateriale:\\n'+JSON.stringify(outline).slice(0,68000)});
+    'Skriv en flytende, redaksjonell norsk analyse av '+company+' '+quarter+
+    ' på grunnlag av KUN de '+analyzed.length+' rapportanalysene. '+
+    'Dette er en OFFENTLIG tekst: Leserne har ikke tilgang til meglerhusrapportene. '+
+    'ALDRI oppgi sidetall, rapportnummer, interne kildereferanser, PDF-navn eller formuleringer som «Rapport 1». '+
+    'SAMLE felles vurderinger i naturlige setninger: «Arctic, Norne og Nordea trekker frem ...». '+
+    'Unngå å repetere samme resultatpoeng per meglerhus. Skilj tydelig mellom hva flere er enige om '+
+    'og vesentlig uenighet, og tilskriv alle vurderinger til navngitte meglerhus. '+
+    'Skriv som en sammenhengende finansartikkel med god flyt, ikke som en oppramsing eller rapport-for-rapport-liste. '+
+    'Returner tre felter som naturlig bygger på hverandre: '+
+    'reaction: Hovedreaksjon, resultat mot markedskonsensus og eventuelle særskilte anbefalings-/kursmålendringer. '+
+    'drivers: Felles positive/negative drivere, så vesentlig uenighet og særskilte syn. '+
+    'outlook: Samlede forventninger, konkrete estimatendringer og ulike fremtidssyn. '+
+    'Skill konsensus fra meglerens egne estimater. Nevn tall og kursmål kun der de er dokumentert. '+
+    'To rapporter fra samme meglerhus er ikke to uavhengige stemmer. '+
+    'Ikke finn på enighet, estimater eller kursmål; utelat detaljer som ikke er oppgitt. '+
+    'Unngå unødvendig innledning, gjentakelser og oppsummerende kildeparenteser. '+
+    'Totalt 250–350 ord, korte lesbare avsnitt. Kildemateriale (kun intern arbeidsgrunnlag):\\n'+
+    JSON.stringify(outline).slice(0,68000)});
   await execute(env,
     'INSERT INTO drafts(company,quarter,reaction,drivers,outlook,report_count,status,updated_at) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(company,quarter) DO UPDATE SET reaction=excluded.reaction,drivers=excluded.drivers,outlook=excluded.outlook,report_count=excluded.report_count,status=excluded.status,updated_at=excluded.updated_at',
     company,quarter,summary.reaction,summary.drivers,summary.outlook,analyzed.length,'draft',now());
@@ -392,6 +410,7 @@ export default {
       if(req.method==='POST'&&path==='/api/reports')return response(await upload(req,env,actor),202);
       if(req.method==='POST'&&path==='/api/import-folder')return response(await importFolder(req,env,actor),202);
       if(req.method==='POST'&&path==='/api/reanalyze-folder')return response(await reanalyzeFolder(req,env,actor),202);
+      if(req.method==='POST'&&path==='/api/rewrite-draft')return response(await rewriteDraft(req,env,actor));
       if(req.method==='POST'&&path==='/api/publish')return response(await approve(req,env,actor));
       const deleteMatch=path.match(/^\/api\/reports\/([0-9a-f-]{36})$/i);
       if(req.method==='DELETE'&&deleteMatch)return response(await removeReport(req,env,actor,deleteMatch[1]));
