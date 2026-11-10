@@ -74,6 +74,6 @@ class MediaTests(unittest.TestCase):
   result=merge({'items':[]},[],now=NOW)
   self.assertEqual(result['last_checked_at'],NOW.isoformat())
   self.assertIsNone(result['latest_headline_at'])
-  self.assertEqual(len(feed_urls()),3)
+  self.assertEqual(len(feed_urls()),5)
  def test_no_unrelated(self):
   self.assertEqual(parse_rss(XML.replace('Gjensidige øker forsikringsprisene'.encode('utf-8'),b'Brod og mat'),NOW),[])
