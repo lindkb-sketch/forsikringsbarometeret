@@ -1,4 +1,13 @@
 {
   "schema_version": 1,
-  "entries": []
+  "entries": [
+    {
+      "company": "Gjensidige",
+      "quarter": "Q3 2026",
+      "reaction": "Arctic Securities: Anbefaling Kjøp, kursmål NOK 285 (uendret). Q3-resultater: Forsikringsserviceresultat og EPS 11–18 % over markedskonsensus; forsikringsinntekter og finans litt under forventning, EPS 2 % under eget estimat.  \nNorne Securities: Anbefaling Kjøp, kursmål NOK 315 (uendret). Resultat før skatt 8–13 % over konsensus, 1 % over eget estimat; investeringsresultat svakere enn ventet.\nNordea: Anbefaling Kjøp, kursmål NOK 316 (tidligere ikke oppgitt). Nettoresultat og EPS 9–11 % over konsensus, kombinert ratio 4,8pp bedre.\nSparebank 1 Markets: Nedgradert fra Kjøp til Nøytral, kursmål justert fra NOK 280 til 270. Q3 betegnes som svært sterkt, underliggende drift sterk, men ingen eksplisitt oppgitt konsensusavvik.",
+      "drivers": "Positivt: Alle meglerhus trekker frem kombinert ratio og forsikringsserviceresultat klart over konsensus (Arctic, Norne, Nordea, SB1). Underliggende skadefrekvens vesentlig forbedret og lavere store tap enn ventet (Arctic, Nordea).\nNegativt: Investeringsresultatet betydelig under konsensus (Arctic, Norne), påvirket av høyere renter og kredittspreader. Premievekst/toppinntekt skuffet mot konsensus/egne forventninger hos flere (Arctic, Norne, Nordea, SB1), og sees som nedadgående trend. SB1 peker i tillegg på konkurranserisiko og mulig prispress, særlig i Norge og Danmark. Noen nevner effekter fra restruktureringskostnader, bl.a. Norne og SB1.",
+      "outlook": "Flere foretar moderate estimatendringer: Inntektsestimatene ned 2–5 % (Arctic, SB1), EPS forsiktig opp 1–5 % (Arctic, Nordea). DPS-forventninger noe opp (SB1). Marginfokus og lønnsom forsikring vurderes å kompensere for svak inntektsvekst (Arctic, Nordea). SB1 ser økt konkurranse og lavere vekst fremover som risiko, og forventer begrenset oppside. Solvens på 190 %, mulig ytterligere oppside hvis internmodeller godkjennes (SB1). Samlet oppsummeres kvartalet som svært sterkt på drift, men med usikkerhet rundt videre inntektsvekst og investeringsmiljø (kilder: Rapport 1 s. 2–3, Rapport 2 s. 2–6, Rapport 3 s. 1, Rapport 4 s. 1, Rapport 5 s. 1–2, Rapport 6 s. 2–7).",
+      "updated_at": "2026-11-10T08:45:41.339Z"
+    }
+  ]
 }
