@@ -15,7 +15,16 @@ const currentCompany=()=>typeof profitabilityCompany!=='undefined'&&NAMES.includ
 const currentQuarter=()=>{
  const p=window.FBActivePeriod;
  if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
- return QUARTER.test(p?.label||'')?p.label:(quarters.at(-1)||'');
+ if(QUARTER.test(p?.label||''))return p.label;
+ // The public dashboard uses a global 'period' selection rather than FBActivePeriod.
+ // Resolve that selection against published periods so the commentary appears
+ // even before the verified financial feed has been loaded.
+ const selected=typeof period!=='undefined'?period:'';
+ if(/^Q[1-4]$/.test(selected)){
+   const matches=feed.entries.map(e=>e.quarter).filter(q=>q.startsWith(selected+' '));
+   if(matches.length)return matches.sort((a,b)=>order(b)-order(a))[0];
+ }
+ return quarters.at(-1)||feed.entries.map(e=>e.quarter).sort((a,b)=>order(b)-order(a))[0]||'';
 };
 function valid(raw){
  return {schema_version:1,entries:(Array.isArray(raw?.entries)?raw.entries:[]).filter(e=>
