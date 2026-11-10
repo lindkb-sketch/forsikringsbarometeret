@@ -15,7 +15,15 @@ const currentCompany=()=>typeof profitabilityCompany!=='undefined'&&NAMES.includ
 const currentQuarter=()=>{
  const p=window.FBActivePeriod;
  if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
- return QUARTER.test(p?.label||'')?p.label:(quarters.at(-1)||'');
+ if(QUARTER.test(p?.label||''))return p.label;
+ // The public dashboard stores its active period in the global 'period'
+ // variable; the admin-only quarters list can be empty on public pages.
+ const selected=typeof period!=='undefined'?period:'';
+ if(/^Q[1-4]$/.test(selected)){
+  const matching=feed.entries.filter(e=>e.company===currentCompany()&&e.quarter.startsWith(selected+' '));
+  if(matching.length)return matching.map(e=>e.quarter).sort((a,b)=>order(b)-order(a))[0];
+ }
+ return quarters.at(-1)||'';
 };
 function valid(raw){
  return {schema_version:1,entries:(Array.isArray(raw?.entries)?raw.entries:[]).filter(e=>
