@@ -33,6 +33,13 @@ class BrokerCommentaryTests(unittest.TestCase):
         self.assertIn('currentCompany()',JS)
         self.assertIn('setInterval(loadPublic,300000)',JS)
 
+    def test_company_page_places_broker_summary_above_market_news(self):
+        company_page=HTML[HTML.index('function company(c){'):HTML.index('function methodology(){')]
+        self.assertIn('id="broker-commentary-panel" hidden',company_page)
+        self.assertLess(company_page.index('id="broker-commentary-panel"'),company_page.index('companyMediaNews(c)'))
+        self.assertIn("NAMES.includes(current)",JS)
+        self.assertIn("typeof period!=='undefined'?period",JS)
+
     def test_quarter_folders_created_automatically_from_verified_data(self):
         self.assertIn('data/verified_financial_feed.json',JS)
         self.assertIn('createObjectStore(name,{keyPath:',JS)
