@@ -295,6 +295,29 @@ function decodeBase64Utf8(text){
   const binary=atob(text.replace(/\s/g,''));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
+// Only classify GitHub's own error text; never return arbitrary API content.
+async function githubPublishError(res){
+  const status=res.status;
+  let message='';
+  try{
+    const data=await res.json();
+    message=typeof data?.message==='string'?data.message.toLowerCase():'';
+    const details=Array.isArray(data?.errors)?data.errors.map(x=>String(x?.message||'')).join(' ').toLowerCase():'';
+    message+=' '+details;
+  }catch{}
+  if(status===401)return 'GitHub avviste tokenet (401). Kontroller at GITHUB_TOKEN er gyldig og oppdatert i Cloudflare.';
+  if(status===403){
+    if(/protected branch|branch protection|ruleset|repository rule|ref update/.test(message))
+      return 'GitHub blokkerer direkte skriving til main (403). Sjekk grenbeskyttelse/regler for main.';
+    if(/rate limit|secondary rate limit|abuse detection/.test(message))
+      return 'GitHub har midlertidig begrenset API-kall (403). Vent litt før nytt forsøk.';
+    if(/resource not accessible|permission|write access|not permitted|insufficient/.test(message))
+      return 'GitHub-tokenet mangler skrivetilgang (403). Kontroller at riktig repository er valgt og Contents har Read and write; oppdater GITHUB_TOKEN i Cloudflare dersom tokenet er endret.';
+    return 'GitHub nekter publisering (403). Kontroller tokenets Contents: Read and write, repository-tilgang og eventuelle regler for main.';
+  }
+  if(status===404)return 'GitHub finner ikke publiseringsfilen eller repository (404). Kontroller repository-tilgangen.';
+  return 'GitHub avviste publisering (HTTP '+status+').';
+}
 async function publishGitHub(env,company,quarter,summary){
   if(!env.GITHUB_TOKEN)throw Object.assign(Error('GitHub-publisering mangler GITHUB_TOKEN i Cloudflare'),{status:503});
   const repo=env.GITHUB_REPO||'lindkb-sketch/forsikringsbarometeret';
@@ -304,7 +327,7 @@ async function publishGitHub(env,company,quarter,summary){
     'X-GitHub-Api-Version':'2022-11-28','User-Agent':'Forsikringsbarometeret-broker-admin'};
   for(let i=0;i<3;i++){
     const current=await fetch(base+'?ref=main',{headers:{...headers,'Cache-Control':'no-cache'}});
-    if(!current.ok)throw Object.assign(Error('GitHub kunne ikke lese publiseringsfilen (HTTP '+current.status+'). Kontroller tokenets Contents-tilgang og valgt repository.'),{status:503});
+    if(!current.ok)throw Object.assign(Error(await githubPublishError(current)),{status:503});
     const remote=await current.json();
     const existing=JSON.parse(decodeBase64Utf8(remote.content));
     const document=mergePublicFeed(existing,company,quarter,summary,now());
@@ -315,7 +338,7 @@ async function publishGitHub(env,company,quarter,summary){
         branch:'main',sha:remote.sha,content:toBase64Utf8(JSON.stringify(document,null,2)+'\n')})
     });
     if(next.ok)return {published:true};
-    if(next.status!==409&&next.status!==422)throw Object.assign(Error('GitHub avviste publisering (HTTP '+next.status+'). Kontroller Contents: Read and write og tokenets gyldighet.'),{status:503});
+    if(next.status!==409&&next.status!==422)throw Object.assign(Error(await githubPublishError(next)),{status:503});
   }
   throw Object.assign(Error('GitHub-publisering fikk en konflikt. Oppdater siden og prøv igjen.'),{status:409});
 }
