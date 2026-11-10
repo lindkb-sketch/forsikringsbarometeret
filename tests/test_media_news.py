@@ -56,5 +56,11 @@ class MediaTests(unittest.TestCase):
    {'id':'stale','headline':'Gjensidige øker forsikringsprisene','published_at':'2026-09-01T08:00:00+00:00','source_url':'https://example.org/stale'},
    {'id':'fresh','headline':'Tryg rammet av store naturskader','published_at':'2026-10-24T08:00:00+00:00','source_url':'https://example.org/fresh'}]}
   self.assertEqual([x['id'] for x in merge(old,[],now=NOW)['items']],['fresh'])
+ def test_refresh_metadata_and_discovery(self):
+  from ingest_media_news import feed_urls
+  result=merge({'items':[]},[],now=NOW)
+  self.assertEqual(result['last_checked_at'],NOW.isoformat())
+  self.assertIsNone(result['latest_headline_at'])
+  self.assertEqual(len(feed_urls()),3)
  def test_no_unrelated(self):
   self.assertEqual(parse_rss(XML.replace('Gjensidige øker forsikringsprisene'.encode('utf-8'),b'Brod og mat'),NOW),[])
