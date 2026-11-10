@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-10T15:46:37.130598+00:00",
+  "updated_at": "2026-11-10T16:01:38.873628+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -3070,7 +3070,7 @@
       "currency": "DKK",
       "close": 163.4,
       "trading_date": "2026-11-10",
-      "observed_at": "2026-11-10T15:46:36+00:00",
+      "observed_at": "2026-11-10T15:59:53+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 162.2,
@@ -4081,9 +4081,9 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 9.918,
+      "close": 9.922,
       "trading_date": "2026-11-10",
-      "observed_at": "2026-11-10T15:46:02+00:00",
+      "observed_at": "2026-11-10T16:01:28+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 9.816,
@@ -5091,7 +5091,7 @@
         },
         {
           "date": "2026-11-10",
-          "price": 9.918
+          "price": 9.922
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
