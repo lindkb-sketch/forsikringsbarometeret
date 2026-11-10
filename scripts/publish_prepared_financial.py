@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Transfer audited finance files from an unlocked validation job to a locked publisher.
 
-Only the short publish job shares the Pages lock with stock updates. Stock-only
-commits during PDF import are preserved. Any intervening code or finance change
+Only the short publish job shares the Pages lock with stock updates. Independent
+stock and approved broker-commentary commits during PDF import are preserved. Any intervening code or finance change
 blocks publishing, rather than overwriting newer observations.
 """
 from __future__ import annotations
@@ -42,7 +42,7 @@ FILES = (
 )
 REQUIRED = {'data/verified_financial_feed.json', 'data/financial_observations.json',
             'data/financial_audit.json', 'data/live.json'}
-ALLOWED_INTERVENING = {'data/stock_prices.json'}
+ALLOWED_INTERVENING = {'data/stock_prices.json', 'data/broker_commentary.json'}
 
 
 def git(*args: str, root: Path = ROOT) -> str:
@@ -112,7 +112,7 @@ def publish(root: Path = ROOT) -> None:
     if unsafe:
         raise ValueError('main changed outside stock prices during financial validation: ' + ', '.join(sorted(unsafe)))
     if changed:
-        print('FINANCIAL_PUBLISH_REBASE stock-only changes retained', flush=True)
+        print('FINANCIAL_PUBLISH_REBASE stock/broker commentary changes retained', flush=True)
     for rel in manifest['files']:
         dest = root / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
