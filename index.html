@@ -2018,7 +2018,16 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
      '<p>'+esc(x.text)+'</p><div class="brief-story-source">'+src(x)+'</div></article>'
    ).join('')+'</div>':
      '<p>Ingen nye kildeverifiserte kvartalstall er tilgjengelige for valgt periode.</p>';
-   body=coverage+body;
+   const companyUpdates=reported.map(name=>{
+     const item=block.by_company[name];
+     if(!item.reader_summary||!/^https:\/\//.test(item.source_url||''))return '';
+     return '<li><strong>'+esc(name)+':</strong> '+esc(item.reader_summary)+
+       ' <a href="'+safeUrl(item.source_url)+'" target="_blank" rel="noopener noreferrer">Kilde ↗</a></li>';
+   }).filter(Boolean);
+   const companyDetails=companyUpdates.length?
+     '<details class="brief-company-updates"><summary>Hovedtrekk fra selskapenes kvartalstall ('+
+     companyUpdates.length+')</summary><ul>'+companyUpdates.join('')+'</ul></details>':'';
+   body=coverage+body+companyDetails;
   }
   return '<section class="quarter-comment" aria-label="'+(c?'Kvartalskommentar for '+esc(c):'Kvartalsbrief')+
    '"><div class="quarter-comment-head"><span class="quarter-comment-label">'+title+
