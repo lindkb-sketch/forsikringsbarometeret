@@ -21,6 +21,12 @@ class IncrementalQuarterlyBriefTests(unittest.TestCase):
     second=build_editorial.build({'observations':[self.row('Fremtind'),self.row('Tryg')]},{'items':[]})
     self.assertEqual({x['theme'] for x in second['brief']},{'large_claims','strategy'})
     self.assertEqual(second['period'],'Q1 2027')
+ def test_homepage_renders_sourced_company_updates_for_every_reported_insurer(self):
+  html=(Path(__file__).resolve().parents[1]/'index.html').read_text(encoding='utf-8')
+  self.assertIn('const companyUpdates=reported.map(name=>',html)
+  self.assertIn('esc(item.reader_summary)',html)
+  self.assertIn('safeUrl(item.source_url)',html)
+  self.assertIn('body=coverage+body+companyDetails;',html)
  def test_brief_remains_short_when_many_companies_arrive(self):
   rows=[{'text':f'Tema {i}: '+('dokumentert innsikt '*20),'theme':f'theme_{i}','basis':'issuer_commentary','source_url':'https://example.com/report.pdf'} for i in range(18)]
   selected=build_editorial.concise_brief(rows)
