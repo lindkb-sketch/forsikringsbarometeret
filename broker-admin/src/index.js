@@ -153,13 +153,16 @@ async function importFolder(req,env,actor){
   const {company,quarter}=await getJson(req);
   assertFolder(company,quarter);
   const match=/^Q([1-4]) (20\d{2})$/.exec(quarter);
-  const prefix=company+'/'+match[2]+'/Q'+match[1]+'/';
+  // Support both Company/YYYY/QN/ and the existing Company/QN/ layout.
+  const prefixes=[company+'/'+match[2]+'/Q'+match[1]+'/',company+'/Q'+match[1]+'/'];
   const stamped=now();
   await execute(env,'INSERT OR IGNORE INTO folders(company,quarter,created_at) VALUES(?,?,?)',company,quarter,stamped);
   const existing=await rows(env,'SELECT id,r2_key,status FROM reports WHERE company=? AND quarter=?',company,quarter);
   const keys=new Set(existing.map(r=>r.r2_key));
-  let cursor,found=0,imported=0,skipped=0;
-  do{
+  let found=0,imported=0,skipped=0;
+  for(const prefix of prefixes){
+   let cursor;
+   do{
     const page=await env.REPORTS.list({prefix,limit:1000,...(cursor?{cursor}:{})});
     for(const file of page.objects){
       if(!/\.pdf$/i.test(file.key))continue;
@@ -185,7 +188,8 @@ async function importFolder(req,env,actor){
       imported++;
     }
     cursor=page.truncated?page.cursor:null;
-  }while(cursor);
+   }while(cursor);
+  }
   if(imported)await execute(env,"UPDATE drafts SET status='needs_review',updated_at=? WHERE company=? AND quarter=?",now(),company,quarter);
   await audit(env,actor,'import',company,quarter);
   return {company,quarter,found,imported,skipped,message:'Rapporter lagt i analysekø; kontroller status og godkjenn utkastet før publisering'};
