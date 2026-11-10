@@ -58,9 +58,13 @@ class BrokerCommentaryTests(unittest.TestCase):
                               capture_output=True,text=True,timeout=12)
         self.assertEqual(result.returncode,0,result.stderr)
 
-    def test_public_feed_is_empty_until_owner_approves_a_summary(self):
+    def test_public_feed_contains_only_approved_public_summaries(self):
         data=json.loads((ROOT/'data/broker_commentary.json').read_text(encoding='utf-8'))
-        self.assertFalse(data['entries'])
+        self.assertIsInstance(data['entries'],list)
+        for entry in data['entries']:
+            self.assertTrue(entry['reaction'].strip())
+            self.assertNotIn('pdf',entry.keys())
+            self.assertNotIn('filename',entry.keys())
         self.assertIn('Ingen lokale PDF-er i denne mappen.',JS)
         self.assertIn('Ikke del dem med ChatGPT eller andre AI-tjenester uten tillatelse',JS)
 
