@@ -31,6 +31,24 @@ async function main(){
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
        document.querySelector('.mon-calendar'),null,{timeout:35000});
+  // A published broker summary must be visible on its company's page, not home.
+  const brokerFeedResponse=await page.request.get(BASE+'data/broker_commentary.json?browser_audit='+Date.now());
+  check('Approved broker feed reachable',brokerFeedResponse.status()===200,'HTTP '+brokerFeedResponse.status());
+  if(brokerFeedResponse.status()===200){
+   const brokerFeed=await brokerFeedResponse.json();
+   const gjensidige=brokerFeed.entries?.find(e=>e.company==='Gjensidige'&&e.quarter==='Q3 2026');
+   if(gjensidige){
+    check('Broker commentary absent on homepage',(await page.locator('#broker-commentary-panel').count())===0);
+    await page.locator('#nav-Gjensidige').click();
+    await page.waitForTimeout(1200);
+    const panel=page.locator('#broker-commentary-panel');
+    check('Gjensidige broker panel exists',await panel.count()===1);
+    check('Approved Gjensidige Q3 commentary visible',await panel.isVisible(),
+      'panel='+await panel.count()+'; hidden='+(await panel.count()?await panel.getAttribute('hidden'):'missing')+
+      '; text='+(await panel.count()?String(await panel.textContent()).slice(0,180):''));
+    await page.locator('#nav-home').click();
+   }
+  }
   // Publication diagnostics remain machine-readable; they are never a reader-facing
   // investor approval label. The reader sees source-backed figures and dated blanks.
   check('Internal data audit exists independently of dashboard labels',
