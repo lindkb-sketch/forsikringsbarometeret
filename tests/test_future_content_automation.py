@@ -42,8 +42,9 @@ class FutureAutomation(unittest.TestCase):
   self.assertEqual(parse_rss(xml,now),[])
  def test_news_merge_repeat_does_not_duplicate(self):
   row={"id":"x","headline":"Gjensidige rapporterer nye forsikringstall","publisher":"E24","published_at":"2026-10-23T10:00:00+00:00","source_url":"https://news.google.com/rss/x","approved":True}
-  a=merge({"items":[]},[row])
-  self.assertEqual(merge(a,[row]),a)
+  now=dt.datetime(2026,10,24,12,tzinfo=dt.timezone.utc)
+  a=merge({"items":[]},[row],now=now)
+  self.assertEqual(merge(a,[row],now=now),a)
  def test_editorial_new_quarter_rollover_and_source(self):
   observations=[dict(company="Gjensidige",year=2026,quarter=q,scope="group",period_type="quarter",metric="combined_ratio",value=v,status="reported",source_url=f"https://example.org/q{q}.pdf",unit="percent") for q,v in [(3,81),(4,78)]]
   data=editorial({"observations":observations,"coverage_complete":False},{"items":[]})

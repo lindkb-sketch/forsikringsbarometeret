@@ -15,6 +15,7 @@ def feed_urls():
  queries=[
   '("Gjensidige" OR "Tryg forsikring" OR "Fremtind" OR "Frende" OR "Protector Forsikring" OR "Storebrand" OR "If forsikring" OR "Sampo") (oppkjøp OR fusjon OR samarbeid OR konkurranse OR markedsandel OR prisøkning OR forsikring) when:7d',
   '("forsikring" OR "forsikringsbransjen" OR "insurance") (oppkjøp OR partnerskap OR distribusjon OR naturskade OR storbrann OR premieøkning OR konkurranse) when:7d',
+  '("Gjensidige" OR "Tryg" OR "Fremtind" OR "Frende" OR "Protector" OR "Storebrand" OR "Sampo") when:7d',
  ]
  return ['https://news.google.com/rss/search?'+urllib.parse.urlencode({'q':q,'hl':'no','gl':'NO','ceid':'NO:no'}) for q in queries]
 def fetch(url):
@@ -86,7 +87,7 @@ def merge(existing,new,now=None):
  for row in approved:
   if not any(same_story(row,prior) for prior in distinct):distinct.append(row)
   if len(distinct)>=100:break
- return {'items':distinct,'source_policy':'Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports'}
+ return {'items':distinct,'last_checked_at':now.isoformat(),'latest_headline_at':distinct[0]['published_at'] if distinct else None,'source_policy':'Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports'}
 def run(fetcher=fetch,out=OUT):
  old=json.loads(out.read_text()) if out.exists() else {'items':[]}
  incoming=[]
