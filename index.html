@@ -2008,11 +2008,17 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     competition:'Konkurranse og marked',strategy:'Strategiske endringer',
     operations:'Drift og effektivisering',inflation:'Kostnadspress',
     investment:'Investeringer og finansmarked',regulation:'Regelverk og rammevilkår'};
+   // Track verified arrivals for the selected quarter, even when themes stay unchanged.
+   const reported=Object.keys(block?.by_company||{}).filter(name=>
+     block.by_company[name]?.period===period);
+   const coverage=reported.length?'<p class="brief-coverage">Kvartalstall publisert for '+
+     reported.length+' av 7 selskaper: '+reported.map(esc).join(', ')+'.</p>':'';
    body=facts.length?'<div class="brief-stories">'+facts.map(x=>
      '<article class="brief-story"><h3>'+esc(themeTitle[x.theme]||'Viktig i kvartalet')+'</h3>'+
      '<p>'+esc(x.text)+'</p><div class="brief-story-source">'+src(x)+'</div></article>'
    ).join('')+'</div>':
      '<p>Ingen nye kildeverifiserte kvartalstall er tilgjengelige for valgt periode.</p>';
+   body=coverage+body;
   }
   return '<section class="quarter-comment" aria-label="'+(c?'Kvartalskommentar for '+esc(c):'Kvartalsbrief')+
    '"><div class="quarter-comment-head"><span class="quarter-comment-label">'+title+
