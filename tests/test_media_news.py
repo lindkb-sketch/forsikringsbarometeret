@@ -35,6 +35,19 @@ class MediaTests(unittest.TestCase):
                    'Storebrand inngår distribusjonsavtale om forsikring',
                    'Tryg rammet av store naturskader'):
    self.assertTrue(relevant(headline),headline)
+ def test_recent_insurance_claims_safety_and_customer_news(self):
+  for headline in ('Gjensidige registrerte 513 skademeldinger i trafikken',
+                   'Tryg advarer mot falsk trygghet fra adaptiv cruisekontroll på glatt føre',
+                   'Frende: 3 av 4 bilister har mistet kontrollen på glatt føre',
+                   'Storebrand slapp å dekke økt vannforbruk etter rørbrudd',
+                   'EPSI-måling: DNB/Fremtind havner sist blant forsikringsselskaper'):
+   self.assertTrue(relevant(headline),headline)
+  for headline in ('Storebrand aksjekurs stiger etter kjøpsanbefaling',
+                   'Tryg kvartalsrapport publisert','Vinterføre på fjellet'):
+   self.assertFalse(relevant(headline),headline)
+ def test_ntb_attributed_news_allowed_but_untrusted_source_rejected(self):
+  xml=b'<rss><channel><item><title>Tryg advarer om vinterf\xc3\xb8re</title><link>https://news.google.com/rss/articles/ntb</link><pubDate>Sat, 24 Oct 2026 10:00:00 GMT</pubDate><source url="https://kommunikasjon.ntb.no">NTB Kommunikasjon</source></item></channel></rss>'
+  self.assertEqual(parse_rss(xml,NOW)[0]['publisher'],'NTB Kommunikasjon')
  def test_nynorsk_bokmal_duplicates(self):
   a={'id':'a','headline':'Gjensidige øker forsikringsprisene etter storbrannen',
      'published_at':'2026-10-23T09:00:00+00:00','source_url':'https://example.org/1'}
