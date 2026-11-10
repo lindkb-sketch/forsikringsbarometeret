@@ -49,6 +49,19 @@ async function main(){
     await page.locator('#nav-home').click();
    }
   }
+  // An approved safety headline must survive the frontend's material-news filter.
+  const newsResponse=await page.request.get(BASE+'data/official_news.json?browser_audit='+Date.now());
+  if(newsResponse.status()===200){
+   const newsFeed=await newsResponse.json();
+   const trygSafety=(newsFeed.items||[]).find(x=>x.approved&&/Tryg/i.test(x.headline)&&/elsparkesykkel/i.test(x.headline));
+   if(trygSafety){
+    await page.locator('#nav-Tryg').click();
+    await page.waitForTimeout(350);
+    check('Approved Tryg traffic-safety news visible on company page',
+      (await page.locator('.company-media-news').allTextContents()).join(' ').includes(trygSafety.headline));
+    await page.locator('#nav-home').click();
+   }
+  }
   // Publication diagnostics remain machine-readable; they are never a reader-facing
   // investor approval label. The reader sees source-backed figures and dated blanks.
   check('Internal data audit exists independently of dashboard labels',
