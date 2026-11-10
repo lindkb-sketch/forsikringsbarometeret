@@ -11,16 +11,20 @@ const ADMIN=new URLSearchParams(location.search).get('admin')==='1';
 let feed={schema_version:1,entries:[]},quarters=[],dialog=null,dbPromise=null;
 let company='Fremtind',quarter='',renderKey='',renderElement=null;
 const order=p=>Number(p.slice(3))*4+Number(p[1]);
-const currentCompany=()=>typeof profitabilityCompany!=='undefined'&&NAMES.includes(profitabilityCompany)?profitabilityCompany:'Fremtind';
+const currentCompany=()=>{
+ if(typeof current!=='undefined'&&NAMES.includes(current))return current;
+ return typeof profitabilityCompany!=='undefined'&&NAMES.includes(profitabilityCompany)?profitabilityCompany:'Fremtind';
+};
 const currentQuarter=()=>{
- const p=window.FBActivePeriod;
- if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
- if(QUARTER.test(p?.label||''))return p.label;
+ // On the dashboard, the explicit Q3/Q2 selector is authoritative.
  const selected=typeof period!=='undefined'?period:'';
  if(/^Q[1-4]$/.test(selected)){
   const matching=feed.entries.filter(e=>e.company===currentCompany()&&e.quarter.startsWith(selected+' '));
   if(matching.length)return matching.map(e=>e.quarter).sort((a,b)=>order(b)-order(a))[0];
  }
+ const p=window.FBActivePeriod;
+ if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
+ if(QUARTER.test(p?.label||''))return p.label;
  return quarters.at(-1)||'';
 };
 function valid(raw){
