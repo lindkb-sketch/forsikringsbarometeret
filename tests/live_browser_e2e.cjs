@@ -62,6 +62,17 @@ async function main(){
     await page.locator('#nav-home').click();
    }
   }
+  // The news surface must be present for every insurer, even when no
+  // recent source-backed article exists. Homepage always shows the sector feed.
+  await page.locator('#nav-home').click();
+  check('Insurance news section exists on homepage',
+    await page.locator('#media-news').count()===1);
+  for(const insurer of ['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']){
+   await page.locator('#nav-'+insurer).click();
+   check(insurer+' media section exists',
+     await page.locator('.company-media-news').count()===1);
+   await page.locator('#nav-home').click();
+  }
   // Publication diagnostics remain machine-readable; they are never a reader-facing
   // investor approval label. The reader sees source-backed figures and dated blanks.
   check('Internal data audit exists independently of dashboard labels',
