@@ -3,19 +3,25 @@
 import datetime as dt,email.utils,hashlib,json,re,unicodedata,urllib.parse,urllib.request,xml.etree.ElementTree as ET
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/'data/official_news.json'
-PUBLISHERS={'dn.no':'DN','e24.no':'E24','finansavisen.no':'Finansavisen','vg.no':'VG','nrk.no':'NRK','nettavisen.no':'Nettavisen','aftenposten.no':'Aftenposten','reuters.com':'Reuters'}
+PUBLISHERS={'dn.no':'DN','e24.no':'E24','finansavisen.no':'Finansavisen','vg.no':'VG','nrk.no':'NRK','nettavisen.no':'Nettavisen','aftenposten.no':'Aftenposten','reuters.com':'Reuters','kommunikasjon.ntb.no':'NTB Kommunikasjon','ntb.no':'NTB'}
 KEYWORDS=re.compile(r'forsikr|insurance|gjensidige|fremtind|frende|protector|storebrand|tryg|sampo|if forsikring|naturskade|premie',re.I)
 # Headlines are signals, not verified article content. Reject equity-market
 # transactions, untitled company pages and earnings-only headlines.
 NOISE=re.compile(r'(?i)aksj|børs|ticker|kursmål|kjøpsanbefal|primærinnsider|pd?mr\\b|meldepliktig|styremedlem|innsidehandel|notice of transaction|transaction by|rapportkalender|kvartalsresultat|kvartalsrapport|resultatfremleggelse|utbytte|stock|share price|analytiker')
 EVENTS=re.compile(r'(?i)oppkjøp|oppkjøper|kjøper opp|fusjon|sammenslå|overtar|oppkjøpsbud|acquisition|merger|takeover|m&a|partnerskap|samarbeidsavtale|distribusjonsavtale|bankavtale|partneravtale|avtale med|strategisk samarbeid|strategisk sats|lanserer|markedsandel|konkurrans|kundeflukt|kundetap|kundevekst|prisøk|prishopp|prisvekst|øker forsikringspris|forsikringspremi|premieøk|naturskad|flom|storbrann|brannskad|ekstremvær|rekordskad|svindel|cyberangrep|dataangrep|erstatningskrav|store skader|store skade|millioner i skade|millionar i skade|insurance rates|market share|distribution deal|major claim|catastroph')
+# Insurer-specific operational developments are relevant even without M&A
+# terminology: claims decisions, road safety, customer satisfaction and loss trends.
+INSURER_EVENT=re.compile(r'(?i)skademelding|skadetall|skadeoppgjør|vannskad|trafikkskad|påkjør|ulykk|glatt føre|vinterføre|elsparkesykkel|pipebrann|brannfare|rettshjelp|erstatning|avkort|dekke|dekning|medhold|avslag|kundetilfredshet|kundemisnøye|epsi|skadebehandling|bemanning|forebygg|advar|varsler|kostnad|rekord')
 def relevant(title):
- return bool(KEYWORDS.search(title) and EVENTS.search(title) and not NOISE.search(title))
+ if NOISE.search(title) or not KEYWORDS.search(title):return False
+ return bool(EVENTS.search(title) or (issuers(title) and INSURER_EVENT.search(title)))
 def feed_urls():
  queries=[
   '("Gjensidige" OR "Tryg forsikring" OR "Fremtind" OR "Frende" OR "Protector Forsikring" OR "Storebrand" OR "If forsikring" OR "Sampo") (oppkjøp OR fusjon OR samarbeid OR konkurranse OR markedsandel OR prisøkning OR forsikring) when:7d',
   '("forsikring" OR "forsikringsbransjen" OR "insurance") (oppkjøp OR partnerskap OR distribusjon OR naturskade OR storbrann OR premieøkning OR konkurranse) when:7d',
   '("Gjensidige" OR "Tryg" OR "Fremtind" OR "Frende" OR "Protector" OR "Storebrand" OR "Sampo") when:7d',
+  '("Gjensidige" OR "Tryg Forsikring" OR "Frende Forsikring" OR "Fremtind Forsikring") (skader OR erstatning OR vinterføre OR brann OR kunder) when:7d',
+  '("forsikringsbransjen" OR "forsikringsselskapene") (skadetall OR skadeoppgjør OR kundetilfredshet OR pris OR konkurranse) when:7d',
  ]
  return ['https://news.google.com/rss/search?'+urllib.parse.urlencode({'q':q,'hl':'no','gl':'NO','ceid':'NO:no'}) for q in queries]
 def fetch(url):
