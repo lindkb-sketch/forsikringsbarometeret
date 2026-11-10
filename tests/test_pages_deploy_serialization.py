@@ -44,8 +44,8 @@ class DeployConcurrencyTests(unittest.TestCase):
         self.assertNotIn('python scripts/run_pipeline.py', quote)
         self.assertIn('python scripts/run_pipeline.py', full)
         self.assertIn('python scripts/verify_public_pages.py', full)
-        self.assertIn("ALLOWED_INTERVENING = {'data/stock_prices.json'}", script)
-        self.assertIn('FINANCIAL_PUBLISH_REBASE stock-only changes retained', script)
+        self.assertIn("ALLOWED_INTERVENING = {'data/stock_prices.json', 'data/broker_commentary.json'}", script)
+        self.assertIn('FINANCIAL_PUBLISH_REBASE stock/broker commentary changes retained', script)
 
 
 if __name__ == '__main__':
