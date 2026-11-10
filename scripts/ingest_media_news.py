@@ -68,10 +68,19 @@ def same_story(a,b):
  if left and left==right and event_a and event_b and numbers_a and numbers_a==numbers_b:
   return True
  return False
-def merge(existing,new):
+def merge(existing,new,now=None):
+ # Old RSS items must not remain on the live news page indefinitely.
+ now=now or dt.datetime.now(dt.timezone.utc)
+ cutoff=now-dt.timedelta(days=21)
+ def fresh(item):
+  try:
+   published=dt.datetime.fromisoformat(item['published_at'].replace('Z','+00:00'))
+   return cutoff<=published.astimezone(dt.timezone.utc)<=now
+  except (ValueError,TypeError,KeyError,AttributeError):
+   return False
  items={x['id']:x for x in existing.get('items',[]) if x.get('id')}
  for x in new:items[x['id']]=x
- items={k:v for k,v in items.items() if relevant(v.get('headline',''))}
+ items={k:v for k,v in items.items() if fresh(v) and relevant(v.get('headline',''))}
  approved=sorted(items.values(),key=lambda x:x['published_at'],reverse=True)
  distinct=[]
  for row in approved:
