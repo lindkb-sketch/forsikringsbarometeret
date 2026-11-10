@@ -21,15 +21,15 @@ class BrokerCommentaryTests(unittest.TestCase):
             self.assertNotIn('filename',row)
             self.assertNotIn('source_file',row)
 
-    def test_summary_is_below_profitability_not_an_upload_widget(self):
-        self.assertIn('id="cr-podium-panel"',HTML)
-        self.assertIn('id="broker-commentary-panel" hidden',HTML)
-        self.assertLess(HTML.index('id="cr-podium-panel"'),HTML.index('id="broker-commentary-panel"'))
+    def test_broker_summary_only_on_company_pages(self):
+        home=HTML[HTML.index('function home(){'):HTML.index('function company(c){')]
+        company=HTML[HTML.index('function company(c){'):HTML.index('function methodology(){')]
+        self.assertNotIn('id="broker-commentary-panel"',home)
+        self.assertIn('id="broker-commentary-panel" hidden',company)
         self.assertIn('scripts/broker_commentary.js',HTML)
         self.assertIn('scripts/broker_commentary.css',HTML)
         self.assertIn('.broker-summary-panel[hidden]{display:none!important}',CSS)
         self.assertIn("document.getElementById('broker-commentary-panel')",JS)
-        self.assertIn('window.FBActivePeriod',JS)
         self.assertIn('currentCompany()',JS)
         self.assertIn('setInterval(loadPublic,300000)',JS)
 
