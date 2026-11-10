@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "7f8d0a68ba338f2a378a",
+      "headline": "Tryg vil ha 16-årsgrense for elsparkesykkel",
+      "publisher": "NTB Kommunikasjon",
+      "published_at": "2026-11-07T06:45:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNR2c1aFE2U0NLYnJBalFpTXdLVFYtSUtZSFdubU9TVFM5V1Y0bnZFYjg2LW9TNExvdHNZSld4Y2tLakZGQ3kxWEQ3a1dfZERtd2VBSllUa2E4eFFqSW1KWHJMSUlIQVNCUUt4bldzSWNTN3dTOGhlOEdBeXFWelFjY2JuZVRUTGpROWN2aVJ3X2h3a0pQSVRRd0RoSTFoWi01TEhCNmM0YVNmTEM5cFF4LTQ5eWI3OTFmTHdiLXZKWFFudw?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "c399824a01bfd9e74908",
       "headline": "Gjensidige, Forsikring | Øker forsikringsprisene og håver inn: – Tar av oss hatten",
       "publisher": "Nettavisen",
@@ -28,7 +37,7 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     }
   ],
-  "last_checked_at": "2026-11-10T17:56:26.213578+00:00",
-  "latest_headline_at": "2026-10-23T09:33:49+00:00",
+  "last_checked_at": "2026-11-10T21:12:59.053825+00:00",
+  "latest_headline_at": "2026-11-07T06:45:00+00:00",
   "source_policy": "Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports"
 }

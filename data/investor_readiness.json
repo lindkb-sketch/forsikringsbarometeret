@@ -7,7 +7,7 @@
   "financial_quarter_complete": true,
   "all_seven_automated": false,
   "definitions_comparable": false,
-  "market_data_fresh": false,
+  "market_data_fresh": true,
   "companies": [
     {
       "company": "Fremtind",
@@ -169,8 +169,8 @@
     }
   ],
   "news": {
-    "latest_headline_date": "2026-10-23",
-    "recent_attributed_headlines": false
+    "latest_headline_date": "2026-11-07",
+    "recent_attributed_headlines": true
   },
   "limitations": [
     "Technical verification is not independent manual review of issuer report cells.",
