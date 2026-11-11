@@ -27,7 +27,7 @@ class IndependentStockScheduleTests(unittest.TestCase):
     def test_workflow_is_independent_and_serialized_with_financial_publish(self):
         quote=(ROOT/'.github/workflows/stock-prices.yml').read_text()
         financial=(ROOT/'.github/workflows/update.yml').read_text()
-        self.assertIn("cron: '7,22,37,52 6-18 * * 1-5'",quote)
+        self.assertIn("cron: '9,24,39,54 6-18 * * 1-5'",quote)
         self.assertIn('forsikringsbarometeret-publish',quote)
         self.assertIn('forsikringsbarometeret-publish',financial)
         self.assertIn("paths-ignore:",financial)
@@ -35,6 +35,9 @@ class IndependentStockScheduleTests(unittest.TestCase):
         self.assertNotIn('python scripts/run_pipeline.py',quote)
         self.assertNotIn('python scripts/update_stock_prices.py',financial)
         self.assertIn('verify_public_stock_prices.py',quote)
+        self.assertIn('Recover missed stock refresh during Nordic market hours',financial)
+        self.assertIn('python scripts/check_stock_schedule.py',financial)
+        self.assertIn('actions: write',financial)
 
     def test_both_publishers_use_multi_pending_fifo_queue_and_same_lock(self):
         quote=(ROOT/'.github/workflows/stock-prices.yml').read_text(encoding='utf-8')
