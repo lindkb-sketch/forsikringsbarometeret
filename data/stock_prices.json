@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-11T15:21:54.015227+00:00",
+  "updated_at": "2026-11-11T15:36:55.138488+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -7,7 +7,7 @@
       "currency": "NOK",
       "close": 276.4,
       "trading_date": "2026-11-11",
-      "observed_at": "2026-11-11T15:03:10+00:00",
+      "observed_at": "2026-11-11T15:19:30+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 276.2,
@@ -1028,7 +1028,7 @@
       "currency": "NOK",
       "close": 476.0,
       "trading_date": "2026-11-11",
-      "observed_at": "2026-11-11T15:06:32+00:00",
+      "observed_at": "2026-11-11T15:19:52+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 480.2,
@@ -2049,7 +2049,7 @@
       "currency": "NOK",
       "close": 205.8,
       "trading_date": "2026-11-11",
-      "observed_at": "2026-11-11T15:06:33+00:00",
+      "observed_at": "2026-11-11T15:14:55+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 206.4,
@@ -3070,7 +3070,7 @@
       "currency": "DKK",
       "close": 163.5,
       "trading_date": "2026-11-11",
-      "observed_at": "2026-11-11T15:21:06+00:00",
+      "observed_at": "2026-11-11T15:36:26+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 163.4,
@@ -4081,9 +4081,9 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 9.948,
+      "close": 9.942,
       "trading_date": "2026-11-11",
-      "observed_at": "2026-11-11T15:21:07+00:00",
+      "observed_at": "2026-11-11T15:36:26+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 9.964,
@@ -5091,7 +5091,7 @@
         },
         {
           "date": "2026-11-11",
-          "price": 9.948
+          "price": 9.942
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
