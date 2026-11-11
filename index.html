@@ -1906,8 +1906,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  // scheduled RSS refresh removes previously saved finance-market noise.
  const mediaNoise=/aksj|børs|ticker|kursmål|primærinnsider|styremedlem|pd?mr\\b|meldepliktig|notice of transaction|transaction by|kvartalsrapport|kvartalsresultat|utbytte|analytiker|stock|share price/i;
  const materialNews=/oppkjøp|oppkjøper|kjøper opp|fusjon|sammenslå|overtar|acquisition|merger|takeover|partnerskap|distribusjonsavtale|samarbeidsavtale|bankavtale|strategisk sats|markedsandel|konkurrans|kundeflukt|kundevekst|prisøk|prishopp|prisvekst|forsikringspris|forsikringspremi|premieøk|naturskad|flom|storbrann|ekstremvær|rekordskad|svindel|cyberangrep|dataangrep|store skader|store skade|insurance rates|market share|major claim/i;
+ // Approved publisher headlines have already passed ingestion relevance checks.
+ // Keep stock-market noise excluded but do not hide valid safety/customer news.
  const selectedNews=()=>unique((news?.items||[]).filter(r=>
-   materialNews.test(r.headline||'')&&!mediaNoise.test(r.headline||'')));
+   !mediaNoise.test(r.headline||'')));
+
  function newsGroups(){
   const all=selectedNews();
   // Market strategy is independent of quarterly reporting summaries.
@@ -1952,23 +1955,24 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
     '<div class="media-news-body"><div class="media-news-meta">'+esc(x.publisher||'Utgiver')+
     ' · '+esc((x.published_at||'').slice(0,10))+'</div><div class="media-news-title">'+
     esc(x.headline)+' ↗</div></div></a>').join('');
+  const checked=news?.last_checked_at?
+    '<p class="media-intro">Nyheter sist kontrollert: '+esc(news.last_checked_at.slice(0,16).replace('T',' '))+' UTC</p>':'';
   return '<section class="panel media-news" id="media-news"><div class="section-head">'+
-    '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Nyheter og innsikt i konkurransebildet</p></div></div>'+
+    '<div><h2>Forsikring i mediebildet</h2><p class="media-intro">Nyheter og innsikt i konkurransebildet</p>'+checked+'</div></div>'+
     '<div class="media-news-grid">'+(strategic+articles||
     '<p>Ingen aktuelle nyheter eller dokumenterte markedsoppdateringer.</p>')+
     '</div></section>';
  };
  companyMediaNews=function(c){
-  if(typeof MON_QUARTER==='undefined'||MON_QUARTER==='Q2')return oldCompanyNews(c);
   const match=c==='Sampo'?/sampo|\bif\b/i:new RegExp(c,'i');
   const items=selectedNews().filter(x=>match.test(x.headline)).slice(0,3);
-  if(!items.length)return '';
   return '<section class="panel company-media-news"><div class="section-head"><h2>'+
     esc(c)+' i mediebildet</h2></div><div class="company-media-grid">'+
     items.map(x=>'<a class="company-media-link" href="'+safeUrl(x.source_url)+
      '" target="_blank" rel="noopener noreferrer"><span class="company-media-meta">'+
      esc(x.publisher||'')+' · '+esc((x.published_at||'').slice(0,10))+'</span><strong>'+
-     esc(x.headline)+' ↗</strong></a>').join('')+'</div></section>';
+     esc(x.headline)+' ↗</strong></a>').join('')+
+    (items.length?'':'<p>Ingen nyere, kildeverifiserte mediesaker om '+esc(c)+' akkurat nå.</p>')+'</div></section>';
  };
  quarterComment=function(c){
   if(MON_QUARTER==='Q2'&&!window.FBActivePeriod)return oldQuarterComment(c);
