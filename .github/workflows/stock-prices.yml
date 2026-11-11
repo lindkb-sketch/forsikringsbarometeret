@@ -17,7 +17,7 @@ on:
     # UTC; re-registered schedule after no schedule events were observed on Nov 3.
     # Keep a 15-minute cadence offset from busy hour boundaries.
     # The exchange-local Python guard handles winter/summer time.
-    - cron: '7,22,37,52 6-18 * * 1-5'
+    - cron: '9,24,39,54 6-18 * * 1-5'
 permissions:
   contents: write
   pages: write
@@ -41,7 +41,7 @@ jobs:
         run: |
           echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
           echo "WORKFLOW_REF=$GITHUB_REF"
-          echo "EXPECTED_SCHEDULE=7,22,37,52 6-18 * * 1-5 (UTC)"
+          echo "EXPECTED_SCHEDULE=9,24,39,54 6-18 * * 1-5 (UTC)"
           echo "- Trigger: $GITHUB_EVENT_NAME" >> "$GITHUB_STEP_SUMMARY"
           if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             echo "- 15-minute scheduled event confirmed" >> "$GITHUB_STEP_SUMMARY"
