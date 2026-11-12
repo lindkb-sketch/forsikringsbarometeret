@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "883db6ad725efdf5a509",
+      "headline": "Skademeldingene renner inn: – Langt flere enn vanlig, sier Gjensidige",
+      "publisher": "Finansavisen",
+      "published_at": "2026-11-12T12:00:55+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQa2xJQWdlWHhSUENDYkZNbElKbFRzUWFkTlJjOXpNTHBTVDVyMER0UFd0MUprNlZsQjRfS0pFUVJvdkR0SmlVNWtTNVJleFFJdmVHY2pGSmZWMm5UVHA2VEdRWGdPOEZqQ3dsbWZGV3ZJVGlhZEVMZWM0Ykc0N2dTazF2Vl9CNEJuSGg5YkJXUHNKN3NfY0Fvck9ZNmkxa01SNjk1MGtDcXJuaU1qbmVOenRmd2NaXzhMd3hN?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "7f8d0a68ba338f2a378a",
       "headline": "Tryg vil ha 16-årsgrense for elsparkesykkel",
       "publisher": "NTB Kommunikasjon",
@@ -37,7 +46,7 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     }
   ],
-  "last_checked_at": "2026-11-12T10:59:50.340586+00:00",
-  "latest_headline_at": "2026-11-07T06:45:00+00:00",
+  "last_checked_at": "2026-11-12T17:09:25.778842+00:00",
+  "latest_headline_at": "2026-11-12T12:00:55+00:00",
   "source_policy": "Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports"
 }
