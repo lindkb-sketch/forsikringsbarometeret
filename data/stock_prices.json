@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T15:43:21.486597+00:00",
+  "updated_at": "2026-11-13T15:58:16.765578+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -3068,9 +3068,9 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 167.8,
+      "close": 167.7,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T15:43:05+00:00",
+      "observed_at": "2026-11-13T15:54:56+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 165.3,
@@ -4070,7 +4070,7 @@
         },
         {
           "date": "2026-11-13",
-          "price": 167.8
+          "price": 167.7
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4083,7 +4083,7 @@
       "currency": "EUR",
       "close": 10.175,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T15:42:51+00:00",
+      "observed_at": "2026-11-13T15:57:43+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.065,
