@@ -1,17 +1,17 @@
 {
-  "updated_at": "2026-11-13T08:38:37.076957+00:00",
+  "updated_at": "2026-11-13T08:53:38.912361+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 280.2,
+      "close": 279.8,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T08:22:10+00:00",
+      "observed_at": "2026-11-13T08:38:22+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
-      "previous_close": 277.2,
-      "previous_close_date": "2026-11-11",
+      "previous_close": 278.2,
+      "previous_close_date": "2026-11-12",
       "history": [
         {
           "date": "2025-11-13",
@@ -1010,8 +1010,12 @@
           "price": 277.2
         },
         {
+          "date": "2026-11-12",
+          "price": 278.2
+        },
+        {
           "date": "2026-11-13",
-          "price": 280.2
+          "price": 279.8
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/GJF.OL",
@@ -1022,13 +1026,13 @@
       "symbol": "PROT.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 479.8,
+      "close": 479.0,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T08:23:19+00:00",
+      "observed_at": "2026-11-13T08:35:15+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
-      "previous_close": 475.6,
-      "previous_close_date": "2026-11-11",
+      "previous_close": 478.6,
+      "previous_close_date": "2026-11-12",
       "history": [
         {
           "date": "2025-11-13",
@@ -2027,8 +2031,12 @@
           "price": 475.6
         },
         {
+          "date": "2026-11-12",
+          "price": 478.6
+        },
+        {
           "date": "2026-11-13",
-          "price": 479.8
+          "price": 479.0
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/PROT.OL",
@@ -2039,13 +2047,13 @@
       "symbol": "STB.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 207.6,
+      "close": 207.4,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T08:22:09+00:00",
+      "observed_at": "2026-11-13T08:38:24+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
-      "previous_close": 205.2,
-      "previous_close_date": "2026-11-11",
+      "previous_close": 207.2,
+      "previous_close_date": "2026-11-12",
       "history": [
         {
           "date": "2025-11-13",
@@ -3044,8 +3052,12 @@
           "price": 205.2
         },
         {
+          "date": "2026-11-12",
+          "price": 207.2
+        },
+        {
           "date": "2026-11-13",
-          "price": 207.6
+          "price": 207.4
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/STB.OL",
@@ -3056,13 +3068,13 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 166.0,
+      "close": 166.1,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T08:38:19+00:00",
+      "observed_at": "2026-11-13T08:53:28+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
-      "previous_close": 163.7,
-      "previous_close_date": "2026-11-11",
+      "previous_close": 165.3,
+      "previous_close_date": "2026-11-12",
       "history": [
         {
           "date": "2025-11-13",
@@ -4053,8 +4065,12 @@
           "price": 163.7
         },
         {
+          "date": "2026-11-12",
+          "price": 165.3
+        },
+        {
           "date": "2026-11-13",
-          "price": 166.0
+          "price": 166.1
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4065,13 +4081,13 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 10.09,
+      "close": 10.1,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T08:36:09+00:00",
+      "observed_at": "2026-11-13T08:51:11+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
-      "previous_close": 9.97,
-      "previous_close_date": "2026-11-11",
+      "previous_close": 10.065,
+      "previous_close_date": "2026-11-12",
       "history": [
         {
           "date": "2025-11-13",
@@ -5070,8 +5086,12 @@
           "price": 9.97
         },
         {
+          "date": "2026-11-12",
+          "price": 10.065
+        },
+        {
           "date": "2026-11-13",
-          "price": 10.09
+          "price": 10.1
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
