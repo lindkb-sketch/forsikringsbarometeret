@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T10:23:51.957669+00:00",
+  "updated_at": "2026-11-13T10:38:53.572210+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -7,7 +7,7 @@
       "currency": "NOK",
       "close": 281.8,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T10:05:36+00:00",
+      "observed_at": "2026-11-13T10:16:18+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 278.2,
@@ -1026,9 +1026,9 @@
       "symbol": "PROT.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 482.0,
+      "close": 482.6,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T10:07:34+00:00",
+      "observed_at": "2026-11-13T10:22:46+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 478.6,
@@ -2036,7 +2036,7 @@
         },
         {
           "date": "2026-11-13",
-          "price": 482.0
+          "price": 482.6
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/PROT.OL",
@@ -2047,9 +2047,9 @@
       "symbol": "STB.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 208.0,
+      "close": 207.8,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T10:06:06+00:00",
+      "observed_at": "2026-11-13T10:23:10+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 207.2,
@@ -3057,7 +3057,7 @@
         },
         {
           "date": "2026-11-13",
-          "price": 208.0
+          "price": 207.8
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/STB.OL",
@@ -3068,9 +3068,9 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 166.6,
+      "close": 166.8,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T10:21:23+00:00",
+      "observed_at": "2026-11-13T10:36:34+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 165.3,
@@ -4070,7 +4070,7 @@
         },
         {
           "date": "2026-11-13",
-          "price": 166.6
+          "price": 166.8
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4083,7 +4083,7 @@
       "currency": "EUR",
       "close": 10.12,
       "trading_date": "2026-11-13",
-      "observed_at": "2026-11-13T10:23:14+00:00",
+      "observed_at": "2026-11-13T10:37:14+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.065,
