@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-11-16T11:03:54.504776+00:00",
+  "updated_at": "2026-11-16T11:18:43.789229+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 283.2,
+      "close": 283.4,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T10:48:48+00:00",
+      "observed_at": "2026-11-16T11:03:15+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 282.4,
@@ -1011,7 +1011,7 @@
         },
         {
           "date": "2026-11-16",
-          "price": 283.2
+          "price": 283.4
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/GJF.OL",
@@ -1022,9 +1022,9 @@
       "symbol": "PROT.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 478.0,
+      "close": 477.2,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T10:47:48+00:00",
+      "observed_at": "2026-11-16T10:58:06+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 484.0,
@@ -2028,7 +2028,7 @@
         },
         {
           "date": "2026-11-16",
-          "price": 478.0
+          "price": 477.2
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/PROT.OL",
@@ -2041,7 +2041,7 @@
       "currency": "NOK",
       "close": 207.6,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T10:44:21+00:00",
+      "observed_at": "2026-11-16T11:00:50+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 207.2,
@@ -3058,7 +3058,7 @@
       "currency": "DKK",
       "close": 167.2,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T11:03:42+00:00",
+      "observed_at": "2026-11-16T11:17:22+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 167.9,
@@ -4067,7 +4067,7 @@
       "currency": "EUR",
       "close": 10.13,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T11:02:57+00:00",
+      "observed_at": "2026-11-16T11:14:19+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.165,
