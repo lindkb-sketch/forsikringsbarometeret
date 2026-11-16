@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-16T15:06:27.186214+00:00",
+  "updated_at": "2026-11-16T15:07:06.892217+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -7,7 +7,7 @@
       "currency": "NOK",
       "close": 285.0,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T14:48:31+00:00",
+      "observed_at": "2026-11-16T14:51:57+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 282.4,
@@ -1024,7 +1024,7 @@
       "currency": "NOK",
       "close": 481.4,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T14:49:05+00:00",
+      "observed_at": "2026-11-16T14:51:30+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 484.0,
@@ -2041,7 +2041,7 @@
       "currency": "NOK",
       "close": 208.8,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T14:50:58+00:00",
+      "observed_at": "2026-11-16T14:52:00+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 207.2,
@@ -4067,7 +4067,7 @@
       "currency": "EUR",
       "close": 10.16,
       "trading_date": "2026-11-16",
-      "observed_at": "2026-11-16T15:05:31+00:00",
+      "observed_at": "2026-11-16T15:07:01+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.165,
