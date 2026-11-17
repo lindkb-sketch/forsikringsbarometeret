@@ -1,8 +1,8 @@
-name: Seven-insurer Q4 release coverage watchdog
+name: Seven-insurer rolling quarterly release coverage watchdog
 on:
   workflow_dispatch:
   schedule:
-    - cron: '24 8 * * *'
+    - cron: '24 8,16 * * *'
   pull_request:
     branches: [main]
     paths:

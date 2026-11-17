@@ -56,14 +56,30 @@ def assess(calendar,rows,now,year=2026,quarter=4,grace_hours=48):
     return result
 
 
+def target_period(now):
+    """Monitor Q4 2026 before release, then roll to each future reporting quarter.
+
+    During Q1 the latest completed reporting period is previous-year Q4.
+    From Q2 onward it is the quarter that ended in the prior calendar quarter.
+    """
+    local = now.astimezone(OSLO)
+    if local.year == 2026:
+        return 2026, 4
+    if local.month <= 3:
+        return local.year - 1, 4
+    return local.year, (local.month - 1) // 3
+
+
 def main():
     calendar=json.loads((ROOT/'data/calendar.json').read_text(encoding='utf-8'))
     feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text(encoding='utf-8'))
-    report=assess(calendar,feed['observations'],dt.datetime.now(OSLO))
+    now=dt.datetime.now(OSLO)
+    year,quarter=target_period(now)
+    report=assess(calendar,feed['observations'],now,year=year,quarter=quarter)
     print(json.dumps(report,ensure_ascii=False,indent=2))
     missing={k:v for k,v in report.items() if v['status']=='overdue'}
     if missing:
-        raise SystemExit('Released Q4 reports not imported: '+', '.join(missing))
+        raise SystemExit('Released quarterly reports not imported: '+', '.join(missing))
 
 
 if __name__=='__main__':

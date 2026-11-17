@@ -42,7 +42,7 @@ FILES = (
 )
 REQUIRED = {'data/verified_financial_feed.json', 'data/financial_observations.json',
             'data/financial_audit.json', 'data/live.json'}
-ALLOWED_INTERVENING = {'data/stock_prices.json', 'data/broker_commentary.json'}
+ALLOWED_INTERVENING = {'data/stock_prices.json', 'data/broker_commentary.json', 'data/official_news.json'}
 
 
 def git(*args: str, root: Path = ROOT) -> str:
@@ -112,11 +112,23 @@ def publish(root: Path = ROOT) -> None:
     if unsafe:
         raise ValueError('main changed outside stock prices during financial validation: ' + ', '.join(sorted(unsafe)))
     if changed:
-        print('FINANCIAL_PUBLISH_REBASE stock/broker commentary changes retained', flush=True)
+        print('FINANCIAL_PUBLISH_REBASE stock/broker/news changes retained', flush=True)
+    preserve_news = 'data/official_news.json' in changed
     for rel in manifest['files']:
+        if preserve_news and rel == 'data/official_news.json':
+            continue
         dest = root / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / STAGE / rel, dest)
+    if preserve_news and 'data/quarterly_editorial.json' in manifest['files']:
+        # Rebuild editorial with the latest approved news, without reimporting PDFs.
+        from build_editorial import build
+        feed = json.loads((root / 'data/verified_financial_feed.json').read_text(encoding='utf-8'))
+        news = json.loads((root / 'data/official_news.json').read_text(encoding='utf-8'))
+        editorial = build(feed, news)
+        (root / 'data/quarterly_editorial.json').write_text(
+            json.dumps(editorial, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        print('FINANCIAL_PUBLISH_REBASE editorial rebuilt from newer news', flush=True)
     git('add', '--', *manifest['files'].keys(), root=root)
     diff_status = subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=root).returncode
     if diff_status == 0:

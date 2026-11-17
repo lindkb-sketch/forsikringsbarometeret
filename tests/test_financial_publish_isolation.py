@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -69,6 +70,26 @@ class FinancePublishIsolationTests(unittest.TestCase):
         self.assertNotIn('stock_prices.json', git(current, 'show', '--format=', '--name-only', 'HEAD'))
         self.assertIn('verified_financial_feed.json', git(current, 'show', '--format=', '--name-only', 'HEAD'))
         self.assertNotIn('data/stock_prices.json', FILES)
+
+    def test_newer_approved_news_is_preserved_and_editorial_rebuilt(self):
+        (self.initial / 'data' / 'official_news.json').write_text(
+            '{"items":[{"headline":"Old story","approved":true}]}\n')
+        (self.initial / 'data' / 'quarterly_editorial.json').write_text(
+            '{"period":"Q3 2026","news":[]}\n')
+        prepare(self.initial)
+        self.change_main('data/official_news.json',
+                         '{"items":[{"headline":"New verified story","approved":true}]}\n')
+        current = self.publish_snapshot()
+        with patch('build_editorial.build', return_value={
+            'period':'Q3 2026','news':[{'headline':'New verified story'}]}) as rebuild:
+            publish(current)
+        self.assertEqual(json.loads((current / 'data/official_news.json').read_text())
+                         ['items'][0]['headline'], 'New verified story')
+        self.assertEqual(json.loads((current / 'data/quarterly_editorial.json').read_text())
+                         ['news'][0]['headline'], 'New verified story')
+        rebuild.assert_called_once()
+        self.assertNotIn('data/official_news.json',
+                         git(current, 'show', '--format=', '--name-only', 'HEAD'))
 
     def test_code_changes_during_long_validation_are_rejected(self):
         (self.initial / 'data' / 'verified_financial_feed.json').write_text('{"value":51}\n')

@@ -1,7 +1,7 @@
 name: Scheduled import watchdog
 on:
   schedule:
-    - cron: '13 * * * *'
+    - cron: '13,43 * * * *'
     - cron: '28,43,58 6-18 * * 1-5'
   workflow_dispatch:
   push:
@@ -29,7 +29,7 @@ jobs:
       - name: Test missing-schedule recovery and duplicate prevention
         run: python -m unittest discover -s tests -p 'test_scheduled_watchdog_recovery.py' -v
       - name: Check last scheduled half-hour importer execution
-        if: ${{ github.event_name != 'schedule' || github.event.schedule == '13 * * * *' }}
+        if: ${{ github.event_name != 'schedule' || github.event.schedule == '13,43 * * * *' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/check_scheduled_runs.py
