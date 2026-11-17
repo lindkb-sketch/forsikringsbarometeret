@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-17T16:22:28.068818+00:00",
+  "updated_at": "2026-11-17T16:37:28.737081+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -4081,9 +4081,9 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 9.92,
+      "close": 9.922,
       "trading_date": "2026-11-17",
-      "observed_at": "2026-11-17T16:22:21+00:00",
+      "observed_at": "2026-11-17T16:29:43+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.115,
@@ -5091,7 +5091,7 @@
         },
         {
           "date": "2026-11-17",
-          "price": 9.92
+          "price": 9.922
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
