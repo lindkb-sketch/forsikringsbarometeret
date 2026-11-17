@@ -14,7 +14,7 @@ minutes=(now-latest).total_seconds()/60 if latest else None
 print(json.dumps({"scheduled_runs_in_recent_history":len(scheduled),
                   "last_scheduled_run":latest.isoformat() if latest else None,
                   "minutes_since_last":round(minutes,1) if minutes is not None else None}))
-if latest is None or minutes>95:
+if latest is None or minutes>70:
     message="Scheduled 30-minute importer delayed: "+("no scheduled runs found" if minutes is None else f"{minutes:.1f} minutes since latest scheduled start")
     print("::warning::"+message)
     # GitHub may delay scheduled workflows. Recover a missed run, but never
