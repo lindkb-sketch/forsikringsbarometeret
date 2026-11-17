@@ -1,6 +1,6 @@
 {
   "source": "NewsWeb",
-  "updated_at": "2026-11-16T09:35:44.258588+00:00",
+  "updated_at": "2026-11-17T12:08:12.296829+00:00",
   "notices": {
     "Fremtind": [
       {
@@ -71,10 +71,10 @@
     "Storebrand": [
       {
         "source": "NewsWeb",
-        "id": "686553",
-        "title": "STOREBRAND ASA: Status share buyback program",
-        "url": "https://newsweb.oslobors.no/message/686553",
-        "published_at": "2026-11-16T07:30:25.250000+00:00",
+        "id": "686659",
+        "title": "STOREBRAND ASA: Medhold i tingretten i skattesak",
+        "url": "https://newsweb.oslobors.no/message/686659",
+        "published_at": "2026-11-17T07:00:19.615000+00:00",
         "issuer_id": 1955,
         "issuer_sign": "STB",
         "issuer_name": "Storebrand ASA",
