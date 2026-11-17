@@ -2,7 +2,7 @@ name: Discover official quarterly reports
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 7 * * 1-5'
+    - cron: '30 7,13,19 * * *'
 permissions:
   contents: read
 jobs:
