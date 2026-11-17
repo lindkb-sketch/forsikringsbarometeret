@@ -73,12 +73,12 @@ class FinancePublishIsolationTests(unittest.TestCase):
 
     def test_newer_approved_news_is_preserved_and_editorial_rebuilt(self):
         (self.initial / 'data' / 'official_news.json').write_text(
-            '{"items":[{"headline":"Old story","approved":true}]}\\n')
+            '{"items":[{"headline":"Old story","approved":true}]}\n')
         (self.initial / 'data' / 'quarterly_editorial.json').write_text(
-            '{"period":"Q3 2026","news":[]}\\n')
+            '{"period":"Q3 2026","news":[]}\n')
         prepare(self.initial)
         self.change_main('data/official_news.json',
-                         '{"items":[{"headline":"New verified story","approved":true}]}\\n')
+                         '{"items":[{"headline":"New verified story","approved":true}]}\n')
         current = self.publish_snapshot()
         with patch('build_editorial.build', return_value={
             'period':'Q3 2026','news':[{'headline':'New verified story'}]}) as rebuild:
