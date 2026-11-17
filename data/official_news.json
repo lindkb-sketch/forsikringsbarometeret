@@ -1,6 +1,24 @@
 {
   "items": [
     {
+      "id": "6837748959871456d55a",
+      "headline": "STOREBRAND: FÅTT MEDHOLD I SKATTESAK I OSLO TINGRETT",
+      "publisher": "Finansavisen",
+      "published_at": "2026-11-17T07:10:48+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOVGJ2VGcxRWhEb3ZCVWU0S19hc0M5VzJoWmo2Si1xVmVXSUZsSzcwUEFNWmxRNDN0VlFTR3hDLUxkdjZDb3hEVXVQSk93N0tnOE1meExBdDFCQzFnZnhRWVdlODB1WjJlTlNfMWhCVVpOUWI3R0ZEamxQQ0R6ZVE4QThvMW1sZEw0VTFYWmJBbHBqV19vYTViRFg3dXlrQktaaEl1eU53?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
+      "id": "d541bc1180a3926b2116",
+      "headline": "STOREBRAND ASA: Medhold i tingretten i skattesak",
+      "publisher": "Finansavisen",
+      "published_at": "2026-11-17T07:00:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNOFh1bTVGQnFWdmxsQkN6dFY5NEZIaXdQSW1vR0RKZnRaaE9ZQmxXNlNsOWxUdWlSVTNIVkkzb28yMXVwMUZIeWpXTjdqd21uZ0JLSVdWVjIteHV3N19UZ3RfcFZxTHZoSTNhZnpRaWttd05KYTVTcXNQNnNXSVVQd2t5LTVwLWRhNUJ2c1UzaXRqZVJXWG9fZVE0ejkzRGYyRXpPRElMbzBPNXVWWWZtdkJGc3pKZHFtWUNRa1ZfOEc0bkRSUmVWQy1GU0ZzR2k3bDJV?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "883db6ad725efdf5a509",
       "headline": "Skademeldingene renner inn: – Langt flere enn vanlig, sier Gjensidige",
       "publisher": "Finansavisen",
@@ -19,7 +37,7 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     }
   ],
-  "last_checked_at": "2026-11-17T12:08:12.215186+00:00",
-  "latest_headline_at": "2026-11-12T12:00:55+00:00",
+  "last_checked_at": "2026-11-17T20:52:44.681591+00:00",
+  "latest_headline_at": "2026-11-17T07:10:48+00:00",
   "source_policy": "Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports"
 }
