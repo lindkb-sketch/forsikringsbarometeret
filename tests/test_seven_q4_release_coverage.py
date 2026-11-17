@@ -6,7 +6,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from check_seven_q4_release_coverage import assess,COMPANIES
+from check_seven_q4_release_coverage import assess,COMPANIES,target_period
 TZ=ZoneInfo('Europe/Oslo')
 
 def calendar():
@@ -32,6 +32,19 @@ def observations():
     return rows
 
 class Q4ReleaseTests(unittest.TestCase):
+    def test_future_quarters_roll_forward_without_code_edits(self):
+        cases = [
+            (dt.datetime(2026,11,17,tzinfo=TZ),(2026,4)),
+            (dt.datetime(2027,2,15,tzinfo=TZ),(2026,4)),
+            (dt.datetime(2027,4,15,tzinfo=TZ),(2027,1)),
+            (dt.datetime(2027,7,15,tzinfo=TZ),(2027,2)),
+            (dt.datetime(2027,10,15,tzinfo=TZ),(2027,3)),
+            (dt.datetime(2028,1,15,tzinfo=TZ),(2027,4)),
+        ]
+        for instant, expected in cases:
+            with self.subTest(instant=instant):
+                self.assertEqual(target_period(instant), expected)
+
     def test_no_false_alarm_before_deadline(self):
         statuses=assess(calendar(),[],dt.datetime(2027,1,2,7,29,tzinfo=TZ))
         self.assertEqual({v['status'] for v in statuses.values()},{'not_due'})
