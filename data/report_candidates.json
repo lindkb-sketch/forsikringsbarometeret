@@ -169,6 +169,12 @@
       "link_text": "1. kvartal Frende Holding AS 2017"
     },
     {
+      "company": "KLP Skadeforsikring",
+      "document_url": "https://www.klp.no/media/KLP%20Kapitalforvaltning%20%C3%A5rsrapport%202018.pdf",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport 2018"
+    },
+    {
       "company": "Sampo",
       "document_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
       "status": "candidate_requires_quarterly_report_verification",
