@@ -1,13 +1,11 @@
-# KLP: isolated-quarter methodology from HIÅ
+# KLP: issuer-reported isolated quarters and HIÅ-consistent ratios
 
-KLP reports cumulative year-to-date (HIÅ) figures. Do **not** label cumulative figures as standalone quarters.
+KLP reports isolated quarterly financial amounts in its result table. These amounts are the authoritative source for the quarter. Do **not** derive them by subtracting consecutive HIÅ columns.
 
-For additive monetary flows: Q1 = HIÅ Q1; Q2 = HIÅ Q2 − HIÅ Q1; Q3 = HIÅ Q3 − HIÅ Q2; Q4 = full-year − HIÅ Q3. Never subtract a previous fiscal year.
+For loss ratio, expense ratio and combined ratio, use the issuer's HIÅ metric definitions and apply the **same numerator, denominator, adjustment and sign conventions** to the directly reported isolated-quarter amounts. Do not subtract or average HIÅ percentages.
 
-For loss, expense and combined ratios, first calculate the isolated-quarter claims, expense and revenue amounts, then divide by isolated-quarter revenue. Never subtract HIÅ percentages or average quarterly percentages.
+Reconcile the methodology by independently reproducing the reported HIÅ KPIs using the cumulative amounts and issuer definitions. A mismatch beyond documented rounding tolerance blocks publication. Do not assume a simple claims/revenue ratio where KLP's actual definition includes additional adjustments.
 
-A KLP-specific report parser must verify that all cumulative source values use the same definitions, accounting scope, currency, units, expense sign conventions and year. Use the precise numerator/denominator definitions in KLP's own report, including any adjustments to the combined ratio. The generic computation is only applicable where the issuer's ratio definitions match the mapped amounts.
+Require matching entity, fiscal year, scope, currency, units and page-located official PDF evidence. Do not derive ROE or solvency by HIÅ subtraction. Missing definitions, numerator or denominator components fail closed.
 
-Report provenance must include PDF URL, SHA-256 and page references for both the current and preceding cumulative observations. Missing documents, inconsistent definitions, unavailable numerators, denominator <= 0, or unsupported non-additive metrics must fail closed. ROE and solvency are not derived by cumulative subtraction.
-
-**Certification:** This calculation module and synthetic unit tests do not prove that live KLP PDFs have been imported. Investor approval remains blocked until actual issuer report mapping, reconciliation to reported HIÅ figures and live end-to-end publication are verified.
+The current module is a calculation contract and synthetic test suite, not a verified live KLP PDF importer or end-to-end certification.
