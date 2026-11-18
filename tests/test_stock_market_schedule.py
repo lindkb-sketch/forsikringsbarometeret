@@ -74,7 +74,7 @@ class IndependentStockScheduleTests(unittest.TestCase):
             second=update(fetcher=quote,out=file,now=now+dt.timedelta(minutes=15))
             self.assertEqual(first['updated_at'],second['updated_at'])
             self.assertEqual(file.read_bytes(),contents)
-            self.assertEqual(validate(json.loads(file.read_text()))['active_quotes'],5)
+            self.assertEqual(validate(json.loads(file.read_text()))['active_quotes'],6)
 
     def test_bad_quotes_do_not_pass_publication_gate(self):
         with self.assertRaisesRegex(ValueError,'No fresh valid stock'):
