@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Nine-insurer comparison with explicit non-comparable and missing states."""
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+COMPANIES = ('Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
+             'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand')
+METRICS = ('insurance_revenue', 'insurance_service_result', 'combined_ratio',
+           'loss_ratio', 'expense_ratio')
+
+
+def build(feed, extended):
+    observations = feed.get('observations', [])
+    ext = extended.get('insurers', {})
+    result = []
+    for company in COMPANIES:
+        if company in ext:
+            item = ext[company]
+            values = item.get('metrics', {})
+            verified = item.get('status') == 'verified_issuer_announcement'
+            period = f"Q{item['quarter']} {item['year']}" if verified else None
+            source = item.get('source_url') if verified else None
+            status = 'issuer_announcement_only' if verified else 'unverified_missing'
+            currency = item.get('currency') if verified else None
+        else:
+            rows = [r for r in observations if r.get('company') == company
+                    and r.get('scope') == 'group'
+                    and r.get('period_type') == 'quarter'
+                    and r.get('status') in ('reported', 'calculated')]
+            periods = sorted({(r['year'], r['quarter']) for r in rows})
+            latest = periods[-1] if periods else None
+            current = [r for r in rows if (r['year'], r['quarter']) == latest] if latest else []
+            values = {r['metric']: r['value'] for r in current if r.get('metric') in METRICS}
+            period = f'Q{latest[1]} {latest[0]}' if latest else None
+            source = next((r.get('source_url') for r in current if r.get('source_url')), None)
+            status = 'verified_quarterly_feed' if latest else 'unverified_missing'
+            currency = next((r.get('currency') for r in current if r.get('currency')), None)
+        result.append({
+            'company': company, 'period': period, 'currency': currency,
+            'status': status, 'source_url': source,
+            'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
+            'revenue_comparable': company not in ('Frende', 'Storebrand') and status != 'unverified_missing',
+        })
+    return {'schema_version': 1, 'count': len(result),
+            'investor_use_approved': False,
+            'note': 'Do not aggregate revenue across currencies or different reporting definitions; missing values are null.',
+            'companies': result}
+
+
+def main():
+    feed = json.loads((ROOT / 'data/verified_financial_feed.json').read_text())
+    extended = json.loads((ROOT / 'data/extended_insurer_financials.json').read_text())
+    output = build(feed, extended)
+    target = ROOT / 'data/nine_insurer_comparison.json'
+    serialized = json.dumps(output, ensure_ascii=False, indent=2) + '\n'
+    if not target.exists() or target.read_text() != serialized:
+        target.write_text(serialized)
+    print('Nine-insurer comparison generated; investor_use_approved=false')
+
+
+if __name__ == '__main__':
+    main()

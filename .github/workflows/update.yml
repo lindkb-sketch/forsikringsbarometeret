@@ -50,6 +50,12 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_extended_insurer_evidence.py' -v
           python scripts/check_extended_insurer_evidence.py
+      - name: Validate nine-company comparison and PDF discovery contracts
+        run: |
+          python -m unittest discover -s tests -p 'test_nine_insurer_import_readiness.py' -v
+          python scripts/build_nine_insurer_comparison.py
+      - name: Discover KLP and Alm Brand issuer PDFs (diagnostic only)
+        run: python scripts/import_extended_pdfs.py || echo '::warning::Issuer PDF index unavailable; no unverified financial data imported'
       - name: Test dashboard and financial data
         run: |
           python -m unittest discover -s tests -v
