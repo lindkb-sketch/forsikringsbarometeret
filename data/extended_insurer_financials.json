@@ -1,0 +1,30 @@
+{
+  "insurers": {
+    "Alm. Brand": {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "currency": "DKK",
+      "scope": "group",
+      "source_type": "official_issuer_interim_announcement",
+      "source_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx",
+      "report_archive": "https://investorrelations.almbrand.dk/English/financials/default.aspx#section=reports",
+      "metrics": {
+        "insurance_revenue": 3054,
+        "insurance_service_result": 755,
+        "combined_ratio": 75.3,
+        "loss_ratio": 59.2,
+        "expense_ratio": 16.1
+      },
+      "unit": "DKK million for financial amounts; percent for ratios",
+      "status": "verified_issuer_announcement",
+      "note": "Quarterly values; not a PDF page-level audited import"
+    },
+    "KLP Skadeforsikring": {
+      "company": "KLP Skadeforsikring",
+      "status": "awaiting_source_verified_metrics",
+      "metrics": {},
+      "report_archive": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner"
+    }
+  }
+}

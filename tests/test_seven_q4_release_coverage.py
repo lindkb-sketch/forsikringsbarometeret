@@ -21,7 +21,7 @@ def observations():
         if company=='Sampo':
             scopes += [('reported_segment','Private Nordic'),('reported_segment','Nordic Commercial')]
         metrics=['insurance_revenue','combined_ratio','loss_ratio','expense_ratio']
-        if company in ('Fremtind','Gjensidige','Tryg','Sampo','Protector'):
+        if company in ('Fremtind','Gjensidige','Tryg','Sampo','Protector','Alm. Brand'):
             metrics+=['insurance_service_result']
         for scope,segment in scopes:
             for metric in metrics:
@@ -66,7 +66,7 @@ class Q4ReleaseTests(unittest.TestCase):
                       (r['company']==company and r['scope']=='group' and r['metric']=='insurance_revenue')]
                 statuses=assess(calendar(),rows,dt.datetime(2027,1,4,tzinfo=TZ))
                 self.assertEqual(statuses[company]['status'],'overdue')
-                self.assertEqual(sum(x['status']=='complete' for x in statuses.values()),6)
+                self.assertEqual(sum(x['status']=='complete' for x in statuses.values()),8)
 
     def test_sampo_missing_one_segment_is_detected(self):
         rows=[r for r in observations() if not

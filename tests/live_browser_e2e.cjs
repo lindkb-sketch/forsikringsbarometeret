@@ -269,11 +269,11 @@ async function main(){
       dates:[...document.querySelectorAll('.mon-cal-split .mon-cal-row')]
         .map(x=>x.querySelector('.mon-cal-countdown')?.textContent?.trim())};
   });
-  check('Calendar separates reported and pending companies',calendarColumns.total===7 &&
-    calendarColumns.pending+calendarColumns.reported===7,
+  check('Calendar separates reported and pending companies',calendarColumns.total===9 &&
+    calendarColumns.pending+calendarColumns.reported===9,
     JSON.stringify(calendarColumns));
   check('Every insurer has a report countdown or explicit unknown date',
-    calendarColumns.total===7 && calendarColumns.dates.length===7 &&
+    calendarColumns.total===9 && calendarColumns.dates.length===9 &&
     calendarColumns.dates.every(x=>x&&x.length>0),
     JSON.stringify(calendarColumns.dates));
   check('Technical duplicate sections removed',!view.technical);
