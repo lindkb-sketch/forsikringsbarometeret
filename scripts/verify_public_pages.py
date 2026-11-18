@@ -69,7 +69,7 @@ def check():
                 print('PUBLIC_SOURCE_CHAIN_VERIFIED', company['company'], company['latest_verified_period'], company['observation_sha256'])
             from build_nine_insurer_comparison import build as build_nine
             comparison=public['nine_insurer_comparison.json']
-            expected_nine=build(public['verified_financial_feed.json'],
+            expected_nine=build_nine(public['verified_financial_feed.json'],
                                 json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8')))
             if comparison != expected_nine or comparison.get('count') != 9:
                 raise ValueError('Public nine-insurer comparison differs from verified sources')
