@@ -84,5 +84,30 @@
         "date": "2027-02-01"
       }
     ]
+  },
+  "Alm. Brand": {
+    "calendar_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Financial-Calendar/default.aspx",
+    "events": [
+      {
+        "period": "Q4 2026",
+        "date": "2027-01-28"
+      },
+      {
+        "period": "Q1 2027",
+        "date": "2027-04-15"
+      },
+      {
+        "period": "Q2 2027",
+        "date": "2027-07-15"
+      },
+      {
+        "period": "Q3 2027",
+        "date": "2027-10-15"
+      }
+    ]
+  },
+  "KLP Skadeforsikring": {
+    "calendar_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner",
+    "events": []
   }
 }
