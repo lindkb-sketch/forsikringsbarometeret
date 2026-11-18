@@ -884,7 +884,8 @@ function serviceResultCell(c){
  return d?comparisonCell(c,'service',d[0]+' '+d[2],d[1]+' '+d[2]):comparisonCell(c,'service','—','—');
 }
 function table(){
- const rows=['Fremtind',...companies];
+ // Comparison remains restricted to the seven fully audited insurers.
+ const rows=['Fremtind',...companies.filter(c=>!newInsurers[c])];
  const cell=(c,key)=>{if(period==='Q3'){const d=(typeof MON_Q3!=='undefined'&&MON_Q3[c])||{};return comparisonCell(c,key,d[key],d[key+'Prev']);}const d=c==='Fremtind'?(period==='H1'?{growth:'6,5 %',growthPrev:'36,5 %',cr:'78,7 %',crPrev:'85,0 %',loss:'56,5 %',lossPrev:'62,7 %',cost:'22,1 %',costPrev:'22,3 %'}:{growth:'5,5 %',growthPrev:'38,7 %',cr:'77,5 %',crPrev:'84,6 %',loss:'54,4 %',lossPrev:'61,6 %',cost:'23,1 %',costPrev:'23,0 %'}):(period==='H1'?halfYearData[c]:groupData[c])||{};return comparisonCell(c,key,d[key],d[key+'Prev']);};
  return `<div class="tablewrap"><table><thead><tr><th>Selskap</th><th>Inntektsvekst</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th><th>Markedsandel · ${marketUpload.period}</th></tr></thead><tbody>${rows.map(c=>`<tr class="${c==='Fremtind'?'reference-row':''}" ${c==='Fremtind'?'':`onclick="show('${c}')"`}><td><span class="dot"></span>${c==='Frende'?'Frende Holding':c}</td><td>${cell(c,'growth')}</td><td>${cell(c,'cr')}</td><td>${cell(c,'loss')}</td><td>${cell(c,'cost')}</td><td>${shareCell(c)}</td></tr>`).join('')}</tbody></table></div>`;
 }
