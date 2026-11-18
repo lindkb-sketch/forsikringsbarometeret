@@ -273,7 +273,7 @@ async function main(){
     calendarColumns.pending+calendarColumns.reported===9,
     JSON.stringify(calendarColumns));
   check('Every insurer has a report countdown or explicit unknown date',
-    calendarColumns.total===7 && calendarColumns.dates.length===9 &&
+    calendarColumns.total===9 && calendarColumns.dates.length===9 &&
     calendarColumns.dates.every(x=>x&&x.length>0),
     JSON.stringify(calendarColumns.dates));
   check('Technical duplicate sections removed',!view.technical);
