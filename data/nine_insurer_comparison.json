@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "count": 9,
+  "investor_use_approved": false,
+  "note": "Do not aggregate revenue across currencies or different reporting definitions; missing values are null.",
+  "companies": [
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "metrics": {
+        "insurance_revenue": 6305,
+        "insurance_service_result": 1704,
+        "combined_ratio": 73,
+        "loss_ratio": 52.5,
+        "expense_ratio": 20.5
+      },
+      "revenue_comparable": true
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "metrics": {
+        "insurance_revenue": 11367.4,
+        "insurance_service_result": 3003.6,
+        "combined_ratio": 73.6,
+        "loss_ratio": 62,
+        "expense_ratio": 11.5
+      },
+      "revenue_comparable": true
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "metrics": {
+        "insurance_revenue": 10591,
+        "insurance_service_result": 2454,
+        "combined_ratio": 76.8,
+        "loss_ratio": 63.6,
+        "expense_ratio": 13.3
+      },
+      "revenue_comparable": true
+    },
+    {
+      "company": "Sampo",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+      "metrics": {
+        "insurance_revenue": 2503.0,
+        "insurance_service_result": 435.0,
+        "combined_ratio": 82.6,
+        "loss_ratio": 57.7,
+        "expense_ratio": 24.9
+      },
+      "revenue_comparable": true
+    },
+    {
+      "company": "Frende",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+      "metrics": {
+        "insurance_revenue": 973.443,
+        "insurance_service_result": 184.381,
+        "combined_ratio": 84.0,
+        "loss_ratio": 61.4,
+        "expense_ratio": 22.6
+      },
+      "revenue_comparable": false
+    },
+    {
+      "company": "Protector",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "metrics": {
+        "insurance_revenue": 3864,
+        "insurance_service_result": 670,
+        "combined_ratio": 82.7,
+        "loss_ratio": 71.7,
+        "expense_ratio": 10.9
+      },
+      "revenue_comparable": true
+    },
+    {
+      "company": "Storebrand",
+      "period": "Q3 2026",
+      "currency": null,
+      "status": "verified_quarterly_feed",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "metrics": {
+        "insurance_revenue": 2896,
+        "insurance_service_result": 386,
+        "combined_ratio": 87,
+        "loss_ratio": 69,
+        "expense_ratio": 18
+      },
+      "revenue_comparable": false
+    },
+    {
+      "company": "KLP Skadeforsikring",
+      "period": null,
+      "currency": null,
+      "status": "unverified_missing",
+      "source_url": null,
+      "metrics": {
+        "insurance_revenue": null,
+        "insurance_service_result": null,
+        "combined_ratio": null,
+        "loss_ratio": null,
+        "expense_ratio": null
+      },
+      "revenue_comparable": false
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "currency": "DKK",
+      "status": "issuer_announcement_only",
+      "source_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx",
+      "metrics": {
+        "insurance_revenue": 3054,
+        "insurance_service_result": 755,
+        "combined_ratio": 75.3,
+        "loss_ratio": 59.2,
+        "expense_ratio": 16.1
+      },
+      "revenue_comparable": true
+    }
+  ]
+}
