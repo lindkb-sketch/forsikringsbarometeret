@@ -67,6 +67,17 @@ def check():
                 raise ValueError('Public provenance differs from audited source and published feed')
             for company in provenance['companies']:
                 print('PUBLIC_SOURCE_CHAIN_VERIFIED', company['company'], company['latest_verified_period'], company['observation_sha256'])
+            from build_nine_insurer_comparison import build as build_nine
+            comparison=public['nine_insurer_comparison.json']
+            expected_nine=build(public['verified_financial_feed.json'],
+                                json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8')))
+            if comparison != expected_nine or comparison.get('count') != 9:
+                raise ValueError('Public nine-insurer comparison differs from verified sources')
+            if comparison.get('investor_use_approved') is not False:
+                raise ValueError('Nine-insurer comparison must not claim investor approval')
+            klp=next((x for x in comparison['companies'] if x['company']=='KLP Skadeforsikring'),None)
+            if not klp or klp['status']!='unverified_missing' or any(v is not None for v in klp['metrics'].values()):
+                raise ValueError('Unverified KLP metrics must remain missing on public Pages')
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
             for marker in ('id="verified-q3-dashboard-bridge"',
