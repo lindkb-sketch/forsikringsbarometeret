@@ -56,6 +56,8 @@ jobs:
           python scripts/build_nine_insurer_comparison.py
       - name: Discover KLP and Alm Brand issuer PDFs (diagnostic only)
         run: python scripts/import_extended_pdfs.py || echo '::warning::Issuer PDF index unavailable; no unverified financial data imported'
+      - name: Verify KLP cumulative HIÅ to isolated-quarter methodology
+        run: python -m unittest discover -s tests -p 'test_klp_quarter_from_ytd.py' -v
       - name: Test dashboard and financial data
         run: |
           python -m unittest discover -s tests -v
