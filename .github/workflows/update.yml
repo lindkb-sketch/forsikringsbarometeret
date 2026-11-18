@@ -46,6 +46,10 @@ jobs:
         run: |
           python -m py_compile scripts/import_reported_returns.py scripts/import_fremtind_holding.py scripts/check_reported_returns_coverage.py
           python -m unittest discover -s tests -p 'test_reported_returns*.py' -v
+      - name: Verify nine-insurer evidence boundaries (fail closed)
+        run: |
+          python -m unittest discover -s tests -p 'test_extended_insurer_evidence.py' -v
+          python scripts/check_extended_insurer_evidence.py
       - name: Test dashboard and financial data
         run: |
           python -m unittest discover -s tests -v
