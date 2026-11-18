@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Track overdue quarterly publications independently for all seven insurers.
+"""Track overdue quarterly publications independently for all nine insurers.
 
 A missing date is UNSCHEDULED, not evidence of success. A scheduled released
 quarter with incomplete verified metrics is OVERDUE. No data are modified.
@@ -11,9 +11,9 @@ from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
 OSLO=ZoneInfo('Europe/Oslo')
-COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand')
+COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand')
 METRICS={'insurance_revenue','combined_ratio','loss_ratio','expense_ratio'}
-RESULT_REQUIRED={'Fremtind','Gjensidige','Tryg','Sampo','Protector'}
+RESULT_REQUIRED={'Fremtind','Gjensidige','Tryg','Sampo','Protector','Alm. Brand'}
 SEGMENTS=('Private Nordic','Nordic Commercial')
 
 
