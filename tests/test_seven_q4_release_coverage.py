@@ -21,7 +21,7 @@ def observations():
         if company=='Sampo':
             scopes += [('reported_segment','Private Nordic'),('reported_segment','Nordic Commercial')]
         metrics=['insurance_revenue','combined_ratio','loss_ratio','expense_ratio']
-        if company in ('Fremtind','Gjensidige','Tryg','Sampo','Protector'):
+        if company in ('Fremtind','Gjensidige','Tryg','Sampo','Protector','Alm. Brand'):
             metrics+=['insurance_service_result']
         for scope,segment in scopes:
             for metric in metrics:
