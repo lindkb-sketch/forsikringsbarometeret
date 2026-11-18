@@ -1111,6 +1111,7 @@ function companyExchangeNotices(c, compact=false){
 }
 // New issuers are source-backed and intentionally isolated from the seven-insurer
 // comparison until their quarterly metrics pass the existing audit pipeline.
+// Extra issuer data is refreshed by the audited finance workflow.
 const newInsurers={
  'KLP Skadeforsikring':{
   period:'Q3 2026',currency:'NOK',source:'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner',
@@ -1124,8 +1125,36 @@ const newInsurers={
   metrics:[['Forsikringsinntekter','3 054 mill. DKK'],['Forsikringsresultat','755 mill. DKK'],['Combined ratio','75,3 %'],['Skadeprosent','59,2 %'],['Kostnadsprosent','16,1 %']],listed:true
  }
 };
+let extendedInsurerFeed={};
+async function loadExtendedInsurers(){
+ try{
+  const response=await fetch('data/extended_insurer_financials.json',{cache:'no-store'});
+  if(!response.ok)throw Error('extended feed unavailable');
+  const feed=await response.json();
+  if(!feed.insurers || typeof feed.insurers!=='object')throw Error('invalid extended feed');
+  extendedInsurerFeed=feed.insurers;
+  if(newInsurers[current])show(current,true);
+ }catch(error){console.warn('Extended issuer feed unavailable:',error.message)}
+}
 function newInsurerPage(c){
- const d=newInsurers[c];
+ const d={...newInsurers[c]};
+ const record=extendedInsurerFeed[c];
+ if(record?.status==='verified_issuer_announcement'&&record.metrics&&
+    record.source_url?.startsWith('https://investorrelations.almbrand.dk/')){
+  d.period='Q'+record.quarter+' '+record.year;
+  d.source=record.report_archive||record.source_url;
+  const m=record.metrics;
+  const fmt=n=>Number(n).toLocaleString('nb-NO',{maximumFractionDigits:1});
+  d.metrics=[
+   ['Forsikringsinntekter',fmt(m.insurance_revenue)+' mill. DKK'],
+   ['Forsikringsresultat',fmt(m.insurance_service_result)+' mill. DKK'],
+   ['Combined ratio',fmt(m.combined_ratio)+' %'],
+   ['Skadeprosent',fmt(m.loss_ratio)+' %'],
+   ['Kostnadsprosent',fmt(m.expense_ratio)+' %']
+  ].filter(x=>!x[1].includes('NaN'));
+  d.status='Kildekontrollerte konserntall fra Alm. Brand A/S, Q'+record.quarter+' '+record.year+
+   '. Beløp i DKK. <a href="'+record.source_url+'" target="_blank" rel="noopener noreferrer">Kildedokument ↗</a>';
+ }
  const cards=d.metrics.length?'<div class="kpi-seven">'+d.metrics.map(([label,value])=>
   '<div class="metric"><div class="name">'+label+'</div><div class="value">'+value+'</div></div>').join('')+'</div>':
   '<div class="panel"><p>Nøkkeltall er ikke publisert her før de er verifisert mot riktig kvartalsrapport.</p></div>';
@@ -1332,6 +1361,7 @@ companyMediaNews=c=>MON_QUARTER==='Q2'?MON_ORIG.companyMediaNews(c):'';
 const MON_ORIG_HOME=MON_ORIG.home,MON_ORIG_COMPANY=MON_ORIG.company;
 home=()=>{let h=MON_ORIG_HOME();h=h.replace('Fremtinds nøkkeltall som referanse for konkurrentene · velg Q2 eller Hiå.','Fremtinds nøkkeltall som referanse for konkurrentene');if(MON_QUARTER==='Q3'){h=h.replace(/Q2 2026 · Kildekontrollerte utdrag/g,'Q3 2026 · Kildekontrollerte utdrag').replace(/Q2 2026<\/span>/g,'Q3 2026</span>').replace('Viktig å følge i Q3','Viktig å følge videre').replace(/Resultatsammenligning · konsern · [^<]*2026/,'Resultatsammenligning · konsern · Q3 2026').replace(/<select aria-label="Rapporteringsperiode"[\s\S]*?<\/select>/,`<select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3" ${period!=='H3'?'selected':''}>Q3 2026</option><option value="H3" ${period==='H3'?'selected':''}>Hiå 2026</option></select>`);h=h.replace('Viktig å følge i Q3','Viktig å følge videre');}return MON_SELECT()+h};
 company=c=>{let h=MON_ORIG_COMPANY(c);if(MON_QUARTER==='Q3'){h=h.replace(/ · Q2 2026/g,' · Q3 2026');h=h.replace('Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','Q3 2026');h+=MON_SOURCE(c);}return MON_SELECT()+h};
+loadExtendedInsurers();
 if(!profitabilityQuarters.includes('Q3 2026'))profitabilityQuarters.push('Q3 2026');
 
 
