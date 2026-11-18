@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'data'/'stock_prices.json'
 SYMBOLS={'Gjensidige':'GJF.OL','Protector':'PROT.OL',
-         'Storebrand':'STB.OL','Tryg':'TRYG.CO','Sampo / If':'SAMPO.HE'}
+         'Storebrand':'STB.OL','Tryg':'TRYG.CO','Sampo / If':'SAMPO.HE','Alm. Brand':'ALMB.CO'}
 MARKETS={'.OL':('Oslo Børs','Europe/Oslo','NOK'),
          '.CO':('Nasdaq Copenhagen','Europe/Copenhagen','DKK'),
          '.HE':('Nasdaq Helsinki','Europe/Helsinki','EUR')}
