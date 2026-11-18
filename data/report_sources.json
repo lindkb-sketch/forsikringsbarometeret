@@ -44,6 +44,18 @@
       "index_url": "https://www.sampo.com/",
       "document_type": "official_quarterly_report",
       "discovery_only": true
+    },
+    {
+      "company": "Alm. Brand",
+      "index_url": "https://investorrelations.almbrand.dk/English/financials/default.aspx",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
+    },
+    {
+      "company": "KLP Skadeforsikring",
+      "index_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner",
+      "document_type": "official_quarterly_report",
+      "discovery_only": true
     }
   ]
 }
