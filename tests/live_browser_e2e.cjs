@@ -73,6 +73,13 @@ async function main(){
      await page.locator('.company-media-news').count()===1);
    await page.locator('#nav-home').click();
   }
+  // New issuer pages must render without relying on legacy seven-company data.
+  for(const name of ['KLP Skadeforsikring','Alm. Brand']){
+    await page.locator('[id="nav-'+name+'"]').click();
+    check(name+' company page renders', (await page.locator('#app').innerText()).includes(name));
+    check(name+' primary-source link exists', await page.locator('#app a[href^="https://"]').count()>0);
+    await page.locator('#nav-home').click();
+  }
   // Publication diagnostics remain machine-readable; they are never a reader-facing
   // investor approval label. The reader sees source-backed figures and dated blanks.
   check('Internal data audit exists independently of dashboard labels',
