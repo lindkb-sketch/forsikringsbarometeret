@@ -169,6 +169,8 @@ jobs:
         with:
           name: quarterly-pipeline-diagnostics
           path: data/financial_audit.json
+      - name: Rebuild nine-insurer comparison after final validated imports
+        run: python scripts/build_nine_insurer_comparison.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4

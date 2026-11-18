@@ -21,6 +21,7 @@ ESSENTIAL=(
  'scripts/broker_admin_link.js',
  'data/strategic_market.json',
  'data/investor_readiness.json',
+ 'data/nine_insurer_comparison.json',
  'data/frende_skade_reports.json',
  'data/frende_skade_financials.json',
  'data/profitability_coverage.json',
