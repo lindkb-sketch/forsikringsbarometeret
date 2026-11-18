@@ -29,6 +29,7 @@ FILES = (
     'data/strategic_market.json',
     'data/official_news.json',
     'data/extended_insurer_financials.json',
+    'data/nine_insurer_comparison.json',
     'data/newsweb_notices.json',
     'data/report_candidates.json',
     'data/report_coverage.json',
