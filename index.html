@@ -1752,7 +1752,9 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
     const nextPeriod=period=>{const m=/^Q([1-4]) (\d{4})$/.exec(period);if(!m)return period;const q=Number(m[1]),y=Number(m[2]);return 'Q'+(q===4?1:q+1)+' '+(q===4?y+1:y);};
     const entries=Object.entries(live.companies||{}).map(([name,config])=>{
       const company=name==='Sampo / If'?'Sampo':name;
-      const published=['combined_ratio','insurance_revenue'].every(metric=>
+      const published=(extendedInsurerFeed[company]?.status==='verified_issuer_announcement'&&
+        extendedInsurerFeed[company].year===latest.year&&
+        extendedInsurerFeed[company].quarter===latest.quarter)||['combined_ratio','insurance_revenue'].every(metric=>
         observations.some(r=>r.company===company&&r.scope==='group'&&
           r.period_type==='quarter'&&r.year===latest.year&&r.quarter===latest.quarter&&
           r.metric===metric&&['reported','calculated'].includes(r.status)&&r.source_url));
