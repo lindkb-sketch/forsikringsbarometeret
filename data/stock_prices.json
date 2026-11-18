@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-18T15:25:23.374809+00:00",
+  "updated_at": "2026-11-18T15:31:59.269038+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -7,7 +7,7 @@
       "currency": "NOK",
       "close": 276.8,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:07:13+00:00",
+      "observed_at": "2026-11-18T15:16:02+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 280.2,
@@ -1026,9 +1026,9 @@
       "symbol": "PROT.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 474.8,
+      "close": 474.4,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:10:00+00:00",
+      "observed_at": "2026-11-18T15:16:37+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 476.8,
@@ -2036,7 +2036,7 @@
         },
         {
           "date": "2026-11-18",
-          "price": 474.8
+          "price": 474.4
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/PROT.OL",
@@ -2047,9 +2047,9 @@
       "symbol": "STB.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 202.8,
+      "close": 202.6,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:10:05+00:00",
+      "observed_at": "2026-11-18T15:15:33+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 205.4,
@@ -3057,7 +3057,7 @@
         },
         {
           "date": "2026-11-18",
-          "price": 202.8
+          "price": 202.6
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/STB.OL",
@@ -3068,9 +3068,9 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 165.6,
+      "close": 165.5,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:25:19+00:00",
+      "observed_at": "2026-11-18T15:28:39+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 166.2,
@@ -4070,7 +4070,7 @@
         },
         {
           "date": "2026-11-18",
-          "price": 165.6
+          "price": 165.5
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4083,7 +4083,7 @@
       "currency": "EUR",
       "close": 9.878,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:25:22+00:00",
+      "observed_at": "2026-11-18T15:31:29+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 9.922,
@@ -5102,9 +5102,9 @@
       "symbol": "ALMB.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 17.4,
+      "close": 17.43,
       "trading_date": "2026-11-18",
-      "observed_at": "2026-11-18T15:24:29+00:00",
+      "observed_at": "2026-11-18T15:31:16+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 17.49,
@@ -6104,7 +6104,7 @@
         },
         {
           "date": "2026-11-18",
-          "price": 17.4
+          "price": 17.43
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/ALMB.CO",
