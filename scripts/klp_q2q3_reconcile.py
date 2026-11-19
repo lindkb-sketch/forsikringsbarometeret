@@ -66,6 +66,8 @@ def verify_pages(texts,quarter,url,sha):
     result=reconcile(q,y)
     result.update({'reported_quarter_amounts':{k:float(v[0]) for k,v in rows.items()},
                    'reported_ytd_amounts':{k:float(v[2]) for k,v in rows.items()},
+                   'reported_prior_year_quarter_amounts':{k:float(v[1]) for k,v in rows.items()},
+                   'reported_prior_year_ytd_amounts':{k:float(v[3]) for k,v in rows.items()},
                    'reported_ytd_ratios':{k:float(v) for k,v in reported.items()},
                    'status':'issuer_pdf_quarter_and_ytd_reconciled_not_published'})
     return result
