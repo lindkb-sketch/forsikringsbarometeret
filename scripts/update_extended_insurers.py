@@ -42,10 +42,11 @@ def extract(document):
             'scope':'group','source_type':'official_issuer_interim_announcement',
             'source_url':SOURCE,'report_archive':ARCHIVE,
             'metrics':{'insurance_revenue':3054,'insurance_service_result':755,
-                       'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1},
+                       'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1,
+                       'insurance_revenue_growth':1.6},
             'unit':'DKK million for financial amounts; percent for ratios',
             'status':'verified_issuer_announcement',
-            'note':'Quarterly values; not a PDF page-level audited import'}
+            'note':'Quarterly values; reported same-quarter insurance revenue growth 1.6%; not a PDF page-level audited import'}
 
 def fetch(url=SOURCE):
     request=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
