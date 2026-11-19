@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 COMPANIES = ('Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
              'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand')
 METRICS = ('insurance_revenue', 'insurance_service_result', 'combined_ratio',
-           'loss_ratio', 'expense_ratio')
+           'loss_ratio', 'expense_ratio', 'insurance_revenue_growth',
+           'return_on_equity', 'solvency_ratio')
 
 
 def build(feed, extended):
@@ -43,11 +44,11 @@ def build(feed, extended):
             'company': company, 'period': period, 'currency': currency,
             'status': status, 'source_url': source,
             'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
-            'revenue_comparable': company not in ('Frende', 'Storebrand') and status != 'unverified_missing',
+            'revenue_comparable': company not in ('Frende', 'Storebrand', 'KLP Skadeforsikring') and status != 'unverified_missing',
         })
     return {'schema_version': 1, 'count': len(result),
             'investor_use_approved': False,
-            'note': 'Do not aggregate revenue across currencies or different reporting definitions; missing values are null.',
+            'note': 'Growth is period-matched insurance revenue versus previous year; ROE/solvency are issuer-specific; do not aggregate currencies or unlike accounting scopes. Missing values are null.',
             'companies': result}
 
 
