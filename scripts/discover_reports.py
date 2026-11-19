@@ -29,12 +29,23 @@ def discover(html,base_url,company):
   base=urllib.parse.urlparse(base_url)
   if parsed.hostname!=base.hostname:continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
-  # Require interim-report context, and an explicit PDF file extension.
+  # Discovery is diagnostic; no candidate is approved for publication.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
-  if not re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I):continue
-  if re.search(r"(presentation|presentasjon|press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  report=re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I)
+  presentation=re.search(r"(presentation|presentasjon|investor.?slides|results.?slides|resultatpresentasjon)",label,re.I)
+  if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
+  if presentation:
+   if not re.search(r"(q[1-4]|[1-4]\.?\s*kvartal|[1-4]\.?\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
+   kind="results_presentation"
+   status="candidate_requires_presentation_verification"
+  elif report:
+   kind="quarterly_report"
+   status="candidate_requires_quarterly_report_verification"
+  else:continue
   if url not in seen:
-   found.append({"company":company,"document_url":url,"status":"candidate_requires_quarterly_report_verification","link_text":link["text"].strip()})
+   found.append({"company":company,"document_url":url,"document_type":kind,
+                 "status":status,
+                 "link_text":link["text"].strip()})
    seen.add(url)
  return found
 def scan(fetcher=None):
