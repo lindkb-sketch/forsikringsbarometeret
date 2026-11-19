@@ -22,7 +22,7 @@ def fixture():
       ('Combined ratio','75.3','73.1','75.6','76.4','78.5')]
     t[4]='ALM. BRAND GROUP – Q3 2026\nQ3 2026 Q3 2025 Q1-Q3 2026 Q1-Q3 2025 2025\n'+'\n'.join(
          k+' '+v+' '+p+' '+y+' '+yp+' '+full for k,v,p,y,yp,full in data)
-    t[4]+='\nReturn on equity after tax\n18.0 13.6 10.0 14.4 14.4\n(% p.a.) **'
+    t[4]+='\nProfit/loss before tax, continuing\n544 452 907 1,145 1,585\noperations\nReturn on equity after tax\n18.0 13.6 10.0 14.4 14.4\n(% p.a.) **'
     return t
 class AlmBrandLivePDFTests(unittest.TestCase):
     def test_only_issuer_cdn_and_ir_pdf(self):
@@ -42,6 +42,8 @@ class AlmBrandLivePDFTests(unittest.TestCase):
         self.assertEqual(res['metrics']['return_on_equity'],18.0)
         self.assertEqual(res['return_on_equity_ytd'],10.0)
         self.assertEqual(res['metrics']['solvency_ratio'],238.0)
+        self.assertEqual(res['metrics']['profit_before_tax'],544.0)
+        self.assertEqual(res['profit_before_tax_ytd'],907.0)
         self.assertNotIn('investment_return_ytd',res['metrics'])
     def test_issuer_announcement_mismatch_blocks(self):
         x=fixture();x[4]=x[4].replace('Insurance revenue 3,054','Insurance revenue 3,150')
