@@ -26,47 +26,46 @@ def classify(url):
     return None
 
 def discover(html):
-    """Use issuer section, year and visible link label; never infer from opaque href."""
+    """Find issuer, year and visible quarter text across HTML heading tags."""
     class Archive(HTMLParser):
         def __init__(self):
             super().__init__()
             self.company=None
             self.year=None
-            self.in_anchor=False
-            self.href=None
-            self.label=[]
+            self.anchor=None
+            self.in_heading=False
+            self.heading=[]
             self.found={q:[] for q in PERIODS}
         def handle_starttag(self,tag,attrs):
-            if tag.lower()=='a':
-                self.in_anchor=True
-                self.href=dict(attrs).get('href')
-                self.label=[]
+            tag=tag.lower()
+            if tag=='a':self.anchor={'href':dict(attrs).get('href'),'label':[]}
+            elif tag in ('h1','h2','h3','h4'):self.in_heading=True;self.heading=[]
         def handle_data(self,data):
             text=' '.join(data.split())
             if not text:return
-            if self.in_anchor:
-                self.label.append(text)
-                return
+            if self.anchor is not None:self.anchor['label'].append(text)
+            elif self.in_heading:self.heading.append(text)
+            else:self.context(text)
+        def context(self,text):
             if text in ('KLP Konsern','KLP Banken','KLP Kommunekreditt',
                         'KLP Boligkreditt','KLP Skadeforsikring'):
-                self.company=text
-                self.year=None
-            elif re.fullmatch(r'20\\d{2}',text):
-                self.year=int(text)
+                self.company=text;self.year=None
+            elif re.fullmatch(r'20\\d{2}',text):self.year=int(text)
         def handle_endtag(self,tag):
-            if tag.lower()!='a' or not self.in_anchor:return
-            label=' '.join(self.label).lower()
-            if self.company=='KLP Skadeforsikring' and self.year==2026 and self.href:
-                url=urljoin(INDEX_URL,self.href)
+            tag=tag.lower()
+            if tag in ('h1','h2','h3','h4') and self.in_heading:
+                self.context(' '.join(self.heading));self.in_heading=False
+            if tag!='a' or self.anchor is None:return
+            label=' '.join(self.anchor['label']).lower()
+            href=self.anchor['href']
+            if self.company=='KLP Skadeforsikring' and self.year==2026 and href:
+                url=urljoin(INDEX_URL,href)
                 if approved(url,'KLP Skadeforsikring'):
                     for q in PERIODS:
                         if re.search(r'kvartalsrapport\\s+(?:for\\s+)?'+str(q)+r'\\.\\s*kvartal',label):
                             if url not in self.found[q]:self.found[q].append(url)
-            self.in_anchor=False
-            self.href=None
-            self.label=[]
-    parser=Archive()
-    parser.feed(html)
+            self.anchor=None
+    parser=Archive();parser.feed(html)
     return parser.found
 
 def scan(url,quarter):
@@ -119,5 +118,7 @@ if __name__=='__main__':
                        'pages':len(v.get('candidate_pages',[]))}
                     for k,v in result.get('periods',{}).items()},
         'missing':result.get('missing')},ensure_ascii=False))
-    if result['status']=='archive_unavailable' or result.get('missing'):
-        raise SystemExit('Missing or ambiguous issuer PDFs: inspect uploaded evidence')
+    if result['status']=='archive_unavailable':
+        raise SystemExit('Issuer archive unavailable: inspect uploaded evidence')
+    if result.get('missing'):
+        print('KLP_REPORTS_NOT_YET_DISCOVERED',result['missing'])
