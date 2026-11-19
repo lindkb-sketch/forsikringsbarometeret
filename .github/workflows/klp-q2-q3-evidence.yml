@@ -29,5 +29,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: klp-q2-q3-official-evidence
-          path: klp-audit/q2-q3-discovery.json
+          path: klp-audit/
           retention-days: 14
