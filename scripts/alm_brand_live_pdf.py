@@ -19,7 +19,8 @@ from alm_brand_pdf import extract_table
 IR='https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx'
 ARCHIVE='https://investorrelations.almbrand.dk/English/financials/default.aspx'
 EXPECTED={'insurance_revenue':3054.0,'insurance_service_result':755.0,
-          'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1}
+          'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1,
+          'insurance_revenue_growth':1.6}
 LABELS={'insurance_revenue':'Insurance revenue',
         'claims_expenses':'Claims expenses',
         'operating_expenses':'Insurance operating expenses',
@@ -109,7 +110,8 @@ def parse_row(page,label):
     if len(nums)!=5:raise ValueError('Unexpected Q3/Q3-prior/HIÅ/HIÅ-prior/FY columns: '+label)
     return [Decimal(x.replace(',','')) for x in nums]
 
-def verify_pages(texts,url,sha):
+def verify_pages(texts,url,raw):
+    sha=hashlib.sha256(raw).hexdigest()
     if not trusted_pdf_link(url):raise ValueError('Unapproved source')
     if len(sha)!=64 or any(c not in '0123456789abcdef' for c in sha):
         raise ValueError('Invalid PDF fingerprint')
@@ -143,14 +145,24 @@ def verify_pages(texts,url,sha):
         return calculated
     q=metrics(0)
     y=metrics(2)
+    revenue_growth=(rows['insurance_revenue'][0]/rows['insurance_revenue'][1]-1)*100
+    ytd_growth=(rows['insurance_revenue'][2]/rows['insurance_revenue'][3]-1)*100
+    if abs(revenue_growth-Decimal(str(EXPECTED['insurance_revenue_growth'])))>Decimal('0.20'):
+        raise ValueError('Alm Brand Q3 PDF income growth differs from issuer announcement')
     result_metrics={
         'insurance_revenue':float(rows['insurance_revenue'][0]),
         'insurance_service_result':float(rows['insurance_service_result'][0]),
         'combined_ratio':float(rows['combined_ratio'][0]),
         'loss_ratio':float(rows['loss_ratio'][0]),
         'expense_ratio':float(rows['expense_ratio'][0]),
+        'insurance_revenue_growth':EXPECTED['insurance_revenue_growth'],
+        'return_on_equity':None,
+        'solvency_ratio':None,
+        'investment_return_ytd':None,
+        'profit_before_tax':None,
     }
     for metric,expected in EXPECTED.items():
+        if metric=='insurance_revenue_growth':continue
         if abs(result_metrics[metric]-expected)>0.001:
             raise ValueError('Issuer PDF disagrees with independently verified Q3 announcement: '+metric)
     # The previously implemented validated table contract is reused rather than bypassed.
@@ -163,11 +175,21 @@ def verify_pages(texts,url,sha):
                            'value':result_metrics[key],
                            'unit':'%' if key in ('combined_ratio','loss_ratio','expense_ratio') else 'DKK million'})
     # extract_table's issuer host allowlist additionally checks this PDF provider.
-    extracted=extract_table(b'%PDF-',url,2026,3,table_rows)
+    extracted=extract_table(raw,url,2026,3,table_rows)
     extracted.update({'metrics':result_metrics,'reported_ytd_ratios':{
         key:float(rows[key][2]) for key in PERCENT},
         'source_pages':{key:page_index+1 for key in result_metrics},
         'quarter_recalculated_ratios':{key:float(x) for key,x in q.items()},
+        'revenue_growth_evidence':{
+            'quarter':{'current':float(rows['insurance_revenue'][0]),
+                'prior_year':float(rows['insurance_revenue'][1]),
+                'calculated_growth_percent':float(revenue_growth),
+                'issuer_reported_growth_percent':EXPECTED['insurance_revenue_growth']},
+            'ytd':{'current':float(rows['insurance_revenue'][2]),
+                'prior_year':float(rows['insurance_revenue'][3]),
+                'growth_percent':float(ytd_growth)},
+            'source_page':page_index+1,'previous_year':2025,
+            'source_sha256':sha,'currency':'DKK','scope':'group'},
         'ytd_recalculated_ratios':{key:float(x) for key,x in y.items()},
         'source_sha256':sha,'source_url':url,
         'issuer_page_url':IR,'status':'verified_official_pdf_reconciled'})
@@ -179,7 +201,13 @@ def run(url=None):
     import pdfplumber
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
         texts=[page.extract_text(layout=False) or '' for page in pdf.pages]
-    out=verify_pages(texts,url,hashlib.sha256(raw).hexdigest())
+    evidence_dir=Path('alm-brand-audit');evidence_dir.mkdir(exist_ok=True)
+    candidates=[{'page':i+1,'text':t[:18000]} for i,t in enumerate(texts)
+                if any(term.lower() in t.lower() for term in ('insurance revenue','combined ratio','solvency cover','insurance service result'))]
+    (evidence_dir/'source-pages.json').write_text(json.dumps({'source_url':url,
+        'source_sha256':hashlib.sha256(raw).hexdigest(),'pdf_pages':len(texts),
+        'candidate_pages':candidates[:35]},ensure_ascii=False,indent=2)+'\n')
+    out=verify_pages(texts,url,raw)
     return out
 
 if __name__=='__main__':
