@@ -15,11 +15,27 @@
         "combined_ratio": 75.3,
         "loss_ratio": 59.2,
         "expense_ratio": 16.1,
-        "insurance_revenue_growth": 1.6
+        "insurance_revenue_growth": 1.6,
+        "solvency_ratio": 238.0
       },
       "unit": "DKK million for financial amounts; percent for ratios",
-      "status": "verified_issuer_announcement",
-      "note": "Quarterly values; reported same-quarter insurance revenue growth 1.6%; not a PDF page-level audited import"
+      "status": "verified_official_presentation_reconciled",
+      "note": "Issuer announcement financial metrics; Q3 Group solvency from official presentation slide 19, SHA256 verified.",
+      "presentation_evidence": {
+        "source_type": "official_results_presentation",
+        "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+        "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+        "source_page": 19,
+        "year": 2026,
+        "quarter": 3,
+        "scope": "group",
+        "currency": "DKK",
+        "metrics": {
+          "solvency_ratio": 238.0,
+          "own_funds": 4685,
+          "solvency_capital_requirement": 1970
+        }
+      }
     },
     "KLP Skadeforsikring": {
       "company": "KLP Skadeforsikring",
