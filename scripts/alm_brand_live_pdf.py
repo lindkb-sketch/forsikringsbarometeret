@@ -136,6 +136,12 @@ def verify_pages(texts,url,raw,regions=None):
     table_text=regions.get(page_index,{}).get('left') or page
     roe_text=regions.get(page_index,{}).get('right') or page
     rows={key:parse_row(table_text,label) for key,label in LABELS.items()}
+    pretax=re.search(r'Profit/loss before tax, continuing\s*\n\s*([-\d,]+)\s+([-\d,]+)\s+([-\d,]+)\s+([-\d,]+)\s+([-\d,]+)\s*\n\s*operations',table_text,re.I)
+    if not pretax:
+        raise ValueError('Missing official Group result before tax quarter/HIÅ columns')
+    before_tax=[Decimal(s.replace(',','')) for s in pretax.groups()]
+    if before_tax[0]!=Decimal('544') or before_tax[2]!=Decimal('907'):
+        raise ValueError('Unexpected Alm Brand Q3 2026 Group result-before-tax figures')
     # Only issuer-disclosed return on EQUITY, not the investment result.
     roe_match=re.search(r'Return on equity after tax\s*\n\s*(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)',roe_text,re.I)
     if not roe_match:
@@ -185,7 +191,7 @@ def verify_pages(texts,url,raw,regions=None):
         'loss_ratio':float(rows['loss_ratio'][0]),
         'expense_ratio':float(rows['expense_ratio'][0]),
         'insurance_revenue_growth':EXPECTED['insurance_revenue_growth'],
-        'profit_before_tax':None,
+        'profit_before_tax':float(before_tax[0]),
         'return_on_equity':roe_quarter,
         'solvency_ratio':solvency,
     }
@@ -209,6 +215,7 @@ def verify_pages(texts,url,raw,regions=None):
         'source_pages':{key:(solvency_index+1 if key=='solvency_ratio' else page_index+1) for key in result_metrics},
         'return_on_equity_definition':'Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation',
         'return_on_equity_ytd':roe_ytd,
+        'profit_before_tax_ytd':float(before_tax[2]),
         'return_on_equity_source_page':page_index+1,
         'solvency_definition':'Group total capital / group solvency capital requirement at quarter end',
         'quarter_recalculated_ratios':{key:float(x) for key,x in q.items()},
