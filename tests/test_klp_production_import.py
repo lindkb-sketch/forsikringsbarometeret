@@ -14,6 +14,14 @@ def reconciled(q):
             'reported_ytd_amounts':{'insurance_revenue':1000+q if q==1 else 2200+q},
             'reported_prior_year_quarter_amounts':{'insurance_revenue':800+q},
             'reported_prior_year_ytd_amounts':{'insurance_revenue':800+q if q==1 else 1800+q},
+            'reported_management_metrics':{'profit_before_tax':30.0,
+               'profit_before_tax_ytd':30.0 if q==1 else 70.0,
+               'solvency_ratio':{1:231.0,2:222.0,3:219.0}[q],
+               'investment_return_ytd':{1:0.5,2:3.0,3:3.7}[q],
+               'return_on_equity':None,'source_page':21 if q==1 else 20,
+               'period_basis':{'profit_before_tax':'quarter',
+                   'profit_before_tax_ytd':'ytd','solvency_ratio':'quarter_end',
+                   'investment_return_ytd':'ytd'}},
             'reported_ytd_ratios':{'gross_loss_ratio':80,'reinsurance_ratio':4,
                                     'loss_ratio':84,'expense_ratio':13,'combined_ratio':97},
             'source_documents':[{'source_url':'https://www.klp.no/a.pdf','source_sha256':str(q)*64,
@@ -32,7 +40,9 @@ class KLPProductionTests(unittest.TestCase):
         self.assertEqual(snapshot['metrics']['combined_ratio'],97)
         self.assertAlmostEqual(snapshot['metrics']['insurance_revenue_growth'],(1003/803-1)*100)
         self.assertIsNone(snapshot['metrics']['return_on_equity'])
-        self.assertIsNone(snapshot['metrics']['solvency_ratio'])
+        self.assertEqual(snapshot['metrics']['solvency_ratio'],219)
+        self.assertEqual(snapshot['metrics']['investment_return_ytd'],3.7)
+        self.assertEqual(snapshot['metrics']['profit_before_tax'],30)
         self.assertAlmostEqual(snapshot['periods'][-1]['revenue_growth_evidence']['ytd']['growth_percent'],(2203/1803-1)*100)
         self.assertEqual(len(snapshot['periods']),3)
         with tempfile.TemporaryDirectory() as td:
