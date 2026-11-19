@@ -177,9 +177,7 @@ jobs:
                   lines.append(f"- Dekningsdetaljer kunne ikke leses: {type(exc).__name__}")
           lines.append("- Rapporter som ennå ikke er offentliggjort, er forventet og skal ikke erstattes med beregnede verdier.")
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as out:
-              out.write("
-".join(lines)+"
-")
+              out.write("\n".join(lines)+"\n")
           PY
       - name: Upload diagnostics on failure
         if: failure()
