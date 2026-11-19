@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "purpose": "non_destructive_seven_insurer_source_gap_inventory",
+  "period": "Q3 2026",
+  "all_seven_quarter_core_metrics_present": true,
+  "all_seven_dual_document_verified": false,
+  "discovery_complete": true,
+  "discovery_errors": [],
+  "note": "Candidate counts cover all periods and do not prove period-specific presentation coverage. Report provenance is carried from the existing verified feed, not independently re-downloaded here. Never mark a metric missing until both documents are checked.",
+  "companies": [
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 7,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 0,
+      "unverified_presentation_candidates_all_periods": 0,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 7,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 0,
+      "unverified_presentation_candidates_all_periods": 0,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 7,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 6,
+      "unverified_presentation_candidates_all_periods": 3,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Sampo",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 5,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 2,
+      "unverified_presentation_candidates_all_periods": 1,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Frende",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 5,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 28,
+      "unverified_presentation_candidates_all_periods": 0,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Protector",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 7,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 0,
+      "unverified_presentation_candidates_all_periods": 0,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    },
+    {
+      "company": "Storebrand",
+      "period": "Q3 2026",
+      "required_metrics_present": true,
+      "verified_metrics": [
+        "combined_ratio",
+        "expense_ratio",
+        "insurance_revenue",
+        "insurance_service_result",
+        "loss_ratio",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "not_present_in_quarter_feed": [
+        "insurance_revenue_growth",
+        "profit_before_tax"
+      ],
+      "quarter_report_sourced_observations": 7,
+      "quarter_presentation_sourced_observations": 0,
+      "unverified_report_candidates_all_periods": 0,
+      "unverified_presentation_candidates_all_periods": 0,
+      "provenance_errors": [],
+      "both_documents_checked_for_this_period": false,
+      "presentation_metric_gap_status": "not_audited_against_official_presentation"
+    }
+  ]
+}
