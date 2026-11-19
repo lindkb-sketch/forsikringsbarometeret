@@ -1,6 +1,8 @@
 name: KLP Q2 Q3 official PDF evidence
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '47 7 * * 1'
   pull_request:
     paths:
       - 'scripts/klp_q2_q3_discovery.py'
