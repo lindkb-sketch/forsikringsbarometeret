@@ -10,7 +10,7 @@ def fixture():
     t[2]='Total capital as a percentage of solvency capital\nrequirement 238 225'
     t[0]='Alm Brand Group interim report Q3 2026'
     data=[
-      ('Insurance revenue','3,054','3,006','9,000','8,900','11,790'),
+      ('INCOME Insurance revenue','3,054','3,006','9,000','8,900','11,790'),
       ('Claims expenses','1,700','1,600','5,000','5,100','7,000'),
       ('Insurance operating expenses','492','500','1,500','1,500','2,000'),
       ('Profit/loss on reinsurance','107','100','300','200','250'),
