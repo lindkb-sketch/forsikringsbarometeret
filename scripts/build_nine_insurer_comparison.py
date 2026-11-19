@@ -73,8 +73,7 @@ def main():
     extended = json.loads((ROOT / 'data/extended_insurer_financials.json').read_text())
     output = build(feed, extended)
     target = ROOT / 'data/nine_insurer_comparison.json'
-    serialized = json.dumps(output, ensure_ascii=False, indent=2) + '
-'
+    serialized = json.dumps(output, ensure_ascii=False, indent=2) + '\n'
     if not target.exists() or target.read_text() != serialized:
         target.write_text(serialized)
     print('Nine-insurer comparison generated; investor_use_approved=false')
