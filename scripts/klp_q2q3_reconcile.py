@@ -72,18 +72,15 @@ def verify_pages(texts,quarter,url,sha):
     if abs(hiya_pre_tax-reported_note_pre_tax)>Decimal('0.15'):
         raise ValueError('KLP HIÅ pre-tax result disagrees with reported note')
     solvency=columns(note,'Solvenskapitaldekning',percent=True)[0]
-    investment_ytd=columns(note,'Avkastning på midler til forvaltning',percent=True)[0]
-    if not (0<solvency<1000 and -100<investment_ytd<100):
-        raise ValueError('Invalid KLP reported solvency or portfolio return')
+    if not 0<solvency<1000:
+        raise ValueError('Invalid KLP reported solvency')
     result=reconcile(q,y)
     result['reported_management_metrics']={'profit_before_tax':float(quarter_pre_tax),
         'profit_before_tax_ytd':float(hiya_pre_tax),
         'solvency_ratio':float(solvency),
-        'investment_return_ytd':float(investment_ytd),
-        'return_on_equity':None,
-        'source_page':np+1,
+         'source_page':np+1,
         'period_basis':{'profit_before_tax':'quarter', 'profit_before_tax_ytd':'ytd',
-                        'solvency_ratio':'quarter_end', 'investment_return_ytd':'ytd'}}
+                        'solvency_ratio':'quarter_end'}}
     result.update({'reported_quarter_amounts':{k:float(v[0]) for k,v in rows.items()},
                    'reported_ytd_amounts':{k:float(v[2]) for k,v in rows.items()},
                    'reported_prior_year_quarter_amounts':{k:float(v[1]) for k,v in rows.items()},
