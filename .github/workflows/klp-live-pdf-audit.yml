@@ -1,0 +1,40 @@
+name: KLP official PDF live table audit
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/klp_pdf_tables.py'
+      - 'scripts/klp_pdf_column_mapping.py'
+      - 'scripts/klp_live_pdf_audit.py'
+      - '.github/workflows/klp-live-pdf-audit.yml'
+  schedule:
+    - cron: '23 7 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  live-klp-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF extraction dependency
+        run: python -m pip install 'pdfplumber>=0.11,<0.13'
+      - name: Download and inspect real KLP Skadeforsikring Q1 2026 PDF
+        env:
+          KLP_PDF_URL: https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/003381a3-7e8d-44bc-84e4-6de354b1fc79%3Aee97b842e57469c4897509abea3bee80331904b3/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%20Q1%202026.pdf
+        run: python scripts/klp_live_pdf_audit.py --url "$KLP_PDF_URL" --out klp-audit/evidence.json
+      - name: Reconcile real Q1 result table against Note 10 HIÅ ratios
+        run: python scripts/klp_q1_2026_pdf_reconcile.py
+      - name: Upload page-indexed diagnostic evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: klp-official-pdf-table-evidence
+          path: klp-audit/
+          if-no-files-found: warn
+          retention-days: 14
