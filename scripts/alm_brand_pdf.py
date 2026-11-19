@@ -8,6 +8,14 @@ import hashlib
 import re
 from decimal import Decimal, InvalidOperation
 from import_extended_pdfs import approved, pages
+from urllib.parse import urlsplit
+
+def official_alm_pdf(url):
+    parts=urlsplit(url)
+    return approved(url,'Alm. Brand') or (url=='https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78') or (parts.scheme=='https' and
+        parts.hostname=='s29.q4cdn.com' and
+        parts.path.startswith('/228553818/files/') and
+        parts.path.lower().endswith('.pdf'))
 
 METRICS=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
 LABELS={
@@ -30,7 +38,7 @@ def extract_table(raw,url,year,quarter,table_rows,*,currency='DKK',unit='million
     table_rows entries: {page, label, period, value, unit}. A separate caller
     must establish correct source document period and group reporting scope.
     """
-    if not approved(url,'Alm. Brand'):
+    if not official_alm_pdf(url):
         raise ValueError('Unapproved issuer PDF URL')
     if not isinstance(raw,bytes) or not raw.startswith(b'%PDF-'):
         raise ValueError('Not PDF bytes')
@@ -71,7 +79,7 @@ def extract_table(raw,url,year,quarter,table_rows,*,currency='DKK',unit='million
 
 def inspect_report(raw,url):
     """Inspect actual PDF pages, returning evidence candidates without metrics."""
-    if not approved(url,'Alm. Brand') or not raw.startswith(b'%PDF-'):
+    if not official_alm_pdf(url) or not raw.startswith(b'%PDF-'):
         raise ValueError('Unapproved or invalid PDF')
     result=[]
     for page_number,text in enumerate(pages(raw),1):

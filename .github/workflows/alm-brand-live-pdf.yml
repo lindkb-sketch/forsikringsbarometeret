@@ -1,0 +1,33 @@
+name: Alm Brand official Q3 PDF reconciliation
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/alm_brand_live_pdf.py'
+      - 'scripts/alm_brand_pdf.py'
+      - '.github/workflows/alm-brand-live-pdf.yml'
+      - 'tests/test_alm_brand_live_pdf.py'
+  schedule:
+    - cron: '37 8 * * 2'
+permissions:
+  contents: read
+jobs:
+  official-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF parser
+        run: python -m pip install 'pdfplumber>=0.11,<0.13'
+      - name: Reconcile real Alm Brand Group Q3 report
+        run: python scripts/alm_brand_live_pdf.py --out alm-brand-audit/verified.json
+      - name: Preserve evidence even when source/parser changes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alm-brand-q3-official-pdf-diagnostics
+          path: alm-brand-audit/
+          retention-days: 14
