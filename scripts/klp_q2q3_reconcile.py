@@ -78,7 +78,7 @@ def verify_pages(texts,quarter,url,sha):
     result['reported_management_metrics']={'profit_before_tax':float(quarter_pre_tax),
         'profit_before_tax_ytd':float(hiya_pre_tax),
         'solvency_ratio':float(solvency),
-         'source_page':np+1,
+        'source_page':np+1,
         'period_basis':{'profit_before_tax':'quarter', 'profit_before_tax_ytd':'ytd',
                         'solvency_ratio':'quarter_end'}}
     result.update({'reported_quarter_amounts':{k:float(v[0]) for k,v in rows.items()},
