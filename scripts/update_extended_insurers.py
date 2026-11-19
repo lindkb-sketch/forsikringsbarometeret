@@ -42,10 +42,11 @@ def extract(document):
             'scope':'group','source_type':'official_issuer_interim_announcement',
             'source_url':SOURCE,'report_archive':ARCHIVE,
             'metrics':{'insurance_revenue':3054,'insurance_service_result':755,
-                       'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1},
+                       'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1,
+                       'insurance_revenue_growth':1.6},
             'unit':'DKK million for financial amounts; percent for ratios',
             'status':'verified_issuer_announcement',
-            'note':'Quarterly values; not a PDF page-level audited import'}
+            'note':'Quarterly values; reported same-quarter insurance revenue growth 1.6%; not a PDF page-level audited import'}
 
 def fetch(url=SOURCE):
     request=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
@@ -57,10 +58,11 @@ def fetch(url=SOURCE):
 def update(document=None,out=OUT):
     row=extract(fetch() if document is None else document)
     old=json.loads(out.read_text(encoding='utf-8')) if out.exists() else {}
-    payload={'insurers':{'Alm. Brand':row,
-        'KLP Skadeforsikring':{'company':'KLP Skadeforsikring',
-            'status':'awaiting_source_verified_metrics','metrics':{},
-            'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'}}}
+    klp=old.get('insurers',{}).get('KLP Skadeforsikring',{
+        'company':'KLP Skadeforsikring','status':'awaiting_source_verified_metrics',
+        'metrics':{},'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'})
+    # Never erase a validated KLP PDF snapshot when refreshing Alm Brand.
+    payload={'insurers':{'Alm. Brand':row,'KLP Skadeforsikring':klp}}
     if old==payload:return False
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

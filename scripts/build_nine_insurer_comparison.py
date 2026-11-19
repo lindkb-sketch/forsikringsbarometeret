@@ -2,12 +2,14 @@
 """Nine-insurer comparison with explicit non-comparable and missing states."""
 import json
 from pathlib import Path
+from prior_year_growth_coverage import basis as revenue_basis
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPANIES = ('Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
              'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand')
 METRICS = ('insurance_revenue', 'insurance_service_result', 'combined_ratio',
-           'loss_ratio', 'expense_ratio')
+           'loss_ratio', 'expense_ratio', 'insurance_revenue_growth',
+           'return_on_equity', 'solvency_ratio', 'profit_before_tax')
 
 
 def build(feed, extended):
@@ -18,10 +20,13 @@ def build(feed, extended):
         if company in ext:
             item = ext[company]
             values = item.get('metrics', {})
-            verified = item.get('status') == 'verified_issuer_announcement'
+            state=item.get('status')
+            verified=state in ('verified_issuer_announcement','verified_official_pdf_reconciled')
             period = f"Q{item['quarter']} {item['year']}" if verified else None
             source = item.get('source_url') if verified else None
-            status = 'issuer_announcement_only' if verified else 'unverified_missing'
+            status = ('verified_official_pdf_reconciled' if state=='verified_official_pdf_reconciled'
+                      else 'issuer_announcement_only' if state=='verified_issuer_announcement'
+                      else 'unverified_missing')
             currency = item.get('currency') if verified else None
         else:
             rows = [r for r in observations if r.get('company') == company
@@ -32,6 +37,20 @@ def build(feed, extended):
             latest = periods[-1] if periods else None
             current = [r for r in rows if (r['year'], r['quarter']) == latest] if latest else []
             values = {r['metric']: r['value'] for r in current if r.get('metric') in METRICS}
+            # Match current isolated quarter with the same quarter one year
+            # earlier, on the same company, scope, unit and revenue definition.
+            if latest and 'insurance_revenue_growth' not in values:
+                curr = next((r for r in current if r.get('metric')=='insurance_revenue'
+                             and r.get('source_url')),None)
+                prior = [r for r in observations if r.get('company')==company
+                         and r.get('scope')=='group' and r.get('period_type')=='quarter'
+                         and r.get('year')==latest[0]-1 and r.get('quarter')==latest[1]
+                         and r.get('metric')=='insurance_revenue'
+                         and r.get('status') in ('reported','calculated')
+                         and r.get('source_url')]
+                if curr and len(prior)==1 and isinstance(prior[0].get('value'),(float,int)) and prior[0]['value']>0 and curr.get('unit')==prior[0].get('unit') and revenue_basis(curr)==revenue_basis(prior[0]):
+                    values['insurance_revenue_growth']=(curr['value']/prior[0]['value']-1)*100
+
             period = f'Q{latest[1]} {latest[0]}' if latest else None
             source = next((r.get('source_url') for r in current if r.get('source_url')), None)
             status = 'verified_quarterly_feed' if latest else 'unverified_missing'
@@ -40,11 +59,11 @@ def build(feed, extended):
             'company': company, 'period': period, 'currency': currency,
             'status': status, 'source_url': source,
             'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
-            'revenue_comparable': company not in ('Frende', 'Storebrand') and status != 'unverified_missing',
+            'revenue_comparable': company not in ('Frende', 'Storebrand', 'KLP Skadeforsikring') and status != 'unverified_missing',
         })
     return {'schema_version': 1, 'count': len(result),
             'investor_use_approved': False,
-            'note': 'Do not aggregate revenue across currencies or different reporting definitions; missing values are null.',
+            'note': 'Growth is period-matched insurance revenue versus previous year; ROE/ROOF and solvency are issuer-specific; investment return is not a substitute; do not aggregate currencies or unlike accounting scopes. Missing values are null.',
             'companies': result}
 
 

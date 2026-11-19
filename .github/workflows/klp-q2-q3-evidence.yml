@@ -7,6 +7,9 @@ on:
     paths:
       - 'scripts/klp_q2_q3_discovery.py'
       - 'scripts/klp_q2q3_reconcile.py'
+      - 'scripts/import_klp_production.py'
+      - 'scripts/check_extended_insurer_evidence.py'
+      - 'scripts/klp_q1_2026_pdf_reconcile.py'
       - '.github/workflows/klp-q2-q3-evidence.yml'
 
 permissions:
@@ -27,6 +30,22 @@ jobs:
         run: python scripts/klp_q2_q3_discovery.py
       - name: Reconcile isolated Q2/Q3 and independently verify reported HIÅ ratios
         run: python scripts/klp_q2q3_reconcile.py --evidence klp-audit/q2-q3-discovery.json --out klp-audit/q2-q3-reconciled.json
+      - name: End-to-end KLP Q1-Q3 official PDF import into temporary PR checkout
+        run: |
+          python scripts/import_klp_production.py
+          python scripts/check_extended_insurer_evidence.py
+          python scripts/build_nine_insurer_comparison.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('data/nine_insurer_comparison.json').read_text())
+          row=next(r for r in d['companies'] if r['company']=='KLP Skadeforsikring')
+          assert row['status']=='verified_official_pdf_reconciled'
+          assert row['period']=='Q3 2026'
+          assert 'return_on_equity' not in json.loads(Path('data/extended_insurer_financials.json').read_text())['insurers']['KLP Skadeforsikring']['metrics']
+          assert len([k for k,v in row['metrics'].items() if v is not None])>=8
+          print('KLP_FULL_PDF_IMPORT_AND_COMPARISON_VERIFIED',row['period'],row['metrics'])
+          PY
       - name: Upload page-located source evidence
         if: always()
         uses: actions/upload-artifact@v4

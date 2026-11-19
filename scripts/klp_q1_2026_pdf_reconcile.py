@@ -41,6 +41,18 @@ def row_value(text,label,*,percentage=False):
     if not match:raise ValueError('Missing first quarter column for '+label)
     return decimal(match.group(1))
 
+def prior_year_comparative(text,label):
+    """Read second result-account column, Q1 2025, directly from Q1 PDF."""
+    matching=[line.strip() for line in text.splitlines()
+              if re.match(r'^(?:\d+\s+)?'+re.escape(label)+r'\s+',line.strip(),re.I)]
+    if len(matching)!=1:
+        raise ValueError('Missing or ambiguous 2025 comparative: '+label)
+    tail=re.sub(r'^(?:\d+\s+)?'+re.escape(label)+r'\s+','',matching[0],count=1,flags=re.I)
+    nums=re.findall(r'-?\d{1,3}(?: \d{3})*(?:,\d+)?',tail)
+    if len(nums)<2:
+        raise ValueError('Missing Q1 2025 comparative numeric column: '+label)
+    return decimal(nums[1])
+
 def verify_pages(texts,url=URL,sha=None):
     if len(texts)<21 or '1. kvartal 2026' not in texts[5] or 'Resultatregnskap' not in texts[5]:
         raise ValueError('Unexpected Q1 2026 result page layout')
@@ -69,8 +81,23 @@ def verify_pages(texts,url=URL,sha=None):
     q={**basis,'period_type':'quarter','source_pages':[6],'ratio_components':components}
     y={**basis,'period_type':'ytd','source_pages':[21],'ratio_components':components,
        'reported_ratios':{k:float(v) for k,v in reported.items()}}
+    profit_before_tax=row_value(texts[5],'Resultat før skattekostnad')
+    ytd_pre_tax=row_value(texts[20],'Resultat før skatt')
+    if abs(profit_before_tax-ytd_pre_tax)>Decimal('0.15'):
+        raise ValueError('Q1 pre-tax profit disagrees with issuer HIÅ note')
+    solvency=row_value(texts[20],'Solvenskapitaldekning',percentage=True)
+    if not 0<solvency<1000:
+        raise ValueError('Unexpected KLP solvency ratio')
     result=reconcile(q,y)
+    result['reported_management_metrics']={'profit_before_tax':float(profit_before_tax),
+        'profit_before_tax_ytd':float(ytd_pre_tax),
+        'solvency_ratio':float(solvency),'source_page':21,
+        'period_basis':{'profit_before_tax':'quarter','profit_before_tax_ytd':'ytd',
+                        'solvency_ratio':'quarter_end'}}
     result['reported_quarter_amounts']={k:float(v) for k,v in amounts.items()}
+    result['reported_ytd_amounts']={k:float(v) for k,v in amounts.items()}
+    result['reported_prior_year_quarter_amounts']={k:float(prior_year_comparative(texts[5],label)) for k,label in AMOUNT_LABELS.items()}
+    result['reported_prior_year_ytd_amounts']=dict(result['reported_prior_year_quarter_amounts'])
     result['reported_ytd_ratios']={k:float(v) for k,v in reported.items()}
     result['status']='q1_2026_pdf_reconciled_not_published'
     return result

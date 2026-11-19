@@ -76,8 +76,22 @@ def check():
             if comparison.get('investor_use_approved') is not False:
                 raise ValueError('Nine-insurer comparison must not claim investor approval')
             klp=next((x for x in comparison['companies'] if x['company']=='KLP Skadeforsikring'),None)
-            if not klp or klp['status']!='unverified_missing' or any(v is not None for v in klp['metrics'].values()):
-                raise ValueError('Unverified KLP metrics must remain missing on public Pages')
+            if not klp:
+                raise ValueError('Public nine-insurer comparison missing KLP')
+            if klp['status']=='unverified_missing':
+                if any(v is not None for v in klp['metrics'].values()):
+                    raise ValueError('Unverified KLP metrics must remain missing on public Pages')
+            elif klp['status']=='verified_official_pdf_reconciled':
+                from check_extended_insurer_evidence import REQUIRED
+                original=json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8'))
+                source=original['insurers']['KLP Skadeforsikring']
+                if (source.get('status')!='verified_official_pdf_reconciled'
+                    or klp.get('period')!='Q3 2026'
+                    or klp.get('metrics')!=source.get('metrics')
+                    or set(source.get('metrics',{}))!=REQUIRED):
+                    raise ValueError('KLP public PDF metrics differ from reconciled source')
+            else:
+                raise ValueError('KLP public comparison claimed unsupported evidence')
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
             for marker in ('id="verified-q3-dashboard-bridge"',

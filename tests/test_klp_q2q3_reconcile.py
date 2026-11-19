@@ -21,11 +21,16 @@ def pages(q):
     result=['Resultatregnskap',
         f'NOTE MILLIONER KRONER {q}. kvartal 2026 {q}. kvartal 2025 {date} 30.09.2025 31.12.2025']
     result += [f'{name} {a[i]} 1,0 {y[i]} 1,0 1,0' for i,name in enumerate(names)]
+    profit=('157,6','194,5') if q==2 else ('154,6','349,1')
+    result.append(f'Resultat før skattekostnad {profit[0]} 1,0 {profit[1]} 1,0 1,0')
     note=['Note 10 Nøkkeltall - akkumulert',
           f'MILLIONER KRONER {q}. kvartal 2026 1. kvartal 2026 4. kvartal 2025']
     for name,v in zip(['Skadeprosent brutto','Gjenforsikringsprosent',
         'Skadeprosent etter gjenforsikring','Kostnadsprosent','Totalskadeprosent'],ratios):
         note.append(f'{name} {v} % 90,0 % 80,0 % 70,0 % 60,0 %')
+    note += [f'Resultat før skatt {profit[1]} 1,0 1,0 1,0 1,0',
+             f'Avkastning på midler til forvaltning '+('3,0' if q==2 else '3,7')+' % 0,5 % 6,2 % 4,5 % 2,7 %',
+             f'Solvenskapitaldekning '+('222' if q==2 else '219')+' % 231 % 233 % 261 % 242 %']
     texts=['']*21
     texts[5]='\n'.join(result)
     texts[20]='\n'.join(note)
@@ -36,6 +41,7 @@ class KLPQ2Q3RealReconciliation(unittest.TestCase):
         r=verify_pages(pages(2),2,'https://www.klp.no/q2.pdf','a'*64)
         self.assertAlmostEqual(r['ratios']['combined_ratio'],99.30077,places=4)
         self.assertEqual(r['reported_ytd_ratios']['combined_ratio'],99.8)
+        self.assertEqual(r['reported_management_metrics']['solvency_ratio'],222)
         self.assertEqual(r['reported_quarter_amounts']['insurance_revenue'],986.8)
         self.assertEqual(r['reported_ytd_amounts']['insurance_revenue'],2032.5)
     def test_q3_isolated_not_ytd_subtraction(self):
