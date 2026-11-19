@@ -32,7 +32,7 @@ class KLPRealPDFReconciliationTests(unittest.TestCase):
         self.assertAlmostEqual(r['ratios']['combined_ratio'],100.34,places=1)
         self.assertEqual(r['reported_ytd_ratios']['combined_ratio'],100.4)
         self.assertEqual(r['reported_management_metrics']['solvency_ratio'],231)
-        self.assertEqual(r['reported_management_metrics']['investment_return_ytd'],0.5)
+        self.assertNotIn('investment_return_ytd',r['reported_management_metrics'])
     def test_wrong_note_blocks(self):
         x=fixture();x[20]=x[20].replace('100,4 %','97,0 %')
         with self.assertRaisesRegex(ValueError,'reconciliation'):verify_pages(x)
