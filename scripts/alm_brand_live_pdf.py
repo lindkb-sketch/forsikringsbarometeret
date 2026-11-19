@@ -112,6 +112,8 @@ def parse_row(page,label):
     matches=[s for s in lines if re.match(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+',s,re.I)]
     if len(matches)!=1:raise ValueError('Missing or ambiguous group PDF row: '+label)
     tail=re.sub(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+','',matches[0],count=1,flags=re.I)
+    # Issuer mixes decimal comma (67,4) with thousands comma (3,054).
+    tail=re.sub(r'(?<=\d),(?=\d{1,2}(?:\s|$))','.',tail)
     nums=NUM.findall(tail)
     if len(nums)!=5:raise ValueError('Unexpected Q3/Q3-prior/HIÅ/HIÅ-prior/FY columns: '+label)
     return [Decimal(x.replace(',','')) for x in nums]
