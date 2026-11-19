@@ -2,7 +2,7 @@
   "schema_version": 1,
   "count": 9,
   "investor_use_approved": false,
-  "note": "Do not aggregate revenue across currencies or different reporting definitions; missing values are null.",
+  "note": "Growth is period-matched insurance revenue versus previous year; ROE/ROOF and solvency are issuer-specific; investment return is not a substitute; do not aggregate currencies or unlike accounting scopes. Missing values are null.",
   "companies": [
     {
       "company": "Fremtind",
@@ -15,7 +15,11 @@
         "insurance_service_result": 1704,
         "combined_ratio": 73,
         "loss_ratio": 52.5,
-        "expense_ratio": 20.5
+        "expense_ratio": 20.5,
+        "insurance_revenue_growth": 4.266578468662141,
+        "return_on_equity": 40.2,
+        "solvency_ratio": 189,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     },
@@ -30,7 +34,11 @@
         "insurance_service_result": 3003.6,
         "combined_ratio": 73.6,
         "loss_ratio": 62,
-        "expense_ratio": 11.5
+        "expense_ratio": 11.5,
+        "insurance_revenue_growth": 1.4774279363322318,
+        "return_on_equity": 34.2,
+        "solvency_ratio": 190.0,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     },
@@ -45,7 +53,11 @@
         "insurance_service_result": 2454,
         "combined_ratio": 76.8,
         "loss_ratio": 63.6,
-        "expense_ratio": 13.3
+        "expense_ratio": 13.3,
+        "insurance_revenue_growth": 4.088452088452099,
+        "return_on_equity": 47,
+        "solvency_ratio": 203.0,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     },
@@ -60,7 +72,11 @@
         "insurance_service_result": 435.0,
         "combined_ratio": 82.6,
         "loss_ratio": 57.7,
-        "expense_ratio": 24.9
+        "expense_ratio": 24.9,
+        "insurance_revenue_growth": 8.684324793747278,
+        "return_on_equity": null,
+        "solvency_ratio": null,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     },
@@ -75,7 +91,11 @@
         "insurance_service_result": 184.381,
         "combined_ratio": 84.0,
         "loss_ratio": 61.4,
-        "expense_ratio": 22.6
+        "expense_ratio": 22.6,
+        "insurance_revenue_growth": 18.96354504014568,
+        "return_on_equity": null,
+        "solvency_ratio": null,
+        "profit_before_tax": null
       },
       "revenue_comparable": false
     },
@@ -90,7 +110,11 @@
         "insurance_service_result": 670,
         "combined_ratio": 82.7,
         "loss_ratio": 71.7,
-        "expense_ratio": 10.9
+        "expense_ratio": 10.9,
+        "insurance_revenue_growth": 9.492774156984973,
+        "return_on_equity": 47.9,
+        "solvency_ratio": 231.0,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     },
@@ -105,22 +129,30 @@
         "insurance_service_result": 386,
         "combined_ratio": 87,
         "loss_ratio": 69,
-        "expense_ratio": 18
+        "expense_ratio": 18,
+        "insurance_revenue_growth": 17.01010101010101,
+        "return_on_equity": 14.4,
+        "solvency_ratio": 200,
+        "profit_before_tax": null
       },
       "revenue_comparable": false
     },
     {
       "company": "KLP Skadeforsikring",
-      "period": null,
-      "currency": null,
-      "status": "unverified_missing",
-      "source_url": null,
+      "period": "Q3 2026",
+      "currency": "NOK",
+      "status": "verified_official_pdf_reconciled",
+      "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
       "metrics": {
-        "insurance_revenue": null,
-        "insurance_service_result": null,
-        "combined_ratio": null,
-        "loss_ratio": null,
-        "expense_ratio": null
+        "insurance_revenue": 1041.0,
+        "insurance_service_result": 113.6,
+        "combined_ratio": 89.08741594620557,
+        "loss_ratio": 77.21421709894332,
+        "expense_ratio": 11.873198847262248,
+        "insurance_revenue_growth": 32.83144060227128,
+        "return_on_equity": null,
+        "solvency_ratio": 219.0,
+        "profit_before_tax": 154.6
       },
       "revenue_comparable": false
     },
@@ -135,7 +167,11 @@
         "insurance_service_result": 755,
         "combined_ratio": 75.3,
         "loss_ratio": 59.2,
-        "expense_ratio": 16.1
+        "expense_ratio": 16.1,
+        "insurance_revenue_growth": 1.6,
+        "return_on_equity": null,
+        "solvency_ratio": null,
+        "profit_before_tax": null
       },
       "revenue_comparable": true
     }
