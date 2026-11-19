@@ -109,7 +109,7 @@ def download_report(url):
 
 def parse_row(page,label):
     lines=[s.strip() for s in page.splitlines()]
-    matches=[s for s in lines if re.match(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+',s,re.I)]
+    matches=[s for s in lines if re.match(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+(?=-?\d)',s,re.I)]
     if len(matches)!=1:raise ValueError('Missing or ambiguous group PDF row: '+label)
     tail=re.sub(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+','',matches[0],count=1,flags=re.I)
     # Issuer mixes decimal comma (67,4) with thousands comma (3,054).
@@ -185,7 +185,6 @@ def verify_pages(texts,url,raw,regions=None):
         'loss_ratio':float(rows['loss_ratio'][0]),
         'expense_ratio':float(rows['expense_ratio'][0]),
         'insurance_revenue_growth':EXPECTED['insurance_revenue_growth'],
-        'solvency_ratio':None,
         'profit_before_tax':None,
         'return_on_equity':roe_quarter,
         'solvency_ratio':solvency,
