@@ -156,9 +156,7 @@ def verify_pages(texts,url,raw):
         'loss_ratio':float(rows['loss_ratio'][0]),
         'expense_ratio':float(rows['expense_ratio'][0]),
         'insurance_revenue_growth':EXPECTED['insurance_revenue_growth'],
-        'return_on_equity':None,
         'solvency_ratio':None,
-        'investment_return_ytd':None,
         'profit_before_tax':None,
     }
     for metric,expected in EXPECTED.items():
