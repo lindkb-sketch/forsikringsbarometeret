@@ -9,6 +9,16 @@ FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_fina
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 
+def klp_metrics_match(public_metrics, source_metrics):
+    """Source values must match exactly; absent optional fields may only be null."""
+    expected={'insurance_revenue','insurance_service_result','combined_ratio',
+              'loss_ratio','expense_ratio','insurance_revenue_growth',
+              'solvency_ratio','profit_before_tax'}
+    return (set(source_metrics)==expected
+            and isinstance(public_metrics,dict)
+            and all(public_metrics.get(k)==v for k,v in source_metrics.items())
+            and all(v is None for k,v in public_metrics.items() if k not in source_metrics))
+
 def check_seven(feed,html):
     rows=feed.get('observations',[])
     if not isinstance(rows,list):raise ValueError('Public financial observations must be a list')
@@ -87,9 +97,7 @@ def check():
                 source=original['insurers']['KLP Skadeforsikring']
                 if (source.get('status')!='verified_official_pdf_reconciled'
                     or klp.get('period')!='Q3 2026'
-                    or set(source.get('metrics',{}))!=REQUIRED|{'insurance_revenue_growth','solvency_ratio','profit_before_tax'}
-                    or any(klp.get('metrics',{}).get(k)!=v for k,v in source.get('metrics',{}).items())
-                    or any(v is not None for k,v in klp.get('metrics',{}).items() if k not in source.get('metrics',{}))):
+                    or not klp_metrics_match(klp.get('metrics',{}),source.get('metrics',{}))):
                     raise ValueError('KLP public PDF metrics differ from reconciled source')
             else:
                 raise ValueError('KLP public comparison claimed unsupported evidence')
