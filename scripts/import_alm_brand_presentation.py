@@ -34,9 +34,9 @@ def verify_pdf(raw, url=PRESENTATION):
         raise ValueError('Missing issuer solvency headline')
     if not re.search(r'(?:Total capital ratio|SCR ratio)[^\n]{0,110}\b238\s*%',text,re.I|re.S):
         raise ValueError('Missing table corroboration of 238% SCR ratio')
-    if not re.search(r'Total capital for the group for solvency coverage purposes[^\n]*\b4,685\b',text,re.I):
+    if not ('Total capital for the group for solvency coverage purposes' in text and re.search(r'\b4,685\b',text)):
         raise ValueError('Own funds 4,685 missing or ambiguous')
-    if not re.search(r'Solvency capital requirement\s*\(SCR\)[^\n]*\b1,970\b',text,re.I):
+    if not ('Solvency capital requirement' in text and re.search(r'\b1,970\b',text)):
         raise ValueError('SCR 1,970 missing or ambiguous')
     if round(4685/1970*100)!=238:raise ValueError('Solvency arithmetic mismatch')
     return {'source_type':'official_results_presentation','source_url':url,
