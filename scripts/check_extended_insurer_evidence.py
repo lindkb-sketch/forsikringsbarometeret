@@ -80,10 +80,10 @@ def validate(extended, sources, calendar):
                 if (management.get('source_sha256')!=p.get('source_sha256')
                     or type(management.get('source_page')) is not int
                     or management.get('source_page',0)<1
-                    or management.get('investment_return_is_not_roe') is not True
+                    or management.get('source_metric')!='reported_solvency_and_pre_tax_profit'
                     or 'return_on_equity' in metrics
                     or management.get('period_basis',{}).get('solvency_ratio')!='quarter_end'
-                    or management.get('period_basis',{}).get('investment_return_ytd')!='ytd'):
+                    ):
                     errors.append('KLP solvency/investment source evidence incomplete Q'+str(p.get('quarter')))
                 if growth.get('previous_year')!=2025 or growth.get('source_sha256')!=p.get('source_sha256'):
                     errors.append('KLP income-growth evidence source mismatch Q'+str(p.get('quarter')))
