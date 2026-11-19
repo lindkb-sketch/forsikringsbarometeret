@@ -11,7 +11,7 @@ from klp_q1_2026_pdf_reconcile import run as run_q1
 from klp_q2_q3_discovery import run as discover
 from klp_q2q3_reconcile import run as run_later
 
-REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
+REQUIRED=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio','insurance_revenue_growth')
 KLP='KLP Skadeforsikring'
 ARCHIVE=INDEX[KLP]
 
@@ -30,12 +30,26 @@ def row_from_reconciliation(item):
         raise ValueError('Missing official KLP PDF provenance')
     values=item['reported_quarter_amounts']
     ratios=item['ratios']
+    prior=item.get('reported_prior_year_quarter_amounts',{})
+    ytd=item.get('reported_ytd_amounts') or values
+    prior_ytd=item.get('reported_prior_year_ytd_amounts',{})
+    if not all(k in x for x in (values,prior,ytd,prior_ytd) for k in ('insurance_revenue',)):
+        raise ValueError('Missing same-basis KLP prior-year revenue comparator')
+    def growth(current,previous):
+        if not isinstance(current,(float,int)) or not isinstance(previous,(float,int)) or previous<=0:
+            raise ValueError('Invalid source-backed KLP insurance revenue growth comparator')
+        return (current/previous-1)*100
+    quarter_growth=growth(values['insurance_revenue'],prior['insurance_revenue'])
+    ytd_growth=growth(ytd['insurance_revenue'],prior_ytd['insurance_revenue'])
     metrics={'insurance_revenue':values['insurance_revenue'],
              'insurance_service_result':values['insurance_service_result'],
              'combined_ratio':ratios['combined_ratio'],
              'loss_ratio':ratios['loss_ratio'],
-             'expense_ratio':ratios['expense_ratio']}
-    if set(metrics)!=set(REQUIRED) or metrics['insurance_revenue']<=0:
+             'expense_ratio':ratios['expense_ratio'],
+             'insurance_revenue_growth':quarter_growth,
+             'return_on_equity':None,
+             'solvency_ratio':None}
+    if not set(REQUIRED).issubset(metrics) or metrics['insurance_revenue']<=0:
         raise ValueError('Incomplete KLP issuer metrics')
     return {'company':KLP,'year':2026,'quarter':q,'scope':'company',
             'currency':'NOK','unit':'NOK million for financial amounts; percent for ratios',
@@ -45,6 +59,16 @@ def row_from_reconciliation(item):
             'source_pages':{'quarter':docs[0]['source_pages'],
                             'ytd':docs[1]['source_pages']},
             'metrics':metrics,'reported_ytd_ratios':item['reported_ytd_ratios'],
+            'revenue_growth_evidence':{
+                'quarter':{'year':2026,'quarter':q,'current':values['insurance_revenue'],
+                           'prior_year':prior['insurance_revenue'],'growth_percent':quarter_growth,
+                           'source_page':docs[0]['source_pages'][0]},
+                'ytd':{'year':2026,'quarter':q,'current':ytd['insurance_revenue'],
+                       'prior_year':prior_ytd['insurance_revenue'],'growth_percent':ytd_growth,
+                       'source_page':docs[0]['source_pages'][0]},
+                'revenue_definition':'KLP Forsikringsinntekter; NOK million; same company basis',
+                'previous_year':2025,
+                'source_sha256':docs[0]['source_sha256']},
             'status':'verified_official_pdf_reconciled'}
 
 def build_snapshot(q1,q2,q3):
