@@ -46,14 +46,13 @@ def row_from_reconciliation(item):
         if field not in management:
             raise ValueError('Missing issuer-reported additional KLP KPI: '+field)
     if management.get('return_on_equity') is not None:
-        raise ValueError('KLP management asset return cannot be treated as ROE')
+        raise ValueError('KLP asset return is not issuer-reported ROE/ROOF')
     metrics={'insurance_revenue':values['insurance_revenue'],
              'insurance_service_result':values['insurance_service_result'],
              'combined_ratio':ratios['combined_ratio'],
              'loss_ratio':ratios['loss_ratio'],
              'expense_ratio':ratios['expense_ratio'],
              'insurance_revenue_growth':quarter_growth,
-             'return_on_equity':None,
              'solvency_ratio':management['solvency_ratio'],
              'profit_before_tax':management['profit_before_tax']}
     if not set(REQUIRED).issubset(metrics) or metrics['insurance_revenue']<=0:
