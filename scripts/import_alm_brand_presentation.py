@@ -23,7 +23,7 @@ def verify_pdf(raw, url=PRESENTATION):
         pages=[p.extract_text() or '' for p in pdf.pages]
     if len(pages)<19:raise ValueError('Official Q3 presentation lacks slide 19')
     cover=' '.join(pages[:3]).lower()
-    if not ('alm' in cover and ('2026' in cover or 'q3' in cover)):
+    if not ('2026' in cover and 'q3' in cover and 'insurance' in cover):
         raise ValueError('Wrong issuer or period in presentation')
     text=pages[18]
     compact=' '.join(text.split())
