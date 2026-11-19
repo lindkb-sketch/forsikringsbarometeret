@@ -1,6 +1,6 @@
 {
   "source": "NewsWeb",
-  "updated_at": "2026-11-18T12:49:55.440183+00:00",
+  "updated_at": "2026-11-19T10:26:52.799562+00:00",
   "notices": {
     "Fremtind": [
       {
@@ -18,10 +18,10 @@
     "Gjensidige": [
       {
         "source": "NewsWeb",
-        "id": "685479",
-        "title": "Rentefastsettelse",
-        "url": "https://newsweb.oslobors.no/message/685479",
-        "published_at": "2026-11-03T12:46:51.207000+00:00",
+        "id": "686907",
+        "title": "Euronext Oslo Børs - GJENSIDIGE FORSIKRING ASA - Mottatt søknad om notering av obligasjonslån",
+        "url": "https://newsweb.oslobors.no/message/686907",
+        "published_at": "2026-11-19T09:55:45.860000+00:00",
         "issuer_id": 11217,
         "issuer_sign": "GJF",
         "issuer_name": "Gjensidige Forsikring ASA",
