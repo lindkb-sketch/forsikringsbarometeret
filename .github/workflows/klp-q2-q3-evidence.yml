@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'scripts/klp_q2_q3_discovery.py'
+      - 'scripts/klp_q2q3_reconcile.py'
       - '.github/workflows/klp-q2-q3-evidence.yml'
 
 permissions:
@@ -24,6 +25,8 @@ jobs:
         run: python -m pip install 'pdfplumber>=0.11,<0.13'
       - name: Discover and inspect official KLP Q2/Q3 2026 PDF reports
         run: python scripts/klp_q2_q3_discovery.py
+      - name: Reconcile isolated Q2/Q3 and independently verify reported HIÅ ratios
+        run: python scripts/klp_q2q3_reconcile.py --evidence klp-audit/q2-q3-discovery.json --out klp-audit/q2-q3-reconciled.json
       - name: Upload page-located source evidence
         if: always()
         uses: actions/upload-artifact@v4
