@@ -25,7 +25,8 @@ def build(feed, extended):
             period = f"Q{item['quarter']} {item['year']}" if verified else None
             source = item.get('source_url') if verified else None
             status = ('verified_official_pdf_reconciled' if state=='verified_official_pdf_reconciled'
-                      else 'verified_official_presentation_reconciled' if state=='verified_official_presentation_reconciled'\n                      else 'issuer_announcement_only' if state=='verified_issuer_announcement'
+                      else 'verified_official_presentation_reconciled' if state=='verified_official_presentation_reconciled'
+                      else 'issuer_announcement_only' if state=='verified_issuer_announcement'
                       else 'unverified_missing')
             currency = item.get('currency') if verified else None
         else:
@@ -72,7 +73,8 @@ def main():
     extended = json.loads((ROOT / 'data/extended_insurer_financials.json').read_text())
     output = build(feed, extended)
     target = ROOT / 'data/nine_insurer_comparison.json'
-    serialized = json.dumps(output, ensure_ascii=False, indent=2) + '\n'
+    serialized = json.dumps(output, ensure_ascii=False, indent=2) + '
+'
     if not target.exists() or target.read_text() != serialized:
         target.write_text(serialized)
     print('Nine-insurer comparison generated; investor_use_approved=false')
