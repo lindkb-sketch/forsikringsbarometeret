@@ -44,7 +44,7 @@ def discover(html):
                         'KLP Boligkreditt','KLP Skadeforsikring'):
                 self.company=text
                 self.year=None
-            elif re.fullmatch(r'20\\d{2}',text):
+            elif re.fullmatch(r'20\d{2}',text):
                 self.year=int(text)
         def handle_starttag(self,tag,attrs):
             if tag.lower()=='a':
@@ -66,7 +66,7 @@ def discover(html):
                 url=urljoin(INDEX_URL,href)
                 if approved(url,'KLP Skadeforsikring'):
                     for q in PERIODS:
-                        if re.search(r'kvartalsrapport\\s+(?:for\\s+)?'+str(q)+r'\\.\\s*kvartal',label,re.I):
+                        if re.search(r'kvartalsrapport\s+(?:for\s+)?'+str(q)+r'\.\s*kvartal',label,re.I):
                             if url not in self.found[q]:self.found[q].append(url)
             self.anchor=None
     parser=Archive()
