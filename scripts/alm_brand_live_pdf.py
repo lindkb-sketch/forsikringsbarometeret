@@ -126,7 +126,7 @@ def verify_pages(texts,url,raw,regions=None):
         raise ValueError('Wrong entity or period: expected Alm Brand Group Q3 2026')
     eligible=[(i,t) for i,t in enumerate(texts)
               if 'Gross expense ratio' in t and 'Net reinsurance ratio' in t
-              and 'Insurance service result' in t and 'ALM. BRAND GROUP' in t and 'Q3 2026' in t]
+              and 'Insurance service result' in t and 'Q3 2026' in t]
     if len(eligible)!=1:raise ValueError('Missing or ambiguous official Group financial-highlights table')
     page_index,page=eligible[0]
     regions=regions or {}
@@ -144,7 +144,9 @@ def verify_pages(texts,url,raw,regions=None):
     if len(solvent)!=1:raise ValueError('Missing issuer Group solvency table')
     solvency_index,solvency_page=solvent[0]
     solvency_text=regions.get(solvency_index,{}).get('right') or solvency_page
-    coverage=re.search(r'Total capital as a percentage of solvency capital\s+requirement\s+(\d{2,3})\s+(\d{2,3})',solvency_text,re.I)
+    coverage=re.search(r'Total capital as a percentage of solvency capital[\s\S]{0,180}?(\d{2,3})\s+(\d{2,3})\s*\n\s*requirement',solvency_text,re.I)
+    if not coverage:
+        coverage=re.search(r'Total capital as a percentage of solvency capital\s+requirement\s+(\d{2,3})\s+(\d{2,3})',solvency_text,re.I)
     if not coverage:raise ValueError('Missing quarter-end Group solvency ratio')
     solvency=float(coverage.group(1))
     if not 100<=solvency<=500:raise ValueError('Implausible Group solvency ratio')
