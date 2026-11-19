@@ -41,7 +41,7 @@ class KLPProductionTests(unittest.TestCase):
         self.assertAlmostEqual(snapshot['metrics']['insurance_revenue_growth'],(1003/803-1)*100)
         self.assertNotIn('return_on_equity',snapshot['metrics'])
         self.assertEqual(snapshot['metrics']['solvency_ratio'],219)
-        self.assertEqual(snapshot['metrics']['investment_return_ytd'],3.7)
+        self.assertNotIn('investment_return_ytd',snapshot['metrics'])
         self.assertEqual(snapshot['metrics']['profit_before_tax'],30)
         self.assertAlmostEqual(snapshot['periods'][-1]['revenue_growth_evidence']['ytd']['growth_percent'],(2203/1803-1)*100)
         self.assertEqual(len(snapshot['periods']),3)
