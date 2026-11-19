@@ -57,10 +57,11 @@ def fetch(url=SOURCE):
 def update(document=None,out=OUT):
     row=extract(fetch() if document is None else document)
     old=json.loads(out.read_text(encoding='utf-8')) if out.exists() else {}
-    payload={'insurers':{'Alm. Brand':row,
-        'KLP Skadeforsikring':{'company':'KLP Skadeforsikring',
-            'status':'awaiting_source_verified_metrics','metrics':{},
-            'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'}}}
+    klp=old.get('insurers',{}).get('KLP Skadeforsikring',{
+        'company':'KLP Skadeforsikring','status':'awaiting_source_verified_metrics',
+        'metrics':{},'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'})
+    # Never erase a validated KLP PDF snapshot when refreshing Alm Brand.
+    payload={'insurers':{'Alm. Brand':row,'KLP Skadeforsikring':klp}}
     if old==payload:return False
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
