@@ -61,7 +61,7 @@ def update(document=None,out=OUT):
     klp=old.get('insurers',{}).get('KLP Skadeforsikring',{
         'company':'KLP Skadeforsikring','status':'awaiting_source_verified_metrics',
         'metrics':{},'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'})
-    # Never erase a validated KLP PDF snapshot when refreshing Alm Brand.
+    # Preserve independently verified official presentation solvency evidence.\n    previous=old.get('insurers',{}).get('Alm. Brand',{})\n    if previous.get('status')=='verified_official_presentation_reconciled':\n        from import_alm_brand_presentation import reconcile\n        row=reconcile(row,previous['presentation_evidence'])\n    # Never erase a validated KLP PDF snapshot when refreshing Alm Brand.
     payload={'insurers':{'Alm. Brand':row,'KLP Skadeforsikring':klp}}
     if old==payload:return False
     out.parent.mkdir(parents=True,exist_ok=True)
