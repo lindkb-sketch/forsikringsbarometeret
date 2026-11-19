@@ -7,23 +7,28 @@ from pathlib import Path
 from import_extended_pdfs import download
 from klp_pdf_tables import table_evidence
 
-def audit(url, *, fetch=download, extract=table_evidence):
+def audit(url, *, fetch=download, extract=table_evidence, inspect_pages=True):
     raw=fetch(url,'KLP Skadeforsikring')
     evidence=extract(raw,url)
     # Preserve full page text and word coordinates for the result table and KPI notes.
     # pdfplumber's default table extraction can merge distinct numeric columns.
     import pdfplumber
-    with pdfplumber.open(io.BytesIO(raw)) as pdf:
-        diagnostic_pages=[]
-        for page_no,page in enumerate(pdf.pages,1):
-            page_text=page.extract_text(layout=False) or ''
-            if page_no == 6 or any(term in page_text.lower() for term in
-                    ('skadeprosent brutto','gjenforsikringsprosent','totalskadeprosent')):
-                diagnostic_pages.append({'page':page_no,'width':page.width,
+    if inspect_pages:
+        pdf_context=pdfplumber.open(io.BytesIO(raw))
+    else:
+        pdf_context=None
+    if pdf_context is not None:
+        with pdf_context as pdf:
+            diagnostic_pages=[]
+            for page_no,page in enumerate(pdf.pages,1):
+                page_text=page.extract_text(layout=False) or ''
+                if page_no == 6 or any(term in page_text.lower() for term in
+                        ('skadeprosent brutto','gjenforsikringsprosent','totalskadeprosent')):
+                    diagnostic_pages.append({'page':page_no,'width':page.width,
                     'height':page.height,'text':page_text[:25000],
                     'words':[{'text':w['text'],'x0':round(w['x0'],1),
                               'top':round(w['top'],1)} for w in page.extract_words()[:1200]]})
-        evidence['diagnostic_pages']=diagnostic_pages
+            evidence['diagnostic_pages']=diagnostic_pages
     rows=evidence.get('rows',[])
     if not rows:
         raise ValueError('No financial table rows extracted from official KLP PDF')
