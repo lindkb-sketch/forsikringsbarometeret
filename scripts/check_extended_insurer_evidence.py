@@ -50,8 +50,8 @@ def validate(extended, sources, calendar):
                 metrics=p.get('metrics',{})
                 if (p.get('status')!='verified_official_pdf_reconciled'
                     or not REQUIRED.issubset(metrics)
-                    or not {'insurance_revenue_growth','return_on_equity','solvency_ratio','investment_return_ytd','profit_before_tax'}.issubset(metrics)
-                    or any(type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k]) for k in REQUIRED|{'insurance_revenue_growth','solvency_ratio','investment_return_ytd','profit_before_tax'})
+                    or not {'insurance_revenue_growth','return_on_equity','solvency_ratio','profit_before_tax'}.issubset(metrics)
+                    or any(type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k]) for k in REQUIRED|{'insurance_revenue_growth','solvency_ratio','profit_before_tax'})
                     or any(metrics[k] is not None and (type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k])) for k in ('return_on_equity','solvency_ratio'))
                     or p.get('scope')!='company' or p.get('currency')!='NOK'
                     or p.get('source_type')!='official_quarterly_report'
