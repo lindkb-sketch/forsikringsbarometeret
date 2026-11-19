@@ -22,7 +22,8 @@ def fixture():
       ('Combined ratio','75.3','73.1','75.6','76.4','78.5')]
     t[4]='ALM. BRAND GROUP – Q3 2026\nQ3 2026 Q3 2025 Q1-Q3 2026 Q1-Q3 2025 2025\n'+'\n'.join(
          k+' '+v+' '+p+' '+y+' '+yp+' '+full for k,v,p,y,yp,full in data)
-    t[4]+='\nReturn on equity after tax\n18.0 13.6 10.0 14.4 14.4\n(% p.a.) **'    return t
+    t[4]+='\nReturn on equity after tax\n18.0 13.6 10.0 14.4 14.4\n(% p.a.) **'
+    return t
 class AlmBrandLivePDFTests(unittest.TestCase):
     def test_only_issuer_cdn_and_ir_pdf(self):
         self.assertTrue(trusted_pdf_link(URL))
