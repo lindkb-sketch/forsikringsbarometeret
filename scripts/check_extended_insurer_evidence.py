@@ -84,7 +84,7 @@ def validate(extended, sources, calendar):
                     or 'return_on_equity' in metrics
                     or management.get('period_basis',{}).get('solvency_ratio')!='quarter_end'
                     ):
-                    errors.append('KLP solvency/investment source evidence incomplete Q'+str(p.get('quarter')))
+                    errors.append('KLP solvency and pre-tax profit source evidence incomplete Q'+str(p.get('quarter')))
                 if growth.get('previous_year')!=2025 or growth.get('source_sha256')!=p.get('source_sha256'):
                     errors.append('KLP income-growth evidence source mismatch Q'+str(p.get('quarter')))
                 if abs(float(metrics.get('insurance_revenue_growth',-10000))-float(growth.get('quarter',{}).get('growth_percent',-20000)))>1e-6:
