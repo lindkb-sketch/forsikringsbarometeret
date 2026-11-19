@@ -34,7 +34,7 @@ def validate(extended, sources, calendar):
     if alm.get('year') != 2026 or alm.get('quarter') != 3:
         errors.append('Alm. Brand verified snapshot is not Q3 2026')
     metrics = alm.get('metrics', {})
-    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth'}) or any(
+    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth','solvency_ratio'}) or any(
         isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
     ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
         errors.append('Alm. Brand verified metric set is incomplete or invalid')
