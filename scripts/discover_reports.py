@@ -35,7 +35,7 @@ def discover(html,base_url,company):
   presentation=re.search(r"(presentation|presentasjon|investor.?slides|results.?slides|resultatpresentasjon)",label,re.I)
   if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
   if presentation:
-   if not re.search(r"(q[1-4]|[1-4]\\.?\\s*kvartal|[1-4]\\.?\\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
+   if not re.search(r"(q[1-4]|[1-4]\.?\s*kvartal|[1-4]\.?\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
    kind="results_presentation"
   elif report:kind="quarterly_report"
   else:continue
