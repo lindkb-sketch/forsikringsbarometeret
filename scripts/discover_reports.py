@@ -37,11 +37,14 @@ def discover(html,base_url,company):
   if presentation:
    if not re.search(r"(q[1-4]|[1-4]\.?\s*kvartal|[1-4]\.?\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
    kind="results_presentation"
-  elif report:kind="quarterly_report"
+   status="candidate_requires_presentation_verification"
+  elif report:
+   kind="quarterly_report"
+   status="candidate_requires_quarterly_report_verification"
   else:continue
   if url not in seen:
    found.append({"company":company,"document_url":url,"document_type":kind,
-                 "status":"candidate_requires_source_verification",
+                 "status":status,
                  "link_text":link["text"].strip()})
    seen.add(url)
  return found
