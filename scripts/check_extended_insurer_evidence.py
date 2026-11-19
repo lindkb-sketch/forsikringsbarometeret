@@ -38,7 +38,30 @@ def validate(extended, sources, calendar):
     ):
         errors.append('Alm. Brand verified metric set is incomplete or invalid')
     klp = insurers.get('KLP Skadeforsikring', {})
-    if klp.get('status') != 'awaiting_source_verified_metrics' or klp.get('metrics') != {}:
+    if klp.get('status') == 'awaiting_source_verified_metrics' and klp.get('metrics') == {}:
+        pass
+    elif klp.get('status') == 'verified_official_pdf_reconciled':
+        periods=klp.get('periods',[])
+        if len(periods)!=3 or [(p.get('year'),p.get('quarter')) for p in periods]!=[(2026,1),(2026,2),(2026,3)]:
+            errors.append('KLP must provide all three verified quarter PDF periods')
+        else:
+            for p in periods:
+                metrics=p.get('metrics',{})
+                if (p.get('status')!='verified_official_pdf_reconciled'
+                    or set(metrics)!=REQUIRED
+                    or any(type(v) not in (float,int) for v in metrics.values())
+                    or p.get('scope')!='company' or p.get('currency')!='NOK'
+                    or p.get('source_type')!='official_quarterly_report'
+                    or not str(p.get('source_url','')).startswith('https://www.klp.no/')
+                    or len(str(p.get('source_sha256','')))!=64
+                    or not p.get('source_pages',{}).get('quarter')
+                    or not p.get('source_pages',{}).get('ytd')
+                    or set(p.get('reported_ytd_ratios',{}))!=
+                       {'gross_loss_ratio','reinsurance_ratio','loss_ratio','expense_ratio','combined_ratio'}):
+                    errors.append('KLP PDF source or quarter metrics incomplete: Q'+str(p.get('quarter')))
+            if (klp.get('year'),klp.get('quarter'))!=(2026,3) or klp.get('metrics')!=periods[-1]['metrics']:
+                errors.append('KLP latest published quarter does not match verified Q3')
+    else:
         errors.append('KLP metrics require source verification before publication')
     return errors
 
@@ -50,7 +73,7 @@ def main():
     errors = validate(extended, sources, calendar)
     print(json.dumps({'nine_issuer_registry_checked': True,
                       'nine_company_financial_parity_certified': False,
-                      'klp_metrics_verified': False,
+                      'klp_metrics_verified': extended.get('insurers',{}).get('KLP Skadeforsikring',{}).get('status')=='verified_official_pdf_reconciled',
                       'alm_brand_pdf_page_import_verified': False,
                       'errors': errors}, ensure_ascii=False, indent=2))
     if errors:
