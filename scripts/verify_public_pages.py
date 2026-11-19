@@ -85,10 +85,14 @@ def check():
                 from check_extended_insurer_evidence import REQUIRED
                 original=json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8'))
                 source=original['insurers']['KLP Skadeforsikring']
+                values=source.get('metrics',{})
+                shown=klp.get('metrics',{})
                 if (source.get('status')!='verified_official_pdf_reconciled'
                     or klp.get('period')!='Q3 2026'
-                    or klp.get('metrics')!=source.get('metrics')
-                    or set(source.get('metrics',{}))!=REQUIRED):
+                    or not REQUIRED.issubset(values)
+                    or not {'insurance_revenue_growth','solvency_ratio','profit_before_tax'}.issubset(values)
+                    or any(shown.get(key)!=value for key,value in values.items())
+                    or any(value is not None for key,value in shown.items() if key not in values)):
                     raise ValueError('KLP public PDF metrics differ from reconciled source')
             else:
                 raise ValueError('KLP public comparison claimed unsupported evidence')
