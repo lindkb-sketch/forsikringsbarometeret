@@ -9,7 +9,7 @@ COMPANIES = ('Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
              'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand')
 METRICS = ('insurance_revenue', 'insurance_service_result', 'combined_ratio',
            'loss_ratio', 'expense_ratio', 'insurance_revenue_growth',
-           'return_on_equity', 'solvency_ratio', 'investment_return_ytd', 'profit_before_tax')
+           'return_on_equity', 'solvency_ratio', 'profit_before_tax')
 
 
 def build(feed, extended):
@@ -63,7 +63,7 @@ def build(feed, extended):
         })
     return {'schema_version': 1, 'count': len(result),
             'investor_use_approved': False,
-            'note': 'Growth is period-matched insurance revenue versus previous year; ROE/solvency and HIÅ investment return are issuer-specific and not interchangeable; do not aggregate currencies or unlike accounting scopes. Missing values are null.',
+            'note': 'Growth is period-matched insurance revenue versus previous year; ROE/ROOF and solvency are issuer-specific; investment return is not a substitute; do not aggregate currencies or unlike accounting scopes. Missing values are null.',
             'companies': result}
 
 
