@@ -25,6 +25,20 @@ jobs:
         run: python scripts/update_newsweb_notices.py --probe
       - name: Install test dependencies
         run: python -m pip install -r requirements-reports.txt
+      - name: Verify live Alm Brand official Q3 presentation PDF before merge
+        run: |
+          python scripts/import_alm_brand_presentation.py
+          python scripts/check_extended_insurer_evidence.py
+          python scripts/build_nine_insurer_comparison.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('data/nine_insurer_comparison.json').read_text())
+          alm=next(c for c in x['companies'] if c['company']=='Alm. Brand')
+          assert alm['status']=='verified_official_presentation_reconciled'
+          assert alm['metrics']['solvency_ratio']==238.0
+          print('ALM_BRAND_LIVE_PRESENTATION_PDF_VERIFIED',alm['metrics']['solvency_ratio'])
+          PY
       - name: Compile importers and discovery
         run: python -m compileall -q scripts tests
       - name: Verify Gjensidige Q3 group solvency from two original issuer PDFs

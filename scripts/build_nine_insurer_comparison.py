@@ -21,10 +21,11 @@ def build(feed, extended):
             item = ext[company]
             values = item.get('metrics', {})
             state=item.get('status')
-            verified=state in ('verified_issuer_announcement','verified_official_pdf_reconciled')
+            verified=state in ('verified_issuer_announcement','verified_official_pdf_reconciled','verified_official_presentation_reconciled')
             period = f"Q{item['quarter']} {item['year']}" if verified else None
             source = item.get('source_url') if verified else None
             status = ('verified_official_pdf_reconciled' if state=='verified_official_pdf_reconciled'
+                      else 'verified_official_presentation_reconciled' if state=='verified_official_presentation_reconciled'
                       else 'issuer_announcement_only' if state=='verified_issuer_announcement'
                       else 'unverified_missing')
             currency = item.get('currency') if verified else None
