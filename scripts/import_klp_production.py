@@ -45,8 +45,6 @@ def row_from_reconciliation(item):
     for field in ('solvency_ratio','profit_before_tax','source_page'):
         if field not in management:
             raise ValueError('Missing issuer-reported additional KLP KPI: '+field)
-    if management.get('return_on_equity') is not None:
-        raise ValueError('KLP asset return is not issuer-reported ROE/ROOF')
     metrics={'insurance_revenue':values['insurance_revenue'],
              'insurance_service_result':values['insurance_service_result'],
              'combined_ratio':ratios['combined_ratio'],
@@ -69,7 +67,7 @@ def row_from_reconciliation(item):
                 'source_sha256':docs[0]['source_sha256'],
                 'period_basis':management['period_basis'],
                 'profit_before_tax_ytd':management['profit_before_tax_ytd'],
-                'investment_return_is_not_roe':True},
+                'source_metric':'reported_solvency_and_pre_tax_profit'},
             'revenue_growth_evidence':{
                 'quarter':{'year':2026,'quarter':q,'current':values['insurance_revenue'],
                            'prior_year':prior['insurance_revenue'],'growth_percent':quarter_growth,
