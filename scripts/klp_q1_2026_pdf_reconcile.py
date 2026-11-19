@@ -81,7 +81,21 @@ def verify_pages(texts,url=URL,sha=None):
     q={**basis,'period_type':'quarter','source_pages':[6],'ratio_components':components}
     y={**basis,'period_type':'ytd','source_pages':[21],'ratio_components':components,
        'reported_ratios':{k:float(v) for k,v in reported.items()}}
+    profit_before_tax=row_value(texts[5],'Resultat før skattekostnad')
+    ytd_pre_tax=row_value(texts[20],'Resultat før skatt')
+    if abs(profit_before_tax-ytd_pre_tax)>Decimal('0.15'):
+        raise ValueError('Q1 pre-tax profit disagrees with issuer HIÅ note')
+    solvency=row_value(texts[20],'Solvenskapitaldekning',percentage=True)
+    investment_ytd=row_value(texts[20],'Avkastning på midler til forvaltning',percentage=True)
+    if not (0<solvency<1000 and -100<investment_ytd<100):
+        raise ValueError('Unexpected KLP solvency or investment return')
     result=reconcile(q,y)
+    result['reported_management_metrics']={'profit_before_tax':float(profit_before_tax),
+        'profit_before_tax_ytd':float(ytd_pre_tax),
+        'solvency_ratio':float(solvency), 'investment_return_ytd':float(investment_ytd),
+        'return_on_equity':None,'source_page':21,
+        'period_basis':{'profit_before_tax':'quarter','profit_before_tax_ytd':'ytd',
+                        'solvency_ratio':'quarter_end','investment_return_ytd':'ytd'}}
     result['reported_quarter_amounts']={k:float(v) for k,v in amounts.items()}
     result['reported_ytd_amounts']={k:float(v) for k,v in amounts.items()}
     result['reported_prior_year_quarter_amounts']={k:float(prior_year_comparative(texts[5],label)) for k,label in AMOUNT_LABELS.items()}
