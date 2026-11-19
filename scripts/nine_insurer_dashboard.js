@@ -57,7 +57,13 @@
         const a=document.createElement('a');a.href=company.source_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=company.company;companyCell.appendChild(a);
       }
       td(row,company.period||'Ikke rapportert');
-      for(const [key,,kind] of FIELDS)td(row,fmt(company.metrics?.[key],kind));
+      for(const [key,,kind] of FIELDS){
+        if(key==='return_on_equity' && (company.metrics?.[key]===null || company.metrics?.[key]===undefined)){
+          td(row,'—');
+        }else{
+          td(row,fmt(company.metrics?.[key],kind));
+        }
+      }
       const status={
         verified_official_pdf_reconciled:'Offisiell PDF avstemt',
         verified_quarterly_feed:'Kildeverifisert kvartal',
