@@ -39,6 +39,10 @@ jobs:
           assert alm['metrics']['solvency_ratio']==238.0
           print('ALM_BRAND_LIVE_PRESENTATION_PDF_VERIFIED',alm['metrics']['solvency_ratio'])
           PY
+      - name: Audit seven-company report and presentation gaps without modifying feed
+        run: |
+          python -m unittest discover -s tests -p 'test_seven_document_source_audit.py' -v
+          python scripts/audit_seven_document_sources.py
       - name: Compile importers and discovery
         run: python -m compileall -q scripts tests
       - name: Verify Gjensidige Q3 group solvency from two original issuer PDFs
