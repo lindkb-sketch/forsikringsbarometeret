@@ -70,8 +70,7 @@ def update(document=None,out=OUT):
     payload={'insurers':{'Alm. Brand':row,'KLP Skadeforsikring':klp}}
     if old==payload:return False
     out.parent.mkdir(parents=True,exist_ok=True)
-    out.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'
-',encoding='utf-8')
+    out.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     return True
 
 if __name__=='__main__':
