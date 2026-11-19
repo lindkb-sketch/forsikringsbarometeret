@@ -8,9 +8,8 @@
     ['loss_ratio','Skadeprosent','percent'],
     ['expense_ratio','Kostnadsprosent','percent'],
     ['combined_ratio','Combined ratio','percent'],
-    ['return_on_equity','EK-avkastning','percent'],
+    ['return_on_equity','ROE / ROOF','percent'],
     ['solvency_ratio','Solvensgrad','percent'],
-    ['investment_return_ytd','Forvaltningsavkastning HIÅ','percent'],
     ['profit_before_tax','Resultat før skatt','amount'],
   ];
   let lastData=null;
@@ -40,10 +39,10 @@
     section.appendChild(title);
     const desc=document.createElement('p');
     desc.className='hint';
-    desc.textContent='Kildeverifiserte isolerte kvartaler. Inntektsvekst er mot samme kvartal året før. KLP gjelder Skadeforsikring AS, ikke KLP-konsernet. Alm. Brand er DKK-konsern. Manglende ROE, solvens eller andre tall vises som «Ikke rapportert». Avkastning på forvaltede midler er HIÅ og ikke det samme som ROE.';
+    desc.textContent='Kildeverifiserte isolerte kvartaler. Inntektsvekst er mot samme kvartal året før. KLP gjelder Skadeforsikring AS, ikke KLP-konsernet. Alm. Brand er DKK-konsern. Manglende ROE, solvens eller andre tall vises som «Ikke rapportert». Finans- og forvaltningsavkastning brukes ikke som ROE eller ROOF.';
     section.appendChild(desc);
     const wrap=document.createElement('div');wrap.className='tablewrap';
-    const table=document.createElement('table');table.setAttribute('aria-label','Ni selskaper med ti finansielle nøkkeltall');
+    const table=document.createElement('table');table.setAttribute('aria-label','Ni selskaper med ni finansielle nøkkeltall');
     const head=document.createElement('thead'),headRow=document.createElement('tr');
     ['Selskap og kilde','Rapportperiode',...FIELDS.map(x=>x[1]),'Datastatus'].forEach(label=>{
       const cell=document.createElement('th');cell.textContent=label;headRow.appendChild(cell);
