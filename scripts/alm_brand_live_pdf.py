@@ -126,7 +126,8 @@ def verify_pages(texts,url,raw,regions=None):
         raise ValueError('Wrong entity or period: expected Alm Brand Group Q3 2026')
     eligible=[(i,t) for i,t in enumerate(texts)
               if 'Gross expense ratio' in t and 'Net reinsurance ratio' in t
-              and 'Insurance service result' in t and 'Q3 2026' in t]
+              and 'Insurance service result' in t and 'Q3 2026' in t
+              and 'Return on equity after tax' in t and 'INCOME Insurance revenue' in t]
     if len(eligible)!=1:raise ValueError('Missing or ambiguous official Group financial-highlights table')
     page_index,page=eligible[0]
     regions=regions or {}
