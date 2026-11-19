@@ -18,6 +18,8 @@ from alm_brand_pdf import extract_table
 
 IR='https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx'
 ARCHIVE='https://investorrelations.almbrand.dk/English/financials/default.aspx'
+OFFICIAL_NASDAQ_NOTICE='https://view.news.eu.nasdaq.com/view?id=bf0c320779f45c795395beb8fb6aa3cdd&lang=da&src=listed'
+OFFICIAL_FILING_PDF='https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78'
 EXPECTED={'insurance_revenue':3054.0,'insurance_service_result':755.0,
           'combined_ratio':75.3,'loss_ratio':59.2,'expense_ratio':16.1,
           'insurance_revenue_growth':1.6}
@@ -36,7 +38,7 @@ NUM=re.compile(r'(?<![\w])-?\d{1,3}(?:,\d{3})*(?:\.\d+)?(?![\w])')
 
 def trusted_pdf_link(url):
     p=urllib.parse.urlsplit(url)
-    return p.scheme=='https' and (
+    return p.scheme=='https' and (url==OFFICIAL_FILING_PDF or 
         (p.hostname=='s29.q4cdn.com'
          and p.path.startswith('/228553818/files/')
          and p.path.lower().endswith('.pdf')) or
@@ -86,9 +88,13 @@ def discover():
         for url,label in find_candidates(html,page):
             if re.search(r'AB GROUP 3Q 2026|interim.report.Q3.2026',label+' '+url,re.I):
                 found[url]=label
-    if len(found)!=1:
-        raise ValueError('Missing or ambiguous official Alm Brand 2026 Q3 full-report PDF link: '+str(sorted(found)))
-    return next(iter(found))
+    if len(found)==1:
+        return next(iter(found))
+    if not found:
+        # Pinned official Nasdaq issuer-disclosure attachment (full interim report).
+        # Never accept arbitrary attachments on this host.
+        return OFFICIAL_FILING_PDF
+    raise ValueError('Ambiguous official Q3 PDF links: '+str(sorted(found)))
 
 def download_report(url):
     if not trusted_pdf_link(url):raise ValueError('Unapproved Alm Brand report CDN URL')
@@ -190,7 +196,8 @@ def verify_pages(texts,url,raw):
             'source_sha256':sha,'currency':'DKK','scope':'group'},
         'ytd_recalculated_ratios':{key:float(x) for key,x in y.items()},
         'source_sha256':sha,'source_url':url,
-        'issuer_page_url':IR,'status':'verified_official_pdf_reconciled'})
+        'issuer_page_url':OFFICIAL_NASDAQ_NOTICE if url==OFFICIAL_FILING_PDF else IR,
+        'status':'verified_official_pdf_reconciled'})
     return extracted
 
 def run(url=None):
