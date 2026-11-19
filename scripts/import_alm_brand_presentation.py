@@ -27,6 +27,7 @@ def verify_pdf(raw, url=PRESENTATION):
         raise ValueError('Wrong issuer or period in presentation')
     text=pages[18]
     compact=' '.join(text.split())
+    print('ALM_BRAND_SLIDE_19_EXTRACTION',repr(compact[:2000]),flush=True)
     if not ('Total capital' in text and 'Q3 2026' in text and 'Q2 2026' in text
             and 'Solvency capital requirement' in text):
         raise ValueError('Missing Group capital table on presentation slide 19')
