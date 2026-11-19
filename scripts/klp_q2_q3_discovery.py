@@ -26,47 +26,53 @@ def classify(url):
     return None
 
 def discover(html):
-    """Find issuer, year and visible quarter text across HTML heading tags."""
+    """Discover by document order, including headings implemented as links/spans.
+
+    Never infer the issuer or reporting year from an opaque PDF URL.
+    """
     class Archive(HTMLParser):
         def __init__(self):
             super().__init__()
             self.company=None
             self.year=None
             self.anchor=None
-            self.in_heading=False
-            self.heading=[]
             self.found={q:[] for q in PERIODS}
+            self.debug=[]
+        def context(self,text):
+            text=' '.join(text.split())
+            if text in ('KLP Konsern','KLP Banken','KLP Kommunekreditt',
+                        'KLP Boligkreditt','KLP Skadeforsikring'):
+                self.company=text
+                self.year=None
+            elif re.fullmatch(r'20\\d{2}',text):
+                self.year=int(text)
         def handle_starttag(self,tag,attrs):
-            tag=tag.lower()
-            if tag=='a':self.anchor={'href':dict(attrs).get('href'),'label':[]}
-            elif tag in ('h1','h2','h3','h4'):self.in_heading=True;self.heading=[]
+            if tag.lower()=='a':
+                self.anchor={'href':dict(attrs).get('href'),'label':[]}
         def handle_data(self,data):
             text=' '.join(data.split())
             if not text:return
+            self.context(text)
             if self.anchor is not None:self.anchor['label'].append(text)
-            elif self.in_heading:self.heading.append(text)
-            else:self.context(text)
-        def context(self,text):
-            if text in ('KLP Konsern','KLP Banken','KLP Kommunekreditt',
-                        'KLP Boligkreditt','KLP Skadeforsikring'):
-                self.company=text;self.year=None
-            elif re.fullmatch(r'20\\d{2}',text):self.year=int(text)
         def handle_endtag(self,tag):
-            tag=tag.lower()
-            if tag in ('h1','h2','h3','h4') and self.in_heading:
-                self.context(' '.join(self.heading));self.in_heading=False
-            if tag!='a' or self.anchor is None:return
-            label=' '.join(self.anchor['label']).lower()
+            if tag.lower()!='a' or self.anchor is None:return
+            label=' '.join(self.anchor['label']).strip()
+            self.context(label)
             href=self.anchor['href']
+            if href and re.search(r'kvartalsrapport',label,re.I):
+                self.debug.append({'company':self.company,'year':self.year,
+                                   'label':label[:90],'href':href[:200]})
             if self.company=='KLP Skadeforsikring' and self.year==2026 and href:
                 url=urljoin(INDEX_URL,href)
                 if approved(url,'KLP Skadeforsikring'):
                     for q in PERIODS:
-                        if re.search(r'kvartalsrapport\\s+(?:for\\s+)?'+str(q)+r'\\.\\s*kvartal',label):
+                        if re.search(r'kvartalsrapport\\s+(?:for\\s+)?'+str(q)+r'\\.\\s*kvartal',label,re.I):
                             if url not in self.found[q]:self.found[q].append(url)
             self.anchor=None
-    parser=Archive();parser.feed(html)
+    parser=Archive()
+    parser.feed(html)
     return parser.found
+
 
 def scan(url,quarter):
     raw=download(url,'KLP Skadeforsikring')
