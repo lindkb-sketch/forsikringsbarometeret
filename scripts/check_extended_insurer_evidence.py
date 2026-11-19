@@ -50,8 +50,8 @@ def validate(extended, sources, calendar):
                 metrics=p.get('metrics',{})
                 if (p.get('status')!='verified_official_pdf_reconciled'
                     or not REQUIRED.issubset(metrics)
-                    or not {'insurance_revenue_growth','return_on_equity','solvency_ratio'}.issubset(metrics)
-                    or any(type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k]) for k in REQUIRED|{'insurance_revenue_growth'})
+                    or not {'insurance_revenue_growth','return_on_equity','solvency_ratio','investment_return_ytd','profit_before_tax'}.issubset(metrics)
+                    or any(type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k]) for k in REQUIRED|{'insurance_revenue_growth','solvency_ratio','investment_return_ytd','profit_before_tax'})
                     or any(metrics[k] is not None and (type(metrics[k]) not in (float,int) or not math.isfinite(metrics[k])) for k in ('return_on_equity','solvency_ratio'))
                     or p.get('scope')!='company' or p.get('currency')!='NOK'
                     or p.get('source_type')!='official_quarterly_report'
@@ -76,6 +76,15 @@ def validate(extended, sources, calendar):
                         or type(evidence.get('source_page')) is not int
                         or evidence['source_page']<1):
                         errors.append('KLP income growth lacks same-period prior-year PDF evidence Q'+str(p.get('quarter'))+' '+period_kind)
+                management=p.get('management_kpi_evidence',{})
+                if (management.get('source_sha256')!=p.get('source_sha256')
+                    or type(management.get('source_page')) is not int
+                    or management.get('source_page',0)<1
+                    or management.get('investment_return_is_not_roe') is not True
+                    or metrics.get('return_on_equity') is not None
+                    or management.get('period_basis',{}).get('solvency_ratio')!='quarter_end'
+                    or management.get('period_basis',{}).get('investment_return_ytd')!='ytd'):
+                    errors.append('KLP solvency/investment source evidence incomplete Q'+str(p.get('quarter')))
                 if growth.get('previous_year')!=2025 or growth.get('source_sha256')!=p.get('source_sha256'):
                     errors.append('KLP income-growth evidence source mismatch Q'+str(p.get('quarter')))
                 if abs(float(metrics.get('insurance_revenue_growth',-10000))-float(growth.get('quarter',{}).get('growth_percent',-20000)))>1e-6:
