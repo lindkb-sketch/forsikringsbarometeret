@@ -291,6 +291,9 @@ async function main(){
     missing.every(c=>view.calendar.includes(calendarName(c))),view.calendar.slice(0,400));
   const announced=Object.entries(calendarFeed.companies||{});
   const futureScheduled=announced.filter(([name,config])=>{
+    // The original seven-company feed does not certify KLP/Alm Brand as published.
+    // Their nine-company comparison has a separate verified source and status.
+    if(!companies.includes(name))return false;
     const next=config.next_event;
     const match=/^Q([1-4]) (\d{4})$/.exec(next?.period||'');
     return next&&!next.locked&&match&&Number(match[2])*4+Number(match[1])>year*4+quarter;
