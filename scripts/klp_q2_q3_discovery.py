@@ -96,6 +96,10 @@ def run():
             raise ValueError('Issuer archive redirected outside approved hosts')
         html=response.read(3_000_000).decode('utf-8','replace')
     found=discover(html)
+    # Keep a bounded archive snapshot for diagnosis of publisher markup changes.
+    snapshot=Path('klp-audit/archive-source.html')
+    snapshot.parent.mkdir(parents=True,exist_ok=True)
+    snapshot.write_text(html,encoding='utf-8')
     report={'index':INDEX_URL,'periods':{},'missing':[],'status':'diagnostic_only'}
     for quarter in PERIODS:
         choices=found[quarter]
