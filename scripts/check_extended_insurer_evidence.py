@@ -25,19 +25,72 @@ def validate(extended, sources, calendar):
             errors.append('Missing issuer calendar: ' + name)
     insurers = extended.get('insurers', {})
     alm = insurers.get('Alm. Brand', {})
-    if alm.get('status') != 'verified_issuer_announcement':
-        errors.append('Alm. Brand must retain its announcement-only evidence status')
-    if alm.get('source_type') != 'official_issuer_interim_announcement':
-        errors.append('Alm. Brand source type must not claim PDF verification')
-    if not str(alm.get('source_url', '')).startswith('https://investorrelations.almbrand.dk/'):
-        errors.append('Alm. Brand official source URL missing')
-    if alm.get('year') != 2026 or alm.get('quarter') != 3:
-        errors.append('Alm. Brand verified snapshot is not Q3 2026')
-    metrics = alm.get('metrics', {})
-    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth'}) or any(
-        isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
-    ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
-        errors.append('Alm. Brand verified metric set is incomplete or invalid')
+    if alm.get('status')=='verified_official_pdf_reconciled':
+        metrics=alm.get('metrics') or {}
+        required_alm=REQUIRED|{'insurance_revenue_growth','return_on_equity',
+                               'solvency_ratio','profit_before_tax'}
+        forbidden={'investment_return','investment_return_ytd','finance_return',
+                   'return_on_investments','investment_result_as_roe'}
+        source=alm.get('source_url','')
+        sha=alm.get('source_sha256','')
+        pages=alm.get('source_pages') or {}
+        if (alm.get('company')!='Alm. Brand' or (alm.get('year'),alm.get('quarter'))!=(2026,3)
+            or alm.get('scope')!='group' or alm.get('currency')!='DKK'
+            or alm.get('source_type')!='official_quarterly_report'
+            or source!='https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78'
+            or len(sha)!=64 or any(char not in '0123456789abcdef' for char in sha)
+            or not required_alm.issubset(metrics) or forbidden.intersection(metrics)):
+            errors.append('Alm Brand PDF source, period, or KPI coverage invalid')
+        else:
+            if (any(type(metrics[k]) not in (int,float) or not math.isfinite(metrics[k])
+                    for k in required_alm)
+                or any(type(pages.get(k)) is not int or pages[k]<=0 for k in required_alm)
+                or not 0<metrics['return_on_equity']<100
+                or not 100<=metrics['solvency_ratio']<=500
+                or abs(metrics['loss_ratio']+metrics['expense_ratio']-metrics['combined_ratio'])>0.15):
+                errors.append('Alm Brand quarterly PDF values or page provenance invalid')
+            if (alm.get('return_on_equity_source_page')!=pages.get('return_on_equity')
+                or 'equity' not in alm.get('return_on_equity_definition','').lower()
+                or type(alm.get('return_on_equity_ytd')) not in (int,float)):
+                errors.append('Alm Brand ROE requires explicitly issuer-reported equity return')
+            growth=alm.get('revenue_growth_evidence') or {}
+            if growth.get('source_sha256')!=sha or growth.get('source_page')!=pages.get('insurance_revenue'):
+                errors.append('Alm Brand prior-year revenue evidence invalid')
+            else:
+                for mode in ('quarter','ytd'):
+                    g=growth.get(mode,{})
+                    if (type(g.get('current')) not in (int,float)
+                        or type(g.get('prior_year')) not in (int,float)
+                        or g['prior_year']<=0):
+                        errors.append('Alm Brand prior-year growth comparator missing: '+mode)
+                        continue
+                    computed=(g['current']/g['prior_year']-1)*100
+                    reported=(g.get('issuer_reported_growth_percent') if mode=='quarter'
+                              else g.get('growth_percent'))
+                    if type(reported) not in (int,float) or abs(computed-reported)>0.20:
+                        errors.append('Alm Brand income growth mismatch: '+mode)
+            for k in ('combined_ratio','loss_ratio','expense_ratio'):
+                actual=alm.get('quarter_recalculated_ratios',{}).get(k)
+                ytd=alm.get('reported_ytd_ratios',{}).get(k)
+                computed=alm.get('ytd_recalculated_ratios',{}).get(k)
+                if (type(actual) not in (int,float) or abs(actual-metrics[k])>0.20
+                    or type(ytd) not in (int,float) or type(computed) not in (int,float)
+                    or abs(computed-ytd)>0.20):
+                    errors.append('Alm Brand quarter or HIÅ ratio reconciliation incomplete: '+k)
+    else:
+        if alm.get('status') != 'verified_issuer_announcement':
+            errors.append('Alm. Brand must retain its announcement-only evidence status')
+        if alm.get('source_type') != 'official_issuer_interim_announcement':
+            errors.append('Alm. Brand source type must not claim PDF verification')
+        if not str(alm.get('source_url', '')).startswith('https://investorrelations.almbrand.dk/'):
+            errors.append('Alm. Brand official source URL missing')
+        if alm.get('year') != 2026 or alm.get('quarter') != 3:
+            errors.append('Alm. Brand verified snapshot is not Q3 2026')
+        metrics = alm.get('metrics', {})
+        if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth'}) or any(
+            isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
+        ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
+            errors.append('Alm. Brand verified metric set is incomplete or invalid')
     klp = insurers.get('KLP Skadeforsikring', {})
     if klp.get('status') == 'awaiting_source_verified_metrics' and klp.get('metrics') == {}:
         pass
@@ -105,7 +158,7 @@ def main():
     print(json.dumps({'nine_issuer_registry_checked': True,
                       'nine_company_financial_parity_certified': False,
                       'klp_metrics_verified': extended.get('insurers',{}).get('KLP Skadeforsikring',{}).get('status')=='verified_official_pdf_reconciled',
-                      'alm_brand_pdf_page_import_verified': False,
+                      'alm_brand_pdf_page_import_verified': extended.get('insurers',{}).get('Alm. Brand',{}).get('status')=='verified_official_pdf_reconciled',
                       'errors': errors}, ensure_ascii=False, indent=2))
     if errors:
         raise SystemExit(1)

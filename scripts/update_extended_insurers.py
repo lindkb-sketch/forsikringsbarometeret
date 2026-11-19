@@ -61,7 +61,12 @@ def update(document=None,out=OUT):
     klp=old.get('insurers',{}).get('KLP Skadeforsikring',{
         'company':'KLP Skadeforsikring','status':'awaiting_source_verified_metrics',
         'metrics':{},'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'})
-    # Never erase a validated KLP PDF snapshot when refreshing Alm Brand.
+    # Keep independently verified PDF snapshots: announcement refreshes must not downgrade.
+    approved_alm=old.get('insurers',{}).get('Alm. Brand',{})
+    if approved_alm.get('status')=='verified_official_pdf_reconciled':
+        if (approved_alm.get('year'),approved_alm.get('quarter'))<(row['year'],row['quarter']):
+            raise ValueError('Newer Alm Brand announcement requires a new source-verified PDF import')
+        row=approved_alm
     payload={'insurers':{'Alm. Brand':row,'KLP Skadeforsikring':klp}}
     if old==payload:return False
     out.parent.mkdir(parents=True,exist_ok=True)

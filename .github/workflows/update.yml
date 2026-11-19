@@ -94,6 +94,8 @@ jobs:
         run: python scripts/update_extended_insurers.py || echo "::warning::Alm Brand source temporarily unavailable; retaining last verified snapshot"
       - name: Import real KLP Q1-Q3 PDF financial metrics after independent HIÅ reconciliation
         run: python scripts/import_klp_production.py
+      - name: Import Alm Brand issuer PDF Q3 with real quarter and HIÅ reconciliation
+        run: python scripts/import_alm_brand_production.py
       - name: Verify KLP source provenance before publication
         run: python scripts/check_extended_insurer_evidence.py
       - name: Fetch independent editorial media headlines
