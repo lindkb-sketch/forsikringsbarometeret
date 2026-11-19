@@ -39,7 +39,7 @@ class KLPProductionTests(unittest.TestCase):
         snapshot=build_snapshot(*[reconciled(q) for q in (1,2,3)])
         self.assertEqual(snapshot['metrics']['combined_ratio'],97)
         self.assertAlmostEqual(snapshot['metrics']['insurance_revenue_growth'],(1003/803-1)*100)
-        self.assertIsNone(snapshot['metrics']['return_on_equity'])
+        self.assertNotIn('return_on_equity',snapshot['metrics'])
         self.assertEqual(snapshot['metrics']['solvency_ratio'],219)
         self.assertEqual(snapshot['metrics']['investment_return_ytd'],3.7)
         self.assertEqual(snapshot['metrics']['profit_before_tax'],30)
