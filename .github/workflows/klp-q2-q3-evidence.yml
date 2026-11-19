@@ -1,0 +1,33 @@
+name: KLP Q2 Q3 official PDF evidence
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 7 * * 1'
+  pull_request:
+    paths:
+      - 'scripts/klp_q2_q3_discovery.py'
+      - '.github/workflows/klp-q2-q3-evidence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  klp-q2-q3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF reader
+        run: python -m pip install 'pdfplumber>=0.11,<0.13'
+      - name: Discover and inspect official KLP Q2/Q3 2026 PDF reports
+        run: python scripts/klp_q2_q3_discovery.py
+      - name: Upload page-located source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: klp-q2-q3-official-evidence
+          path: klp-audit/
+          retention-days: 14
