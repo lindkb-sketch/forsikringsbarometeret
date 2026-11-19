@@ -25,8 +25,20 @@ def validate(extended, sources, calendar):
             errors.append('Missing issuer calendar: ' + name)
     insurers = extended.get('insurers', {})
     alm = insurers.get('Alm. Brand', {})
-    if alm.get('status') != 'verified_issuer_announcement':
-        errors.append('Alm. Brand must retain its announcement-only evidence status')
+    if alm.get('status') not in ('verified_issuer_announcement','verified_official_presentation_reconciled'):
+        errors.append('Alm. Brand evidence status unsupported')
+    if alm.get('status')=='verified_official_presentation_reconciled':
+        from import_alm_brand_presentation import PRESENTATION, EXPECTED
+        evidence=alm.get('presentation_evidence',{})
+        if (evidence.get('source_type')!='official_results_presentation'
+            or evidence.get('source_url')!=PRESENTATION
+            or len(str(evidence.get('source_sha256','')))!=64
+            or evidence.get('source_page')!=19
+            or (evidence.get('year'),evidence.get('quarter'))!=(2026,3)
+            or evidence.get('scope')!='group' or evidence.get('currency')!='DKK'
+            or evidence.get('metrics')!=EXPECTED
+            or alm.get('metrics',{}).get('solvency_ratio')!=238.0):
+            errors.append('Alm. Brand presentation solvency evidence incomplete')
     if alm.get('source_type') != 'official_issuer_interim_announcement':
         errors.append('Alm. Brand source type must not claim PDF verification')
     if not str(alm.get('source_url', '')).startswith('https://investorrelations.almbrand.dk/'):
