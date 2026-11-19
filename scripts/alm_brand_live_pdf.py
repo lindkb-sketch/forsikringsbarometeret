@@ -109,14 +109,14 @@ def download_report(url):
 
 def parse_row(page,label):
     lines=[s.strip() for s in page.splitlines()]
-    matches=[s for s in lines if re.match(r'^'+re.escape(label)+r'\s+',s,re.I)]
+    matches=[s for s in lines if re.match(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+',s,re.I)]
     if len(matches)!=1:raise ValueError('Missing or ambiguous group PDF row: '+label)
-    tail=re.sub(r'^'+re.escape(label)+r'\s+','',matches[0],count=1,flags=re.I)
+    tail=re.sub(r'^(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+','',matches[0],count=1,flags=re.I)
     nums=NUM.findall(tail)
     if len(nums)!=5:raise ValueError('Unexpected Q3/Q3-prior/HIÅ/HIÅ-prior/FY columns: '+label)
     return [Decimal(x.replace(',','')) for x in nums]
 
-def verify_pages(texts,url,raw):
+def verify_pages(texts,url,raw,regions=None):
     sha=hashlib.sha256(raw).hexdigest()
     if not trusted_pdf_link(url):raise ValueError('Unapproved source')
     if len(sha)!=64 or any(c not in '0123456789abcdef' for c in sha):
@@ -126,10 +126,28 @@ def verify_pages(texts,url,raw):
         raise ValueError('Wrong entity or period: expected Alm Brand Group Q3 2026')
     eligible=[(i,t) for i,t in enumerate(texts)
               if 'Gross expense ratio' in t and 'Net reinsurance ratio' in t
-              and 'Insurance service result' in t and 'Q3 2026' in t and 'Q1-Q3 2026' in t]
+              and 'Insurance service result' in t and 'ALM. BRAND GROUP' in t and 'Q3 2026' in t]
     if len(eligible)!=1:raise ValueError('Missing or ambiguous official Group financial-highlights table')
     page_index,page=eligible[0]
-    rows={key:parse_row(page,label) for key,label in LABELS.items()}
+    regions=regions or {}
+    table_text=regions.get(page_index,{}).get('left') or page
+    roe_text=regions.get(page_index,{}).get('right') or page
+    rows={key:parse_row(table_text,label) for key,label in LABELS.items()}
+    # Only issuer-disclosed return on EQUITY, not the investment result.
+    roe_match=re.search(r'Return on equity after tax\s*\n\s*(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)',roe_text,re.I)
+    if not roe_match:
+        raise ValueError('Missing issuer-reported annualised ROE after tax')
+    roe_quarter=float(roe_match.group(1));roe_ytd=float(roe_match.group(3))
+    if not 0<roe_quarter<100 or not 0<roe_ytd<100:
+        raise ValueError('Implausible issuer-reported ROE values')
+    solvent=[(i,t) for i,t in enumerate(texts) if 'Total capital as a percentage of solvency capital' in t]
+    if len(solvent)!=1:raise ValueError('Missing issuer Group solvency table')
+    solvency_index,solvency_page=solvent[0]
+    solvency_text=regions.get(solvency_index,{}).get('right') or solvency_page
+    coverage=re.search(r'Total capital as a percentage of solvency capital\s+requirement\s+(\d{2,3})\s+(\d{2,3})',solvency_text,re.I)
+    if not coverage:raise ValueError('Missing quarter-end Group solvency ratio')
+    solvency=float(coverage.group(1))
+    if not 100<=solvency<=500:raise ValueError('Implausible Group solvency ratio')
     def metrics(idx):
         revenue=rows['insurance_revenue'][idx]
         claims=abs(rows['claims_expenses'][idx])
@@ -164,6 +182,8 @@ def verify_pages(texts,url,raw):
         'insurance_revenue_growth':EXPECTED['insurance_revenue_growth'],
         'solvency_ratio':None,
         'profit_before_tax':None,
+        'return_on_equity':roe_quarter,
+        'solvency_ratio':solvency,
     }
     for metric,expected in EXPECTED.items():
         if metric=='insurance_revenue_growth':continue
@@ -182,7 +202,11 @@ def verify_pages(texts,url,raw):
     extracted=extract_table(raw,url,2026,3,table_rows)
     extracted.update({'metrics':result_metrics,'reported_ytd_ratios':{
         key:float(rows[key][2]) for key in PERCENT},
-        'source_pages':{key:page_index+1 for key in result_metrics},
+        'source_pages':{key:(solvency_index+1 if key=='solvency_ratio' else page_index+1) for key in result_metrics},
+        'return_on_equity_definition':'Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation',
+        'return_on_equity_ytd':roe_ytd,
+        'return_on_equity_source_page':page_index+1,
+        'solvency_definition':'Group total capital / group solvency capital requirement at quarter end',
         'quarter_recalculated_ratios':{key:float(x) for key,x in q.items()},
         'revenue_growth_evidence':{
             'quarter':{'current':float(rows['insurance_revenue'][0]),
@@ -206,13 +230,18 @@ def run(url=None):
     import pdfplumber
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
         texts=[page.extract_text(layout=False) or '' for page in pdf.pages]
+        regions={i:{'left':p.crop((0,0,p.width*.52,p.height)).extract_text(layout=False) or '',
+                     'right':p.crop((p.width*.48,0,p.width,p.height)).extract_text(layout=False) or ''}
+                 for i,p in enumerate(pdf.pages) if i in (2,4)}
     evidence_dir=Path('alm-brand-audit');evidence_dir.mkdir(exist_ok=True)
     candidates=[{'page':i+1,'text':t[:18000]} for i,t in enumerate(texts)
                 if any(term.lower() in t.lower() for term in ('insurance revenue','combined ratio','solvency cover','insurance service result'))]
     (evidence_dir/'source-pages.json').write_text(json.dumps({'source_url':url,
         'source_sha256':hashlib.sha256(raw).hexdigest(),'pdf_pages':len(texts),
         'candidate_pages':candidates[:35]},ensure_ascii=False,indent=2)+'\n')
-    out=verify_pages(texts,url,raw)
+    (evidence_dir/'table-regions.json').write_text(json.dumps({'source_url':url,
+        'regions':regions},ensure_ascii=False,indent=2)+'\n')
+    out=verify_pages(texts,url,raw,regions=regions)
     return out
 
 if __name__=='__main__':
