@@ -42,7 +42,7 @@ def row_from_reconciliation(item):
     quarter_growth=growth(values['insurance_revenue'],prior['insurance_revenue'])
     ytd_growth=growth(ytd['insurance_revenue'],prior_ytd['insurance_revenue'])
     management=item.get('reported_management_metrics') or {}
-    for field in ('solvency_ratio','investment_return_ytd','profit_before_tax','source_page'):
+    for field in ('solvency_ratio','profit_before_tax','source_page'):
         if field not in management:
             raise ValueError('Missing issuer-reported additional KLP KPI: '+field)
     if management.get('return_on_equity') is not None:
@@ -55,7 +55,6 @@ def row_from_reconciliation(item):
              'insurance_revenue_growth':quarter_growth,
              'return_on_equity':None,
              'solvency_ratio':management['solvency_ratio'],
-             'investment_return_ytd':management['investment_return_ytd'],
              'profit_before_tax':management['profit_before_tax']}
     if not set(REQUIRED).issubset(metrics) or metrics['insurance_revenue']<=0:
         raise ValueError('Incomplete KLP issuer metrics')
