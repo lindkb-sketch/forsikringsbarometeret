@@ -21,7 +21,7 @@ def fixture():
       ('Gross expense ratio','16.1','16.6','16.7','16.9','17.0'),
       ('Combined ratio','75.3','73.1','75.6','76.4','78.5')]
     t[4]='ALM. BRAND GROUP – Q3 2026\nQ3 2026 Q3 2025 Q1-Q3 2026 Q1-Q3 2025 2025\n'+'\n'.join(
-         k+' '+v+' '+p+' '+y+' '+yp+' '+full for k,v,p,y,yp,full in data)
+         ('INCOME ' if k=='Insurance revenue' else 'STATEMENT ' if k=='Claims expenses' else '')+k+' '+v+' '+p+' '+y+' '+yp+' '+full for k,v,p,y,yp,full in data)
     t[4]+='\nProfit/loss before tax, continuing\n544 452 907 1,145 1,585\noperations\nReturn on equity after tax\n18.0 13.6 10.0 14.4 14.4\n(% p.a.) **'
     return t
 class AlmBrandLivePDFTests(unittest.TestCase):
