@@ -92,6 +92,22 @@ def check():
                     raise ValueError('KLP public PDF metrics differ from reconciled source')
             else:
                 raise ValueError('KLP public comparison claimed unsupported evidence')
+            alm=next((x for x in comparison['companies'] if x['company']=='Alm. Brand'),None)
+            if not alm:raise ValueError('Public nine-insurer comparison missing Alm Brand')
+            source_alm=json.loads((ROOT/'data/extended_insurer_financials.json').read_text(
+                encoding='utf-8'))['insurers']['Alm. Brand']
+            if source_alm.get('status')=='verified_official_pdf_reconciled':
+                if (alm.get('status')!='verified_official_pdf_reconciled'
+                    or alm.get('period')!='Q3 2026'
+                    or alm['metrics']['return_on_equity']!=source_alm['metrics']['return_on_equity']
+                    or alm['metrics']['solvency_ratio']!=source_alm['metrics']['solvency_ratio']
+                    or alm.get('source_url')!=source_alm.get('source_url')):
+                    raise ValueError('Public Alm Brand PDF ROE, solvency and source mismatch')
+                if any(x in alm['metrics'] and alm['metrics'][x] is not None
+                       for x in ('investment_return','investment_return_ytd','finance_return')):
+                    raise ValueError('Alm Brand public KPI must exclude investment returns')
+            elif alm.get('status')!='issuer_announcement_only':
+                raise ValueError('Public Alm Brand evidence status unsupported')
             feed=public['verified_financial_feed.json']
             check_seven(feed,html)
             for marker in ('id="verified-q3-dashboard-bridge"',
