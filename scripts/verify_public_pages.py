@@ -87,8 +87,9 @@ def check():
                 source=original['insurers']['KLP Skadeforsikring']
                 if (source.get('status')!='verified_official_pdf_reconciled'
                     or klp.get('period')!='Q3 2026'
-                    or klp.get('metrics')!=source.get('metrics')
-                    or set(source.get('metrics',{}))!=REQUIRED):
+                    or set(source.get('metrics',{}))!=REQUIRED|{'insurance_revenue_growth','solvency_ratio','profit_before_tax'}
+                    or any(klp.get('metrics',{}).get(k)!=v for k,v in source.get('metrics',{}).items())
+                    or any(v is not None for k,v in klp.get('metrics',{}).items() if k not in source.get('metrics',{}))):
                     raise ValueError('KLP public PDF metrics differ from reconciled source')
             else:
                 raise ValueError('KLP public comparison claimed unsupported evidence')
