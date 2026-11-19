@@ -11,6 +11,9 @@ def reconciled(q):
                      'issuer_pdf_quarter_and_ytd_reconciled_not_published',
             'ratios':{'loss_ratio':84.5,'expense_ratio':12.5,'combined_ratio':97.0},
             'reported_quarter_amounts':{'insurance_revenue':1000+q,'insurance_service_result':30},
+            'reported_ytd_amounts':{'insurance_revenue':1000+q if q==1 else 2200+q},
+            'reported_prior_year_quarter_amounts':{'insurance_revenue':800+q},
+            'reported_prior_year_ytd_amounts':{'insurance_revenue':800+q if q==1 else 1800+q},
             'reported_ytd_ratios':{'gross_loss_ratio':80,'reinsurance_ratio':4,
                                     'loss_ratio':84,'expense_ratio':13,'combined_ratio':97},
             'source_documents':[{'source_url':'https://www.klp.no/a.pdf','source_sha256':str(q)*64,
@@ -27,6 +30,10 @@ class KLPProductionTests(unittest.TestCase):
     def test_all_three_quarters_publish_with_independent_ytd(self):
         snapshot=build_snapshot(*[reconciled(q) for q in (1,2,3)])
         self.assertEqual(snapshot['metrics']['combined_ratio'],97)
+        self.assertAlmostEqual(snapshot['metrics']['insurance_revenue_growth'],(1003/803-1)*100)
+        self.assertIsNone(snapshot['metrics']['return_on_equity'])
+        self.assertIsNone(snapshot['metrics']['solvency_ratio'])
+        self.assertAlmostEqual(snapshot['periods'][-1]['revenue_growth_evidence']['ytd']['growth_percent'],(2203/1803-1)*100)
         self.assertEqual(len(snapshot['periods']),3)
         with tempfile.TemporaryDirectory() as td:
             root=Path(td);(root/'data').mkdir()
