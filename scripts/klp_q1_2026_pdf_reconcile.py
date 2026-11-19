@@ -28,15 +28,15 @@ RATIO_LABELS={
  'expense_ratio':'Kostnadsprosent',
  'combined_ratio':'Totalskadeprosent',
 }
-NUM=r'-?\\d[\\d ]*(?:[.,]\\d+)?'
+NUM=r'-?\d[\d ]*(?:[.,]\d+)?'
 def decimal(s):
     return Decimal(s.replace(' ','').replace(',','.'))
 def row_value(text,label,*,percentage=False):
     lines=[line.strip() for line in text.splitlines()]
-    matches=[line for line in lines if re.match(r'^(?:\\d+\\s+)?'+re.escape(label)+r'\\s+',line,re.I)]
+    matches=[line for line in lines if re.match(r'^(?:\d+\s+)?'+re.escape(label)+r'\s+',line,re.I)]
     if len(matches)!=1:raise ValueError('Missing or ambiguous official PDF row: '+label)
-    tail=re.sub(r'^(?:\\d+\\s+)?'+re.escape(label)+r'\\s+','',matches[0],count=1,flags=re.I)
-    pattern=r'^('+NUM+r')\\s*%' if percentage else r'^('+NUM+r')(?=\\s|$)'
+    tail=re.sub(r'^(?:\d+\s+)?'+re.escape(label)+r'\s+','',matches[0],count=1,flags=re.I)
+    pattern=r'^('+NUM+r')\s*%' if percentage else r'^('+NUM+r')(?=\s|$)'
     match=re.match(pattern,tail)
     if not match:raise ValueError('Missing first quarter column for '+label)
     return decimal(match.group(1))
@@ -46,9 +46,9 @@ def verify_pages(texts,url=URL,sha=None):
         raise ValueError('Unexpected Q1 2026 result page layout')
     if 'Note 10 Nøkkeltall - akkumulert' not in texts[20]:
         raise ValueError('Missing official HIÅ Note 10')
-    if not re.search(r'MILLIONER KRONER\\s+1\\. kvartal 2026\\s+1\\. kvartal 2025',texts[5]):
+    if not re.search(r'MILLIONER KRONER\s+1\. kvartal 2026\s+1\. kvartal 2025',texts[5]):
         raise ValueError('Unexpected result-column order')
-    if not re.search(r'MILLIONER KRONER\\s+1\\. kvartal 2026\\s+4\\. kvartal 2025',texts[20]):
+    if not re.search(r'MILLIONER KRONER\s+1\. kvartal 2026\s+4\. kvartal 2025',texts[20]):
         raise ValueError('Unexpected HIÅ-column order')
     amounts={k:row_value(texts[5],label) for k,label in AMOUNT_LABELS.items()}
     reported={k:row_value(texts[20],label,percentage=True) for k,label in RATIO_LABELS.items()}
