@@ -63,7 +63,27 @@ def verify_pages(texts,quarter,url,sha):
     y={**basis,'period_type':'ytd','source_pages':[rp+1,np+1],
        'ratio_components':components(2),
        'reported_ratios':{k:float(v) for k,v in reported.items()}}
+    # Additional website KPIs are read from the issuer, not inferred from
+    # insurance profitability ratios. Solvency is a quarter-end stock;
+    # portfolio return is cumulative HIÅ and MUST NOT be labeled ROE.
+    quarter_pre_tax=columns(result,'Resultat før skattekostnad')[0]
+    hiya_pre_tax=columns(result,'Resultat før skattekostnad')[2]
+    reported_note_pre_tax=columns(note,'Resultat før skatt',percent=False)[0]
+    if abs(hiya_pre_tax-reported_note_pre_tax)>Decimal('0.15'):
+        raise ValueError('KLP HIÅ pre-tax result disagrees with reported note')
+    solvency=columns(note,'Solvenskapitaldekning',percent=True)[0]
+    investment_ytd=columns(note,'Avkastning på midler til forvaltning',percent=True)[0]
+    if not (0<solvency<1000 and -100<investment_ytd<100):
+        raise ValueError('Invalid KLP reported solvency or portfolio return')
     result=reconcile(q,y)
+    result['reported_management_metrics']={'profit_before_tax':float(quarter_pre_tax),
+        'profit_before_tax_ytd':float(hiya_pre_tax),
+        'solvency_ratio':float(solvency),
+        'investment_return_ytd':float(investment_ytd),
+        'return_on_equity':None,
+        'source_page':np+1,
+        'period_basis':{'profit_before_tax':'quarter', 'profit_before_tax_ytd':'ytd',
+                        'solvency_ratio':'quarter_end', 'investment_return_ytd':'ytd'}}
     result.update({'reported_quarter_amounts':{k:float(v[0]) for k,v in rows.items()},
                    'reported_ytd_amounts':{k:float(v[2]) for k,v in rows.items()},
                    'reported_prior_year_quarter_amounts':{k:float(v[1]) for k,v in rows.items()},
