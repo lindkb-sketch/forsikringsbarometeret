@@ -187,6 +187,8 @@ jobs:
           path: data/financial_audit.json
       - name: Rebuild nine-insurer comparison after final validated imports
         run: python scripts/build_nine_insurer_comparison.py
+      - name: Inventory seven-company quarterly source gaps without altering observations
+        run: python scripts/audit_seven_document_sources.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4
