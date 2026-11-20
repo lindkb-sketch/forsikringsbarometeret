@@ -1,6 +1,13 @@
 {
   "candidates": [
     {
+      "company": "Fremtind",
+      "document_url": "https://cdn.sanity.io/files/rppnrdtw/production/265619694fe06f8c8c61660eaee2844c83b62693.pdf",
+      "document_type": "quarterly_report",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "Årsrapport Fremtind Service ASEkstern lenke"
+    },
+    {
       "company": "Frende",
       "document_url": "https://www.frende.no/documents/285/Arsrapport_Frende_Holding_AS_2023.pdf",
       "document_type": "quarterly_report",
@@ -2456,6 +2463,13 @@
       "document_type": "results_presentation",
       "status": "candidate_requires_presentation_verification",
       "link_text": "Kvartalsrapport 3. kvartal"
+    },
+    {
+      "company": "Protector",
+      "document_url": "https://protectorforsikring.no/getfile.php/138725-1743154080/Documents/Investor%20Relation/Annual%20General%20Meetings/ENG/2025%20Appendix%202_Annual%20Report%202024.pdf",
+      "document_type": "quarterly_report",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "2025 Appendix 2_Annual Report 2024.pdf"
     },
     {
       "company": "Sampo",
