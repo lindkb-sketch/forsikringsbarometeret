@@ -189,6 +189,8 @@ jobs:
         run: python scripts/build_nine_insurer_comparison.py
       - name: Inventory seven-company quarterly source gaps without altering observations
         run: python scripts/audit_seven_document_sources.py
+      - name: Fail closed on nine-insurer source-to-comparison E2E parity
+        run: python scripts/check_nine_insurer_e2e.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4
