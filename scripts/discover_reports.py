@@ -4,6 +4,7 @@ Candidates are NOT approved financial data and never update the dashboard.\nQ4 a
 """
 import json,re,urllib.request,urllib.parse,html.parser,sys
 from pathlib import Path
+from verify_nine_document_bytes import approved as approved_delivery_host
 ROOT=Path(__file__).resolve().parents[1]
 REGISTRY=ROOT/"data/report_sources.json"
 OUTPUT=ROOT/"data/report_candidates.json"
@@ -25,9 +26,11 @@ def discover(html,base_url,company):
   url=urllib.parse.urljoin(base_url,link["href"])
   parsed=urllib.parse.urlparse(url)
   if parsed.scheme!="https":continue
-  # Same host or same registrable domain; no third-party press distribution.
+  # Issuer-approved CDN hosts only; arbitrary cross-domain links are rejected.
+  # XLSX remains a discovery candidate for legacy report importers; byte verifier is PDF-only.
+  trusted_url=url if parsed.path.lower().endswith('.pdf') else url+'.pdf' if parsed.path.lower().endswith('.xlsx') else url
   base=urllib.parse.urlparse(base_url)
-  if parsed.hostname!=base.hostname:continue
+  if parsed.hostname!=base.hostname and not approved_delivery_host(company,trusted_url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
