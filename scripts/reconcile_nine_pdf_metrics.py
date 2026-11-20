@@ -56,6 +56,31 @@ def extract_unambiguous(lines,metric,expected=None):
     unique=sorted(set(matches))
     return unique[0] if len(unique)==1 else None
 
+def discover_presentation_metrics(pages,year,quarter):
+    """Extract only single-value Q3-labelled GROUP presentation pages.
+
+    No inference from other slides, historical columns, or group/segment ambiguity.
+    This is independent of previously committed report values.
+    """
+    evidence=[]
+    for page_number,page in pages:
+        lines=page.splitlines()
+        if not period_matches(page,year,quarter):continue
+        if not re.search(r'\\b(?:group|konsern)\\b',page,re.I):continue
+        if re.search(r'\\b(?:norway only|norge alene|segment only)\\b',page,re.I):continue
+        for metric in CORE:
+            value=extract_unambiguous(lines,metric)
+            if value is None:continue
+            if metric in ('insurance_revenue','insurance_service_result'):
+                # Currency/scale is not unambiguously identifiable on arbitrary slides.
+                continue
+            evidence.append({'metric':metric,'scope':'group','period_type':'quarter',
+                'unit':'percent','source_page':page_number,
+                'document_type':'results_presentation','value':value,
+                'status':'extracted_unambiguous','committed_value':None,
+                'committed_value_matches':None,'extraction_method':'single_label_period_and_group_page'})
+    return evidence
+
 def source_documents(feed,extended,candidates,year,quarter):
     docs=defaultdict(dict)
     rows=feed.get('observations',[])
@@ -148,6 +173,9 @@ def verify_document(doc,year,quarter):
                 'status':'extracted_unambiguous' if val is not None else 'ambiguous_or_not_found',
                 'committed_value':row.get('value'),
                 'committed_value_matches':val is not None and abs(val-row.get('value',float('inf')))<0.05})
+        if doc['document_type']=='results_presentation':
+            pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
+            extracted.extend(discover_presentation_metrics(pages,year,quarter))
     return {'company':company,'document_type':doc['document_type'],'url':final,
             'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted}
 
