@@ -29,7 +29,8 @@ def discover(html,base_url,company):
   # Issuer-approved CDN hosts only; arbitrary cross-domain links are rejected.
   # XLSX remains a discovery candidate for legacy report importers; byte verifier is PDF-only.
   trusted_url=url if parsed.path.lower().endswith('.pdf') else url+'.pdf' if parsed.path.lower().endswith('.xlsx') else url
-  if not approved_delivery_host(company,trusted_url):continue
+  base=urllib.parse.urlparse(base_url)
+  if parsed.hostname!=base.hostname and not approved_delivery_host(company,trusted_url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
