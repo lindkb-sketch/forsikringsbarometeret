@@ -66,8 +66,8 @@ def discover_presentation_metrics(pages,year,quarter):
     for page_number,page in pages:
         lines=page.splitlines()
         if not period_matches(page,year,quarter):continue
-        if not re.search(r'\\b(?:group|konsern)\\b',page,re.I):continue
-        if re.search(r'\\b(?:norway only|norge alene|segment only)\\b',page,re.I):continue
+        if not re.search(r'\b(?:group|konsern)\b',page,re.I):continue
+        if re.search(r'\b(?:norway only|norge alene|segment only)\b',page,re.I):continue
         for metric in CORE:
             value=extract_unambiguous(lines,metric)
             if value is None:continue
