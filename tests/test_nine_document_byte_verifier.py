@@ -34,6 +34,9 @@ class NineDocumentVerifierTests(unittest.TestCase):
   x=discover(html,'https://investorrelations.almbrand.dk/English/financials/default.aspx','Alm. Brand')
   self.assertEqual(len(x),1)
   self.assertEqual(x[0]['document_type'],'results_presentation')
+ def test_legacy_xlsx_discovery_retained(self):
+  html='<a href="/q3-interim-report.xlsx">Q3 2026 interim report</a>'
+  self.assertEqual(len(discover(html,'https://tryg.com/en/downloads-2026','Tryg')),1)
  def test_unapproved_external_presentation_rejected(self):
   html='<a href="https://random-cdn.test/q3-2026-presentation.pdf">Q3 2026 presentation</a>'
   self.assertEqual(discover(html,'https://tryg.com/en/downloads-2026','Tryg'),[])
