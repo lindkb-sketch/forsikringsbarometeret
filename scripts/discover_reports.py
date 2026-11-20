@@ -27,10 +27,12 @@ def discover(html,base_url,company):
   parsed=urllib.parse.urlparse(url)
   if parsed.scheme!="https":continue
   # Issuer-approved CDN hosts only; arbitrary cross-domain links are rejected.
-  if not approved_delivery_host(company,url):continue
+  # XLSX remains a discovery candidate for legacy report importers; byte verifier is PDF-only.
+  trusted_url=url if parsed.path.lower().endswith('.pdf') else url+'.pdf' if parsed.path.lower().endswith('.xlsx') else url
+  if not approved_delivery_host(company,trusted_url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
-  if not re.search(r"\.pdf$",parsed.path,re.I):continue
+  if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
   report=re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I)
   presentation=re.search(r"(presentation|presentasjon|investor.?slides|results.?slides|resultatpresentasjon)",label,re.I)
   if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
