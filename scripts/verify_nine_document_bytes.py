@@ -22,11 +22,11 @@ COMPANIES=('Fremtind','Gjensidige','Tryg','Sampo','Frende',
 # Explicitly approved delivery hosts; never derive a trusted host from an arbitrary link.
 DELIVERY={
  'Fremtind':('www.fremtind.no','fremtind.no','cdn.sanity.io'),
- 'Gjensidige':('www.gjensidige.com','gjensidige.com'),
+ 'Gjensidige':('www.gjensidige.com','gjensidige.com','mb.cision.com'),
  'Tryg':('tryg.com','www.tryg.com'),
  'Sampo':('www.sampo.com','sampo.com'),
  'Frende':('www.frende.no','frende.no','frende.wrep.it'),
- 'Protector':('investor.protectorforsikring.no','www.protectorforsikring.no','protectorforsikring.no'),
+ 'Protector':('investor.protectorforsikring.no','www.protectorforsikring.no','protectorforsikring.no','storage.mfn.se'),
  'Storebrand':('www.storebrand.no','www.storebrand.com','storebrand.com','storebrand.no'),
  'KLP Skadeforsikring':('www.klp.no','klp.no'),
  'Alm. Brand':('investorrelations.almbrand.dk','almbrand.dk','s29.q4cdn.com'),
@@ -53,6 +53,9 @@ def approved(company,url):
             or (company=='Alm. Brand' and p.hostname=='s29.q4cdn.com' and p.path.lower().endswith('.pdf'))))
 
 def period_matches(text,year,quarter):
+    # Nordic Q1-Q3 reports identify the cumulative period, not only Q3.
+    if re.search(r'\bQ1\s*[-–]\s*Q'+str(quarter)+r'\s*'+str(year)+r'\b',text,re.I):return True
+    if re.search(r'\b'+str(quarter)+r'\.?\s*kvartal\s*'+str(year)+r'\b',text,re.I):return True
     for m in PERIOD.finditer(text):
         q,y=(m.group(1),m.group(2)) if m.group(1) else (
             (m.group(3),m.group(4)) if m.group(3) else (m.group(6),m.group(5)))

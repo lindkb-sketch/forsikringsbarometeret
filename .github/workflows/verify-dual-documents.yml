@@ -1,6 +1,12 @@
 name: Verify official reports and presentations (diagnostic)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/reconcile_nine_pdf_metrics.py'
+      - 'scripts/verify_nine_document_bytes.py'
+      - '.github/workflows/verify-dual-documents.yml'
 permissions:
   contents: read
 jobs:
@@ -19,6 +25,8 @@ jobs:
         run: python scripts/build_nine_document_source_inventory.py
       - name: Verify downloaded PDF bytes, period, issuer and SHA256
         run: python scripts/verify_nine_document_bytes.py
+      - name: Re-download actual issuer PDFs and reconcile unambiguous page metrics
+        run: python scripts/reconcile_nine_pdf_metrics.py
       - name: Save document verification evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -28,4 +36,5 @@ jobs:
             data/report_candidates.json
             data/dual_document_verification.json
             data/nine_document_source_inventory.json
+            data/nine_document_metric_reconciliation.json
           if-no-files-found: warn

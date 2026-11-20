@@ -1,0 +1,36 @@
+import sys
+import unittest
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted
+
+class RealPdfMetricReconciliationTests(unittest.TestCase):
+ def test_single_labelled_value_is_extracted(self):
+  self.assertEqual(extract_unambiguous(['Solvency ratio: 238%'],'solvency_ratio'),238)
+ def test_multiple_period_columns_are_ambiguous(self):
+  self.assertIsNone(extract_unambiguous(['Solvency ratio 238% 230%'],'solvency_ratio'))
+ def test_prior_expected_value_never_disambiguates(self):
+  self.assertIsNone(extract_unambiguous(['Solvency ratio 238% 230%'],'solvency_ratio',expected=238))
+ def test_norwegian_decimal(self):
+  self.assertEqual(extract_unambiguous(['Kostnadsprosent: 20,5 %'],'expense_ratio'),20.5)
+ def test_source_hash_and_page_preserved(self):
+  f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
+      'source_type':'official_quarterly_report',
+      'source_url':'https://cdn.sanity.io/report.pdf','source_sha256':'a'*64,
+      'source_page':3,'metric':'combined_ratio','value':73}]}
+  d=source_documents(f,{'insurers':{}},{'candidates':[]},2026,3)
+  record=next(iter(d['Fremtind'].values()))
+  self.assertEqual(record['expected_hashes'],{'a'*64})
+  self.assertEqual(record['observations'][0]['source_page'],3)
+ def test_matching_independently_extracted_values(self):
+  records=[{'metric':'solvency_ratio','scope':'group','period_type':'quarter',
+            'document_type':kind,'value':value,'status':'extracted_unambiguous'}
+           for kind,value in [('quarterly_report',238),('results_presentation',238)]]
+  self.assertEqual(reconcile_extracted(records)[0]['status'],'match')
+  records[1]['value']=231
+  self.assertEqual(reconcile_extracted(records)[0]['status'],'conflict')
+ def test_unverified_presentation_does_not_count_as_match(self):
+  records=[{'metric':'solvency_ratio','scope':'group','period_type':'quarter',
+            'document_type':'results_presentation','value':238,'status':'ambiguous_or_not_found'}]
+  self.assertEqual(reconcile_extracted(records),[])
+if __name__=='__main__':unittest.main()
