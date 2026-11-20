@@ -45,6 +45,10 @@ jobs:
           python scripts/audit_seven_document_sources.py
       - name: Validate nine-issuer PDF delivery and evidence verifier
         run: python -m unittest discover -s tests -p 'test_nine_document_byte_verifier.py' -v
+      - name: Run nine-insurer E2E source parity and negative regression tests
+        run: |
+          python -m unittest discover -s tests -p 'test_nine_insurer_e2e.py' -v
+          python scripts/check_nine_insurer_e2e.py
       - name: Compile importers and discovery
         run: python -m compileall -q scripts tests
       - name: Verify Gjensidige Q3 group solvency from two original issuer PDFs
