@@ -1,6 +1,12 @@
 name: Verify official reports and presentations (diagnostic)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/reconcile_nine_pdf_metrics.py'
+      - 'scripts/verify_nine_document_bytes.py'
+      - '.github/workflows/verify-dual-documents.yml'
 permissions:
   contents: read
 jobs:
