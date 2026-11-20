@@ -40,6 +40,8 @@ def evaluate(readiness,comparison,gaps,dual_documents):
     if not isinstance(dual_documents,dict):
         blockers.append('nine_insurer_document_verification_evidence_missing')
     else:
+        if dual_documents.get('metrics_published') is not False or dual_documents.get('investor_use_approved') is not False:
+            blockers.append('document_diagnostic_must_not_claim_investor_approval')
         if {c.get('company') for c in dual_documents.get('companies',[])}!=set(NINE):
             blockers.append('nine_insurer_document_verification_incomplete')
         for c in dual_documents.get('companies',[]):
@@ -47,13 +49,23 @@ def evaluate(readiness,comparison,gaps,dual_documents):
                 blockers.append('both_document_bytes_not_verified:'+str(c.get('company')))
             if c.get('metric_extraction_status')!='verified_and_reconciled':
                 blockers.append('both_document_metrics_not_reconciled:'+str(c.get('company')))
+            if c.get('conflicts'):
+                blockers.append('conflicting_report_and_presentation_metrics:'+str(c.get('company')))
+            if not c.get('cross_document_matches'):
+                blockers.append('no_independently_reconciled_kpis:'+str(c.get('company')))
+            for m in c.get('cross_document_matches',[]):
+                if m.get('status')!='match':
+                    blockers.append('nonmatching_kpi:'+str(c.get('company'))+':'+str(m.get('metric')))
     return {'schema_version':1,'milestone':6,'status':'APPROVED' if not blockers else 'BLOCKED',
             'approved':not blockers,'blockers':sorted(set(blockers))}
 
 def main():
     def read(path):
         return json.loads((ROOT/path).read_text(encoding='utf-8'))
-    dual=ROOT/'data/dual_document_verification.json'
+    # Consume actual independently extracted PDF metrics, not byte-only metadata.
+    # The diagnostic workflow uploads this file as an artifact; approval requires
+    # downloading that exact run's artifact and validating it locally.
+    dual=ROOT/'data/nine_document_metric_reconciliation.json'
     result=evaluate(read('data/investor_readiness.json'),
                     read('data/nine_insurer_comparison.json'),
                     read('data/seven_insurer_source_gap_audit.json'),
