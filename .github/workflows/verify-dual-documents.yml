@@ -30,4 +30,5 @@ jobs:
             data/report_candidates.json
             data/dual_document_verification.json
             data/nine_document_source_inventory.json
+            data/nine_document_metric_reconciliation.json
           if-no-files-found: warn
