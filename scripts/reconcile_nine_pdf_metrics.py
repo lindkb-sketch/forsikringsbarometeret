@@ -84,7 +84,7 @@ def source_documents(feed,extended,candidates,year,quarter):
                     if metric in CORE:
                         doc['observations'].append({'metric':metric,'value':value,
                             'source_page':record.get('source_page'),'scope':record.get('scope','group'),
-                            'period_type':'quarter'})
+                            'period_type':'quarter','unit':'percent' if metric in ('solvency_ratio','return_on_equity','combined_ratio','loss_ratio','expense_ratio') else record.get('currency','unknown')})
     for x in candidates.get('candidates',[]):
         company,kind,url=x.get('company'),x.get('document_type'),x.get('document_url','')
         if company not in COMPANIES or kind not in ('quarterly_report','results_presentation'):continue
@@ -100,7 +100,7 @@ def reconcile_extracted(records,tolerance=0.05):
     grouped=defaultdict(dict)
     for r in records:
         if r.get('status')!='extracted_unambiguous':continue
-        key=(r['metric'],r['scope'],r['period_type'])
+        key=(r['metric'],r['scope'],r['period_type'],r.get('unit','unknown'))
         grouped[key].setdefault(r['document_type'],[]).append(r['value'])
     results=[]
     for key,by_type in sorted(grouped.items()):
@@ -111,7 +111,7 @@ def reconcile_extracted(records,tolerance=0.05):
             status='ambiguous'
         else:
             status='match' if abs(report[0]-presentation[0])<=tolerance else 'conflict'
-        results.append({'metric':key[0],'scope':key[1],'period_type':key[2],
+        results.append({'metric':key[0],'scope':key[1],'period_type':key[2],'unit':key[3],
                         'report_values':report,'presentation_values':presentation,'status':status})
     return results
 
@@ -141,7 +141,9 @@ def verify_document(doc,year,quarter):
             if metric not in CORE:continue
             val=extract_unambiguous(page_text[p].splitlines(),metric)
             extracted.append({'metric':metric,'scope':row.get('scope','group'),
-                'period_type':row.get('period_type','quarter'),'source_page':p,
+                'period_type':row.get('period_type','quarter'),
+                'unit':row.get('unit','percent' if metric in ('solvency_ratio','return_on_equity','combined_ratio','loss_ratio','expense_ratio') else 'unknown'),
+                'source_page':p,
                 'document_type':doc['document_type'],'value':val,
                 'status':'extracted_unambiguous' if val is not None else 'ambiguous_or_not_found',
                 'committed_value':row.get('value'),
