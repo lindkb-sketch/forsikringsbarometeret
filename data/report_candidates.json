@@ -2466,6 +2466,13 @@
     },
     {
       "company": "Protector",
+      "document_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "document_type": "quarterly_report",
+      "status": "candidate_requires_quarterly_report_verification",
+      "link_text": "PDF"
+    },
+    {
+      "company": "Protector",
       "document_url": "https://protectorforsikring.no/getfile.php/138725-1743154080/Documents/Investor%20Relation/Annual%20General%20Meetings/ENG/2025%20Appendix%202_Annual%20Report%202024.pdf",
       "document_type": "quarterly_report",
       "status": "candidate_requires_quarterly_report_verification",
