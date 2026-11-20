@@ -27,4 +27,5 @@ jobs:
           path: |
             data/report_candidates.json
             data/dual_document_verification.json
+            data/nine_document_source_inventory.json
           if-no-files-found: warn
