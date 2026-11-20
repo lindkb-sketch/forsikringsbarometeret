@@ -4,6 +4,7 @@ Candidates are NOT approved financial data and never update the dashboard.\nQ4 a
 """
 import json,re,urllib.request,urllib.parse,html.parser,sys
 from pathlib import Path
+from verify_nine_document_bytes import approved as approved_delivery_host
 ROOT=Path(__file__).resolve().parents[1]
 REGISTRY=ROOT/"data/report_sources.json"
 OUTPUT=ROOT/"data/report_candidates.json"
@@ -25,12 +26,11 @@ def discover(html,base_url,company):
   url=urllib.parse.urljoin(base_url,link["href"])
   parsed=urllib.parse.urlparse(url)
   if parsed.scheme!="https":continue
-  # Same host or same registrable domain; no third-party press distribution.
-  base=urllib.parse.urlparse(base_url)
-  if parsed.hostname!=base.hostname:continue
+  # Issuer-approved CDN hosts only; arbitrary cross-domain links are rejected.
+  if not approved_delivery_host(company,url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
-  if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
+  if not re.search(r"\.pdf$",parsed.path,re.I):continue
   report=re.search(r"(interim.?report|quarterly.?report|kvartalsrapport|delårsrapport|q[1-4].{0,30}report|report.{0,30}q[1-4]|investor.?tables|investor.?tabeller|annual.?report|annual.?results|full.?year|year.?end|årsrapport|årsresultat|helårsrapport|helårsresultat|financial.?statements.?release)",label,re.I)
   presentation=re.search(r"(presentation|presentasjon|investor.?slides|results.?slides|resultatpresentasjon)",label,re.I)
   if re.search(r"(press.release|pressemelding|newsletter|supplementary)",label,re.I):continue
