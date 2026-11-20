@@ -1,0 +1,17 @@
+name: Milestone 6 investor production approval
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test fail-closed approval policy
+        run: python -m unittest discover -s tests -p 'test_production_approval.py' -v
+      - name: Require independently verified investor production approval
+        run: python scripts/check_production_approval.py --require-approved
