@@ -39,23 +39,37 @@ def parse_number(token):
     return float(s)
 
 def extract_unambiguous(lines,metric,expected=None):
-    """Return value only for a single labelled value; never guess a table column.
+    """Only accept a standalone metric row with one bounded numeric value.
 
-    expected is deliberately NOT used to choose among ambiguous values.
+    PDF text extraction can glue chart ticks, period columns or footnote numbers
+    into a single enormous token. A single regex match is not proof of a KPI.
     """
     labels=LABELS.get(metric,())
     matches=[]
     for line in lines:
-        if not any(re.search(p,line,re.I) for p in labels):continue
-        # A label must be followed by exactly one numeric field on this line.
-        # Many official tables have multiple period columns; these are ambiguous.
-        label_end=min((m.end() for p in labels if (m:=re.search(p,line,re.I))),default=0)
-        tail=line[label_end:].strip(' :–—\t')
-        numbers=[parse_number(x.group()) for x in NUMBER.finditer(tail)]
-        if len(numbers)==1:matches.append(numbers[0])
+        found=[m for p in labels for m in re.finditer(p,line,re.I)]
+        if not found:continue
+        # The KPI must begin the row; chart prose and other metrics are not rows.
+        first=min(found,key=lambda m:m.start())
+        if line[:first.start()].strip(' :–—\\t•-'):continue
+        tail=line[first.end():].strip(' :–—\\t')
+        # Never parse values from a line containing another KPI label.
+        if any(re.search(p,tail,re.I) for patterns in LABELS.values() for p in patterns):
+            continue
+        tokens=[m.group() for m in NUMBER.finditer(tail)]
+        if len(tokens)!=1:continue
+        token=tokens[0]
+        # Exclude adjacent letters/digits and concatenated numeric columns.
+        if re.search(r'\\d{7,}',token.replace(' ','').replace(',','').replace('.','')):
+            continue
+        value=parse_number(token)
+        if metric in ('combined_ratio','loss_ratio','expense_ratio','solvency_ratio','return_on_equity'):
+            if not (0<=value<=1000):continue
+            # Percentage metrics require an explicit percent sign on standalone rows.
+            if '%' not in tail:continue
+        matches.append(value)
     unique=sorted(set(matches))
     return unique[0] if len(unique)==1 else None
-
 
 def extract_explicit_quarter_column(lines,metric,year,quarter):
     """Extract only a table value under an explicit quarter/year column header.
