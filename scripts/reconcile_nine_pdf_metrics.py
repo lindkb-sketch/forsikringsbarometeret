@@ -59,6 +59,10 @@ def extract_unambiguous(lines,metric,expected=None):
         tokens=[m.group() for m in NUMBER.finditer(tail)]
         if len(tokens)!=1:continue
         token=tokens[0]
+        # Reject raw unseparated runs before parsing; the number regex may
+        # split a glued PDF token into shorter matches or keep it intact.
+        if re.search(r'(?<![\d])\d{7,}(?!\d)',tail):
+            continue
         # Exclude adjacent letters/digits and concatenated numeric columns.
         if re.search(r'\\d{7,}',token.replace(' ','').replace(',','').replace('.','')):
             continue
