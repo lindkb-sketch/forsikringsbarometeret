@@ -56,6 +56,31 @@ def extract_unambiguous(lines,metric,expected=None):
     unique=sorted(set(matches))
     return unique[0] if len(unique)==1 else None
 
+
+def extract_explicit_quarter_column(lines,metric,year,quarter):
+    """Extract only a table value under an explicit quarter/year column header.
+
+    Never choose a value based on previously published figures or column order.
+    """
+    labels=LABELS.get(metric,())
+    heading=re.compile(r'(?<!\w)(?:Q'+str(quarter)+r'\s*[-/ ]?\s*'+str(year)+r'|'+str(year)+r'\s*[-/ ]?\s*Q'+str(quarter)+r')(?!\w)',re.I)
+    matches=[]
+    for i,line in enumerate(lines):
+        columns=re.split(r'\s{2,}|\t+',line.strip())
+        indices=[j for j,c in enumerate(columns) if heading.fullmatch(c.strip())]
+        if len(indices)!=1 or len(columns)<2:continue
+        target=indices[0]
+        if not any(re.search(r'Q[1-4]|20\d\d',c,re.I) for j,c in enumerate(columns) if j!=target):
+            continue
+        for candidate in lines[i+1:i+35]:
+            cells=re.split(r'\s{2,}|\t+',candidate.strip())
+            if len(cells)!=len(columns):continue
+            if not any(re.search(p,cells[0],re.I) for p in labels):continue
+            if re.fullmatch(r'[-+]?\d+(?:[.,]\d+)?\s*%?',cells[target].strip()):
+                matches.append(parse_number(cells[target].replace('%','').strip()))
+    unique=sorted(set(matches))
+    return unique[0] if len(unique)==1 else None
+
 def discover_presentation_metrics(pages,year,quarter):
     """Extract only single-value Q3-labelled GROUP presentation pages.
 
@@ -165,13 +190,17 @@ def verify_document(doc,year,quarter):
             metric=row.get('metric')
             if metric not in CORE:continue
             val=extract_unambiguous(page_text[p].splitlines(),metric)
+            method='single_labelled_value'
+            if val is None:
+                val=extract_explicit_quarter_column(page_text[p].splitlines(),metric,year,quarter)
+                method='explicit_quarter_table_column' if val is not None else 'ambiguous_or_not_found'
             extracted.append({'metric':metric,'scope':row.get('scope','group'),
                 'period_type':row.get('period_type','quarter'),
                 'unit':row.get('unit','percent' if metric in ('solvency_ratio','return_on_equity','combined_ratio','loss_ratio','expense_ratio') else 'unknown'),
                 'source_page':p,
                 'document_type':doc['document_type'],'value':val,
                 'status':'extracted_unambiguous' if val is not None else 'ambiguous_or_not_found',
-                'committed_value':row.get('value'),
+                'extraction_method':method,'committed_value':row.get('value'),
                 'committed_value_matches':val is not None and abs(val-row.get('value',float('inf')))<0.05})
         if doc['document_type']=='results_presentation':
             pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
