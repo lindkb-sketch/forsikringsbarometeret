@@ -143,6 +143,45 @@ def extract_structured_table_metrics(tables,year,quarter):
                 else:evidence[metric]=value
     return evidence
 
+def extract_issuer_quarter_rows(lines,company,year,quarter):
+    """Extract aligned Q3 cells from known issuer financial-overview layouts.
+
+    No committed values, positional guessing without an explicit dated header,
+    or cumulative (Q1-Q3 / 1-9) values are used.
+    """
+    if company not in ('Tryg','Sampo') or quarter!=3:return {}
+    headers=[]
+    for i,line in enumerate(lines):
+        normalized=re.sub(r'\\s+',' ',line.strip())
+        if company=='Tryg' and re.search(r'Q3\\s+Q3\\s+Q1-Q3',normalized,re.I):
+            if i+1>=len(lines):continue
+            years=re.findall(r'20\\d{2}',lines[i+1])
+            if len(years)<3 or int(years[0])!=year or int(years[1])!=year-1:continue
+            headers.append((i+2,'tryg'))
+        elif company=='Sampo' and re.search(r'7\\s*[-–]\\s*9\\s*/\\s*'+str(year)+r'\\s+7\\s*[-–]\\s*9\\s*/\\s*'+str(year-1),normalized,re.I):
+            headers.append((i+1,'sampo'))
+    evidence={}
+    ambiguous=set()
+    for start,kind in headers:
+        for line in lines[start:start+65]:
+            for metric,patterns in LABELS.items():
+                found=[m for p in patterns if (m:=re.match(r'\\s*(?:'+p+r')\\b',line,re.I))]
+                if not found:continue
+                rest=line[max(m.end() for m in found):]
+                # Sampo places unit/scope text before five period values.
+                if kind=='sampo':
+                    if not re.search(r'\\bEURm\\b',rest,re.I) and metric not in PERCENT_METRICS:continue
+                numeric=re.findall(r'(?<![\\w])[-+]?(?:\\d{1,3}(?:[ ,]\\d{3})+|\\d+)(?:[.,]\\d+)?%?(?![\\w])',rest)
+                # Exactly five columns, in the order verified by the header.
+                if len(numeric)!=5:continue
+                value=parse_number(numeric[0].rstrip('%'))
+                if metric in PERCENT_METRICS and not (0<=value<=1000):continue
+                if metric in ambiguous:continue
+                if metric in evidence and evidence[metric]!=value:
+                    ambiguous.add(metric);evidence.pop(metric,None)
+                else:evidence[metric]=value
+    return evidence
+
 def discover_presentation_metrics(pages,year,quarter):
     """Extract only single-value Q3-labelled GROUP presentation pages.
 
@@ -272,6 +311,19 @@ def verify_document(doc,year,quarter):
         if doc['document_type']=='results_presentation':
             pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
             extracted.extend(discover_presentation_metrics(pages,year,quarter))
+        # Issuer-specific multi-line and slash-period headers are common in
+        # financial overviews; preserve page provenance for extracted values.
+        if doc['document_type']=='quarterly_report':
+            for page_number,page in enumerate(pdf.pages,1):
+                if page_number not in page_text:continue
+                rows=extract_issuer_quarter_rows((page.extract_text() or '').splitlines(),company,year,quarter)
+                for metric,value in rows.items():
+                    extracted.append({'metric':metric,'scope':'group','period_type':'quarter',
+                        'unit':'percent' if metric in PERCENT_METRICS else 'reported_currency_millions',
+                        'source_page':page_number,'document_type':doc['document_type'],
+                        'value':value,'status':'extracted_unambiguous',
+                        'extraction_method':'issuer_explicit_quarter_overview',
+                        'committed_value':None,'committed_value_matches':None})
         # Prefer aligned cells extracted from PDF table geometry. Both document
         # types use the same independent extraction path, never committed values.
         for page_number,page in enumerate(pdf.pages,1):
