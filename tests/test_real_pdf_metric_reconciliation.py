@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted,discover_presentation_metrics,extract_structured_table_metrics
+from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted,discover_presentation_metrics,extract_structured_table_metrics,extract_issuer_quarter_rows
 
 class RealPdfMetricReconciliationTests(unittest.TestCase):
  def test_single_labelled_value_is_extracted(self):
@@ -43,6 +43,16 @@ class RealPdfMetricReconciliationTests(unittest.TestCase):
   tables=[[['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','76.8%','80.1%']],
           [['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','77.2%','80.1%']]]
   self.assertEqual(extract_structured_table_metrics(tables,2026,3),{})
+ def test_tryg_real_overview_multiline_period_header(self):
+  lines=['Income overview','Q3 Q3 Q1-Q3 Q1-Q3 Full Year',
+         'DKKm 2026 2025 2026 2025 2025',
+         'Insurance revenue 10,591 10,175 31,563 30,063 40,356']
+  self.assertEqual(extract_issuer_quarter_rows(lines,'Tryg',2026,3).get('insurance_revenue'),10591)
+ def test_sampo_real_overview_slash_period_header(self):
+  lines=['Financial overview','7–9/2026 7–9/2025 1–9/2026 1–9/2025 2025',
+         'Insurance revenue (incl. brokerage), net EURm 2,503 2,303 7,303 6,755 9,078']
+  # Additional scope qualifier requires an explicit issuer mapping; do not guess.
+  self.assertEqual(extract_issuer_quarter_rows(lines,'Sampo',2026,3),{})
  def test_source_hash_and_page_preserved(self):
   f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
       'source_type':'official_quarterly_report',
