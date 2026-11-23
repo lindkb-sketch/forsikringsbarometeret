@@ -59,6 +59,8 @@ jobs:
           python scripts/build_nine_document_source_inventory.py
       - name: Test real issuer PDF metric extraction and reconciliation
         run: python -m unittest discover -s tests -p 'test_real_pdf_metric_reconciliation.py' -v
+      - name: Test independently extracted presentation metrics
+        run: python -m unittest discover -s tests -p 'test_presentation_independent_extraction.py' -v
       - name: Compile importers and discovery
         run: python -m compileall -q scripts tests
       - name: Verify Gjensidige Q3 group solvency from two original issuer PDFs
