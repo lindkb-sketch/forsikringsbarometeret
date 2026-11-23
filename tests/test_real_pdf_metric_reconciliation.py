@@ -26,6 +26,12 @@ class RealPdfMetricReconciliationTests(unittest.TestCase):
          (3,'Results Q3 2026 GROUP\nMetric    YTD 2026    YTD 2025\nCombined ratio    76.8    80.1'),
          (4,'Results Q3 2026 NORWAY ONLY GROUP\nMetric    Q3 2026    Q3 2025\nCombined ratio    76.8    80.1')]
   self.assertEqual(discover_presentation_metrics(pages,2026,3),[])
+ def test_rejects_glued_pdf_chart_values(self):
+  self.assertIsNone(extract_unambiguous(['Solvency ratio 203199188184183%'],'solvency_ratio'))
+  self.assertIsNone(extract_unambiguous(['Insurance revenue 168141481439584'],'insurance_revenue'))
+ def test_rejects_chart_prose_and_unmarked_ratio(self):
+  self.assertIsNone(extract_unambiguous(['Strong solvency ratio 203%'],'solvency_ratio'))
+  self.assertIsNone(extract_unambiguous(['Combined ratio 2.15'],'combined_ratio'))
  def test_source_hash_and_page_preserved(self):
   f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
       'source_type':'official_quarterly_report',
