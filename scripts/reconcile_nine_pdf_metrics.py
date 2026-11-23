@@ -95,6 +95,10 @@ def discover_presentation_metrics(pages,year,quarter):
         if re.search(r'\b(?:norway only|norge alene|segment only)\b',page,re.I):continue
         for metric in CORE:
             value=extract_unambiguous(lines,metric)
+            method='single_label_period_and_group_page'
+            if value is None:
+                value=extract_explicit_quarter_column(lines,metric,year,quarter)
+                method='explicit_quarter_table_column_on_group_page'
             if value is None:continue
             if metric in ('insurance_revenue','insurance_service_result'):
                 # Currency/scale is not unambiguously identifiable on arbitrary slides.
@@ -103,7 +107,7 @@ def discover_presentation_metrics(pages,year,quarter):
                 'unit':'percent','source_page':page_number,
                 'document_type':'results_presentation','value':value,
                 'status':'extracted_unambiguous','committed_value':None,
-                'committed_value_matches':None,'extraction_method':'single_label_period_and_group_page'})
+                'committed_value_matches':None,'extraction_method':method})
     return evidence
 
 def source_documents(feed,extended,candidates,year,quarter):
