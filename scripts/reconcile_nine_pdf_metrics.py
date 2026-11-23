@@ -99,6 +99,50 @@ def extract_explicit_quarter_column(lines,metric,year,quarter):
     unique=sorted(set(matches))
     return unique[0] if len(unique)==1 else None
 
+PERCENT_METRICS={'combined_ratio','loss_ratio','expense_ratio','solvency_ratio','return_on_equity'}
+QUARTER_CELL=re.compile(r'^Q([1-4])\\s*[-/ ]?\\s*(20\\d{2})$|^(20\\d{2})\\s*[-/ ]?\\s*Q([1-4])$',re.I)
+NUMERIC_CELL=re.compile(r'^[-+]?(?:\\d{1,3}(?:[ .]\\d{3})+|\\d+)(?:[.,]\\d+)?\\s*%?$')
+
+def extract_structured_table_metrics(tables,year,quarter):
+    """Read only explicitly period-labelled, aligned PDF table cells.
+
+    Do not infer quarter from page heading, row position, prior published
+    values or a YTD column. Return empty on duplicate/ambiguous evidence.
+    """
+    evidence={}
+    rejected=set()
+    for table in tables:
+        if not table or len(table)<2:continue
+        for hi,header in enumerate(table[:-1]):
+            cells=[re.sub(r'\\s+',' ',str(v or '')).strip() for v in header]
+            targets=[]
+            for j,cell in enumerate(cells):
+                m=QUARTER_CELL.fullmatch(cell)
+                if m:
+                    q,y=(int(m.group(1)),int(m.group(2))) if m.group(1) else (int(m.group(4)),int(m.group(3)))
+                    if (q,y)==(quarter,year):targets.append(j)
+            if len(targets)!=1 or not any(QUARTER_CELL.fullmatch(c) for k,c in enumerate(cells) if k!=targets[0]):
+                continue
+            target=targets[0]
+            for row in table[hi+1:]:
+                if not row or len(row)!=len(cells) or target==0:continue
+                label=re.sub(r'\\s+',' ',str(row[0] or '')).strip()
+                raw=re.sub(r'\\s+',' ',str(row[target] or '')).strip()
+                if not NUMERIC_CELL.fullmatch(raw):continue
+                matches=[metric for metric,patterns in LABELS.items()
+                         if any(re.fullmatch(r'(?:'+pattern+r')\\s*(?:\\(%\\)|%|\\(percent\\))?',label,re.I) for pattern in patterns)]
+                if len(matches)!=1:continue
+                metric=matches[0]
+                value=parse_number(raw.rstrip('%').strip())
+                if metric in PERCENT_METRICS and (not 0<=value<=1000 or ('%' not in raw and '%' not in label)):
+                    continue
+                if metric in rejected:continue
+                if metric in evidence and evidence[metric]!=value:
+                    rejected.add(metric)
+                    evidence.pop(metric,None)
+                else:evidence[metric]=value
+    return evidence
+
 def discover_presentation_metrics(pages,year,quarter):
     """Extract only single-value Q3-labelled GROUP presentation pages.
 
@@ -227,6 +271,25 @@ def verify_document(doc,year,quarter):
         if doc['document_type']=='results_presentation':
             pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
             extracted.extend(discover_presentation_metrics(pages,year,quarter))
+        # Prefer aligned cells extracted from PDF table geometry. Both document
+        # types use the same independent extraction path, never committed values.
+        for page_number,page in enumerate(pdf.pages,1):
+            if doc['document_type']=='quarterly_report' and page_number not in page_text:
+                continue
+            page_body=page.extract_text() or ''
+            if not period_matches(page_body,year,quarter):continue
+            if doc['document_type']=='results_presentation':
+                if not re.search(r'\\b(?:group|konsern)\\b',page_body,re.I):continue
+                if re.search(r'\\b(?:norway only|norge alene|segment only)\\b',page_body,re.I):continue
+            try: tables=page.extract_tables() or []
+            except (ValueError,TypeError):continue
+            for metric,value in extract_structured_table_metrics(tables,year,quarter).items():
+                if metric in ('insurance_revenue','insurance_service_result'):continue
+                extracted.append({'metric':metric,'scope':'group','period_type':'quarter',
+                    'unit':'percent','source_page':page_number,
+                    'document_type':doc['document_type'],'value':value,
+                    'status':'extracted_unambiguous','extraction_method':'structured_pdf_table',
+                    'committed_value':None,'committed_value_matches':None})
     return {'company':company,'document_type':doc['document_type'],'url':final,
             'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted}
 
