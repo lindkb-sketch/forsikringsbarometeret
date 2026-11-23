@@ -51,8 +51,9 @@ class RealPdfMetricReconciliationTests(unittest.TestCase):
  def test_sampo_real_overview_slash_period_header(self):
   lines=['Financial overview','7–9/2026 7–9/2025 1–9/2026 1–9/2025 2025',
          'Insurance revenue (incl. brokerage), net EURm 2,503 2,303 7,303 6,755 9,078']
-  # Additional scope qualifier requires an explicit issuer mapping; do not guess.
-  self.assertEqual(extract_issuer_quarter_rows(lines,'Sampo',2026,3),{})
+  # This dated quarterly column explicitly states EURm; extraction is
+  # permitted, but independent document reconciliation is still required.
+  self.assertEqual(extract_issuer_quarter_rows(lines,'Sampo',2026,3).get('insurance_revenue'),2503.0)
  def test_source_hash_and_page_preserved(self):
   f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
       'source_type':'official_quarterly_report',
