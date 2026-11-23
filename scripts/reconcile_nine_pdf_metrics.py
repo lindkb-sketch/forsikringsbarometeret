@@ -250,6 +250,7 @@ def verify_document(doc,year,quarter):
                 page_text[p]=pdf.pages[p-1].extract_text() or ''
         # Presentation metric extraction must be anchored to a real source page.
         extracted=[]
+        table_diagnostics=[]
         for row in doc['observations']:
             p=row.get('source_page')
             if p not in page_text:continue
@@ -277,12 +278,19 @@ def verify_document(doc,year,quarter):
             if doc['document_type']=='quarterly_report' and page_number not in page_text:
                 continue
             page_body=page.extract_text() or ''
-            if not period_matches(page_body,year,quarter):continue
+            # Table headers carry the period independently; requiring the page's
+            # narrative text to repeat it discards valid financial statement tables.
             if doc['document_type']=='results_presentation':
                 if not re.search(r'\\b(?:group|konsern)\\b',page_body,re.I):continue
                 if re.search(r'\\b(?:norway only|norge alene|segment only)\\b',page_body,re.I):continue
             try: tables=page.extract_tables() or []
             except (ValueError,TypeError):continue
+            if tables and (company in ('Tryg','Sampo')):
+                table_diagnostics.append({'page':page_number,'tables':len(tables),
+                    'headers':[[str(v or '')[:65] for v in (table[0] or [])][:9]
+                               for table in tables[:6] if table],
+                    'row_samples':[[str(v or '')[:65] for v in (row or [])][:9]
+                                   for table in tables[:2] for row in table[1:5]]})
             for metric,value in extract_structured_table_metrics(tables,year,quarter).items():
                 if metric in ('insurance_revenue','insurance_service_result'):continue
                 extracted.append({'metric':metric,'scope':'group','period_type':'quarter',
@@ -291,7 +299,8 @@ def verify_document(doc,year,quarter):
                     'status':'extracted_unambiguous','extraction_method':'structured_pdf_table',
                     'committed_value':None,'committed_value_matches':None})
     return {'company':company,'document_type':doc['document_type'],'url':final,
-            'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted}
+            'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted,
+            'table_diagnostics':table_diagnostics[:30] if company in ('Tryg','Sampo') else []}
 
 def run(year=2026,quarter=3):
     def load(path):return json.loads((ROOT/path).read_text(encoding='utf-8'))
