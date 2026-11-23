@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-23T15:45:11.263912+00:00",
+  "updated_at": "2026-11-23T16:00:17.002642+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -3056,9 +3056,9 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 166.4,
+      "close": 166.8,
       "trading_date": "2026-11-23",
-      "observed_at": "2026-11-23T15:44:25+00:00",
+      "observed_at": "2026-11-23T15:59:51+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 165.4,
@@ -4054,7 +4054,7 @@
         },
         {
           "date": "2026-11-23",
-          "price": 166.4
+          "price": 166.8
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4065,9 +4065,9 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 9.886,
+      "close": 9.884,
       "trading_date": "2026-11-23",
-      "observed_at": "2026-11-23T15:45:05+00:00",
+      "observed_at": "2026-11-23T15:59:54+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 9.796,
@@ -5071,7 +5071,7 @@
         },
         {
           "date": "2026-11-23",
-          "price": 9.886
+          "price": 9.884
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
@@ -5082,9 +5082,9 @@
       "symbol": "ALMB.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 17.44,
+      "close": 17.47,
       "trading_date": "2026-11-23",
-      "observed_at": "2026-11-23T15:43:34+00:00",
+      "observed_at": "2026-11-23T15:59:31+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 17.32,
@@ -6080,7 +6080,7 @@
         },
         {
           "date": "2026-11-23",
-          "price": 17.44
+          "price": 17.47
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/ALMB.CO",
