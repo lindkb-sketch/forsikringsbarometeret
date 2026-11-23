@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted,discover_presentation_metrics
+from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted,discover_presentation_metrics,extract_structured_table_metrics
 
 class RealPdfMetricReconciliationTests(unittest.TestCase):
  def test_single_labelled_value_is_extracted(self):
@@ -32,6 +32,17 @@ class RealPdfMetricReconciliationTests(unittest.TestCase):
  def test_rejects_chart_prose_and_unmarked_ratio(self):
   self.assertIsNone(extract_unambiguous(['Strong solvency ratio 203%'],'solvency_ratio'))
   self.assertIsNone(extract_unambiguous(['Combined ratio 2.15'],'combined_ratio'))
+ def test_structured_table_exact_quarter_and_metric(self):
+  tables=[[['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','76.8%','80.1%'],['Loss ratio (%)','63.6%','65.2%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{'combined_ratio':76.8,'loss_ratio':63.6})
+ def test_structured_table_rejects_ambiguous_period(self):
+  tables=[[['Metric','Q3 2026','Q3 2026'],['Combined ratio (%)','76.8%','80.1%']],
+          [['Metric','YTD 2026','YTD 2025'],['Combined ratio (%)','76.8%','80.1%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{})
+ def test_structured_table_rejects_conflicting_values(self):
+  tables=[[['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','76.8%','80.1%']],
+          [['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','77.2%','80.1%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{})
  def test_source_hash_and_page_preserved(self):
   f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
       'source_type':'official_quarterly_report',
