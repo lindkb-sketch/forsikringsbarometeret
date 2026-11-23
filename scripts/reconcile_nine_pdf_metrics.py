@@ -100,8 +100,8 @@ def extract_explicit_quarter_column(lines,metric,year,quarter):
     return unique[0] if len(unique)==1 else None
 
 PERCENT_METRICS={'combined_ratio','loss_ratio','expense_ratio','solvency_ratio','return_on_equity'}
-QUARTER_CELL=re.compile(r'^Q([1-4])\\s*[-/ ]?\\s*(20\\d{2})$|^(20\\d{2})\\s*[-/ ]?\\s*Q([1-4])$',re.I)
-NUMERIC_CELL=re.compile(r'^[-+]?(?:\\d{1,3}(?:[ .]\\d{3})+|\\d+)(?:[.,]\\d+)?\\s*%?$')
+QUARTER_CELL=re.compile(r'^Q([1-4])\s*[-/ ]?\s*(20\d{2})$|^(20\d{2})\s*[-/ ]?\s*Q([1-4])$',re.I)
+NUMERIC_CELL=re.compile(r'^[-+]?(?:\d{1,3}(?:[ .]\d{3})+|\d+)(?:[.,]\d+)?\s*%?$')
 
 def extract_structured_table_metrics(tables,year,quarter):
     """Read only explicitly period-labelled, aligned PDF table cells.
@@ -114,7 +114,7 @@ def extract_structured_table_metrics(tables,year,quarter):
     for table in tables:
         if not table or len(table)<2:continue
         for hi,header in enumerate(table[:-1]):
-            cells=[re.sub(r'\\s+',' ',str(v or '')).strip() for v in header]
+            cells=[re.sub(r'\s+',' ',str(v or '')).strip() for v in header]
             targets=[]
             for j,cell in enumerate(cells):
                 m=QUARTER_CELL.fullmatch(cell)
@@ -126,11 +126,11 @@ def extract_structured_table_metrics(tables,year,quarter):
             target=targets[0]
             for row in table[hi+1:]:
                 if not row or len(row)!=len(cells) or target==0:continue
-                label=re.sub(r'\\s+',' ',str(row[0] or '')).strip()
-                raw=re.sub(r'\\s+',' ',str(row[target] or '')).strip()
+                label=re.sub(r'\s+',' ',str(row[0] or '')).strip()
+                raw=re.sub(r'\s+',' ',str(row[target] or '')).strip()
                 if not NUMERIC_CELL.fullmatch(raw):continue
                 matches=[metric for metric,patterns in LABELS.items()
-                         if any(re.fullmatch(r'(?:'+pattern+r')\\s*(?:\\(%\\)|%|\\(percent\\))?',label,re.I) for pattern in patterns)]
+                         if any(re.fullmatch(r'(?:'+pattern+r')\s*(?:\(%\)|%|\(percent\))?',label,re.I) for pattern in patterns)]
                 if len(matches)!=1:continue
                 metric=matches[0]
                 value=parse_number(raw.rstrip('%').strip())
