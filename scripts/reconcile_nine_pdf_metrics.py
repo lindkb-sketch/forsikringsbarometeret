@@ -285,6 +285,17 @@ def verify_document(doc,year,quarter):
                 if re.search(r'\\b(?:norway only|norge alene|segment only)\\b',page_body,re.I):continue
             try: tables=page.extract_tables() or []
             except (ValueError,TypeError):continue
+            if company in ('Tryg','Sampo') and (page_number in page_text or (doc['document_type']=='results_presentation' and page_number<=12)):
+                # Capture bounded layout evidence once per run, not a new CI
+                # iteration for every guess about how the PDF was typeset.
+                words=page.extract_words() or []
+                layout=[{'text':str(w.get('text',''))[:48],
+                         'x0':round(w['x0'],1),'top':round(w['top'],1)}
+                        for w in words[:450]]
+                table_diagnostics.append({'page':page_number,
+                    'page_width':round(page.width,1),
+                    'layout_words':layout,
+                    'text_lines':page_body.splitlines()[:65]})
             if tables and (company in ('Tryg','Sampo')):
                 table_diagnostics.append({'page':page_number,'tables':len(tables),
                     'headers':[[str(v or '')[:65] for v in (table[0] or [])][:9]
