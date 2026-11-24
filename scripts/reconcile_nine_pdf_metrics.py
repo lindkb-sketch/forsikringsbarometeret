@@ -327,10 +327,11 @@ def parse_protector_group(pages,year,quarter,url,digest):
             print('PROTECTOR_ROW_DIAGNOSTIC',metric,repr(matches),repr(text[:5000]))
             continue
         tokens=next(iter(unique))
-        result.append(dict(company='Protector',year=year,quarter=quarter,scope='group',period_type='quarter',
-            metric=metric,value=tokens[0],unit='percent' if metric.endswith('ratio') else 'MNOK',
+        for period,index in ([('quarter',0),('ytd',2)] if re.search(r'Q1[-–]Q'+str(quarter)+r'\s+'+str(year)+r'\s+Q1[-–]Q'+str(quarter)+r'\s+'+str(year-1),text) else [('quarter',0)]):
+            result.append(dict(company='Protector',year=year,quarter=quarter,scope='group',period_type=period,
+            metric=metric,value=tokens[index],unit='percent' if metric.endswith('ratio') else 'MNOK',
             source_page=page,source_url=url,source_sha256=digest,source_type='official_quarterly_report'))
-    values={r['metric']:r['value'] for r in result}
+    values={r['metric']:r['value'] for r in result if r['period_type']=='quarter'}
     if {'combined_ratio','loss_ratio','expense_ratio'}<=values.keys() and abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed')
     return result
 
@@ -390,6 +391,27 @@ def verify_document(doc,year,quarter):
                         committed_value_matches=None if len(vals)!=1 else abs(next(iter(vals))-row['value'])<0.05))
             except (ValueError,TypeError,KeyError) as exc:
                 print('ISSUER_REPORT_PARSER_BLOCKED',company,str(exc)[:500])
+        if doc['document_type']=='quarterly_report':
+            from import_group_solvency_pdf import extract as solvency_extract, COMPANIES as SOLVENCY_COMPANIES
+            from import_reported_returns import extract as return_extract, LABELS as RETURN_COMPANIES
+            for metric,enabled,reader in (
+                ('solvency_ratio',company in SOLVENCY_COMPANIES,solvency_extract),
+                ('return_on_own_funds' if company=='Tryg' else 'return_on_equity',company in RETURN_COMPANIES,return_extract)):
+                if not enabled:continue
+                try:
+                    result=reader(raw,company,year,quarter)
+                    page,value=result[:2]
+                    baseline_metric='return_on_equity' if metric=='return_on_own_funds' else metric
+                    old=[x for x in doc['observations'] if x.get('metric')==baseline_metric and x.get('scope')=='group' and x.get('period_type')=='quarter' and x.get('unit')=='percent']
+                    if metric=='return_on_own_funds':
+                        old=[x for x in old if 'ROOF' in x.get('source_definition','')]
+                    vals={x['value'] for x in old}
+                    extracted.append(dict(metric=metric,scope='group',period_type='quarter',unit='percent',
+                        source_page=page,document_type='quarterly_report',value=value,status='extracted_unambiguous',
+                        extraction_method='issuer_validated_report_table',committed_value=next(iter(vals)) if len(vals)==1 else None,
+                        committed_value_matches=None if len(vals)!=1 else abs(next(iter(vals))-value)<0.05))
+                except ValueError as exc:
+                    print('MANAGEMENT_KPI_BLOCKED',company,metric,str(exc)[:300])
         for row in doc['observations']:
             p=row.get('source_page')
             if p not in page_text:continue
