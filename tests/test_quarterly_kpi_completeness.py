@@ -29,6 +29,19 @@ class KPICompletenessTests(unittest.TestCase):
         self.assertEqual(report['companies'][0]['missing_metrics'], ['profit_before_tax'])
         self.assertIn('combined_ratio', report['companies'][0]['present_metrics'])
 
+    def test_reporting_exceptions_do_not_count_as_missing(self):
+        data = self.fixture()
+        for row in data['companies']:
+            if row['company'] in ('Frende', 'KLP Skadeforsikring'):
+                row['metrics']['return_on_equity'] = None
+            if row['company'] == 'Frende':
+                row['metrics']['solvency_ratio'] = None
+        report = build(data)
+        self.assertTrue(report['all_nine_metrics_present'])
+        frende = next(r for r in report['companies'] if r['company'] == 'Frende')
+        self.assertEqual(set(frende['not_reported_metrics']), {'return_on_equity', 'solvency_ratio'})
+        self.assertEqual(frende['expected_count'], 7)
+
     def test_missing_company_fails_closed(self):
         data = self.fixture()
         data['companies'].pop()
