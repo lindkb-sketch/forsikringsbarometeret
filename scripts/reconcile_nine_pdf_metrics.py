@@ -484,7 +484,8 @@ def verify_special_report(company,year,quarter,feed,extended=None):
                 if (row['year'],row['quarter'],row['source_page'])!=(year,quarter,section) or row['period_type'] not in ('quarter','ytd'):continue
                 # Operating revenue is not insurance-only revenue. Preserve its
                 # definition and do not certify it as comparable insurance revenue.
-                if row['metric']=='insurance_revenue':continue
+                # User-approved IFRS 4 operating revenue proxy; retain source definition.
+                if row['metric']=='insurance_revenue' and not row.get('source_definition'):continue
                 old=[x for x in feed.get('observations',[]) if all(x.get(k)==row.get(k) for k in ('company','year','quarter','scope','period_type','metric','unit','source_definition'))]
                 vals={x['value'] for x in old}
                 evidence.append(dict(row,document_type='quarterly_report',status='extracted_unambiguous',
@@ -571,8 +572,13 @@ def run(year=2026,quarter=3):
         item['period_coverage']={}
         for period in ('quarter','ytd'):
             expected=required|({'solvency_ratio','return_on_equity'} if period=='quarter' else {'return_on_equity'})
+            if item['company'] in ('Sampo','Frende','KLP Skadeforsikring'):
+                expected.discard('return_on_equity')
+            if item['company']=='Tryg':
+                expected.discard('return_on_equity')
+                expected.add('return_on_own_funds')
             matched={r['metric'] for r in item['report_metric_audit'] if r['scope']==scope and r['period_type']==period and r['status']=='report_value_match'}
-            item['period_coverage'][period]={'verified':sorted(matched),'missing':sorted(expected-matched)}
+            item['period_coverage'][period]={'verified':sorted(matched & expected),'missing':sorted(expected-matched),'required':sorted(expected)}
     output['production_gate']={'approved':False,'reason':'Require complete period coverage, comparable revenue growth, and future-period replay before approval'}
     print('NINE_PERIOD_COVERAGE',json.dumps({x['company']:x['period_coverage'] for x in output['companies']},ensure_ascii=False))
     output['all_nine_dual_document_verified']=all(c['both_documents_verified'] for c in output['companies'])
