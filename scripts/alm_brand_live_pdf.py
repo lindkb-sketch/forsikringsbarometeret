@@ -39,7 +39,7 @@ NUM=re.compile(r'(?<![\w])-?\d{1,3}(?:,\d{3})*(?:\.\d+)?(?![\w])')
 
 def trusted_pdf_link(url):
     p=urllib.parse.urlsplit(url)
-    return p.scheme=='https' and (url==OFFICIAL_FILING_PDF or 
+    return p.scheme=='https' and ((p.hostname=='ml-eu.globenewswire.com' and re.fullmatch(r'/Resource/Download/[0-9a-fA-F-]{36}',p.path)) or 
         (p.hostname=='s29.q4cdn.com'
          and p.path.startswith('/228553818/files/')
          and p.path.lower().endswith('.pdf')) or
@@ -73,7 +73,8 @@ def find_candidates(html,origin=IR):
         url=match.group(0)
         if trusted_pdf_link(url):parser.links.append((url,''))
     unique={}
-    for url,label in parser.links:unique[url]=label
+    for url,label in parser.links:
+        if url not in unique or label:unique[url]=label
     return sorted(unique.items(),key=lambda x:(not bool(re.search(r'AB GROUP 3Q 2026',x[1],re.I)),x[0]))
 
 def fetch_html(url):
@@ -113,8 +114,6 @@ def discover():
     if len(found)==1:
         return next(iter(found))
     if not found:
-        # Pinned official Nasdaq issuer-disclosure attachment (full interim report).
-        # Never accept arbitrary attachments on this host.
         raise ValueError('No quarterly report linked from official Alm Brand issuer pages')
     raise ValueError('Ambiguous official Q3 PDF links: '+str(sorted(found)))
 
@@ -253,7 +252,7 @@ def verify_pages(texts,url,raw,regions=None):
             'source_sha256':sha,'currency':'DKK','scope':'group'},
         'ytd_recalculated_ratios':{key:float(x) for key,x in y.items()},
         'source_sha256':sha,'source_url':url,
-        'issuer_page_url':OFFICIAL_NASDAQ_NOTICE if url==OFFICIAL_FILING_PDF else IR,
+        'issuer_page_url':IR,
         'status':'verified_official_pdf_reconciled'})
     return extracted
 
