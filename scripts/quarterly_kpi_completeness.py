@@ -14,6 +14,10 @@ COMPANIES = (
     'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand',
 )
 
+# Reporting exceptions supplied by project owner; revisit if disclosure changes.
+NOT_REPORTED = {'KLP Skadeforsikring': {'return_on_equity'},
+                'Frende': {'return_on_equity', 'solvency_ratio'}}
+
 def build(comparison):
     rows = comparison.get('companies', [])
     by_company = {row['company']: row for row in rows}
@@ -23,7 +27,8 @@ def build(comparison):
     for company in COMPANIES:
         row = by_company[company]
         values = row.get('metrics') or {}
-        missing = [metric for metric in METRICS if values.get(metric) is None]
+        exempt = [metric for metric in METRICS if metric in NOT_REPORTED.get(company, set()) and values.get(metric) is None]
+        missing = [metric for metric in METRICS if values.get(metric) is None and metric not in exempt]
         unexpected = sorted(set(values) - set(METRICS))
         if unexpected:
             raise ValueError(f'{company}: unknown metrics: {unexpected}')
@@ -34,8 +39,10 @@ def build(comparison):
             'source_status': row.get('status'),
             'present_metrics': observed,
             'missing_metrics': missing,
+            'not_reported_metrics': exempt,
+            'reporting_exception_basis': 'project_owner_disclosure_policy' if exempt else None,
             'present_count': len(observed),
-            'expected_count': len(METRICS),
+            'expected_count': len(METRICS) - len(exempt),
             'all_metrics_present': not missing,
             # A non-null value does NOT prove unattended import or dual-document provenance.
             'unattended_extraction_verified': False,
