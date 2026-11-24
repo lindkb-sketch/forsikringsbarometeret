@@ -22,3 +22,9 @@ Neste steg for faktisk fullautomatisering er utstederspesifikke
 rapport- og presentasjonsadaptere med sporbar kildehash, side/tabell,
 kvartal/HIÅ, avstemming, og publiseringsattestering fra samme workflow-run.
 Denne statusrapporten er bevisst ikke en sertifisering av dette.
+
+## Rapporteringsregler fra prosjekteier
+
+- KLP og Frende: ROE er ikke påkrevd. Frende: solvensgrad er ikke påkrevd.
+- Sampo: Solvency II ratio og Return on equity own funds, med original definisjon.
+- Solvensgrad er et balansetidspunktstall ved kvartalsslutt. For samme år, kvartal og scope skal kvartalsvisning og HIÅ vise identisk verdi. Ingen summering, gjennomsnitt, annualisering eller fremføring fra tidligere kvartal. Manglende kildeverifisert verdi for valgt kvartal skal forbli null.
