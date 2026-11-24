@@ -112,7 +112,15 @@ def publish(root: Path = ROOT) -> None:
     if ancestor.returncode != 0:
         raise ValueError('Validated financial source is not an ancestor of current main')
     changed = set(git('diff', '--name-only', base, current, root=root).splitlines())
-    unsafe = changed - ALLOWED_INTERVENING
+    # A previous attempt may have committed this exact validated snapshot
+    # before Pages deployment failed. Permit only byte-identical outputs;
+    # any newer or different finance/code change still blocks the retry.
+    already_published = {
+        rel for rel in changed & manifest['files'].keys()
+        if (root / rel).is_file()
+        and sha256(root / rel) == manifest['files'][rel]
+    }
+    unsafe = changed - ALLOWED_INTERVENING - already_published
     if unsafe:
         raise ValueError('main changed outside stock prices during financial validation: ' + ', '.join(sorted(unsafe)))
     if changed:
