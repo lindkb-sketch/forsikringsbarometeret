@@ -394,7 +394,7 @@ def verify_document(doc,year,quarter):
             'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted,
             'table_diagnostics':table_diagnostics[:30] if company in ('Tryg','Sampo') else []}
 
-def verify_special_report(company,year,quarter,feed):
+def verify_special_report(company,year,quarter,feed,extended=None):
     """Reuse existing issuer-specific parsers without writing financial feeds."""
     if company=='Frende':
         from import_frende_holding import read,extract,extract_revenue,extract_insurance_result
@@ -426,13 +426,16 @@ def verify_special_report(company,year,quarter,feed):
         from alm_brand_live_pdf import run
         report=run()
         evidence=[]
+        baseline=(extended or {}).get('insurers',{}).get(company,{})
+        comparable=(baseline.get('year'),baseline.get('quarter'),baseline.get('scope'),baseline.get('currency'))==(year,quarter,'group','DKK')
         for metric,value in report['metrics'].items():
             if metric not in CORE:continue
+            old=baseline.get('metrics',{}).get(metric) if comparable else None
             evidence.append({'metric':metric,'scope':'group','period_type':'quarter',
                 'unit':'DKKm' if metric in ('insurance_revenue','insurance_service_result') else 'percent',
                 'source_page':report['source_pages'][metric],'document_type':'quarterly_report',
                 'value':value,'status':'extracted_unambiguous','extraction_method':'issuer_validated_report_table',
-                'committed_value':None,'committed_value_matches':None})
+                'committed_value':old,'committed_value_matches':None if old is None else abs(value-old)<0.05})
         return [{'company':company,'document_type':'quarterly_report','url':report['source_url'],
             'source_sha256':report['source_sha256'],'status':'verified_pdf_bytes','metric_evidence':evidence}]
     return []
@@ -440,8 +443,9 @@ def verify_special_report(company,year,quarter,feed):
 def run(year=2026,quarter=3):
     def load(path):return json.loads((ROOT/path).read_text(encoding='utf-8'))
     feed=load('data/verified_financial_feed.json')
+    extended=load('data/extended_insurer_financials.json')
     docs=source_documents(feed,
-        load('data/extended_insurer_financials.json'),load('data/report_candidates.json'),year,quarter)
+        extended,load('data/report_candidates.json'),year,quarter)
     output={'schema_version':1,'year':year,'quarter':quarter,
             'metrics_published':False,'investor_use_approved':False,'numeric_primary_source':'quarterly_report','presentation_required_for_numeric_validation':False,'companies':[]}
     for company in COMPANIES:
@@ -452,7 +456,7 @@ def run(year=2026,quarter=3):
                 checked.append({'company':company,'document_type':doc['document_type'],
                     'url':doc['url'],'status':'unverified','error':type(exc).__name__+': '+str(exc)[:200]})
         if company in ('Frende','Alm. Brand'):
-            try:checked.extend(verify_special_report(company,year,quarter,feed))
+            try:checked.extend(verify_special_report(company,year,quarter,feed,extended))
             except Exception as exc:checked.append({'company':company,'document_type':'quarterly_report','status':'unverified','error':type(exc).__name__+': '+str(exc)[:300]})
         types={x['document_type'] for x in checked if x['status'] in ('verified_pdf_bytes','verified_report_html')}
         metrics=[dict(row,source_sha256=x['source_sha256']) for x in checked
