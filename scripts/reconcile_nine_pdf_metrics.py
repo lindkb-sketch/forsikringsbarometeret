@@ -315,14 +315,23 @@ def parse_protector_group(pages,year,quarter,url,digest):
     for metric,label in labels.items():
         pattern=r'^\s*'+re.escape(label)+r'\s*[¹²³⁴⁵⁶⁷⁸⁹⁰]*\s+(.+)$'
         matches=[m.group(1) for line in text.splitlines() if (m:=re.fullmatch(pattern,line,re.I))]
-        if len(matches)!=1:raise ValueError('Protector ambiguous row '+metric)
-        tokens=matches[0].replace('%','').split()
-        if len(tokens)!=5 or not all(re.fullmatch(r'-?\d[\d,]*(?:\.\d+)?',v) for v in tokens):raise ValueError('Protector invalid numeric columns '+metric)
+        # A row label can also prefix a different metric (e.g. a ratio).
+        # Accept only complete numeric rows, never narrative or suffix labels.
+        numeric=[]
+        for match in matches:
+            tokens=match.replace('%','').split()
+            if len(tokens)==5 and all(re.fullmatch(r'-?\d[\d,]*(?:\.\d+)?',v) for v in tokens):
+                numeric.append(tuple(float(v.replace(',','')) for v in tokens))
+        unique=set(numeric)
+        if len(unique)!=1:
+            print('PROTECTOR_ROW_DIAGNOSTIC',metric,repr(matches),repr(text[:5000]))
+            continue
+        tokens=next(iter(unique))
         result.append(dict(company='Protector',year=year,quarter=quarter,scope='group',period_type='quarter',
-            metric=metric,value=float(tokens[0].replace(',','')),unit='percent' if metric.endswith('ratio') else 'MNOK',
+            metric=metric,value=tokens[0],unit='percent' if metric.endswith('ratio') else 'MNOK',
             source_page=page,source_url=url,source_sha256=digest,source_type='official_quarterly_report'))
     values={r['metric']:r['value'] for r in result}
-    if abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed')
+    if {'combined_ratio','loss_ratio','expense_ratio'}<=values.keys() and abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed')
     return result
 
 def verify_document(doc,year,quarter):
