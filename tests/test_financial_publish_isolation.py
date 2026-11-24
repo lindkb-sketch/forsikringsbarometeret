@@ -109,6 +109,15 @@ class FinancePublishIsolationTests(unittest.TestCase):
             publish(current)
         self.assertEqual(json.loads((current / 'data/verified_financial_feed.json').read_text())['value'], 52)
 
+    def test_retry_after_identical_finance_commit_is_noop(self):
+        (self.initial / 'data' / 'verified_financial_feed.json').write_text('{"value":51}\n')
+        prepare(self.initial)
+        self.change_main('data/verified_financial_feed.json', '{"value":51}\n')
+        current = self.publish_snapshot()
+        before = git(current, 'rev-parse', 'HEAD')
+        publish(current)
+        self.assertEqual(before, git(current, 'rev-parse', 'HEAD'))
+
     def test_modified_artifact_is_rejected_before_touching_files(self):
         prepare(self.initial)
         current = self.publish_snapshot()
