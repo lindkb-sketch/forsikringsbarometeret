@@ -577,7 +577,11 @@ def verify_special_report(company,year,quarter,feed,extended=None):
              'return_on_equity':report['return_on_equity_ytd']}
         for metric,value in ytd.items():
             if metric not in CORE:continue
-            old=baseline.get('ytd_metrics',{}).get(metric) if comparable else None
+            old=(baseline.get('ytd_metrics',{}).get(metric) if comparable else None)
+            if old is None and comparable:
+                old=baseline.get('reported_ytd_ratios',{}).get(metric)
+                if metric=='insurance_revenue':old=baseline.get('revenue_growth_evidence',{}).get('ytd',{}).get('current')
+                if metric=='return_on_equity':old=baseline.get('return_on_equity_ytd')
             evidence.append(dict(metric=metric,scope='group',period_type='ytd',
                 unit='DKKm' if metric=='insurance_revenue' else 'percent',
                 source_page=report['source_pages'][metric],document_type='quarterly_report',value=value,
@@ -635,8 +639,21 @@ def run(year=2026,quarter=3):
                 expected.add('return_on_own_funds')
             matched={r['metric'] for r in item['report_metric_audit'] if r['scope']==scope and r['period_type']==period and r['status']=='report_value_match'}
             item['period_coverage'][period]={'verified':sorted(matched & expected),'missing':sorted(expected-matched),'required':sorted(expected)}
+    # Distinguish newly extracted source evidence from existing-feed matches.
+    for item in output['companies']:
+        for period,coverage in item['period_coverage'].items():
+            candidates={}
+            for row in item['metric_evidence']:
+                if row.get('period_type')!=period or row.get('metric') not in coverage['missing']:continue
+                if row.get('document_type')!='quarterly_report' or row.get('extraction_method')!='issuer_validated_report_table':continue
+                if row.get('committed_value') is not None or not row.get('source_page') or not row.get('source_sha256'):continue
+                if row.get('scope')!=('company' if item['company']=='KLP Skadeforsikring' else 'group'):continue
+                candidates.setdefault(row['metric'],[]).append(row)
+            coverage['pending_baseline']={metric:rows for metric,rows in candidates.items()
+                if len({(r['unit'],r['value']) for r in rows})==1}
+    print('NINE_PENDING_BASELINE',json.dumps({x['company']:{p:{m:[{'value':r['value'],'unit':r['unit'],'page':r['source_page']} for r in rows] for m,rows in c['pending_baseline'].items()} for p,c in x['period_coverage'].items()} for x in output['companies']},ensure_ascii=False))
     output['production_gate']={'approved':False,'reason':'Require complete period coverage, comparable revenue growth, and future-period replay before approval'}
-    print('NINE_PERIOD_COVERAGE',json.dumps({x['company']:x['period_coverage'] for x in output['companies']},ensure_ascii=False))
+    print('NINE_PERIOD_COVERAGE',json.dumps({x['company']:{p:{k:v for k,v in c.items() if k!='pending_baseline'} for p,c in x['period_coverage'].items()} for x in output['companies']},ensure_ascii=False))
     output['all_nine_dual_document_verified']=all(c['both_documents_verified'] for c in output['companies'])
     OUTPUT.write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print('NINE_DOCUMENT_METRIC_AUDIT',json.dumps({x['company']:{
