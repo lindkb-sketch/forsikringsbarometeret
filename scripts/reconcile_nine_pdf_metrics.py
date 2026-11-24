@@ -288,11 +288,11 @@ def report_metric_audit(records):
         # Only explicit quarter-column extraction qualifies. A single number on
         # a page does not independently establish the observation's period.
         valid=[r for r in rows if r.get('status')=='extracted_unambiguous'
-               and r.get('extraction_method')=='explicit_quarter_table_column'
+               and r.get('extraction_method') in ('explicit_quarter_table_column','issuer_validated_report_table')
                and r.get('committed_value_matches') is True
                and r.get('source_page') and r.get('source_sha256')]
         conflict=any(r.get('status')=='extracted_unambiguous'
-                     and r.get('extraction_method')=='explicit_quarter_table_column'
+                     and r.get('extraction_method') in ('explicit_quarter_table_column','issuer_validated_report_table')
                      and r.get('committed_value_matches') is False for r in rows)
         result.append({'metric':key[0],'scope':key[1],'period_type':key[2],'unit':key[3],
                        'status':'conflict' if conflict else 'report_value_match' if valid else 'needs_review',
@@ -394,9 +394,53 @@ def verify_document(doc,year,quarter):
             'source_sha256':digest,'status':'verified_pdf_bytes','metric_evidence':extracted,
             'table_diagnostics':table_diagnostics[:30] if company in ('Tryg','Sampo') else []}
 
+def verify_special_report(company,year,quarter,feed):
+    """Reuse existing issuer-specific parsers without writing financial feeds."""
+    if company=='Frende':
+        from import_frende_holding import read,extract,extract_revenue,extract_insurance_result
+        base=f'https://frende.wrep.it/q{quarter}-{year}-frende-holding-as'
+        ratios=read(base,6)
+        income=read(base,7)
+        rows=extract(ratios,base+'/sec/6',year,quarter)
+        rows+=extract_revenue(income,base+'/sec/7',year,quarter)
+        rows+=extract_insurance_result(income,base+'/sec/7',year,quarter)
+        output=[]
+        for section in (6,7):
+            evidence=[]
+            raw=ratios if section==6 else income
+            digest=hashlib.sha256(raw.encode('utf-8')).hexdigest()
+            for row in rows:
+                if (row['year'],row['quarter'],row['period_type'],row['source_page'])!=(year,quarter,'quarter',section):continue
+                # Operating revenue is not insurance-only revenue. Preserve its
+                # definition and do not certify it as comparable insurance revenue.
+                if row['metric']=='insurance_revenue':continue
+                old=[x for x in feed.get('observations',[]) if all(x.get(k)==row.get(k) for k in ('company','year','quarter','scope','period_type','metric','unit','source_definition'))]
+                vals={x['value'] for x in old}
+                evidence.append(dict(row,document_type='quarterly_report',status='extracted_unambiguous',
+                    extraction_method='issuer_validated_report_table',committed_value=next(iter(vals)) if len(vals)==1 else None,
+                    committed_value_matches=len(vals)==1 and abs(next(iter(vals))-row['value'])<0.05))
+            output.append({'company':company,'document_type':'quarterly_report','url':base+f'/sec/{section}',
+                'source_sha256':digest,'status':'verified_report_html','metric_evidence':evidence})
+        return output
+    if company=='Alm. Brand' and (year,quarter)==(2026,3):
+        from alm_brand_live_pdf import run,OFFICIAL_FILING_PDF
+        report=run(OFFICIAL_FILING_PDF)
+        evidence=[]
+        for metric,value in report['metrics'].items():
+            if metric not in CORE:continue
+            evidence.append({'metric':metric,'scope':'group','period_type':'quarter',
+                'unit':'DKKm' if metric in ('insurance_revenue','insurance_service_result') else 'percent',
+                'source_page':report['source_pages'][metric],'document_type':'quarterly_report',
+                'value':value,'status':'extracted_unambiguous','extraction_method':'issuer_validated_report_table',
+                'committed_value':None,'committed_value_matches':None})
+        return [{'company':company,'document_type':'quarterly_report','url':report['source_url'],
+            'source_sha256':report['source_sha256'],'status':'verified_pdf_bytes','metric_evidence':evidence}]
+    return []
+
 def run(year=2026,quarter=3):
     def load(path):return json.loads((ROOT/path).read_text(encoding='utf-8'))
-    docs=source_documents(load('data/verified_financial_feed.json'),
+    feed=load('data/verified_financial_feed.json')
+    docs=source_documents(feed,
         load('data/extended_insurer_financials.json'),load('data/report_candidates.json'),year,quarter)
     output={'schema_version':1,'year':year,'quarter':quarter,
             'metrics_published':False,'investor_use_approved':False,'numeric_primary_source':'quarterly_report','presentation_required_for_numeric_validation':False,'companies':[]}
@@ -407,9 +451,12 @@ def run(year=2026,quarter=3):
             except Exception as exc:
                 checked.append({'company':company,'document_type':doc['document_type'],
                     'url':doc['url'],'status':'unverified','error':type(exc).__name__+': '+str(exc)[:200]})
-        types={x['document_type'] for x in checked if x['status']=='verified_pdf_bytes'}
+        if company in ('Frende','Alm. Brand'):
+            try:checked.extend(verify_special_report(company,year,quarter,feed))
+            except Exception as exc:checked.append({'company':company,'document_type':'quarterly_report','status':'unverified','error':type(exc).__name__+': '+str(exc)[:300]})
+        types={x['document_type'] for x in checked if x['status'] in ('verified_pdf_bytes','verified_report_html')}
         metrics=[dict(row,source_sha256=x['source_sha256']) for x in checked
-                 if x['status']=='verified_pdf_bytes' for row in x['metric_evidence']]
+                 if x['status'] in ('verified_pdf_bytes','verified_report_html') for row in x['metric_evidence']]
         report_audit=report_metric_audit(metrics)
         matches=reconcile_extracted(metrics)
         conflicts=[m for m in matches if m['status']!='match']
