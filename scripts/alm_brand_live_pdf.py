@@ -6,6 +6,7 @@ linked from Alm. Brand's own IR page, and its contents must pass independent
 income-statement and KPI reconciliation before admission.
 """
 import hashlib
+import html as html_lib
 import io
 import json
 import re
@@ -66,6 +67,11 @@ def find_candidates(html,origin=IR):
                 if trusted_pdf_link(url) and re.search(r'AB GROUP 3Q 2026|Report|Rapport|Q3 2026',label+' '+link['title']+' '+urllib.parse.unquote(url),re.I):
                     self.links.append((url,label))
     parser=Links();parser.feed(html)
+    # Q4 archive widgets may embed links in JSON rather than anchor elements.
+    decoded=html_lib.unescape(html).replace(r'\/', '/')
+    for match in re.finditer(r'https://s29\.q4cdn\.com/228553818/files/[^\s<>\x22\x27\\]+?\.pdf',decoded,re.I):
+        url=match.group(0)
+        if trusted_pdf_link(url):parser.links.append((url,''))
     unique={}
     for url,label in parser.links:unique[url]=label
     return sorted(unique.items(),key=lambda x:(not bool(re.search(r'AB GROUP 3Q 2026',x[1],re.I)),x[0]))
@@ -83,9 +89,13 @@ def fetch_html(url):
 def discover():
     """Only trust a report link linked by the company's own IR page."""
     found={}
-    for page in (IR,ARCHIVE):
-        html=fetch_html(page)
-        for url,label in find_candidates(html,page):
+    for page in (IR,ARCHIVE,'https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx'):
+        try: html=fetch_html(page)
+        except (OSError,ValueError) as exc:
+            print('ALM_ISSUER_PAGE_ERROR',page,str(exc));continue
+        candidates=find_candidates(html,page)
+        print('ALM_ISSUER_PAGE_LINKS',page,len(html),json.dumps(candidates,ensure_ascii=False))
+        for url,label in candidates:
             if re.search(r'AB[ _-]*GROUP[ _-]*3Q[ _-]*2026|(?:interim|quarterly)[ _-]*report[ _-]*Q3[ _-]*2026|Q3[ _-]*2026[ _-]*(?:interim[ _-]*)?report|(?:rapport|report)[ _-]*3[._ -]*kvartal[ _-]*2026',label+' '+urllib.parse.unquote(url),re.I):
                 found[url]=label
     print('ALM_ISSUER_REPORT_CANDIDATES',json.dumps(found,ensure_ascii=False))
