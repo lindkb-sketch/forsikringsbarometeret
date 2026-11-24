@@ -30,7 +30,7 @@ def discover(html,base_url,company):
   # XLSX remains a discovery candidate for legacy report importers; byte verifier is PDF-only.
   trusted_url=url if parsed.path.lower().endswith('.pdf') else url+'.pdf' if parsed.path.lower().endswith('.xlsx') else url
   base=urllib.parse.urlparse(base_url)
-  if not approved_delivery_host(company,trusted_url):continue
+  if parsed.hostname!=base.hostname and not approved_delivery_host(company,trusted_url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
