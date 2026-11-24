@@ -319,6 +319,20 @@ def verify_document(doc,year,quarter):
         # Presentation metric extraction must be anchored to a real source page.
         extracted=[]
         table_diagnostics=[]
+        if company=='Tryg' and doc['document_type']=='quarterly_report':
+            from import_tryg import parse_group
+            try:
+                parsed=parse_group(raw,year,quarter,final)
+                for row in parsed:
+                    if (row['year'],row['quarter'],row['scope'],row['period_type'])!=(year,quarter,'group','quarter'):continue
+                    old=[x for x in doc['observations'] if all(x.get(k)==row.get(k) for k in ('metric','scope','period_type','unit'))]
+                    vals={x['value'] for x in old}
+                    extracted.append(dict(row,document_type='quarterly_report',status='extracted_unambiguous',
+                        extraction_method='issuer_validated_report_table',
+                        committed_value=next(iter(vals)) if len(vals)==1 else None,
+                        committed_value_matches=len(vals)==1 and abs(next(iter(vals))-row['value'])<0.05))
+            except ValueError as exc:
+                print('TRYG_REPORT_PARSER_BLOCKED',str(exc))
         for row in doc['observations']:
             p=row.get('source_page')
             if p not in page_text:continue
