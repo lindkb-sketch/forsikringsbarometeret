@@ -379,7 +379,7 @@ def verify_document(doc,year,quarter):
                         local.write_bytes(raw)
                         parsed=parse_group(local,final,year,quarter)
                 for row in parsed:
-                    if (row['year'],row['quarter'],row['scope'],row['period_type'])!=(year,quarter,'group','quarter'):continue
+                    if (row['year'],row['quarter'],row['scope'])!=(year,quarter,'group') or row['period_type'] not in ('quarter','ytd'):continue
                     if row.get('metric') not in CORE:continue
                     if row.get('source_sha256')!=digest:continue
                     old=[x for x in doc['observations'] if all(x.get(k)==row.get(k) for k in ('metric','scope','period_type','unit')) and (company!='Storebrand' or x.get('source_definition')==row.get('source_definition'))]
@@ -394,7 +394,7 @@ def verify_document(doc,year,quarter):
             p=row.get('source_page')
             if p not in page_text:continue
             metric=row.get('metric')
-            if metric not in CORE:continue
+            if metric not in CORE or row.get('period_type')!='quarter':continue
             val=extract_unambiguous(page_text[p].splitlines(),metric)
             method='single_labelled_value'
             if val is None:
@@ -481,7 +481,7 @@ def verify_special_report(company,year,quarter,feed,extended=None):
             raw=ratios if section==6 else income
             digest=hashlib.sha256(raw.encode('utf-8')).hexdigest()
             for row in rows:
-                if (row['year'],row['quarter'],row['period_type'],row['source_page'])!=(year,quarter,'quarter',section):continue
+                if (row['year'],row['quarter'],row['source_page'])!=(year,quarter,section) or row['period_type'] not in ('quarter','ytd'):continue
                 # Operating revenue is not insurance-only revenue. Preserve its
                 # definition and do not certify it as comparable insurance revenue.
                 if row['metric']=='insurance_revenue':continue
@@ -564,6 +564,17 @@ def run(year=2026,quarter=3):
             'report_value_matches':sum(m['status']=='report_value_match' for m in report_audit),
             'cross_document_matches':matches,'conflicts':conflicts,
             'metric_extraction_status':'report_partial_validation' if any(m['status']=='report_value_match' for m in report_audit) else 'not_certified'})
+    # Separate period coverage; never count quarter-end solvency twice.
+    required={'insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'}
+    for item in output['companies']:
+        scope='company' if item['company']=='KLP Skadeforsikring' else 'group'
+        item['period_coverage']={}
+        for period in ('quarter','ytd'):
+            expected=required|({'solvency_ratio','return_on_equity'} if period=='quarter' else {'return_on_equity'})
+            matched={r['metric'] for r in item['report_metric_audit'] if r['scope']==scope and r['period_type']==period and r['status']=='report_value_match'}
+            item['period_coverage'][period]={'verified':sorted(matched),'missing':sorted(expected-matched)}
+    output['production_gate']={'approved':False,'reason':'Require complete period coverage, comparable revenue growth, and future-period replay before approval'}
+    print('NINE_PERIOD_COVERAGE',json.dumps({x['company']:x['period_coverage'] for x in output['companies']},ensure_ascii=False))
     output['all_nine_dual_document_verified']=all(c['both_documents_verified'] for c in output['companies'])
     OUTPUT.write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print('NINE_DOCUMENT_METRIC_AUDIT',json.dumps({x['company']:{
@@ -572,4 +583,13 @@ def run(year=2026,quarter=3):
         for x in output['companies']},ensure_ascii=False))
     return output
 
-if __name__=='__main__':run()
+if __name__=='__main__':
+    import argparse
+    from datetime import date
+    today=date.today()
+    current=(today.month-1)//3+1
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--year',type=int,default=today.year if current>1 else today.year-1)
+    parser.add_argument('--quarter',type=int,choices=(1,2,3,4),default=current-1 if current>1 else 4)
+    args=parser.parse_args()
+    run(args.year,args.quarter)
