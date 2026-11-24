@@ -17,6 +17,7 @@ from ingest_official_pdf import download
 from publish_geographic_workbooks import atomic_write
 
 LABELS={
+ 'Sampo':(r'return on equity\s*\(?own funds\)?', 'Return on equity own funds (issuer definition)'),
  'Gjensidige':(
    r'(?:annualis(?:ed|z) return on equity|return on equity,? annualis(?:ed|z))',
    'ROE annualised'),

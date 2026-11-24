@@ -131,7 +131,7 @@ def run():
                  source_type='official_quarterly_report',source_url=selected_url,
                  source_page=page,source_sha256=hashlib.sha256(blob).hexdigest(),
                  source_document_period=f'Q{quarter} {target_year}',
-                 source_definition='Reported quarter-end Group solvency ratio'))
+                 source_definition=('Reported quarter-end Group Solvency II ratio' if company=='Sampo' else 'Reported quarter-end Group solvency ratio')))
             count+=1
             print('OFFICIAL_GROUP_SOLVENCY',company,target_year,quarter,value,page,flush=True)
     if not audit(data)['ok']:raise ValueError('Solvency source audit failed')

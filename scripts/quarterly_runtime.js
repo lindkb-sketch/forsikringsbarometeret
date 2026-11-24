@@ -87,9 +87,12 @@
   function quote(company,type,year,quarter,metric){
     // Solvency is an as-of-date balance-sheet measurement, not a flow.
     // Reuse the same verified reporting-date value for Quarter and YTD.
-    if(metric==='solvency_ratio')
-      return lookup(company,type,year,quarter,metric)||
-        lookup(company,type==='quarter'?'ytd':'quarter',year,quarter,metric);
+    if(metric==='solvency_ratio') {
+      const q=lookup(company,'quarter',year,quarter,metric);
+      const y=lookup(company,'ytd',year,quarter,metric);
+      if(q&&y&&q.value!==y.value)return null;
+      return q||y;
+    }
     return lookup(company,type,year,quarter,metric)||
       (type==='ytd'?addYtd(company,year,quarter,metric):
        addQuarter(company,year,quarter,metric));
