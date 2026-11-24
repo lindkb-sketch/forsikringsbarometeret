@@ -300,12 +300,32 @@ def report_metric_audit(records):
     return result
 
 def parse_protector_group(pages,year,quarter,url,digest):
-    """Read only the report's explicitly dated group Income overview."""
     labels={'insurance_revenue':'Insurance revenue','insurance_service_result':'Insurance service result',
         'loss_ratio':'Loss ratio, net of reinsurance','expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
     candidates=[]
     for page,text in pages:
-        if not re.search(r'(?m)^Income overview\s*
+        if not re.search(r'(?m)^Income overview\s*$',text):continue
+        if not re.search(r'NOKm\s+Q'+str(quarter)+r'\s+'+str(year)+r'\s+Q'+str(quarter)+r'\s+'+str(year-1)+r'\b',text):
+            print('PROTECTOR_OVERVIEW_HEADER',page,repr(text[:1200]))
+            continue
+        candidates.append((page,text))
+    if len(candidates)!=1:raise ValueError('Protector group overview or explicit quarter columns missing')
+    page,text=candidates[0]
+    result=[]
+    for metric,label in labels.items():
+        pattern=r'^\s*'+re.escape(label)+r'\s*[¹²³⁴⁵⁶⁷⁸⁹⁰]*\s+(.+)$'
+        matches=[m.group(1) for line in text.splitlines() if (m:=re.fullmatch(pattern,line,re.I))]
+        if len(matches)!=1:raise ValueError('Protector ambiguous row '+metric)
+        tokens=matches[0].replace('%','').split()
+        if len(tokens)!=5 or not all(re.fullmatch(r'-?\d[\d,]*(?:\.\d+)?',v) for v in tokens):raise ValueError('Protector invalid numeric columns '+metric)
+        result.append(dict(company='Protector',year=year,quarter=quarter,scope='group',period_type='quarter',
+            metric=metric,value=float(tokens[0].replace(',','')),unit='percent' if metric.endswith('ratio') else 'MNOK',
+            source_page=page,source_url=url,source_sha256=digest,source_type='official_quarterly_report'))
+    values={r['metric']:r['value'] for r in result}
+    if abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed')
+    return result
+
+def verify_document(doc,year,quarter):
     company,url=doc['company'],doc['url']
     raw,final=download(company,url)
     if not raw.startswith(b'%PDF-'):raise ValueError('Not PDF bytes')
