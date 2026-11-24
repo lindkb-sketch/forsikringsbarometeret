@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "purpose": "non_destructive_latest_quarter_kpi_gap_inventory",
+  "all_nine_metrics_present": false,
+  "all_nine_unattended_extraction_verified": false,
+  "note": "Missing values must remain null until validated against issuer sources. This inventory is not proof of PDF extraction, source comparison, automated scheduled ingestion or investor readiness.",
+  "companies": [
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 8,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 8,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 8,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Sampo",
+      "period": "Q3 2026",
+      "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth"
+      ],
+      "missing_metrics": [
+        "return_on_equity",
+        "solvency_ratio",
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 6,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Frende",
+      "period": "Q3 2026",
+      "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "reporting_exception_basis": "project_owner_disclosure_policy",
+      "present_count": 6,
+      "expected_count": 7,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Protector",
+      "period": "Q3 2026",
+      "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 8,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "Storebrand",
+      "period": "Q3 2026",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "source_status": "verified_quarterly_feed",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "return_on_equity",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 8,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    },
+    {
+      "company": "KLP Skadeforsikring",
+      "period": "Q3 2026",
+      "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+      "source_status": "verified_official_pdf_reconciled",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "solvency_ratio",
+        "profit_before_tax"
+      ],
+      "missing_metrics": [],
+      "not_reported_metrics": [
+        "return_on_equity"
+      ],
+      "reporting_exception_basis": "project_owner_disclosure_policy",
+      "present_count": 8,
+      "expected_count": 8,
+      "all_metrics_present": true,
+      "unattended_extraction_verified": false,
+      "missing_reason": null
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx",
+      "source_status": "verified_official_presentation_reconciled",
+      "present_metrics": [
+        "insurance_revenue",
+        "insurance_service_result",
+        "combined_ratio",
+        "loss_ratio",
+        "expense_ratio",
+        "insurance_revenue_growth",
+        "solvency_ratio"
+      ],
+      "missing_metrics": [
+        "return_on_equity",
+        "profit_before_tax"
+      ],
+      "not_reported_metrics": [],
+      "reporting_exception_basis": null,
+      "present_count": 7,
+      "expected_count": 9,
+      "all_metrics_present": false,
+      "unattended_extraction_verified": false,
+      "missing_reason": "not_verified_in_comparison_feed"
+    }
+  ]
+}
