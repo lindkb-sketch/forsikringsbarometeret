@@ -275,6 +275,30 @@ def reconcile_extracted(records,tolerance=0.05):
                         'report_values':report,'presentation_values':presentation,'status':status})
     return results
 
+def report_metric_audit(records):
+    """Report-only validation of existing observations; never certify unknown scope."""
+    grouped=defaultdict(list)
+    for row in records:
+        if row.get('document_type')!='quarterly_report':continue
+        if row.get('committed_value') is None:continue
+        key=(row.get('metric'),row.get('scope'),row.get('period_type'),row.get('unit'))
+        grouped[key].append(row)
+    result=[]
+    for key,rows in sorted(grouped.items(),key=lambda item:str(item[0])):
+        # Only explicit quarter-column extraction qualifies. A single number on
+        # a page does not independently establish the observation's period.
+        valid=[r for r in rows if r.get('status')=='extracted_unambiguous'
+               and r.get('extraction_method')=='explicit_quarter_table_column'
+               and r.get('committed_value_matches') is True
+               and r.get('source_page') and r.get('source_sha256')]
+        conflict=any(r.get('status')=='extracted_unambiguous'
+                     and r.get('extraction_method')=='explicit_quarter_table_column'
+                     and r.get('committed_value_matches') is False for r in rows)
+        result.append({'metric':key[0],'scope':key[1],'period_type':key[2],'unit':key[3],
+                       'status':'conflict' if conflict else 'report_value_match' if valid else 'needs_review',
+                       'evidence':valid})
+    return result
+
 def verify_document(doc,year,quarter):
     company,url=doc['company'],doc['url']
     raw,final=download(company,url)
@@ -375,7 +399,7 @@ def run(year=2026,quarter=3):
     docs=source_documents(load('data/verified_financial_feed.json'),
         load('data/extended_insurer_financials.json'),load('data/report_candidates.json'),year,quarter)
     output={'schema_version':1,'year':year,'quarter':quarter,
-            'metrics_published':False,'investor_use_approved':False,'companies':[]}
+            'metrics_published':False,'investor_use_approved':False,'numeric_primary_source':'quarterly_report','presentation_required_for_numeric_validation':False,'companies':[]}
     for company in COMPANIES:
         checked=[]
         for doc in list(docs[company].values())[:12]:
@@ -386,6 +410,7 @@ def run(year=2026,quarter=3):
         types={x['document_type'] for x in checked if x['status']=='verified_pdf_bytes'}
         metrics=[dict(row,source_sha256=x['source_sha256']) for x in checked
                  if x['status']=='verified_pdf_bytes' for row in x['metric_evidence']]
+        report_audit=report_metric_audit(metrics)
         matches=reconcile_extracted(metrics)
         conflicts=[m for m in matches if m['status']!='match']
         verified={'quarterly_report','results_presentation'}.issubset(types)
@@ -394,14 +419,15 @@ def run(year=2026,quarter=3):
             'report_verified':'quarterly_report' in types,
             'presentation_verified':'results_presentation' in types,
             'both_documents_verified':verified,'metric_evidence':metrics,
+            'report_metric_audit':report_audit,
+            'report_value_matches':sum(m['status']=='report_value_match' for m in report_audit),
             'cross_document_matches':matches,'conflicts':conflicts,
-            'metric_extraction_status':'partial_reconciliation' if verified and matches and not conflicts
-                                        else 'not_certified'})
+            'metric_extraction_status':'report_partial_validation' if any(m['status']=='report_value_match' for m in report_audit) else 'not_certified'})
     output['all_nine_dual_document_verified']=all(c['both_documents_verified'] for c in output['companies'])
     OUTPUT.write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print('NINE_DOCUMENT_METRIC_AUDIT',json.dumps({x['company']:{
         'report':x['report_verified'],'presentation':x['presentation_verified'],
-        'matched_metrics':len(x['cross_document_matches']),'conflicts':len(x['conflicts'])}
+        'report_value_matches':x['report_value_matches'],'matched_metrics':len(x['cross_document_matches']),'conflicts':len(x['conflicts'])}
         for x in output['companies']},ensure_ascii=False))
     return output
 
