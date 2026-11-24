@@ -30,7 +30,7 @@ def discover(html,base_url,company):
   # XLSX remains a discovery candidate for legacy report importers; byte verifier is PDF-only.
   trusted_url=url if parsed.path.lower().endswith('.pdf') else url+'.pdf' if parsed.path.lower().endswith('.xlsx') else url
   base=urllib.parse.urlparse(base_url)
-  if parsed.hostname!=base.hostname and not approved_delivery_host(company,trusted_url):continue
+  if not approved_delivery_host(company,trusted_url):continue
   label=(link["text"]+" "+urllib.parse.unquote(parsed.path)).lower()
   # Discovery is diagnostic; no candidate is approved for publication.
   if not re.search(r"\.(?:pdf|xlsx)$",parsed.path,re.I):continue
@@ -41,7 +41,7 @@ def discover(html,base_url,company):
    if not re.search(r"(q[1-4]|[1-4]\.?\s*kvartal|[1-4]\.?\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
    kind="results_presentation"
    status="candidate_requires_presentation_verification"
-  elif report:
+  elif report or (company=='Frende' and re.search(r'frende.holding',label,re.I) and re.search(r'q[1-4]|kvartal',label,re.I)):
    kind="quarterly_report"
    status="candidate_requires_quarterly_report_verification"
   else:continue
