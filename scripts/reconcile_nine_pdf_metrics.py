@@ -319,11 +319,14 @@ def verify_document(doc,year,quarter):
         # Presentation metric extraction must be anchored to a real source page.
         extracted=[]
         table_diagnostics=[]
-        if company in ('Tryg','Fremtind','Gjensidige','Storebrand') and doc['document_type']=='quarterly_report':
+        if company in ('Tryg','Fremtind','Gjensidige','Storebrand','Sampo') and doc['document_type']=='quarterly_report':
             try:
                 if company=='Tryg':
                     from import_tryg import parse_group
                     parsed=parse_group(raw,year,quarter,final)
+                elif company=='Sampo':
+                    from sampo_publish import parse
+                    parsed=parse(raw,final,year,quarter)
                 elif company=='Fremtind':
                     from import_fremtind_holding import extract
                     parsed=extract(raw,final)
@@ -452,6 +455,25 @@ def verify_special_report(company,year,quarter,feed,extended=None):
             output.append({'company':company,'document_type':'quarterly_report','url':base+f'/sec/{section}',
                 'source_sha256':digest,'status':'verified_report_html','metric_evidence':evidence})
         return output
+    if company=='KLP Skadeforsikring' and year==2026 and quarter in (2,3):
+        from klp_q2q3_reconcile import run
+        from import_klp_production import row_from_reconciliation
+        baseline=(extended or {}).get('insurers',{}).get(company,{})
+        if (baseline.get('year'),baseline.get('quarter'),baseline.get('scope'),baseline.get('currency'))!=(year,quarter,'company','NOK'):return []
+        report=row_from_reconciliation(run(baseline['source_url'],quarter))
+        if report['source_sha256']!=baseline.get('source_sha256'):raise ValueError('KLP source fingerprint changed')
+        evidence=[]
+        for metric,value in report['metrics'].items():
+            if metric not in CORE:continue
+            old=baseline.get('metrics',{}).get(metric)
+            page=report['management_kpi_evidence']['source_page'] if metric=='solvency_ratio' else report['source_pages']['quarter'][0]
+            evidence.append(dict(metric=metric,scope='company',period_type='quarter',
+                unit='NOKm' if metric in ('insurance_revenue','insurance_service_result') else 'percent',
+                source_page=page,document_type='quarterly_report',value=value,status='extracted_unambiguous',
+                extraction_method='issuer_validated_report_table',committed_value=old,
+                committed_value_matches=None if old is None else abs(value-old)<0.05))
+        return [dict(company=company,document_type='quarterly_report',url=report['source_url'],
+            source_sha256=report['source_sha256'],status='verified_pdf_bytes',metric_evidence=evidence)]
     if company=='Alm. Brand' and (year,quarter)==(2026,3):
         from alm_brand_live_pdf import run
         report=run()
@@ -485,7 +507,7 @@ def run(year=2026,quarter=3):
             except Exception as exc:
                 checked.append({'company':company,'document_type':doc['document_type'],
                     'url':doc['url'],'status':'unverified','error':type(exc).__name__+': '+str(exc)[:200]})
-        if company in ('Frende','Alm. Brand'):
+        if company in ('Frende','Alm. Brand','KLP Skadeforsikring'):
             try:checked.extend(verify_special_report(company,year,quarter,feed,extended))
             except Exception as exc:checked.append({'company':company,'document_type':'quarterly_report','status':'unverified','error':type(exc).__name__+': '+str(exc)[:300]})
         types={x['document_type'] for x in checked if x['status'] in ('verified_pdf_bytes','verified_report_html')}
