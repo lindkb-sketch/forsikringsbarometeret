@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""Auditable nine-insurer KPI completeness inventory; never invent missing values."""
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+METRICS = (
+    'insurance_revenue', 'insurance_service_result', 'combined_ratio',
+    'loss_ratio', 'expense_ratio', 'insurance_revenue_growth',
+    'return_on_equity', 'solvency_ratio', 'profit_before_tax',
+)
+COMPANIES = (
+    'Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
+    'Protector', 'Storebrand', 'KLP Skadeforsikring', 'Alm. Brand',
+)
+
+def build(comparison):
+    rows = comparison.get('companies', [])
+    by_company = {row['company']: row for row in rows}
+    if len(rows) != len(COMPANIES) or set(by_company) != set(COMPANIES):
+        raise ValueError('Nine-company comparison must contain exactly nine distinct issuers')
+    result = []
+    for company in COMPANIES:
+        row = by_company[company]
+        values = row.get('metrics') or {}
+        missing = [metric for metric in METRICS if values.get(metric) is None]
+        unexpected = sorted(set(values) - set(METRICS))
+        if unexpected:
+            raise ValueError(f'{company}: unknown metrics: {unexpected}')
+        observed = [metric for metric in METRICS if values.get(metric) is not None]
+        result.append({
+            'company': company, 'period': row.get('period'),
+            'source_url': row.get('source_url'),
+            'source_status': row.get('status'),
+            'present_metrics': observed,
+            'missing_metrics': missing,
+            'present_count': len(observed),
+            'expected_count': len(METRICS),
+            'all_metrics_present': not missing,
+            # A non-null value does NOT prove unattended import or dual-document provenance.
+            'unattended_extraction_verified': False,
+            'missing_reason': 'not_verified_in_comparison_feed' if missing else None,
+        })
+    return {
+        'schema_version': 1,
+        'purpose': 'non_destructive_latest_quarter_kpi_gap_inventory',
+        'all_nine_metrics_present': all(r['all_metrics_present'] for r in result),
+        'all_nine_unattended_extraction_verified': False,
+        'note': ('Missing values must remain null until validated against issuer sources. '
+                 'This inventory is not proof of PDF extraction, source comparison, '
+                 'automated scheduled ingestion or investor readiness.'),
+        'companies': result,
+    }
+
+def main():
+    comparison = json.loads((ROOT / 'data/nine_insurer_comparison.json').read_text(encoding='utf-8'))
+    report = build(comparison)
+    target = ROOT / 'data/quarterly_kpi_completeness.json'
+    target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    print('Quarterly KPI completeness:', json.dumps({
+        'all_nine_metrics_present': report['all_nine_metrics_present'],
+        'missing_by_company': {r['company']: r['missing_metrics'] for r in report['companies'] if r['missing_metrics']}
+    }, ensure_ascii=False))
+    print('Saved', target)
+
+if __name__ == '__main__':
+    main()
