@@ -299,6 +299,18 @@ def report_metric_audit(records):
                        'evidence':valid})
     return result
 
+def explicit_ytd_columns(header,year,quarter):
+    """Require adjacent current/prior cumulative columns, not balance dates."""
+    header=re.sub(r'[\u2010-\u2015\u2212]', '-', header)
+    months=quarter*3
+    labels=[rf'Q1\s*-\s*Q{quarter}',rf'1\s*-\s*{months}\s*/?',rf'{months}\s*M',r'YTD',r'HIÅ']
+    if quarter==3:labels.extend([r'Jan(?:uary)?\s*-\s*Sep(?:tember)?'])
+    if quarter==2:labels.extend([r'Jan(?:uary)?\s*-\s*Jun(?:e)?',r'H1'])
+    for label in labels:
+        if re.search(rf'(?:{label})\s*{year}\s+(?:{label})\s*{year-1}\b',header,re.I):
+            return True
+    return False
+
 def parse_protector_group(pages,year,quarter,url,digest):
     labels={'insurance_revenue':'Insurance revenue','insurance_service_result':'Insurance service result',
         'loss_ratio':'Loss ratio, net of reinsurance','expense_ratio':'Cost ratio','combined_ratio':'Combined ratio'}
@@ -327,12 +339,13 @@ def parse_protector_group(pages,year,quarter,url,digest):
             print('PROTECTOR_ROW_DIAGNOSTIC',metric,repr(matches),repr(text[:5000]))
             continue
         tokens=next(iter(unique))
-        for period,index in ([('quarter',0),('ytd',2)] if re.search(r'Q1[-–]Q'+str(quarter)+r'\s+'+str(year)+r'\s+Q1[-–]Q'+str(quarter)+r'\s+'+str(year-1),text) else [('quarter',0)]):
+        for period,index in ([('quarter',0),('ytd',2)] if explicit_ytd_columns(text,year,quarter) else [('quarter',0)]):
             result.append(dict(company='Protector',year=year,quarter=quarter,scope='group',period_type=period,
             metric=metric,value=tokens[index],unit='percent' if metric.endswith('ratio') else 'MNOK',
             source_page=page,source_url=url,source_sha256=digest,source_type='official_quarterly_report'))
-    values={r['metric']:r['value'] for r in result if r['period_type']=='quarter'}
-    if {'combined_ratio','loss_ratio','expense_ratio'}<=values.keys() and abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed')
+    for period in ('quarter','ytd'):
+        values={r['metric']:r['value'] for r in result if r['period_type']==period}
+        if {'combined_ratio','loss_ratio','expense_ratio'}<=values.keys() and abs(values['combined_ratio']-values['loss_ratio']-values['expense_ratio'])>0.2:raise ValueError('Protector CR reconciliation failed: '+period)
     return result
 
 def verify_document(doc,year,quarter):
