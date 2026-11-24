@@ -25,7 +25,7 @@ DELIVERY={
  'Gjensidige':('www.gjensidige.com','gjensidige.com','mb.cision.com'),
  'Tryg':('tryg.com','www.tryg.com'),
  'Sampo':('www.sampo.com','sampo.com'),
- 'Frende':('www.frende.no','frende.no','frende.wrep.it'),
+ 'Frende':('www.frende.no','frende.no','frende.wrep.it','newsweb.oslobors.no','live.euronext.com'),
  'Protector':('investor.protectorforsikring.no','www.protectorforsikring.no','protectorforsikring.no','storage.mfn.se'),
  'Storebrand':('www.storebrand.no','www.storebrand.com','storebrand.com','storebrand.no'),
  'KLP Skadeforsikring':('www.klp.no','klp.no'),
@@ -53,6 +53,8 @@ def approved(company,url):
             or (company=='Alm. Brand' and p.hostname=='s29.q4cdn.com' and p.path.lower().endswith('.pdf'))))
 
 def period_matches(text,year,quarter):
+    if re.search(r'\b'+str(quarter)+r'(?:rd|th|st|nd)?\s+quarter\s+(?:of\s+)?'+str(year)+r'\b',text,re.I):return True
+    if re.search(r'\b'+str(quarter)+r'\.\s*kvartal\s*'+str(year)+r'\b',text,re.I):return True
     # Nordic Q1-Q3 reports identify the cumulative period, not only Q3.
     if re.search(r'\bQ1\s*[-–]\s*Q'+str(quarter)+r'\s*'+str(year)+r'\b',text,re.I):return True
     if re.search(r'\b'+str(quarter)+r'\.?\s*kvartal\s*'+str(year)+r'\b',text,re.I):return True
