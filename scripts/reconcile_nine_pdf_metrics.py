@@ -521,7 +521,8 @@ def verify_special_report(company,year,quarter,feed,extended=None):
         from import_klp_production import row_from_reconciliation
         baseline=(extended or {}).get('insurers',{}).get(company,{})
         if (baseline.get('year'),baseline.get('quarter'),baseline.get('scope'),baseline.get('currency'))!=(year,quarter,'company','NOK'):return []
-        report=row_from_reconciliation(run(baseline['source_url'],quarter))
+        raw_report=run(baseline['source_url'],quarter)
+        report=row_from_reconciliation(raw_report)
         if report['source_sha256']!=baseline.get('source_sha256'):raise ValueError('KLP source fingerprint changed')
         evidence=[]
         for metric,value in report['metrics'].items():
@@ -533,6 +534,16 @@ def verify_special_report(company,year,quarter,feed,extended=None):
                 source_page=page,document_type='quarterly_report',value=value,status='extracted_unambiguous',
                 extraction_method='issuer_validated_report_table',committed_value=old,
                 committed_value_matches=None if old is None else abs(value-old)<0.05))
+        stored=next((p for p in baseline.get('periods',[]) if (p['year'],p['quarter'])==(year,quarter)),{})
+        for metric in ('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'):
+            amount=metric in ('insurance_revenue','insurance_service_result')
+            value=raw_report['reported_ytd_amounts'][metric] if amount else raw_report['reported_ytd_ratios'][metric]
+            old=(stored.get('revenue_growth_evidence',{}).get('ytd',{}).get('current') if metric=='insurance_revenue'
+                 else stored.get('reported_ytd_ratios',{}).get(metric))
+            evidence.append(dict(metric=metric,scope='company',period_type='ytd',unit='NOKm' if amount else 'percent',
+                source_page=report['source_pages']['ytd'][0 if amount else -1],document_type='quarterly_report',
+                value=value,status='extracted_unambiguous',extraction_method='issuer_validated_report_table',
+                committed_value=old,committed_value_matches=None if old is None else abs(value-old)<0.05))
         return [dict(company=company,document_type='quarterly_report',url=report['source_url'],
             source_sha256=report['source_sha256'],status='verified_pdf_bytes',metric_evidence=evidence)]
     if company=='Alm. Brand' and (year,quarter)==(2026,3):
@@ -549,6 +560,16 @@ def verify_special_report(company,year,quarter,feed,extended=None):
                 'source_page':report['source_pages'][metric],'document_type':'quarterly_report',
                 'value':value,'status':'extracted_unambiguous','extraction_method':'issuer_validated_report_table',
                 'committed_value':old,'committed_value_matches':None if old is None else abs(value-old)<0.05})
+        ytd={**report['reported_ytd_ratios'],'insurance_revenue':report['revenue_growth_evidence']['ytd']['current'],
+             'return_on_equity':report['return_on_equity_ytd']}
+        for metric,value in ytd.items():
+            if metric not in CORE:continue
+            old=baseline.get('ytd_metrics',{}).get(metric) if comparable else None
+            evidence.append(dict(metric=metric,scope='group',period_type='ytd',
+                unit='DKKm' if metric=='insurance_revenue' else 'percent',
+                source_page=report['source_pages'][metric],document_type='quarterly_report',value=value,
+                status='extracted_unambiguous',extraction_method='issuer_validated_report_table',
+                committed_value=old,committed_value_matches=None if old is None else abs(value-old)<0.05))
         return [{'company':company,'document_type':'quarterly_report','url':report['source_url'],
             'source_sha256':report['source_sha256'],'status':'verified_pdf_bytes','metric_evidence':evidence}]
     return []
