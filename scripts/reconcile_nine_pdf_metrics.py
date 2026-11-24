@@ -423,8 +423,8 @@ def verify_special_report(company,year,quarter,feed):
                 'source_sha256':digest,'status':'verified_report_html','metric_evidence':evidence})
         return output
     if company=='Alm. Brand' and (year,quarter)==(2026,3):
-        from alm_brand_live_pdf import run,OFFICIAL_FILING_PDF
-        report=run(OFFICIAL_FILING_PDF)
+        from alm_brand_live_pdf import run
+        report=run()
         evidence=[]
         for metric,value in report['metrics'].items():
             if metric not in CORE:continue
