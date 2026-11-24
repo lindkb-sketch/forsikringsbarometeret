@@ -93,7 +93,7 @@ def discover():
     if not found:
         # Pinned official Nasdaq issuer-disclosure attachment (full interim report).
         # Never accept arbitrary attachments on this host.
-        return OFFICIAL_FILING_PDF
+        raise ValueError('No quarterly report linked from official Alm Brand issuer pages')
     raise ValueError('Ambiguous official Q3 PDF links: '+str(sorted(found)))
 
 def download_report(url):
