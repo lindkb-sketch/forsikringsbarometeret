@@ -63,7 +63,7 @@ def find_candidates(html,origin=IR):
                 if not link['href']:return
                 url=urllib.parse.urljoin(origin,link['href'])
                 label=' '.join(' '.join(link['label']).split())
-                if trusted_pdf_link(url) and re.search(r'AB GROUP 3Q 2026|Report|Rapport|Q3 2026',label+' '+link['title'],re.I):
+                if trusted_pdf_link(url) and re.search(r'AB GROUP 3Q 2026|Report|Rapport|Q3 2026',label+' '+link['title']+' '+urllib.parse.unquote(url),re.I):
                     self.links.append((url,label))
     parser=Links();parser.feed(html)
     unique={}
@@ -86,8 +86,9 @@ def discover():
     for page in (IR,ARCHIVE):
         html=fetch_html(page)
         for url,label in find_candidates(html,page):
-            if re.search(r'AB GROUP 3Q 2026|interim.report.Q3.2026',label+' '+url,re.I):
+            if re.search(r'AB[ _-]*GROUP[ _-]*3Q[ _-]*2026|(?:interim|quarterly)[ _-]*report[ _-]*Q3[ _-]*2026|Q3[ _-]*2026[ _-]*(?:interim[ _-]*)?report|(?:rapport|report)[ _-]*3[._ -]*kvartal[ _-]*2026',label+' '+urllib.parse.unquote(url),re.I):
                 found[url]=label
+    print('ALM_ISSUER_REPORT_CANDIDATES',json.dumps(found,ensure_ascii=False))
     if len(found)==1:
         return next(iter(found))
     if not found:
