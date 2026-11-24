@@ -187,6 +187,8 @@ jobs:
           path: data/financial_audit.json
       - name: Rebuild nine-insurer comparison after final validated imports
         run: python scripts/build_nine_insurer_comparison.py
+      - name: Record missing quarterly KPIs for all nine insurers
+        run: python scripts/quarterly_kpi_completeness.py
       - name: Inventory seven-company quarterly source gaps without altering observations
         run: python scripts/audit_seven_document_sources.py
       - name: Fail closed on nine-insurer source-to-comparison E2E parity
