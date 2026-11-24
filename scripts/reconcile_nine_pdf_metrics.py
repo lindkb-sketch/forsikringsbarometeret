@@ -319,20 +319,36 @@ def verify_document(doc,year,quarter):
         # Presentation metric extraction must be anchored to a real source page.
         extracted=[]
         table_diagnostics=[]
-        if company=='Tryg' and doc['document_type']=='quarterly_report':
-            from import_tryg import parse_group
+        if company in ('Tryg','Fremtind','Gjensidige','Storebrand') and doc['document_type']=='quarterly_report':
             try:
-                parsed=parse_group(raw,year,quarter,final)
+                if company=='Tryg':
+                    from import_tryg import parse_group
+                    parsed=parse_group(raw,year,quarter,final)
+                elif company=='Fremtind':
+                    from import_fremtind_holding import extract
+                    parsed=extract(raw,final)
+                elif company=='Gjensidige':
+                    from ingest_official_pdf import parse_highlights,read_pdf
+                    parsed=parse_highlights(read_pdf(raw),company,year,quarter,final,digest)
+                else:
+                    from import_storebrand_reports import parse_group
+                    import tempfile
+                    with tempfile.TemporaryDirectory() as tmp:
+                        local=Path(tmp)/'report.pdf'
+                        local.write_bytes(raw)
+                        parsed=parse_group(local,final,year,quarter)
                 for row in parsed:
                     if (row['year'],row['quarter'],row['scope'],row['period_type'])!=(year,quarter,'group','quarter'):continue
-                    old=[x for x in doc['observations'] if all(x.get(k)==row.get(k) for k in ('metric','scope','period_type','unit'))]
+                    if row.get('metric') not in CORE:continue
+                    if row.get('source_sha256')!=digest:continue
+                    old=[x for x in doc['observations'] if all(x.get(k)==row.get(k) for k in ('metric','scope','period_type','unit')) and (company!='Storebrand' or x.get('source_definition')==row.get('source_definition'))]
                     vals={x['value'] for x in old}
                     extracted.append(dict(row,document_type='quarterly_report',status='extracted_unambiguous',
                         extraction_method='issuer_validated_report_table',
                         committed_value=next(iter(vals)) if len(vals)==1 else None,
-                        committed_value_matches=len(vals)==1 and abs(next(iter(vals))-row['value'])<0.05))
-            except ValueError as exc:
-                print('TRYG_REPORT_PARSER_BLOCKED',str(exc))
+                        committed_value_matches=None if len(vals)!=1 else abs(next(iter(vals))-row['value'])<0.05))
+            except (ValueError,TypeError,KeyError) as exc:
+                print('ISSUER_REPORT_PARSER_BLOCKED',company,str(exc)[:500])
         for row in doc['observations']:
             p=row.get('source_page')
             if p not in page_text:continue
