@@ -93,6 +93,17 @@ def discover():
         try: html=fetch_html(page)
         except (OSError,ValueError) as exc:
             print('ALM_ISSUER_PAGE_ERROR',page,str(exc));continue
+        # Inspect actual issuer markup, including widget configuration and script
+        # references, rather than guessing report filenames or API endpoints.
+        lines=html.splitlines()
+        markers=re.compile(r'api/|apiUrl|serviceUrl|moduleapi|GetPressRelease|GetFinancial|q4api|q4inc|data-module|data-url|\.asmx|\.svc|<script[^>]+src|attachment|download',re.I)
+        snippets=[]
+        for line in lines:
+            for m in markers.finditer(line):
+                snippets.append(line[max(0,m.start()-100):m.end()+180])
+                if len(snippets)>=100:break
+            if len(snippets)>=100:break
+        print('ALM_ISSUER_WIDGET_CONFIG',page,json.dumps(snippets,ensure_ascii=False))
         candidates=find_candidates(html,page)
         print('ALM_ISSUER_PAGE_LINKS',page,len(html),json.dumps(candidates,ensure_ascii=False))
         for url,label in candidates:
