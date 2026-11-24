@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'scripts/discover_reports.py'
+      - 'data/report_sources.json'
       - 'scripts/reconcile_nine_pdf_metrics.py'
       - 'tests/test_real_pdf_metric_reconciliation.py'
       - '.github/workflows/verify-dual-documents.yml'
