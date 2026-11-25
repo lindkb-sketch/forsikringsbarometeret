@@ -15,6 +15,7 @@
   let lastData=null;
   let completeness=null;
   let fetching=false;
+  let view='quarter';
   const fmt=(value,kind)=>{
     if(typeof value!=='number'||!Number.isFinite(value))return 'Ikke rapportert';
     return new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1,
@@ -40,21 +41,31 @@
     section.appendChild(title);
     const desc=document.createElement('p');
     desc.className='hint';
-    desc.textContent='Kildeverifiserte isolerte kvartaler. Inntektsvekst er mot samme kvartal året før. KLP gjelder Skadeforsikring AS, ikke KLP-konsernet. Alm. Brand er DKK-konsern. Manglende ROE, solvens eller andre tall vises som «Ikke rapportert». Finans- og forvaltningsavkastning brukes ikke som ROE eller ROOF.';
+    desc.textContent='Kildeverifiserte kvartals- og HIÅ-verdier. Avkastning som kun rapporteres HIÅ er særskilt merket. Inntektsvekst er mot samme periode året før. KLP gjelder Skadeforsikring AS, ikke KLP-konsernet. Alm. Brand er DKK-konsern. Manglende ROE, solvens eller andre tall vises som «Ikke rapportert». Finans- og forvaltningsavkastning brukes ikke som ROE eller ROOF.';
     section.appendChild(desc);
+    const controls=document.createElement('div');
+    controls.setAttribute('role','group');controls.setAttribute('aria-label','Rapportgrunnlag for ni selskaper');
+    for(const [key,label] of [['quarter','Kvartal'],['ytd','HIÅ']]){
+      const btn=document.createElement('button');btn.type='button';btn.textContent=label;
+      btn.id='nine-kpi-view-'+key;btn.setAttribute('aria-pressed',String(view===key));btn.className='btn';
+      btn.addEventListener('click',()=>{view=key;section.remove();draw();});
+      controls.appendChild(btn);
+    }
+    section.appendChild(controls);
     if (completeness && method) {
-      const expected=completeness.expected_metric_count;
-      const present=completeness.present_metric_count;
-      const missing=completeness.missing_metric_count;
-      const exempt=completeness.reporting_exception_count;
+      const selected=view==='ytd'?completeness.ytd:completeness;
+      const expected=selected?.expected_metric_count;
+      const present=selected?.present_metric_count;
+      const missing=selected?.missing_metric_count;
+      const exempt=selected?.reporting_exception_count;
       if (Number.isInteger(expected) && Number.isInteger(present) &&
           Number.isInteger(missing) && Number.isInteger(exempt) &&
           expected===present+missing && expected+exempt===81 &&
-          Array.isArray(completeness.companies) && completeness.companies.length===9) {
+          Array.isArray(selected.companies) && selected.companies.length===9) {
         const status=document.createElement('p');
         status.className='hint';
         status.id='nine-company-kpi-completeness';
-        status.textContent='Automatisk dekningskontroll for siste rapporterte kvartal: '+
+        status.textContent='Automatisk dekningskontroll for '+(view==='ytd'?'HIÅ':'siste rapporterte kvartal')+': '+
           present+' av '+expected+' forventede nøkkeltall finnes; '+missing+
           ' mangler og '+exempt+' er dokumenterte rapporteringsunntak. '+
           'Tilstedeværelse er ikke bevis på ubetjent kildeimport.';
@@ -67,7 +78,11 @@
         }
         const list=document.createElement('ul');
         list.setAttribute('aria-label','Manglende nøkkeltall per selskap');
-        for (const issuer of completeness.companies) {
+        if(view==='quarter'&&Number.isInteger(completeness.isolated_quarter_metric_count)&&completeness.ytd_only_return_metrics?.length){
+          const detail=document.createElement('p');detail.className='hint';
+          detail.textContent=completeness.isolated_quarter_metric_count+' isolerte kvartals-/punktverdier; '+completeness.ytd_only_return_metrics.map(x=>x.company+' (avkastning HIÅ)').join(', ')+' rapporterer avkastning HIÅ.';section.appendChild(detail);
+        }
+        for (const issuer of selected.companies) {
           if (!Array.isArray(issuer.missing_metrics) || !issuer.missing_metrics.length) continue;
           const item=document.createElement('li');
           item.textContent=issuer.company+' ('+(issuer.period||'periode ukjent')+'): '+
@@ -93,14 +108,16 @@
         const a=document.createElement('a');a.href=company.source_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=company.company;companyCell.appendChild(a);
       }
       td(row,company.period||'Ikke rapportert');
+      const metrics=view==='ytd'?(company.ytd_metrics||{}):company.metrics;
+      const sources=view==='ytd'?(company.ytd_metric_sources||{}):(company.metric_sources||{});
       for(const [key,,kind] of FIELDS){
-        if(key==='return_on_equity' && (company.metrics?.[key]===null || company.metrics?.[key]===undefined)){
+        if(key==='return_on_equity' && (metrics?.[key]===null || metrics?.[key]===undefined)){
           td(row,'—');
         }else{
-          const label=company.metric_periods?.[key]==='ytd'?' (HIÅ)':'';
-          const calculated=company.metric_methods?.[key]==='calculated'?' (beregnet)':'';
-          const cell=td(row,fmt(company.metrics?.[key],kind)+label+calculated);
-          if(company.metric_sources?.[key]?.source_definition)cell.title=company.metric_sources[key].source_definition;
+          const label=view==='quarter'&&company.metric_periods?.[key]==='ytd'?' (HIÅ)':view==='ytd'&&key==='solvency_ratio'&&metrics[key]!=null?' (periodens slutt)':'';
+          const calculated=(view==='ytd'?sources[key]?.method==='calculated':company.metric_methods?.[key]==='calculated')?' (beregnet)':'';
+          const cell=td(row,fmt(metrics?.[key],kind)+label+calculated);
+          if(sources[key]?.source_definition)cell.title=sources[key].source_definition;
         }
       }
       const status={
@@ -109,7 +126,7 @@
         issuer_announcement_only:'Kun utsteder­melding',
         unverified_missing:'Mangler kildeverifiserte data'
       }[company.status]||'Ikke verifisert';
-      td(row,company.metric_methods?.profit_before_tax==='calculated'?'Kildeavstemt, Q4 beregnet fra helår − HIÅ Q3':status);
+      td(row,view==='ytd'?(Object.values(metrics).some(v=>typeof v==='number')?'Kildeverifisert HIÅ':'Mangler kildeverifisert HIÅ'):company.metric_methods?.profit_before_tax==='calculated'?'Kildeavstemt, Q4 beregnet fra helår − HIÅ Q3':status);
       body.appendChild(row);
     }
     table.appendChild(body);wrap.appendChild(table);section.appendChild(wrap);
