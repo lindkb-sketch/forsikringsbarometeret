@@ -55,14 +55,14 @@ def build(feed, extended):
             latest = periods[-1] if periods else None
             current = [r for r in rows if (r['year'], r['quarter']) == latest] if latest else []
             values = {r['metric']: r['value'] for r in current if r.get('metric') in METRICS}
-            if company == 'Sampo' and latest:
+            if company in ('Sampo','Gjensidige') and latest:
                 # A source-labelled YTD RoEOF is not an isolated-quarter ROE.
                 ytd = [r for r in observations if r.get('company') == company
                        and r.get('scope') == 'group' and r.get('period_type') == 'ytd'
                        and (r.get('year'), r.get('quarter')) == latest
                        and r.get('metric') == 'return_on_equity'
                        and r.get('status') == 'reported'
-                       and r.get('source_definition') == 'Return on equity own funds (RoEOF; issuer definition)']
+                       and r.get('source_definition') == ('Return on equity own funds (RoEOF; issuer definition)' if company=='Sampo' else 'ROE annualised; issuer explicitly reports year-to-date')]
                 if 'return_on_equity' not in values and len(ytd) == 1:
                     values['return_on_equity'] = ytd[0]['value']
                     metric_periods['return_on_equity'] = 'ytd'
@@ -91,10 +91,14 @@ def build(feed, extended):
             source = next((r.get('source_url') for r in current if r.get('source_url')), None)
             status = 'verified_quarterly_feed' if latest else 'unverified_missing'
             currency = next((r.get('currency') for r in current if r.get('currency')), None)
+        from nine_insurer_ytd import build_for
+        ytd_values,ytd_sources=build_for(company,period,observations,ext)
         result.append({
             'company': company, 'period': period, 'currency': currency,
             'status': status, 'source_url': source,
             'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
+            'ytd_metrics':{key:ytd_values.get(key) for key in METRICS},
+            'ytd_metric_sources':ytd_sources,
             **({'metric_periods': metric_periods, 'metric_sources': metric_sources} if metric_periods or metric_sources else {}),
             **({'metric_methods':metric_methods} if metric_methods else {}),
             'revenue_comparable': company not in ('Frende', 'Storebrand', 'KLP Skadeforsikring') and status != 'unverified_missing',
