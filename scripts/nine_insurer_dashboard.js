@@ -13,6 +13,7 @@
     ['profit_before_tax','Resultat før skatt','amount'],
   ];
   let lastData=null;
+  let completeness=null;
   let fetching=false;
   const fmt=(value,kind)=>{
     if(typeof value!=='number'||!Number.isFinite(value))return 'Ikke rapportert';
@@ -41,6 +42,35 @@
     desc.className='hint';
     desc.textContent='Kildeverifiserte isolerte kvartaler. Inntektsvekst er mot samme kvartal året før. KLP gjelder Skadeforsikring AS, ikke KLP-konsernet. Alm. Brand er DKK-konsern. Manglende ROE, solvens eller andre tall vises som «Ikke rapportert». Finans- og forvaltningsavkastning brukes ikke som ROE eller ROOF.';
     section.appendChild(desc);
+    if (completeness && method) {
+      const expected=completeness.expected_metric_count;
+      const present=completeness.present_metric_count;
+      const missing=completeness.missing_metric_count;
+      const exempt=completeness.reporting_exception_count;
+      if (Number.isInteger(expected) && Number.isInteger(present) &&
+          Number.isInteger(missing) && Number.isInteger(exempt) &&
+          expected===present+missing && expected+exempt===81 &&
+          Array.isArray(completeness.companies) && completeness.companies.length===9) {
+        const status=document.createElement('p');
+        status.className='hint';
+        status.id='nine-company-kpi-completeness';
+        status.textContent='Automatisk dekningskontroll for siste rapporterte kvartal: '+
+          present+' av '+expected+' forventede nøkkeltall finnes; '+missing+
+          ' mangler og '+exempt+' er dokumenterte rapporteringsunntak. '+
+          'Tilstedeværelse er ikke bevis på ubetjent kildeimport.';
+        section.appendChild(status);
+        const list=document.createElement('ul');
+        list.setAttribute('aria-label','Manglende nøkkeltall per selskap');
+        for (const issuer of completeness.companies) {
+          if (!Array.isArray(issuer.missing_metrics) || !issuer.missing_metrics.length) continue;
+          const item=document.createElement('li');
+          item.textContent=issuer.company+' ('+(issuer.period||'periode ukjent')+'): '+
+            issuer.missing_metrics.map(key=>FIELDS.find(f=>f[0]===key)?.[1]||key).join(', ');
+          list.appendChild(item);
+        }
+        if(list.children.length)section.appendChild(list);
+      }
+    }
     const wrap=document.createElement('div');wrap.className='tablewrap';
     const table=document.createElement('table');table.setAttribute('aria-label','Ni selskaper med ni finansielle nøkkeltall');
     const head=document.createElement('thead'),headRow=document.createElement('tr');
@@ -87,7 +117,12 @@
       if(!response.ok)throw Error('HTTP '+response.status);
       const data=await response.json();
       if(data.count!==9||!Array.isArray(data.companies)||data.companies.length!==9)throw Error('Ni-selskapsdata mangler');
-      lastData=data;draw();
+      lastData=data;
+      try {
+        const coverageResponse=await fetch('data/quarterly_kpi_completeness.json',{cache:'no-store'});
+        if(coverageResponse.ok)completeness=await coverageResponse.json();
+      } catch(error) { console.warn('Dekningskontroll utilgjengelig',error); }
+      draw();
     }catch(err){console.warn('Kildekontroll for ni selskap utilgjengelig',err);}
     finally{fetching=false;}
   }
