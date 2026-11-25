@@ -125,9 +125,15 @@ def check(feed,extended,comparison,gaps):
             elif all(isinstance(p,dict) and p.get('year') for p in source['periods']):
                 from import_klp_production import snapshot_from_rows
                 try:
+                    from klp_annual_q4 import validate_derived
+                    for i,p in enumerate(source['periods']):
+                        if p.get('source_type')=='official_annual_report' or p.get('quarter_calculation'):
+                            errors.extend(validate_derived(p,source['periods'][i-1] if i>0 else None))
                     snapshot=snapshot_from_rows(source['periods'])
                     if (snapshot['year'],snapshot['quarter'],snapshot['metrics'])!=(source.get('year'),source.get('quarter'),source.get('metrics')):
                         raise ValueError('Latest snapshot mismatch')
+                    if source.get('quarter_calculation') and item.get('metric_methods')!=source.get('metric_methods'):
+                        errors.append('KLP derived Q4 metric methods missing from comparison')
                 except (ValueError,KeyError,TypeError):
                     errors.append('KLP: invalid rolling PDF quarter history')
     return errors
