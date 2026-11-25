@@ -58,8 +58,14 @@ def validate(extended, sources, calendar):
         pass
     elif klp.get('status') == 'verified_official_pdf_reconciled':
         periods=klp.get('periods',[])
-        if len(periods)!=3 or [(p.get('year'),p.get('quarter')) for p in periods]!=[(2026,1),(2026,2),(2026,3)]:
-            errors.append('KLP must provide all three verified quarter PDF periods')
+        from import_klp_production import snapshot_from_rows
+        try:
+            snapshot_from_rows(periods)
+            period_history_ok=len(periods)>=3
+        except (KeyError,TypeError,ValueError):
+            period_history_ok=False
+        if not period_history_ok:
+            errors.append('KLP must provide contiguous verified PDF quarter periods starting Q1 2026')
         else:
             for p in periods:
                 metrics=p.get('metrics',{})
@@ -100,13 +106,13 @@ def validate(extended, sources, calendar):
                     or management.get('period_basis',{}).get('solvency_ratio')!='quarter_end'
                     ):
                     errors.append('KLP solvency and pre-tax profit source evidence incomplete Q'+str(p.get('quarter')))
-                if growth.get('previous_year')!=2025 or growth.get('source_sha256')!=p.get('source_sha256'):
+                if growth.get('previous_year')!=p.get('year',0)-1 or growth.get('source_sha256')!=p.get('source_sha256'):
                     errors.append('KLP income-growth evidence source mismatch Q'+str(p.get('quarter')))
                 if abs(float(metrics.get('insurance_revenue_growth',-10000))-float(growth.get('quarter',{}).get('growth_percent',-20000)))>1e-6:
                     errors.append('KLP published income growth differs from source-backed quarter growth')
 
-            if (klp.get('year'),klp.get('quarter'))!=(2026,3) or klp.get('metrics')!=periods[-1]['metrics']:
-                errors.append('KLP latest published quarter does not match verified Q3')
+            if (klp.get('year'),klp.get('quarter'))!=(periods[-1].get('year'),periods[-1].get('quarter')) or klp.get('metrics')!=periods[-1]['metrics']:
+                errors.append('KLP latest published quarter does not match last verified period')
     else:
         errors.append('KLP metrics require source verification before publication')
     return errors
