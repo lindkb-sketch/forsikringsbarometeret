@@ -50,7 +50,7 @@ class DeployConcurrencyTests(unittest.TestCase):
     def test_stock_deployer_can_read_actions_artifacts(self):
         source = (WORKFLOWS / 'stock-prices.yml').read_text(encoding='utf-8')
         permissions = source.split('permissions:', 1)[1].split('jobs:', 1)[0]
-        self.assertRegex(permissions, r'(?m)^  actions: read\\b')
+        self.assertRegex(permissions, r'(?m)^  actions: read\b')
 
     def test_pages_artifact_uses_github_required_name(self):
         # deploy-pages queries the artifact API using a Pages-specific lookup.
