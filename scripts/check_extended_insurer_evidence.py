@@ -27,32 +27,36 @@ def validate(extended, sources, calendar):
             errors.append('Missing issuer calendar: ' + name)
     insurers = extended.get('insurers', {})
     alm = insurers.get('Alm. Brand', {})
-    if alm.get('status') not in ('verified_issuer_announcement','verified_official_presentation_reconciled'):
-        errors.append('Alm. Brand evidence status unsupported')
-    if alm.get('status')=='verified_official_presentation_reconciled':
-        from import_alm_brand_presentation import PRESENTATION, EXPECTED
-        evidence=alm.get('presentation_evidence',{})
-        if (evidence.get('source_type')!='official_results_presentation'
-            or evidence.get('source_url')!=PRESENTATION
-            or len(str(evidence.get('source_sha256','')))!=64
-            or evidence.get('source_page')!=19
-            or (evidence.get('year'),evidence.get('quarter'))!=(2026,3)
-            or evidence.get('scope')!='group' or evidence.get('currency')!='DKK'
-            or evidence.get('metrics')!=EXPECTED
-            or alm.get('metrics',{}).get('solvency_ratio')!=238.0):
-            errors.append('Alm. Brand presentation solvency evidence incomplete')
-    if alm.get('source_type') != 'official_issuer_interim_announcement':
-        errors.append('Alm. Brand source type must not claim PDF verification')
-    if not str(alm.get('source_url', '')).startswith('https://investorrelations.almbrand.dk/'):
-        errors.append('Alm. Brand official source URL missing')
-    if alm.get('year') != 2026 or alm.get('quarter') != 3:
-        errors.append('Alm. Brand verified snapshot is not Q3 2026')
-    metrics = alm.get('metrics', {})
-    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth','solvency_ratio','return_on_equity','profit_before_tax'}) or any(
-        isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
-    ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
-        errors.append('Alm. Brand verified metric set is incomplete or invalid')
-    errors.extend(validate_supplemental(alm))
+    if (alm.get('year',0),alm.get('quarter',0))>(2026,3):
+        from rolling_alm_brand_reports import validate_rolling
+        errors.extend(validate_rolling(alm))
+    else:
+        if alm.get('status') not in ('verified_issuer_announcement','verified_official_presentation_reconciled'):
+            errors.append('Alm. Brand evidence status unsupported')
+        if alm.get('status')=='verified_official_presentation_reconciled':
+            from import_alm_brand_presentation import PRESENTATION, EXPECTED
+            evidence=alm.get('presentation_evidence',{})
+            if (evidence.get('source_type')!='official_results_presentation'
+                or evidence.get('source_url')!=PRESENTATION
+                or len(str(evidence.get('source_sha256','')))!=64
+                or evidence.get('source_page')!=19
+                or (evidence.get('year'),evidence.get('quarter'))!=(2026,3)
+                or evidence.get('scope')!='group' or evidence.get('currency')!='DKK'
+                or evidence.get('metrics')!=EXPECTED
+                or alm.get('metrics',{}).get('solvency_ratio')!=238.0):
+                errors.append('Alm. Brand presentation solvency evidence incomplete')
+        if alm.get('source_type') != 'official_issuer_interim_announcement':
+            errors.append('Alm. Brand source type must not claim PDF verification')
+        if not str(alm.get('source_url', '')).startswith('https://investorrelations.almbrand.dk/'):
+            errors.append('Alm. Brand official source URL missing')
+        if alm.get('year') != 2026 or alm.get('quarter') != 3:
+            errors.append('Alm. Brand verified snapshot is not Q3 2026')
+        metrics = alm.get('metrics', {})
+        if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth','solvency_ratio','return_on_equity','profit_before_tax'}) or any(
+            isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
+        ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
+            errors.append('Alm. Brand verified metric set is incomplete or invalid')
+        errors.extend(validate_supplemental(alm))
     klp = insurers.get('KLP Skadeforsikring', {})
     if klp.get('status') == 'awaiting_source_verified_metrics' and klp.get('metrics') == {}:
         pass
