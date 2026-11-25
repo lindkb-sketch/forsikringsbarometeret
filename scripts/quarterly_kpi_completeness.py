@@ -53,6 +53,10 @@ def build(comparison):
         'purpose': 'non_destructive_latest_quarter_kpi_gap_inventory',
         'all_nine_metrics_present': all(r['all_metrics_present'] for r in result),
         'all_nine_unattended_extraction_verified': False,
+        'expected_metric_count': sum(row['expected_count'] for row in result),
+        'present_metric_count': sum(row['present_count'] for row in result),
+        'missing_metric_count': sum(len(row['missing_metrics']) for row in result),
+        'reporting_exception_count': sum(len(row['not_reported_metrics']) for row in result),
         'note': ('Missing values must remain null until validated against issuer sources. '
                  'This inventory is not proof of PDF extraction, source comparison, '
                  'automated scheduled ingestion or investor readiness.'),
