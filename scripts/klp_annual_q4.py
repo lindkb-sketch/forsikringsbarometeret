@@ -196,21 +196,32 @@ def parse_q3(texts,year,url,digest,views=None):
     cover=' '.join(texts[:3])
     if not re.search(r'KLP\s+Skadeforsikring',cover,re.I) or not re.search(rf'3\.\s*kvartal(?:sregnskap)?\s+{year}',cover,re.I):
         raise ValueError('KLP Q3 report issuer/period mismatch')
-    results=[];notes=[]
+    results=[];notes=[];diagnostics=[]
     for i,t in enumerate(texts):
-        if re.search(r'(?m)^\s*Resultatregnskap\s*$',t,re.I):
-            # The historical report may wrap 01.01- and 30.09 across physical lines.
-            before=re.split(r'(?m)^\s*'+NOTE_PREFIX+r'Forsikringsinntekter\s+',t,maxsplit=1)[0]
-            compact=' '.join(before.split())
-            compact=re.sub(rf'01\.01\.(?:{year}|{year-1})\s*[-–]\s*','',compact)
-            expected=rf'NOTE\s+MILLIONER KRONER\s+3\.\s*kvartal\s+{year}\s+3\.\s*kvartal\s+{year-1}\s+30\.09\.{year}\s+30\.09\.{year-1}\s+31\.12\.{year-1}\b'
-            if re.search(expected,compact,re.I):
-                results.append((i+1,amount_rows(t,5)))
-        if re.search(r'Note\s+\d+\s+Nøkkeltall\s*[-–]\s*akkumulert',t,re.I) and 'Totalskadeprosent' in t:
-            if re.search(rf'MILLIONER KRONER\s+3\.\s*kvartal\s+{year}\b',t,re.I):
-                notes.append((i+1,t))
+        for v in [t,*((views or {}).get(i,[]))]:
+            if re.search(r'(?m)^\s*Resultatregnskap\s*$',v,re.I):
+                # Accept only five columns with explicit period labels. The
+                # start-date row can precede or follow the quarter labels.
+                before=re.split(r'(?m)^\s*'+NOTE_PREFIX+r'Forsikringsinntekter\s+',v,maxsplit=1)[0]
+                compact=' '.join(before.split())
+                compact=re.sub(r'01\.01\.(?:20\d{2})?\s*[-–]\s*','',compact)
+                expected=rf'(?:NOTE\s+)?MILLIONER KRONER\s+3\.\s*kvartal\s+{year}\s+3\.\s*kvartal\s+{year-1}\s+30\.09\.{year}\s+30\.09\.{year-1}\s+31\.12\.{year-1}\b'
+                # Some reports print the years under all five column labels.
+                split=rf'(?:NOTE\s+)?MILLIONER KRONER\s+3\.\s*kvartal\s+3\.\s*kvartal\s+30\.09\.?\s+30\.09\.?\s+31\.12\.?\s+{year}\s+{year-1}\s+{year}\s+{year-1}\s+{year-1}\b'
+                if re.search(expected,compact,re.I) or re.search(split,compact,re.I):
+                    try:
+                        item=(i+1,amount_rows(v,5))
+                        if item not in results:results.append(item)
+                    except ValueError as exc:diagnostics.append((i+1,str(exc)))
+                else:diagnostics.append((i+1,'statement header',before[-1400:]))
+            if re.search(r'Note\s+\d+\s+Nøkkeltall\s*[-–]\s*akkumulert',v,re.I) and 'Totalskadeprosent' in v:
+                if re.search(rf'MILLIONER KRONER\s+3\.\s*kvartal\s+{year}\b',v,re.I):
+                    # The same page may be present in several text views;
+                    # prefer its complete original text where possible.
+                    if not any(p==i+1 for p,_ in notes):notes.append((i+1,v))
+                else:diagnostics.append((i+1,'note header',v[:700]))
     if len(results)!=1 or len(notes)!=1:
-        raise ValueError('Unique KLP Q3 current/prior HIÅ and prior FY columns not verified')
+        raise ValueError('Unique KLP Q3 current/prior HIÅ and prior FY columns not verified; statement pages='+repr([p for p,_ in results])+'; note pages='+repr([p for p,_ in notes])+'; headers='+repr(list(dict.fromkeys(diagnostics))[:5]))
     sp,amounts=results[0];rp,note=notes[0]
     def first(label,percent=False):
         for n in (3,4,5,6,7,8):
@@ -317,7 +328,7 @@ def annual_views(raw,texts):
     result={}
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
         for i,t in enumerate(texts):
-            if re.search(r'Hovedtall\s+20\d{2}|regnskapsprinsipp|IFRS\s+Accounting|IFRIC',t,re.I):
+            if re.search(r'Hovedtall\s+20\d{2}|regnskapsprinsipp|IFRS\s+Accounting|IFRIC|Resultatregnskap|Nøkkeltall\s*[-–]\s*akkumulert',t,re.I):
                 p=pdf.pages[i]
                 views=[p.extract_text(layout=False,use_text_flow=True) or '']
                 # The annual report uses three text columns; the highlights
