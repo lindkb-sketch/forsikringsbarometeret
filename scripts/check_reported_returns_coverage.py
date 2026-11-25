@@ -28,7 +28,7 @@ def coverage(rows):
         year,quarter=max((r["year"],r["quarter"]) for r in base)
         matches=[r for r in rows if r.get("company")==company and
                  r.get("year")==year and r.get("quarter")==quarter and
-                 r.get("scope")=="group" and r.get("period_type")=="quarter" and
+                 r.get("scope")=="group" and (r.get("period_type")=="quarter" or company=="Gjensidige" and r.get("period_type")=="ytd" and "issuer explicitly reports year-to-date" in r.get("source_definition","")) and
                  r.get("metric")=="return_on_equity" and
                  r.get("status")=="reported" and
                  r.get("source_type")=="official_quarterly_report" and
@@ -54,7 +54,7 @@ def quarterly_coverage(rows, start_year=2025, start_quarter=3):
         for year,quarter in periods:
             matches=[r for r in rows if r.get("company")==company
                 and (r.get("year"),r.get("quarter"))==(year,quarter)
-                and r.get("scope")=="group" and r.get("period_type")=="quarter"
+                and r.get("scope")=="group" and (r.get("period_type")=="quarter" or company=="Gjensidige" and r.get("period_type")=="ytd" and "issuer explicitly reports year-to-date" in r.get("source_definition",""))
                 and r.get("metric")=="return_on_equity"
                 and r.get("status")=="reported"
                 and r.get("source_type")=="official_quarterly_report"
