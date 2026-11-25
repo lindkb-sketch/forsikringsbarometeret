@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted
+from reconcile_nine_pdf_metrics import extract_unambiguous,parse_number,source_documents,reconcile_extracted,discover_presentation_metrics,extract_structured_table_metrics,extract_issuer_quarter_rows
 
 class RealPdfMetricReconciliationTests(unittest.TestCase):
  def test_single_labelled_value_is_extracted(self):
@@ -13,6 +13,47 @@ class RealPdfMetricReconciliationTests(unittest.TestCase):
   self.assertIsNone(extract_unambiguous(['Solvency ratio 238% 230%'],'solvency_ratio',expected=238))
  def test_norwegian_decimal(self):
   self.assertEqual(extract_unambiguous(['Kostnadsprosent: 20,5 %'],'expense_ratio'),20.5)
+ def test_presentation_explicit_q3_table_extracts_only_correct_column(self):
+  page='Results Q3 2026 GROUP\nMetric    Q3 2026    Q3 2025\nCombined ratio    76.8    80.1'
+  evidence=discover_presentation_metrics([(7,page)],2026,3)
+  self.assertEqual(len(evidence),1)
+  self.assertEqual(evidence[0]['metric'],'combined_ratio')
+  self.assertEqual(evidence[0]['value'],76.8)
+  self.assertEqual(evidence[0]['source_page'],7)
+  self.assertEqual(evidence[0]['extraction_method'],'explicit_quarter_table_column_on_group_page')
+ def test_presentation_ambiguous_or_ytd_table_not_extracted(self):
+  pages=[(2,'Results Q3 2026 GROUP\nMetric    Q3 2026    Q3 2026\nCombined ratio    76.8    80.1'),
+         (3,'Results Q3 2026 GROUP\nMetric    YTD 2026    YTD 2025\nCombined ratio    76.8    80.1'),
+         (4,'Results Q3 2026 NORWAY ONLY GROUP\nMetric    Q3 2026    Q3 2025\nCombined ratio    76.8    80.1')]
+  self.assertEqual(discover_presentation_metrics(pages,2026,3),[])
+ def test_rejects_glued_pdf_chart_values(self):
+  self.assertIsNone(extract_unambiguous(['Solvency ratio 203199188184183%'],'solvency_ratio'))
+  self.assertIsNone(extract_unambiguous(['Insurance revenue 168141481439584'],'insurance_revenue'))
+ def test_rejects_chart_prose_and_unmarked_ratio(self):
+  self.assertIsNone(extract_unambiguous(['Strong solvency ratio 203%'],'solvency_ratio'))
+  self.assertIsNone(extract_unambiguous(['Combined ratio 2.15'],'combined_ratio'))
+ def test_structured_table_exact_quarter_and_metric(self):
+  tables=[[['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','76.8%','80.1%'],['Loss ratio (%)','63.6%','65.2%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{'combined_ratio':76.8,'loss_ratio':63.6})
+ def test_structured_table_rejects_ambiguous_period(self):
+  tables=[[['Metric','Q3 2026','Q3 2026'],['Combined ratio (%)','76.8%','80.1%']],
+          [['Metric','YTD 2026','YTD 2025'],['Combined ratio (%)','76.8%','80.1%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{})
+ def test_structured_table_rejects_conflicting_values(self):
+  tables=[[['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','76.8%','80.1%']],
+          [['Metric','Q3 2026','Q3 2025'],['Combined ratio (%)','77.2%','80.1%']]]
+  self.assertEqual(extract_structured_table_metrics(tables,2026,3),{})
+ def test_tryg_real_overview_multiline_period_header(self):
+  lines=['Income overview','Q3 Q3 Q1-Q3 Q1-Q3 Full Year',
+         'DKKm 2026 2025 2026 2025 2025',
+         'Insurance revenue 10,591 10,175 31,563 30,063 40,356']
+  self.assertEqual(extract_issuer_quarter_rows(lines,'Tryg',2026,3).get('insurance_revenue'),10591)
+ def test_sampo_real_overview_slash_period_header(self):
+  lines=['Financial overview','7–9/2026 7–9/2025 1–9/2026 1–9/2025 2025',
+         'Insurance revenue (incl. brokerage), net EURm 2,503 2,303 7,303 6,755 9,078']
+  # This dated quarterly column explicitly states EURm; extraction is
+  # permitted, but independent document reconciliation is still required.
+  self.assertEqual(extract_issuer_quarter_rows(lines,'Sampo',2026,3).get('insurance_revenue'),2503.0)
  def test_source_hash_and_page_preserved(self):
   f={'observations':[{'company':'Fremtind','year':2026,'quarter':3,
       'source_type':'official_quarterly_report',

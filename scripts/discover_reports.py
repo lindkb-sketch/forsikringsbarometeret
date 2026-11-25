@@ -41,7 +41,7 @@ def discover(html,base_url,company):
    if not re.search(r"(q[1-4]|[1-4]\.?\s*kvartal|[1-4]\.?\s*quarter|annual|full.?year|helår|årsresultat)",label,re.I):continue
    kind="results_presentation"
    status="candidate_requires_presentation_verification"
-  elif report:
+  elif report or (company=='Frende' and re.search(r'frende.holding',label,re.I) and re.search(r'q[1-4]|kvartal',label,re.I)):
    kind="quarterly_report"
    status="candidate_requires_quarterly_report_verification"
   else:continue
@@ -51,6 +51,37 @@ def discover(html,base_url,company):
                  "link_text":link["text"].strip()})
    seen.add(url)
  return found
+def issuer_report_pages(html,base_url,company):
+ """Find official report landing pages, not arbitrary external links."""
+ parser=Links();parser.feed(html)
+ result=[]
+ for link in parser.links:
+  url=urllib.parse.urljoin(base_url,link["href"])
+  p=urllib.parse.urlsplit(url)
+  if p.scheme!="https" or p.username or p.password or p.port not in (None,443):continue
+  label=link["text"]+" "+urllib.parse.unquote(p.path)
+  if company=="Frende":
+   accepted=p.hostname=="frende.wrep.it" and re.search(r"frende.holding",label,re.I) and re.search(r"q[1-4]|[1-4]\\.\\s*kvartal",label,re.I)
+  elif company=="Alm. Brand":
+   accepted=p.hostname=="investorrelations.almbrand.dk" and "/press-release-details/" in p.path.lower() and re.search(r"interim.report|quarterly.report",label,re.I)
+  else:accepted=False
+  if accepted:result.append((url,link["text"].strip()))
+ return list(dict.fromkeys(result))
+
+def discover_landing_pdfs(html,url,company,label):
+ """Accept PDF attachments only on the issuer-approved delivery hosts."""
+ parser=Links();parser.feed(html)
+ found=[]
+ for link in parser.links:
+  target=urllib.parse.urljoin(url,link["href"])
+  if not approved_delivery_host(company,target):continue
+  description=link["text"]+" "+urllib.parse.unquote(target)
+  if re.search(r"presentation|presentasjon|slides|appendix|supplement|press.release",description,re.I):continue
+  if not re.search(r"report|rapport|download|last ned|pdf",description,re.I):continue
+  found.append({"company":company,"document_url":target,"document_type":"quarterly_report",
+                "status":"candidate_requires_quarterly_report_verification","link_text":label+" "+link["text"],"landing_url":url})
+ return found
+
 def scan(fetcher=None):
  if fetcher is None:
   def fetcher(url):
@@ -61,11 +92,22 @@ def scan(fetcher=None):
    return blob.decode("utf-8",errors="replace")
  sources=json.loads(REGISTRY.read_text())["sources"]
  pages={(r["company"],r["index_url"]) for r in sources if r.get("index_url")}
- candidates=[];errors=[]
+ candidates=[];errors=[];warnings=[]
  for company,url in sorted(pages):
-  try:candidates+=discover(fetcher(url),url,company)
+  try:
+   html=fetcher(url)
+   candidates+=discover(html,url,company)
+   if company in ("Frende","Alm. Brand"):
+    pages=issuer_report_pages(html,url,company)
+    for landing,label in pages[:16]:
+     try:
+      attachments=discover_landing_pdfs(fetcher(landing),landing,company,label)
+      candidates+=attachments
+      if not attachments:
+       warnings.append(f"{company}: no downloadable PDF on {landing}")
+     except Exception as e:warnings.append(f"{company}: {type(e).__name__}: {e}")
   except Exception as e:errors.append(f"{company}: {type(e).__name__}: {e}")
- return {"candidates":candidates,"errors":errors,"complete":not errors}
+ return {"candidates":candidates,"errors":errors,"complete":not errors,"warnings":warnings}
 if __name__=="__main__":
  result=scan()
  # Never overwrite previous results on failure

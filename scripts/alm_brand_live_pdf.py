@@ -6,6 +6,7 @@ linked from Alm. Brand's own IR page, and its contents must pass independent
 income-statement and KPI reconciliation before admission.
 """
 import hashlib
+import html as html_lib
 import io
 import json
 import re
@@ -38,7 +39,7 @@ NUM=re.compile(r'(?<![\w])-?\d{1,3}(?:,\d{3})*(?:\.\d+)?(?![\w])')
 
 def trusted_pdf_link(url):
     p=urllib.parse.urlsplit(url)
-    return p.scheme=='https' and (url==OFFICIAL_FILING_PDF or 
+    return p.scheme=='https' and ((p.hostname=='ml-eu.globenewswire.com' and re.fullmatch(r'/Resource/Download/[0-9a-fA-F-]{36}',p.path)) or 
         (p.hostname=='s29.q4cdn.com'
          and p.path.startswith('/228553818/files/')
          and p.path.lower().endswith('.pdf')) or
@@ -63,11 +64,17 @@ def find_candidates(html,origin=IR):
                 if not link['href']:return
                 url=urllib.parse.urljoin(origin,link['href'])
                 label=' '.join(' '.join(link['label']).split())
-                if trusted_pdf_link(url) and re.search(r'AB GROUP 3Q 2026|Report|Rapport|Q3 2026',label+' '+link['title'],re.I):
+                if trusted_pdf_link(url) and re.search(r'AB GROUP 3Q 2026|Report|Rapport|Q3 2026',label+' '+link['title']+' '+urllib.parse.unquote(url),re.I):
                     self.links.append((url,label))
     parser=Links();parser.feed(html)
+    # Q4 archive widgets may embed links in JSON rather than anchor elements.
+    decoded=html_lib.unescape(html).replace(r'\/', '/')
+    for match in re.finditer(r'https://s29\.q4cdn\.com/228553818/files/[^\s<>\x22\x27\\]+?\.pdf',decoded,re.I):
+        url=match.group(0)
+        if trusted_pdf_link(url):parser.links.append((url,''))
     unique={}
-    for url,label in parser.links:unique[url]=label
+    for url,label in parser.links:
+        if url not in unique or label:unique[url]=label
     return sorted(unique.items(),key=lambda x:(not bool(re.search(r'AB GROUP 3Q 2026',x[1],re.I)),x[0]))
 
 def fetch_html(url):
@@ -83,17 +90,31 @@ def fetch_html(url):
 def discover():
     """Only trust a report link linked by the company's own IR page."""
     found={}
-    for page in (IR,ARCHIVE):
-        html=fetch_html(page)
-        for url,label in find_candidates(html,page):
-            if re.search(r'AB GROUP 3Q 2026|interim.report.Q3.2026',label+' '+url,re.I):
+    for page in (IR,ARCHIVE,'https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx'):
+        try: html=fetch_html(page)
+        except (OSError,ValueError) as exc:
+            print('ALM_ISSUER_PAGE_ERROR',page,str(exc));continue
+        # Inspect actual issuer markup, including widget configuration and script
+        # references, rather than guessing report filenames or API endpoints.
+        lines=html.splitlines()
+        markers=re.compile(r'api/|apiUrl|serviceUrl|moduleapi|GetPressRelease|GetFinancial|q4api|q4inc|data-module|data-url|\.asmx|\.svc|<script[^>]+src|attachment|download',re.I)
+        snippets=[]
+        for line in lines:
+            for m in markers.finditer(line):
+                snippets.append(line[max(0,m.start()-100):m.end()+180])
+                if len(snippets)>=100:break
+            if len(snippets)>=100:break
+        print('ALM_ISSUER_WIDGET_CONFIG',page,json.dumps(snippets,ensure_ascii=False))
+        candidates=find_candidates(html,page)
+        print('ALM_ISSUER_PAGE_LINKS',page,len(html),json.dumps(candidates,ensure_ascii=False))
+        for url,label in candidates:
+            if re.search(r'AB[ _-]*GROUP[ _-]*3Q[ _-]*2026|(?:interim|quarterly)[ _-]*report[ _-]*Q3[ _-]*2026|Q3[ _-]*2026[ _-]*(?:interim[ _-]*)?report|(?:rapport|report)[ _-]*3[._ -]*kvartal[ _-]*2026',label+' '+urllib.parse.unquote(url),re.I):
                 found[url]=label
+    print('ALM_ISSUER_REPORT_CANDIDATES',json.dumps(found,ensure_ascii=False))
     if len(found)==1:
         return next(iter(found))
     if not found:
-        # Pinned official Nasdaq issuer-disclosure attachment (full interim report).
-        # Never accept arbitrary attachments on this host.
-        return OFFICIAL_FILING_PDF
+        raise ValueError('No quarterly report linked from official Alm Brand issuer pages')
     raise ValueError('Ambiguous official Q3 PDF links: '+str(sorted(found)))
 
 def download_report(url):
@@ -231,7 +252,7 @@ def verify_pages(texts,url,raw,regions=None):
             'source_sha256':sha,'currency':'DKK','scope':'group'},
         'ytd_recalculated_ratios':{key:float(x) for key,x in y.items()},
         'source_sha256':sha,'source_url':url,
-        'issuer_page_url':OFFICIAL_NASDAQ_NOTICE if url==OFFICIAL_FILING_PDF else IR,
+        'issuer_page_url':IR,
         'status':'verified_official_pdf_reconciled'})
     return extracted
 

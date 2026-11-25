@@ -1,6 +1,13 @@
 name: Verify official reports and presentations (diagnostic)
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/discover_reports.py'
+      - 'data/report_sources.json'
+      - 'scripts/reconcile_nine_pdf_metrics.py'
+      - 'tests/test_real_pdf_metric_reconciliation.py'
+      - '.github/workflows/verify-dual-documents.yml'
   push:
     branches: [main]
     paths:
@@ -19,6 +26,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements-reports.txt
+      - name: Test conservative PDF metric extraction
+        run: python -m unittest discover -s tests -p 'test_real_pdf_metric_reconciliation.py' -v
       - name: Discover issuer-linked PDFs without changing financial feed
         run: python scripts/discover_reports.py
       - name: Inventory imported and discovered report/presentation evidence

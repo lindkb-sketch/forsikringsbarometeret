@@ -12,7 +12,7 @@ from urllib.parse import urlsplit
 
 def official_alm_pdf(url):
     parts=urlsplit(url)
-    return approved(url,'Alm. Brand') or (url=='https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78') or (parts.scheme=='https' and
+    return approved(url,'Alm. Brand') or (parts.scheme=='https' and parts.hostname=='ml-eu.globenewswire.com' and re.fullmatch(r'/Resource/Download/[0-9a-fA-F-]{36}',parts.path)) or (parts.scheme=='https' and
         parts.hostname=='s29.q4cdn.com' and
         parts.path.startswith('/228553818/files/') and
         parts.path.lower().endswith('.pdf'))

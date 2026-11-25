@@ -32,6 +32,18 @@ class AlmBrandLivePDFTests(unittest.TestCase):
     def test_source_link_candidates(self):
         html='<a href="'+URL+'">AB GROUP 3Q 2026</a><a href="https://evil.test/bad.pdf">Report Q3 2026</a>'
         self.assertEqual(find_candidates(html),[(URL,'AB GROUP 3Q 2026')])
+    def test_company_linked_globe_attachment(self):
+        from alm_brand_pdf import official_alm_pdf
+        from alm_brand_live_pdf import discover,IR
+        from unittest.mock import patch
+        url='https://ml-eu.globenewswire.com/Resource/Download/d5ad49d0-d609-4c16-9a53-6e388eb76934'
+        html='<a href="'+url+'">AB GROUP 3Q 2026</a>'
+        self.assertTrue(official_alm_pdf(url))
+        self.assertFalse(trusted_pdf_link('https://ml-eu.globenewswire.com/other/file'))
+        with patch('alm_brand_live_pdf.fetch_html',side_effect=lambda page:html if page==IR else ''):
+            self.assertEqual(discover(),url)
+        with patch('alm_brand_live_pdf.fetch_html',return_value=''):
+            with self.assertRaises(ValueError):discover()
     def test_q3_and_ytd_reconciled_and_growth(self):
         res=verify_pages(fixture(),URL,b'%PDF-synthetic-test')
         self.assertEqual(res['status'],'verified_official_pdf_reconciled')
