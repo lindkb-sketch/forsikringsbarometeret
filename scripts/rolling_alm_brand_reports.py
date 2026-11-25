@@ -97,7 +97,7 @@ def numeric_values(tail,count):
     return [Decimal(x.replace(',','')) for x in values]
 
 def row(text,label,count):
-    pattern=re.compile(r'^\s*(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+(.+?)\s*$',re.I)
+    pattern=re.compile(r'^\s*(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+(?=-?\d)(.+?)\s*$',re.I)
     matches=[m.group(1) for line in text.splitlines() if (m:=pattern.fullmatch(line))]
     if len(matches)!=1:raise ValueError('Missing or ambiguous Alm. Brand group row: '+label)
     # The half-page crop occasionally retains a fragment of the adjacent
