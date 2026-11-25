@@ -71,7 +71,11 @@ def validate(extended, sources, calendar):
         if not period_history_ok:
             errors.append('KLP must provide contiguous verified PDF quarter periods starting Q1 2026')
         else:
-            for p in periods:
+            for index,p in enumerate(periods):
+                if p.get('source_type')=='official_annual_report' or p.get('quarter_calculation'):
+                    from klp_annual_q4 import validate_derived
+                    errors.extend(validate_derived(p,periods[index-1] if index>0 else None))
+                    continue
                 metrics=p.get('metrics',{})
                 if (p.get('status')!='verified_official_pdf_reconciled'
                     or not REQUIRED.issubset(metrics)
@@ -120,7 +124,7 @@ def validate(extended, sources, calendar):
                 if abs(float(metrics.get('insurance_revenue_growth',-10000))-float(growth.get('quarter',{}).get('growth_percent',-20000)))>1e-6:
                     errors.append('KLP published income growth differs from source-backed quarter growth')
 
-            if (klp.get('year'),klp.get('quarter'))!=(periods[-1].get('year'),periods[-1].get('quarter')) or klp.get('metrics')!=periods[-1]['metrics']:
+            if (klp.get('year'),klp.get('quarter'))!=(periods[-1].get('year'),periods[-1].get('quarter')) or klp.get('metrics')!=periods[-1]['metrics'] or any(klp.get(k)!=periods[-1].get(k) for k in ('source_url','source_sha256','source_type','source_pages','ytd_metrics','metric_methods','quarter_calculation','source_documents')):
                 errors.append('KLP latest published quarter does not match last verified period')
     else:
         errors.append('KLP metrics require source verification before publication')
