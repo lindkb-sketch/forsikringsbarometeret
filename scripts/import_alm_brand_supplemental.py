@@ -80,6 +80,9 @@ def preserve(new,previous):
 def run(path=DATA,pdf=None):
     data=json.loads(path.read_text(encoding='utf-8'))
     existing=data['insurers']['Alm. Brand']
+    if (existing.get('year',0),existing.get('quarter',0))>(2026,3):
+        print('ALM_LEGACY_SUPPLEMENTAL_SKIPPED rolling snapshot retained',flush=True)
+        return existing
     new=attach(existing,pdf if pdf is not None else reconcile_pdf())
     if new!=existing:
         data['insurers']['Alm. Brand']=new
