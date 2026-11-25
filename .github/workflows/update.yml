@@ -206,6 +206,9 @@ jobs:
   publish:
     needs: validate-and-prepare
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     # PDF downloads/tests do NOT hold this lock. Only committing and
     # deploying prepared data shares it with the stock-price workflow.
     concurrency:
