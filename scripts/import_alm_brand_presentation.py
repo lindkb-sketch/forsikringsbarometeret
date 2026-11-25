@@ -64,6 +64,10 @@ def reconcile(existing,evidence):
     return result
 
 def run(out=DATA,raw=None):
+    existing=json.loads(out.read_text(encoding='utf-8'))['insurers']['Alm. Brand']
+    if (existing.get('year',0),existing.get('quarter',0))>(2026,3):
+        print('ALM_LEGACY_PRESENTATION_SKIPPED rolling snapshot retained',flush=True)
+        return
     if raw is None:
         req=urllib.request.Request(PRESENTATION,headers={'User-Agent':'Mozilla/5.0 Forsikringsbarometeret'})
         with urllib.request.urlopen(req,timeout=40) as response:
