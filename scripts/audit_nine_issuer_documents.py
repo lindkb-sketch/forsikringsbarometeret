@@ -217,29 +217,34 @@ def report_sources(feed,extended,company,y,q):
     return list(docs.values())
 
 def verify_pdf_identity(company,texts,y,q,kind):
-    head=normalize(' '.join(texts[:3]))
+    head=normalize(' '.join(texts[:6] if company=='Gjensidige' else texts[:3]))
     if not re.search(ENTITY[company],head,re.I):raise ValueError('Issuer/entity not established on opening pages')
     if not period_label(head,y,q):
         # Explicit cover phrases with the quarter number separated from year
         # are allowed only on the cover itself and require a current-period title.
         cover=normalize(texts[0])
-        if not (str(y) in cover and re.search(rf'\bQ\s*{q}\b',cover,re.I)):raise ValueError('Cover period not established')
+        word=('first','second','third','fourth')[q-1]
+        gjensidige_period=(company=='Gjensidige' and kind=='quarterly_report' and str(y) in head
+                           and re.search(rf'\b(?:{word} quarter|Q\s*{q})\b',head,re.I))
+        if not gjensidige_period and not (str(y) in cover and re.search(rf'\bQ\s*{q}\b',cover,re.I)):raise ValueError('Cover period not established')
     if kind=='results_presentation' and not re.search(r'presentation|presentasjon|præsentation|quarterly results|interim results|financial results|quarter results|results|Q[1-4]',head,re.I):
         raise ValueError('Presentation document identity not established')
     if company=='KLP Skadeforsikring' and not re.search(r'KLP\s+Skadeforsikring',normalize(texts[0]),re.I):
         raise ValueError('KLP parent or other entity is not the Skadeforsikring report')
     return True
 
-def verify_document(company,doc,y,q):
+def verify_document(company,doc,y,q,feed=None):
     url=doc['url'];kind=doc['document_type']
     if doc.get('format')=='html':
-        from import_frende_holding import read,extract,extract_revenue
+        from import_frende_holding import read,extract,extract_revenue,extract_insurance_result
+        from import_reported_profit_before_tax import parse_frende
         if company!='Frende':raise ValueError('Unexpected HTML report')
         m=re.fullmatch(r'https://frende\.wrep\.it/(q[1-4]-20\d{2}-frende-holding-as)/sec/([67])',url)
         if not m or m.group(1)!=f'q{q}-{y}-frende-holding-as':raise ValueError('Wrong Frende report section')
         section=int(m.group(2));markup=read(url.rsplit('/sec/',1)[0],section)
         raw=markup.encode('utf-8')
-        parsed=extract(markup,url,y,q) if section==6 else extract_revenue(markup,url,y,q)
+        anchor=next((r for r in (feed or {}).get('observations',[]) if r.get('company')==company and r.get('year')==y and r.get('quarter')==q and r.get('source_url')==url and r.get('metric')=='profit_before_tax'),None)
+        parsed=extract(markup,url,y,q)+parse_frende(markup,anchor) if section==6 else extract_revenue(markup,url,y,q)+extract_insurance_result(markup,url,y,q)
         texts=[f'Frende Holding Q{q} {y} section {section}: verified table; {len(parsed)} observations']
         fmt='html'
         final=url
@@ -250,15 +255,28 @@ def verify_document(company,doc,y,q):
         with pdfplumber.open(io.BytesIO(raw)) as pdf:
             if not 1<=len(pdf.pages)<=300:raise ValueError('Invalid PDF page count')
             texts=[p.extract_text() or '' for p in pdf.pages]
-        verify_pdf_identity(company,texts,y,q,kind)
+        # The issuer logo is graphical on Alm. Brand's presentation cover.
+        # Only a fingerprint-pinned issuer-linked document may use this exception;
+        # the independent solvency parser below still has to verify its table.
+        pinned_alm=(company=='Alm. Brand' and kind=='results_presentation' and doc.get('expected_sha256')==[hashlib.sha256(raw).hexdigest()] and urlsplit(url).hostname=='s29.q4cdn.com' and period_label(url,y,q))
+        if not pinned_alm:verify_pdf_identity(company,texts,y,q,kind)
         fmt='pdf'
     digest=hashlib.sha256(raw).hexdigest()
     expected=doc.get('expected_sha256',[])
-    if expected and set(expected)!={digest}:raise ValueError('Current source fingerprint differs from imported provenance')
+    semantic_matches=[]
+    if expected and set(expected)!={digest}:
+        if fmt!='html':raise ValueError('Current source fingerprint differs from imported provenance')
+        old=[r for r in (feed or {}).get('observations',[]) if r.get('company')==company and r.get('year')==y and r.get('quarter')==q and r.get('scope')=='group' and r.get('source_url')==url and r.get('metric') in METRICS]
+        for r in old:
+            rr=[p for p in parsed if (p.get('year'),p.get('quarter'),p.get('scope'),p.get('period_type'),p.get('metric'),p.get('unit'))==(y,q,'group',r['period_type'],r['metric'],r['unit'])]
+            if len(rr)!=1 or rr[0]['value']!=r['value']:raise ValueError('Changed HTML and financial table differs or is ambiguous: '+r['metric'])
+            semantic_matches.append({'metric':r['metric'],'period_type':r['period_type'],'value':r['value'],'prior_sha256':r['source_sha256']})
+        if not old:raise ValueError('Changed HTML without original observations')
     if fmt=='pdf' and any(p>len(texts) for p in doc.get('source_pages',[])):raise ValueError('Imported source page outside document')
     result=dict(url=final,requested_url=url,document_type=kind,origin=doc['origin'],label=doc.get('label',''),
         format=fmt,source_sha256=digest,issuer_verified=True,period_verified=True,
-        expected_fingerprint_matches=bool(expected),source_pages_examined=len(texts),status='verified_document')
+        expected_fingerprint_matches=bool(expected) and set(expected)=={digest},semantic_matches=semantic_matches,
+        fingerprint_status='changed_html_values_reparsed_and_matched' if semantic_matches else 'exact_match' if expected else 'new_source',source_pages_examined=len(texts),status='verified_document')
     return result,raw,texts
 
 def collect_company(company,y,q,feed,extended):
@@ -283,7 +301,7 @@ def collect_company(company,y,q,feed,extended):
     verified=[];loaded=[]
     for doc in list(unique.values())[:12]:
         try:
-            evidence,raw,texts=verify_document(company,doc,y,q)
+            evidence,raw,texts=verify_document(company,doc,y,q,feed)
             verified.append(evidence);loaded.append((evidence,raw,texts))
             # Actual PDF/text evidence is a CI artifact, not a new web feed.
             folder=ARTIFACTS/re.sub(r'[^A-Za-z0-9]+','-',company).strip('-')/f'Q{q}-{y}'
@@ -297,7 +315,11 @@ def collect_company(company,y,q,feed,extended):
     presentation_found='results_presentation' in types
     # Byte identity is not metric reconciliation. Explicitly compare at least
     # Alm. Brand solvency using the two existing independently verified parsers.
+    from reconcile_issuer_presentation_metrics import reconcile
     matches=[]
+    for pe,pr,pt in loaded:
+        if pe['document_type']=='results_presentation':
+            matches.extend(reconcile(company,y,q,feed,[e for e,_,_ in loaded if e['document_type']=='quarterly_report'],pe,pt))
     if company=='Alm. Brand' and types=={'quarterly_report','results_presentation'}:
         from rolling_alm_brand_reports import read_report,verify_report,presentation_evidence
         reports=[(e,r,t) for e,r,t in loaded if e['document_type']=='quarterly_report' and e['expected_fingerprint_matches']]
@@ -320,7 +342,7 @@ def collect_company(company,y,q,feed,extended):
     report_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='quarterly_report'}
     presentation_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='results_presentation'}
     both=bool(report_hashes and presentation_hashes-report_hashes)
-    status='partial_metric_reconciliation' if both and matches else 'both_documents_read_metrics_not_certified' if both else 'presentation_not_verified' if not presentation_found else 'report_not_verified'
+    status='conflicting_metric_evidence' if any(m['status']=='conflict' for m in matches) else 'partial_metric_reconciliation' if both and matches else 'both_documents_read_metrics_not_certified' if both else 'presentation_not_verified' if not presentation_found else 'report_not_verified'
     return dict(company=company,year=y,quarter=q,report_verified=bool(report_hashes),presentation_verified=presentation_found,
                 both_distinct_documents_verified=both,metric_reconciliation_status=status,
                 archives_checked=indexes,exchange_announcements=news,documents=verified,cross_document_matches=matches,errors=errors)
@@ -354,6 +376,7 @@ def main():
     print('DUAL_DOCUMENT_SUMMARY',json.dumps({'report_verified':sum(x['report_verified'] for x in report['companies']),
         'presentation_verified':sum(x['presentation_verified'] for x in report['companies']),
         'distinct_pairs':sum(x['both_distinct_documents_verified'] for x in report['companies']),
-        'metric_matches':sum(len(x['cross_document_matches']) for x in report['companies']),
+        'metric_matches':sum(m['status']=='match' for x in report['companies'] for m in x['cross_document_matches']),
+        'metric_conflicts':sum(m['status']=='conflict' for x in report['companies'] for m in x['cross_document_matches']),
         'full_reconciliation':report['all_nine_dual_document_verified']},ensure_ascii=False),flush=True)
 if __name__=='__main__':main()
