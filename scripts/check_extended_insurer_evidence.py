@@ -88,6 +88,11 @@ def validate(extended, sources, calendar):
                        {'gross_loss_ratio','reinsurance_ratio','loss_ratio','expense_ratio','combined_ratio'}):
                     errors.append('KLP PDF source or quarter metrics incomplete: Q'+str(p.get('quarter')))
 
+                if (p.get('year',0),p.get('quarter',0))>(2026,3):
+                    ytd=p.get('ytd_metrics',{})
+                    required=REQUIRED|{'insurance_revenue_growth','solvency_ratio','profit_before_tax'}
+                    if set(ytd)!=required or any(type(v) not in (float,int) or not math.isfinite(v) for v in ytd.values()) or ytd.get('solvency_ratio')!=metrics.get('solvency_ratio'):
+                        errors.append('KLP rolling HIÅ metrics incomplete or inconsistent')
                 growth=p.get('revenue_growth_evidence',{})
                 for period_kind in ('quarter','ytd'):
                     evidence=growth.get(period_kind,{})
