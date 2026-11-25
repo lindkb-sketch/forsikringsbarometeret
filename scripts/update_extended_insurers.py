@@ -56,8 +56,12 @@ def fetch(url=SOURCE):
         return response.read(3_000_000).decode('utf-8','replace')
 
 def update(document=None,out=OUT):
-    row=extract(fetch() if document is None else document)
     old=json.loads(out.read_text(encoding='utf-8')) if out.exists() else {}
+    previous=old.get('insurers',{}).get('Alm. Brand',{})
+    if (previous.get('year',0),previous.get('quarter',0))>(2026,3):
+        # Never let the legacy Q3 announcement reset a rolling snapshot.
+        return False
+    row=extract(fetch() if document is None else document)
     klp=old.get('insurers',{}).get('KLP Skadeforsikring',{
         'company':'KLP Skadeforsikring','status':'awaiting_source_verified_metrics',
         'metrics':{},'report_archive':'https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'})

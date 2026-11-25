@@ -25,7 +25,7 @@ def classify(url):
             return quarter
     return None
 
-def discover(html):
+def discover(html, year=2026, periods=PERIODS):
     """Discover by document order, including headings implemented as links/spans.
 
     Never infer the issuer or reporting year from an opaque PDF URL.
@@ -36,7 +36,7 @@ def discover(html):
             self.company=None
             self.year=None
             self.anchor=None
-            self.found={q:[] for q in PERIODS}
+            self.found={q:[] for q in periods}
             self.debug=[]
         def context(self,text):
             text=' '.join(text.split())
@@ -62,11 +62,15 @@ def discover(html):
             if href and re.search(r'kvartalsrapport',label,re.I):
                 self.debug.append({'company':self.company,'year':self.year,
                                    'label':label[:90],'href':href[:200]})
-            if self.company=='KLP Skadeforsikring' and self.year==2026 and href:
+            if self.company=='KLP Skadeforsikring' and self.year==year and href:
                 url=urljoin(INDEX_URL,href)
                 if approved(url,'KLP Skadeforsikring'):
-                    for q in PERIODS:
-                        if re.search(r'kvartalsrapport\s+(?:for\s+)?'+str(q)+r'\.\s*kvartal',label,re.I):
+                    for q in periods:
+                        explicit=bool(re.search(r'kvartalsrapport\s+(?:for\s+)?'+str(q)+r'\.\s*kvartal',label,re.I))
+                        annual=(q==4 and bool(re.fullmatch(r'årsrapport(?:\s+'+str(year)+r')?(?:\s*\(PDF\))?',label,re.I)))
+                        # Annual reports are Q4 candidates, NOT automatically isolated-quarter data.
+                        # Only the downstream explicit quarter-column parser can admit them.
+                        if explicit or annual:
                             if url not in self.found[q]:self.found[q].append(url)
             self.anchor=None
     parser=Archive()

@@ -105,19 +105,37 @@ def check(feed,extended,comparison,gaps):
             if item.get('metrics',{}).get(metric)!=source.get('metrics',{}).get(metric):
                 errors.append(company+': metric mismatch '+metric)
         if company=='Alm. Brand':
-            from import_alm_brand_supplemental import validate_supplemental
-            errors.extend(validate_supplemental(source))
-            ev=source.get('presentation_evidence',{})
-            if (source.get('metrics',{}).get('solvency_ratio')!=238
-                or ev.get('source_page')!=19
-                or ev.get('metrics',{}).get('solvency_ratio')!=238
-                or len(str(ev.get('source_sha256','')))!=64):
-                errors.append('Alm. Brand: Q3 presentation provenance mismatch')
+            if (source.get('year',0),source.get('quarter',0))>(2026,3):
+                from rolling_alm_brand_reports import validate_rolling
+                errors.extend(validate_rolling(source))
+            else:
+                from import_alm_brand_supplemental import validate_supplemental
+                errors.extend(validate_supplemental(source))
+                ev=source.get('presentation_evidence',{})
+                if (source.get('metrics',{}).get('solvency_ratio')!=238
+                    or ev.get('source_page')!=19
+                    or ev.get('metrics',{}).get('solvency_ratio')!=238
+                    or len(str(ev.get('source_sha256','')))!=64):
+                    errors.append('Alm. Brand: Q3 presentation provenance mismatch')
         if company=='KLP Skadeforsikring':
             if source.get('metrics',{}).get('return_on_equity') is not None:
                 errors.append('KLP: unverified ROE must remain absent')
-            if len(source.get('periods',[]))!=3:
-                errors.append('KLP: three PDF quarter reconciliations required')
+            if len(source.get('periods',[]))<3:
+                errors.append('KLP: historical PDF quarter reconciliations required')
+            elif all(isinstance(p,dict) and p.get('year') for p in source['periods']):
+                from import_klp_production import snapshot_from_rows
+                try:
+                    from klp_annual_q4 import validate_derived
+                    for i,p in enumerate(source['periods']):
+                        if p.get('source_type')=='official_annual_report' or p.get('quarter_calculation'):
+                            errors.extend(validate_derived(p,source['periods'][i-1] if i>0 else None))
+                    snapshot=snapshot_from_rows(source['periods'])
+                    if (snapshot['year'],snapshot['quarter'],snapshot['metrics'])!=(source.get('year'),source.get('quarter'),source.get('metrics')):
+                        raise ValueError('Latest snapshot mismatch')
+                    if source.get('quarter_calculation') and item.get('metric_methods')!=source.get('metric_methods'):
+                        errors.append('KLP derived Q4 metric methods missing from comparison')
+                except (ValueError,KeyError,TypeError):
+                    errors.append('KLP: invalid rolling PDF quarter history')
     return errors
 
 def main():

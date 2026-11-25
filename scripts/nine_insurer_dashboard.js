@@ -59,6 +59,12 @@
           ' mangler og '+exempt+' er dokumenterte rapporteringsunntak. '+
           'Tilstedeværelse er ikke bevis på ubetjent kildeimport.';
         section.appendChild(status);
+        if(completeness.all_nine_same_period===false){
+          const periodWarning=document.createElement('p');
+          periodWarning.className='hint';
+          periodWarning.textContent='Selskapene har ulike siste rapportperioder. Samlet KPI-dekning betyr ikke at alle har rapportert samme kvartal.';
+          section.appendChild(periodWarning);
+        }
         const list=document.createElement('ul');
         list.setAttribute('aria-label','Manglende nøkkeltall per selskap');
         for (const issuer of completeness.companies) {
@@ -92,7 +98,8 @@
           td(row,'—');
         }else{
           const label=company.metric_periods?.[key]==='ytd'?' (HIÅ)':'';
-          const cell=td(row,fmt(company.metrics?.[key],kind)+label);
+          const calculated=company.metric_methods?.[key]==='calculated'?' (beregnet)':'';
+          const cell=td(row,fmt(company.metrics?.[key],kind)+label+calculated);
           if(company.metric_sources?.[key]?.source_definition)cell.title=company.metric_sources[key].source_definition;
         }
       }
@@ -102,13 +109,18 @@
         issuer_announcement_only:'Kun utsteder­melding',
         unverified_missing:'Mangler kildeverifiserte data'
       }[company.status]||'Ikke verifisert';
-      td(row,status);
+      td(row,company.metric_methods?.profit_before_tax==='calculated'?'Kildeavstemt, Q4 beregnet fra helår − HIÅ Q3':status);
       body.appendChild(row);
     }
     table.appendChild(body);wrap.appendChild(table);section.appendChild(wrap);
     const note=document.createElement('p');note.className='hint';
     note.textContent='Beløp er i selskapets rapporterte valuta og enhet. Inntekter kan ikke summeres på tvers av NOK, DKK eller ulike IFRS-definisjoner. ROE og solvens kan ha ulike utstederdefinisjoner.';
     section.appendChild(note);
+    if ((lastData.companies||[]).some(c=>c.metric_methods?.profit_before_tax==='calculated')) {
+      const calcNote=document.createElement('p');calcNote.className='hint';
+      calcNote.textContent='KLP Q4: Beløp = helår minus HIÅ per Q3; skade-, kostnads- og combined ratio beregnes fra isolerte beløp. Solvens er rapportert ved årsslutt. Årsoppgjørsjusteringer kan inngå i Q4.';
+      section.appendChild(calcNote);
+    }
     root.appendChild(section);
   }
   async function load(){
