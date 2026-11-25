@@ -25,6 +25,7 @@ DASH_TRANS=str.maketrans('‐‑‒–—−','------')
 def ytd_header(lines,year,q):
     """Explicit current/prior isolated and current/prior cumulative columns."""
     # Normalize only whitespace/dashes, not the dates or column ordering.
+    end={1:'31.03',2:'30.06',3:'30.09',4:'31.12'}[q]
     for i in range(len(lines)):
         for n in (1,2,3):
             text=' '.join(' '.join(lines[i:i+n]).translate(DASH_TRANS).split())
@@ -39,9 +40,13 @@ def ytd_header(lines,year,q):
             cum=rf'(?:Q1\s*-\s*Q{q}|YTD|HIÅ|Hittil i år|{ {2:"H1",3:"9M",4:"FY"}[q]})'
             if re.search(cq+r'\s+'+pq+r'\s+'+cum+rf'\s+{year}\s+'+cum+rf'\s+{year-1}\b',text,re.I):
                 return (5 if re.search(cum+rf'\s+{year-1}\s+(?:FY\s+)?{year-1}\b',text,re.I) else 4),0,2,3
+            # Fremtind labels the cumulative columns by reporting date.
+            date_columns=rf'{re.escape(end)}\.{year}\s+{re.escape(end)}\.{year-1}\s+31\.12\.{year-1}\b'
+            if re.search(cq+r'\s+'+pq+r'\s+'+date_columns,text,re.I):
+                return 5,0,2,3
             # Tryg and Fremtind may put period labels and years on two rows.
             prefix=rf'Q\s*{q}\s+Q\s*{q}\s+{cum}\s+{cum}'
-            if re.search(prefix+rf'\s+(?:FY\s+)?(?:{year-1}\s+)?{year}\s+{year-1}\s+{year}\s+{year-1}\s+{year-1}\b',text,re.I):
+            if re.search(prefix+rf'\s+(?:FY\s+|Full Year\s+)?(?:DKKm\s+|NOKm\s+|MNOK\s+)?{year}\s+{year-1}\s+{year}\s+{year-1}\s+{year-1}\b',text,re.I):
                 return 5,0,2,3
             # Fremtind's header can name the same cumulative date span once,
             # followed by the two explicitly printed years.
@@ -153,14 +158,19 @@ def protector(pages,anchor,quarter_values):
     if len(hits)!=1:raise ValueError('Protector HIÅ income overview not unique')
     return hits[0]
 
-def returns(pages,anchor,quarter_values):
+def returns(pages,anchor,quarter_values,positioned=None):
     c=anchor['company'];y,q=anchor['year'],anchor['quarter'];hits=[];diag=[]
     if c=='Gjensidige':
         for page,t in pages:
-            compact=' '.join(t.split())
-            # The issuer explicitly identifies its annualised YTD measure.
-            for m in re.finditer(r'annualis(?:ed|z)\s+return on equity\s+for\s+the\s+(?:year-to-date|year to date)\s+was\s+([-−]?\d+(?:\.\d+)?)\s+per cent',compact,re.I):
-                hits.append((page,float(m.group(1).replace('−','-'))))
+            for variant in [t,*((positioned or {}).get(page,[]))]:
+                compact=' '.join(variant.translate(DASH_TRANS).split())
+                # Normalize a hyphenated line break but never remove intervening
+                # prose to manufacture a matching cumulative statement.
+                pattern=r'annualis(?:ed|z)\s+return on equity\s+for\s+the\s+year\s*[- ]\s*to\s*[- ]\s*date\s+was\s+([-]?\d+(?:\.\d+)?)\s+per\s+cent'
+                for m in re.finditer(pattern,compact,re.I):
+                    hits.append((page,float(m.group(1))))
+                if re.search(r'return on equity',compact,re.I):
+                    diag.extend((page,m.group()[:280]) for m in re.finditer(r'.{0,50}return on equity.{0,160}',compact,re.I))
         definition='ROE annualised; issuer explicitly reports year-to-date'
     else:
         labels={'Protector':r'Return on equity,?\s*annualis(?:ed|z)',
@@ -172,7 +182,7 @@ def returns(pages,anchor,quarter_values):
             lines=t.splitlines()
             for i,line in enumerate(lines):
                 pattern=labels[c]
-                match=re.search(r'^\s*'+pattern+FOOT+r'\s+(.+?)\s*$',line,re.I)
+                match=re.search(r'^\s*'+pattern+FOOT+r'\s+(?=[-−\d%])(.+?)\s*$',line,re.I)
                 if c=='Fremtind':
                     if not re.search(r'annualisert\s+egenkapitalavkastning\s+justert\s+for',' '.join(lines[max(0,i-7):i+1]),re.I):continue
                     match=re.search(pattern+FOOT+r'\s+(.+?)\s*$',line,re.I)
@@ -225,8 +235,17 @@ def collect(rows,downloader=download):
             raw=downloader(anchor['source_url'])
             if not raw.startswith(b'%PDF-') or hashlib.sha256(raw).hexdigest()!=anchor['source_sha256']:
                 raise ValueError('Issuer document fingerprint differs from verified quarter')
+            positioned={}
             with pdfplumber.open(io.BytesIO(raw)) as pdf:
                 pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
+                if c=='Gjensidige':
+                    for page,text in pages:
+                        if not re.search(r'return on equity|year.to.date',text,re.I):continue
+                        p=pdf.pages[page-1]
+                        variants=[p.extract_text(use_text_flow=True) or '']
+                        for a,b in ((0,.5),(.5,1),(0,.34),(.33,.67),(.66,1),(0,.55),(.45,1),(.30,.70)):
+                            variants.append(p.crop((p.width*a,0,p.width*b,p.height)).extract_text() or '')
+                        positioned[page]=list(dict.fromkeys(variants))
         except (ValueError,OSError,TimeoutError) as exc:
             errors.append((c,'PDF',str(exc)));continue
         tasks=[]
@@ -235,7 +254,7 @@ def collect(rows,downloader=download):
         if c!='Sampo' and 'return_on_equity' not in present:tasks.append(('return',returns))
         for name,parser in tasks:
             try:
-                extracted=parser(pages,anchor,values)
+                extracted=parser(pages,anchor,values,positioned=positioned) if parser is returns else parser(pages,anchor,values)
                 additions.extend(extracted)
                 print('GROUP_YTD_LIVE_VERIFIED',c,name,[(x['year'],x['metric'],x['value'],x['source_page']) for x in extracted],flush=True)
             except ValueError as exc:
