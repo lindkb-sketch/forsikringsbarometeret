@@ -55,7 +55,14 @@ def row_from_reconciliation(item):
              'profit_before_tax':management['profit_before_tax']}
     if not set(REQUIRED).issubset(metrics) or metrics['insurance_revenue']<=0:
         raise ValueError('Incomplete KLP issuer metrics')
-    return {'company':KLP,'year':item['year'],'quarter':q,'scope':'company',
+    extra={}
+    if (item['year'],q)>(2026,3):
+        extra['ytd_metrics']={'insurance_revenue':ytd['insurance_revenue'],
+            'insurance_service_result':ytd['insurance_service_result'],
+            'insurance_revenue_growth':ytd_growth,'combined_ratio':item['reported_ytd_ratios']['combined_ratio'],
+            'loss_ratio':item['reported_ytd_ratios']['loss_ratio'],'expense_ratio':item['reported_ytd_ratios']['expense_ratio'],
+            'solvency_ratio':management['solvency_ratio'],'profit_before_tax':management['profit_before_tax_ytd']}
+    return {'company':KLP,'year':item['year'],'quarter':q,'scope':'company',**extra,
             'currency':'NOK','unit':'NOK million for financial amounts; percent for ratios',
             'source_type':'official_quarterly_report',
             'source_url':docs[0]['source_url'],
@@ -91,7 +98,7 @@ def snapshot_from_rows(rows):
     if not rows:raise ValueError('No verified KLP periods')
     periods=[(p['year'],p['quarter']) for p in rows]
     ordinals=[y*4+q-1 for y,q in periods]
-    if periods[0]!=(2026,1) or ordinals!=list(range(ordinals[0],ordinals[-1]+1)):
+    if any(type(y) is not int or type(q) is not int or not 1<=q<=4 for y,q in periods) or periods[0]!=(2026,1) or ordinals!=list(range(ordinals[0],ordinals[-1]+1)):
         raise ValueError('KLP verified period history incomplete or out of order')
     return {'company':KLP,'status':'verified_official_pdf_reconciled',
             'year':rows[-1]['year'],'quarter':rows[-1]['quarter'],'scope':'company','currency':'NOK',
@@ -99,7 +106,8 @@ def snapshot_from_rows(rows):
             'source_sha256':rows[-1]['source_sha256'],
             'source_pages':rows[-1]['source_pages'],
             'metrics':rows[-1]['metrics'],
-            'periods':rows,'report_archive':ARCHIVE}
+            'periods':rows,'report_archive':ARCHIVE,
+            **({'ytd_metrics':rows[-1]['ytd_metrics']} if 'ytd_metrics' in rows[-1] else {})}
 
 def verify_latest(existing,new):
     if not existing:return
