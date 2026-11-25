@@ -66,7 +66,11 @@ def discover(html, year=2026, periods=PERIODS):
                 url=urljoin(INDEX_URL,href)
                 if approved(url,'KLP Skadeforsikring'):
                     for q in periods:
-                        if re.search(r'kvartalsrapport\s+(?:for\s+)?'+str(q)+r'\.\s*kvartal',label,re.I):
+                        explicit=bool(re.search(r'kvartalsrapport\s+(?:for\s+)?'+str(q)+r'\.\s*kvartal',label,re.I))
+                        annual=(q==4 and bool(re.fullmatch(r'årsrapport(?:\s+'+str(year)+r')?(?:\s*\(PDF\))?',label,re.I)))
+                        # Annual reports are Q4 candidates, NOT automatically isolated-quarter data.
+                        # Only the downstream explicit quarter-column parser can admit them.
+                        if explicit or annual:
                             if url not in self.found[q]:self.found[q].append(url)
             self.anchor=None
     parser=Archive()
