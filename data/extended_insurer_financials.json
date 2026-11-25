@@ -16,7 +16,9 @@
         "loss_ratio": 59.2,
         "expense_ratio": 16.1,
         "insurance_revenue_growth": 1.6,
-        "solvency_ratio": 238.0
+        "solvency_ratio": 238.0,
+        "return_on_equity": 18.0,
+        "profit_before_tax": 544.0
       },
       "unit": "DKK million for financial amounts; percent for ratios",
       "status": "verified_official_presentation_reconciled",
@@ -34,6 +36,29 @@
           "solvency_ratio": 238.0,
           "own_funds": 4685,
           "solvency_capital_requirement": 1970
+        }
+      },
+      "supplemental_pdf_evidence": {
+        "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+        "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+        "source_type": "official_quarterly_report",
+        "year": 2026,
+        "quarter": 3,
+        "scope": "group",
+        "currency": "DKK",
+        "metrics": {
+          "return_on_equity": {
+            "quarter_value": 18.0,
+            "ytd_value": 10.0,
+            "source_page": 3,
+            "definition": "Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation"
+          },
+          "profit_before_tax": {
+            "quarter_value": 544.0,
+            "ytd_value": 907.0,
+            "source_page": 3,
+            "definition": "Group profit/loss before tax, continuing operations; DKK million"
+          }
         }
       }
     },

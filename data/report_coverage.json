@@ -7,7 +7,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 11,
       "candidate_discovery_verified": true,
-      "group_quarter_observations": 62,
+      "group_quarter_observations": 63,
       "group_quarters_with_required_metrics": [
         "2024-Q2",
         "2024-Q3",
@@ -65,7 +65,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 52,
+      "group_quarter_observations": 53,
       "group_quarters_with_required_metrics": [
         "2024-Q3",
         "2024-Q4",
@@ -122,7 +122,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 61,
+      "group_quarter_observations": 62,
       "group_quarters_with_required_metrics": [
         "2024-Q1",
         "2024-Q2",
@@ -226,7 +226,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 47,
       "candidate_discovery_verified": true,
-      "group_quarter_observations": 43,
+      "group_quarter_observations": 44,
       "group_quarters_with_required_metrics": [
         "2025-Q1",
         "2025-Q2",
@@ -273,7 +273,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 37,
+      "group_quarter_observations": 38,
       "group_quarters_with_required_metrics": [
         "2025-Q3",
         "2025-Q4",
@@ -326,7 +326,7 @@
       "direct_pdf_registered": 1,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 46,
+      "group_quarter_observations": 47,
       "group_quarters_with_required_metrics": [
         "2024-Q4",
         "2025-Q3",

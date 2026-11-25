@@ -19,7 +19,18 @@
         "insurance_revenue_growth": 4.266578468662141,
         "return_on_equity": 40.2,
         "solvency_ratio": 189,
-        "profit_before_tax": null
+        "profit_before_tax": 1810.0
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_page": 3,
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_definition": "Reported group profit before tax",
+          "period_type": "quarter",
+          "source_entity": "Fremtind Holding konsern"
+        }
       },
       "revenue_comparable": true
     },
@@ -38,7 +49,18 @@
         "insurance_revenue_growth": 1.4774279363322318,
         "return_on_equity": 34.2,
         "solvency_ratio": 190.0,
-        "profit_before_tax": null
+        "profit_before_tax": 2780.6
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_page": 5,
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_definition": "Reported group profit before tax",
+          "period_type": "quarter",
+          "source_entity": "Gjensidige Group"
+        }
       },
       "revenue_comparable": true
     },
@@ -57,7 +79,18 @@
         "insurance_revenue_growth": 4.088452088452099,
         "return_on_equity": 47,
         "solvency_ratio": 203.0,
-        "profit_before_tax": null
+        "profit_before_tax": 2123.0
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_page": 4,
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_definition": "Reported group profit before tax",
+          "period_type": "quarter",
+          "source_entity": "Tryg Group"
+        }
       },
       "revenue_comparable": true
     },
@@ -87,7 +120,8 @@
           "source_page": 8,
           "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
           "source_definition": "Profit before taxes",
-          "period_type": "quarter"
+          "period_type": "quarter",
+          "source_entity": null
         },
         "solvency_ratio": {
           "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
@@ -121,7 +155,18 @@
         "insurance_revenue_growth": 18.96354504014568,
         "return_on_equity": null,
         "solvency_ratio": null,
-        "profit_before_tax": null
+        "profit_before_tax": 236.548
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "source_page": 6,
+          "source_sha256": "a60f3c8aa5a8a231a044327f5b712b3fb90b59826cc7bdbc88b5b80695fd0f8a",
+          "source_definition": "Resultat før skatt; konsern, NOK 1 000 omregnet til millioner",
+          "period_type": "quarter",
+          "source_entity": "Frende Holding AS konsern"
+        }
       },
       "revenue_comparable": false
     },
@@ -140,7 +185,18 @@
         "insurance_revenue_growth": 9.492774156984973,
         "return_on_equity": 47.9,
         "solvency_ratio": 231.0,
-        "profit_before_tax": null
+        "profit_before_tax": 1120.0
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_page": 5,
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_definition": "Reported group profit before tax",
+          "period_type": "quarter",
+          "source_entity": "Protector Forsikring ASA"
+        }
       },
       "revenue_comparable": true
     },
@@ -159,7 +215,18 @@
         "insurance_revenue_growth": 17.01010101010101,
         "return_on_equity": 14.4,
         "solvency_ratio": 200,
-        "profit_before_tax": null
+        "profit_before_tax": 1372.0
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_page": 17,
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_definition": "Storebrand Group consolidated profit before tax (not insurance segment)",
+          "period_type": "quarter",
+          "source_entity": "Storebrand ASA / consolidated Group"
+        }
       },
       "revenue_comparable": false
     },
@@ -195,9 +262,26 @@
         "loss_ratio": 59.2,
         "expense_ratio": 16.1,
         "insurance_revenue_growth": 1.6,
-        "return_on_equity": null,
+        "return_on_equity": 18.0,
         "solvency_ratio": 238.0,
-        "profit_before_tax": null
+        "profit_before_tax": 544.0
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "return_on_equity": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "source_definition": "Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation",
+          "period_type": "quarter"
+        },
+        "profit_before_tax": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "source_definition": "Group profit/loss before tax, continuing operations; DKK million",
+          "period_type": "quarter"
+        }
       },
       "revenue_comparable": true
     }

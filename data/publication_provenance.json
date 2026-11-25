@@ -6,11 +6,11 @@
     {
       "company": "Fremtind",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 7,
+      "group_quarter_observations": 8,
       "official_source_urls": [
         "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf"
       ],
-      "observation_sha256": "6b3909ca59634b6975e35f84bc55093bbd52ff2675870cf5c63ea372a5b3ecb2",
+      "observation_sha256": "2f3da673cd7beea06b3ef0ab93403e103a5788df78c7958ce9d4882998b306dd",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -19,11 +19,11 @@
     {
       "company": "Gjensidige",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 7,
+      "group_quarter_observations": 8,
       "official_source_urls": [
         "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
       ],
-      "observation_sha256": "f777f7008c97f67822aa1c93479396d66c4261fac90493744d98f7f66312d142",
+      "observation_sha256": "cbaa2120d181f1323378ddd2f0a867fce1a725323756c6282460817080982ea2",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -32,11 +32,11 @@
     {
       "company": "Tryg",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 7,
+      "group_quarter_observations": 8,
       "official_source_urls": [
         "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
       ],
-      "observation_sha256": "0598d0b244902b0272e8d0d6cdef87a5e1231bf2ec16b1185ddf5e16dfc111cd",
+      "observation_sha256": "25280e65180a2667d9438e7b9abae230ee6e8d67acb67aa03cf0b6d61d528fbe",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -58,12 +58,12 @@
     {
       "company": "Frende",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 6,
       "official_source_urls": [
         "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
         "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7"
       ],
-      "observation_sha256": "9d86e4bd1ff419a1f481b1f69819a24953575a81d0c87902d12573b1fb2354cf",
+      "observation_sha256": "077bfc43a3bb03759644ce1e4d5a3a99c36efbcaae7acb22448ef86407c66886",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -72,11 +72,11 @@
     {
       "company": "Protector",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 7,
+      "group_quarter_observations": 8,
       "official_source_urls": [
         "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf"
       ],
-      "observation_sha256": "07f8e802eb7993c9856bfa48f7ee18e4bb66b90783941bc96a2da76dd614032f",
+      "observation_sha256": "9d99948978885731a644164240657a0cf6ac99cb941bf7e93da7a65fef0ed514",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
@@ -85,11 +85,11 @@
     {
       "company": "Storebrand",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 7,
+      "group_quarter_observations": 8,
       "official_source_urls": [
         "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf"
       ],
-      "observation_sha256": "a9eb468f7b7b6b67e27896bb1bf9b450458cb578ca91e2324a8158bdb767d6e4",
+      "observation_sha256": "759279dcf18d2b035bc44ee5ad74123dd56c5f01fef555086bc745cabe56d905",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,
