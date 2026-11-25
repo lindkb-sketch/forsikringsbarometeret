@@ -68,7 +68,7 @@ def column_layout(text,year,q):
 def numeric_values(tail,count):
     tail=re.sub(r'(?<=\d),(?=\d{1,2}(?:\s|$))','.',tail)
     values=tail.split()
-    if len(values)!=count or not all(NUM.fullmatch(x) for x in values):
+    if len(values)!=count or not all(re.fullmatch(r'-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?',x) for x in values):
         raise ValueError('Unexpected Alm. Brand numeric columns')
     return [Decimal(x.replace(',','')) for x in values]
 
@@ -142,7 +142,9 @@ def verify_report(texts,url,raw,year,quarter,regions=None):
         source_pages={k:j+1 if k=='solvency_ratio' else i+1 for k in current},
         return_on_equity_definition='Annualised Group return on equity after tax (% p.a.)',
         return_on_equity_ytd=ytd['return_on_equity'],profit_before_tax_ytd=ytd['profit_before_tax'],
-        issuer_page_url=ARCHIVE)
+        issuer_page_url=ARCHIVE,
+        growth_evidence={'quarter_prior':float(rows['insurance_revenue'][1]),'ytd_prior':float(rows['insurance_revenue'][pi])},
+        ratio_evidence={'quarter':{k:float(v[0]) for k,v in rows.items()},'ytd':{k:float(v[yi]) for k,v in rows.items()}})
     return result
 
 def presentation_evidence(texts,url,raw,year,quarter,solvency):
@@ -199,6 +201,20 @@ def validate_rolling(row):
         or type(em.get('own_funds')) not in (int,float) or type(em.get('solvency_capital_requirement')) not in (int,float)
         or em.get('solvency_capital_requirement',0)<=0 or round(em['own_funds']/em['solvency_capital_requirement']*100)!=em.get('solvency_ratio')):
         errors.append('Alm. Brand rolling independent presentation evidence invalid')
+    evidence=row.get('ratio_evidence',{});growth=row.get('growth_evidence',{})
+    for period_kind,values,prior_key in (('quarter',metrics,'quarter_prior'),('ytd',ytd,'ytd_prior')):
+        e=evidence.get(period_kind,{})
+        try:
+            rev=e['insurance_revenue'];claims=abs(e['claims_expenses']);cost=abs(e['operating_expenses']);reins=abs(e['reinsurance']);prior=growth[prior_key]
+            if (rev<=0 or prior<=0 or abs(rev-claims-cost-reins-e['insurance_service_result'])>1.5
+                or any(values[k]!=e[k] for k in ('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'))
+                or abs((claims+reins)/rev*100-values['loss_ratio'])>0.20
+                or abs(cost/rev*100-values['expense_ratio'])>0.20
+                or abs((claims+reins+cost)/rev*100-values['combined_ratio'])>0.20
+                or abs((rev/prior-1)*100-values['insurance_revenue_growth'])>1e-6):
+                raise ValueError('Mismatch')
+        except (TypeError,KeyError,ValueError,ZeroDivisionError):
+            errors.append('Alm. Brand rolling '+period_kind+' metric reconciliation invalid')
     history=row.get('periods')
     if history is not None:
         try:
