@@ -37,6 +37,16 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_nine_issuer_dual_audit.py' -v
       - name: Download and audit current issuer documents without publishing financial values
         run: python scripts/audit_nine_issuer_documents.py
+      - name: Require both Alm. Brand documents discovered from its own investor portal
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads(Path('data/nine_issuer_dual_audit.json').read_text())
+          alm=next(x for x in result['companies'] if x['company']=='Alm. Brand')
+          if not (alm['issuer_report_verified'] and alm['issuer_presentation_verified']):
+              raise SystemExit('Alm. Brand: primary-source report or presentation is still unverified')
+          PY
       - name: Save actual issuer documents and audit evidence
         if: always()
         uses: actions/upload-artifact@v4

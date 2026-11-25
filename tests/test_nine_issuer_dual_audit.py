@@ -161,6 +161,37 @@ Combined ratio 75.3 82.2'''
         self.assertTrue(verify_pdf_identity('Protector',pages,2026,3,'results_presentation'))
         with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages[:-1]+['Mentions Protector Forsikring ASA'],2026,3,'results_presentation')
         with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages,2026,2,'results_presentation')
+    def test_alm_issuer_archive_discovers_both_types_and_rejects_other_periods(self):
+        from audit_nine_issuer_documents import alm_archive_documents
+        page='https://investorrelations.almbrand.dk/English/financials/default.aspx'
+        prefix='https://s29.q4cdn.com/228553818/files/content_files/'
+        markup=''.join(f'<a href="{prefix}{name}">{label}</a>' for name,label in [
+            ('AB-GROUP-3Q-2026.pdf','Report'),
+            ('Investor-presentation-Q3-2026.pdf','Presentation'),
+            ('AB-GROUP-2Q-2026.pdf','Report'),
+            ('Investor-presentation-Q3-2025.pdf','Presentation'),
+            ('Preliminary-statement-Q3-2026.pdf','Report'),
+            ('Roadshow-presentation-Q3-2026.pdf','Presentation'),
+            ('Annual-report-2026.pdf','Report')])
+        markup+='<a href="https://evil.test/Investor-presentation-Q3-2026.pdf">Presentation</a>'
+        markup+='<a href="https://s29.q4cdn.com/999999/files/AB-GROUP-3Q-2026.pdf">Report</a>'
+        docs=alm_archive_documents(markup,page,2026,3)
+        self.assertEqual({(d['document_type'],d['url']) for d in docs},{
+            ('quarterly_report',prefix+'AB-GROUP-3Q-2026.pdf'),
+            ('results_presentation',prefix+'Investor-presentation-Q3-2026.pdf')})
+        self.assertTrue(all(d['origin']==page and d['exchange'] is False for d in docs))
+        self.assertEqual(alm_archive_documents(markup,page,2027,3),[])
+        self.assertEqual(alm_archive_documents(markup,'https://evil.test/financials',2026,3),[])
+        self.assertEqual(alm_archive_documents(markup,page,2026,2)[0]['url'],prefix+'AB-GROUP-2Q-2026.pdf')
+    def test_alm_danish_archive_and_future_period(self):
+        from audit_nine_issuer_documents import alm_archive_documents
+        page='https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx'
+        prefix='https://s29.q4cdn.com/228553818/files/doc_financials/2027/q1/'
+        markup=f'<h2>Q1 2027</h2><a href="{prefix}r.pdf">Rapport</a><a href="{prefix}Investor-pr%C3%A6sentation-Q1-2027.pdf">Præsentation</a>'
+        markup+=f'<a href="{prefix}Investor-presentation-Q1-2026.pdf">Presentation</a>'
+        docs=alm_archive_documents(markup,page,2027,1)
+        self.assertEqual({d['document_type'] for d in docs},{'quarterly_report','results_presentation'})
+        self.assertEqual(len(docs),2)
 if __name__=='__main__':unittest.main()
 
 

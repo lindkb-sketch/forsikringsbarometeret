@@ -60,7 +60,8 @@ KNOWN_PRESENTATIONS={
 }
 ISSUER_WEB_HOSTS={
  'Gjensidige':{'gjensidige.com','www.gjensidige.com'},
- 'Protector':{'investor.protectorforsikring.no','protectorforsikring.no','www.protectorforsikring.no'}
+ 'Protector':{'investor.protectorforsikring.no','protectorforsikring.no','www.protectorforsikring.no'},
+ 'Alm. Brand':{'investorrelations.almbrand.dk','almbrand.dk'}
 }
 
 def issuer_web_page(company,url):
@@ -229,7 +230,7 @@ def issuer_detail_links(company,markup,index,y,q):
         if period_label(descriptor,y,q) and not EXCLUDE.search(descriptor):out.append(url)
     return list(dict.fromkeys(out))[:8]
 
-def rendered_issuer_html(company,url):
+def rendered_issuer_html(company,url,y,q):
     """Read dynamically rendered issuer tables only when static HTML is insufficient."""
     if not issuer_web_page(company,url):raise ValueError('Non-issuer browser URL')
     from playwright.sync_api import sync_playwright,TimeoutError as PlaywrightTimeout
@@ -241,6 +242,16 @@ def rendered_issuer_html(company,url):
             try:
                 if company=='Gjensidige':
                     page.wait_for_selector('table a[href], a[href*="releaseid="]',timeout=12000)
+                elif company=='Alm. Brand':
+                    # The Q4 investor portal inserts document links asynchronously.
+                    # Wait for both correctly dated candidates, not a generic PDF
+                    # or a navigation link. Return the actual DOM, never guess URLs.
+                    for _ in range(24):
+                        if not issuer_web_page(company,page.url):
+                            raise ValueError('Browser left issuer website')
+                        kinds={d['document_type'] for d in alm_archive_documents(page.content(),page.url,y,q)}
+                        if kinds=={'quarterly_report','results_presentation'}:break
+                        page.wait_for_timeout(500)
                 else:
                     page.wait_for_selector('a[href*="/pressreleases/"], a[href*="storage.mfn.se"]',timeout=12000)
             except PlaywrightTimeout:pass
@@ -248,7 +259,38 @@ def rendered_issuer_html(company,url):
             return page.content(),page.url
         finally:browser.close()
 
+ALM_REPORT=re.compile(r'\b(?:AB\s+GROUP|interim\s+report|quarterly\s+report|delårsrapport|kvartalsrapport|annual\s+report|årsrapport)\b',re.I)
+ALM_EXCLUDE=re.compile(r'\b(?:preliminary|preliminær|announcement|selskabsmeddelelse|press\s+release|webcast|key\s+figures|nøgletal|SFCR|solvency|parent\s+company|roadshow|seminar|conference|capital\s+markets?\s+day|investor\s+meeting|consensus|sustainability)\b',re.I)
+
+def alm_archive_documents(markup,index,y,q):
+    """Accept actual issuer-linked PDFs with explicit document type and period."""
+    if not issuer_web_page('Alm. Brand',index):return []
+    parser=Anchors();parser.feed(markup);found={}
+    for href,label,heading in parser.links:
+        if not href:continue
+        url=urljoin(index,html.unescape(href))
+        path=urlsplit(url).path
+        if not trusted('Alm. Brand',url) or not path.lower().endswith('.pdf'):continue
+        name=normalize(unquote(path.rsplit('/',1)[-1]).replace('_',' ').replace('-',' '))
+        descriptor=normalize(label+' '+name)
+        if EXCLUDE.search(descriptor) or ALM_EXCLUDE.search(descriptor):continue
+        is_presentation=bool(PRESENTATION.search(descriptor))
+        is_report=bool(ALM_REPORT.search(descriptor) or re.fullmatch(r'(?:Report|Rapport)(?:\s*\(opens in new window\))?',label,re.I))
+        if is_presentation==is_report:continue
+        # Do not let a current heading turn an explicitly older filename into
+        # a current document. A generic link needs a dated enclosing heading.
+        has_period=bool(re.search(r'\b(?:Q\s*[1-4]|[1-4]\s*Q|[1-4]\.?\s*(?:quarter|kvartal))[\s/-]*20\d{2}\b|\b20\d{2}[\s/-]*Q\s*[1-4]\b',descriptor,re.I))
+        explicit=period_label(descriptor,y,q)
+        if not explicit and (has_period or not period_label(heading,y,q)):continue
+        if not explicit and re.search(r'\b20\d{2}\b',descriptor) and str(y) not in descriptor:continue
+        if is_report and q!=4 and re.search(r'\b(?:annual\s+report|årsrapport)\b',descriptor,re.I):continue
+        kind='results_presentation' if is_presentation else 'quarterly_report'
+        found[(kind,url)]=dict(url=url,document_type=kind,origin=index,label=label or name,
+                              exchange=False,origin_kind='issuer_archive_or_release')
+    return list(found.values())
+
 def archive_links(company,markup,index,y,q):
+    if company=='Alm. Brand':return alm_archive_documents(markup,index,y,q)
     parser=Anchors();parser.feed(markup);results=gjensidige_quarter_table(markup,index,y,q) if company=='Gjensidige' else []
     for href,label,heading in parser.links:
         url=urljoin(index,html.unescape(href))
@@ -406,6 +448,12 @@ def verify_document(company,doc,y,q,feed=None):
         # the independent solvency parser below still has to verify its table.
         pinned_alm=(company=='Alm. Brand' and kind=='results_presentation' and doc.get('expected_sha256')==[hashlib.sha256(raw).hexdigest()] and urlsplit(url).hostname=='s29.q4cdn.com' and period_label(url,y,q))
         if not pinned_alm:verify_pdf_identity(company,texts,y,q,kind)
+        if company=='Alm. Brand' and kind=='quarterly_report' and doc.get('origin_kind','').startswith('issuer_'):
+            # Reject a results announcement masquerading as the full report.
+            # Reuse the existing issuer's report parser and financial gates.
+            from rolling_alm_brand_reports import read_report,verify_report
+            report_texts,regions=read_report(raw)
+            verify_report(report_texts,final,raw,y,q,regions)
         fmt='pdf'
     digest=hashlib.sha256(raw).hexdigest()
     expected=doc.get('expected_sha256',[])
@@ -435,14 +483,15 @@ def collect_company(company,y,q,feed,extended):
         if not render:checked.add(url)
         try:
             if render:
-                markup,final=rendered_issuer_html(company,url)
+                markup,final=rendered_issuer_html(company,url,y,q)
             else:
                 raw,final=fetch(company,url,limit=5_000_000)
                 markup=raw.decode('utf-8','replace')
             found=archive_links(company,markup,final,y,q)
             details=issuer_detail_links(company,markup,final,y,q)
             indexes.append(dict(url=final,status='checked',method='rendered_issuer_page' if render else 'issuer_html',
-                                presentation_candidates=len(found),release_candidates=len(details)))
+                                presentation_candidates=sum(d['document_type']=='results_presentation' for d in found),
+                                report_candidates=sum(d['document_type']=='quarterly_report' for d in found),release_candidates=len(details)))
             return found,details
         except Exception as exc:
             indexes.append(dict(url=url,status='unavailable',method='rendered_issuer_page' if render else 'issuer_html',error=str(exc)[:240]))
@@ -451,17 +500,21 @@ def collect_company(company,y,q,feed,extended):
         found,details=discover_index(template);docs.extend(found);detail_urls.extend(details)
     for url in dict.fromkeys([*detail_urls,*ISSUER_RELEASE_PAGES.get((company,y,q),())]):
         found,_=discover_index(url);docs.extend(found)
-    def primary_candidate():
-        return any(d['document_type']=='results_presentation' and d.get('origin_kind','').startswith('issuer_') for d in docs)
+    def primary_candidate(kind='results_presentation'):
+        return any(d['document_type']==kind and d.get('origin_kind','').startswith('issuer_') for d in docs)
+    def needs_render():
+        if company=='Alm. Brand':
+            return not (primary_candidate('quarterly_report') and primary_candidate())
+        return not primary_candidate()
     # Do not fall back to a stock exchange just because the issuer page
     # needs JavaScript. Only render the missing company's relevant index.
-    if company in ('Gjensidige','Protector') and not primary_candidate():
-        templates=INDEXES[company][:2] if company=='Gjensidige' else [INDEXES[company][-1]]
+    if company in ('Gjensidige','Protector','Alm. Brand') and needs_render():
+        templates=INDEXES[company][:2] if company in ('Gjensidige','Alm. Brand') else [INDEXES[company][-1]]
         for template in templates:
             found,details=discover_index(template,render=True);docs.extend(found)
             for url in details:
                 found,_=discover_index(url);docs.extend(found)
-            if primary_candidate():break
+            if not needs_render():break
     # A stock-exchange attachment may be used only in an expressly enabled
     # diagnostic fallback; normal report/presentation discovery is issuer-only.
     if not primary_candidate() and os.environ.get('BAROMETER_ALLOW_EXCHANGE_DOCUMENT_FALLBACK')=='1':
@@ -562,12 +615,13 @@ def collect_company(company,y,q,feed,extended):
     presentation_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='results_presentation'}
     both=bool(report_hashes and presentation_hashes-report_hashes)
     status='conflicting_metric_evidence' if any(m['status']=='conflict' for m in matches) else 'partial_metric_reconciliation' if both and matches else 'both_documents_read_metrics_not_certified' if both else 'presentation_not_verified' if not presentation_found else 'report_not_verified'
+    issuer_report_verified=any(d['status']=='verified_document' and d['document_type']=='quarterly_report' and d.get('origin_kind','').startswith('issuer_') for d in verified)
     issuer_presentation_verified=any(d['status']=='verified_document' and d['document_type']=='results_presentation' and d.get('origin_kind','').startswith('issuer_') for d in verified)
     policy=presentation_policy(company,verified)
     if policy['presentation_exception']:
         status='report_only_verified' if report_hashes else 'report_only_not_verified'
     return dict(company=company,year=y,quarter=q,report_verified=bool(report_hashes),presentation_verified=presentation_found,
-                **policy,issuer_presentation_verified=issuer_presentation_verified,
+                **policy,issuer_report_verified=issuer_report_verified,issuer_presentation_verified=issuer_presentation_verified,
                 both_distinct_documents_verified=both,metric_reconciliation_status=status,
                 archives_checked=indexes,exchange_announcements=news,documents=verified,cross_document_matches=matches,errors=errors)
 
@@ -600,6 +654,7 @@ def audit(feed,extended,comparison):
     exceptions=[x for x in result if x['presentation_exception']]
     out={'schema_version':2,'purpose':'issuer_document_and_metric_verification',
          'report_verified_count':sum(x['report_verified'] for x in result),
+         'issuer_report_verified_count':sum(x['issuer_report_verified'] for x in result),
          'presentation_required_count':len(required),
          'presentation_verified_count':sum(x['presentation_verified'] for x in required),
          'issuer_presentation_verified_count':sum(x['issuer_presentation_verified'] for x in required),
@@ -620,7 +675,7 @@ def main():
     report=audit(load('verified_financial_feed.json'),load('extended_insurer_financials.json'),load('nine_insurer_comparison.json'))
     atomic_write(OUT,report)
     for item in report['companies']:
-        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','issuer_presentation_verified','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
+        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','issuer_report_verified','issuer_presentation_verified','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
         for d in item['documents']:print('DUAL_DOCUMENT',item['company'],json.dumps(d,ensure_ascii=False),flush=True)
         for m in item['cross_document_matches']:print('DUAL_METRIC_MATCH',item['company'],json.dumps(m,ensure_ascii=False),flush=True)
         print('DUAL_METRIC_INVENTORY',item['company'],json.dumps(item['metric_inventory'],ensure_ascii=False),flush=True)
@@ -629,6 +684,7 @@ def main():
         'distinct_pairs':sum(x['both_distinct_documents_verified'] for x in report['companies']),
         'presentations_expected':report['presentation_required_count'],
         'issuer_presentations_verified':report['issuer_presentation_verified_count'],
+        'issuer_reports_verified':report['issuer_report_verified_count'],
         'report_only_issuers':report['report_only_issuers'],
         'all_required_documents_verified':report['all_required_documents_verified'],
         'metric_matches':sum(m['status']=='match' for x in report['companies'] for m in x['cross_document_matches']),
