@@ -54,5 +54,18 @@ class KPICompletenessTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unknown metrics'):
             build(data)
 
+    def test_totals_reconcile_with_reporting_exceptions(self):
+        data = self.fixture()
+        data['companies'][0]['metrics']['profit_before_tax'] = None
+        data['companies'][4]['metrics']['return_on_equity'] = None
+        data['companies'][4]['metrics']['solvency_ratio'] = None
+        data['companies'][7]['metrics']['return_on_equity'] = None
+        report = build(data)
+        self.assertEqual(report['expected_metric_count'], 78)
+        self.assertEqual(report['present_metric_count'], 77)
+        self.assertEqual(report['missing_metric_count'], 1)
+        self.assertEqual(report['reporting_exception_count'], 3)
+        self.assertEqual(report['present_metric_count'] + report['missing_metric_count'], report['expected_metric_count'])
+
 if __name__ == '__main__':
     unittest.main()
