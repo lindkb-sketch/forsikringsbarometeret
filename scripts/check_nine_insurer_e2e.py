@@ -116,8 +116,16 @@ def check(feed,extended,comparison,gaps):
         if company=='KLP Skadeforsikring':
             if source.get('metrics',{}).get('return_on_equity') is not None:
                 errors.append('KLP: unverified ROE must remain absent')
-            if len(source.get('periods',[]))!=3:
-                errors.append('KLP: three PDF quarter reconciliations required')
+            if len(source.get('periods',[]))<3:
+                errors.append('KLP: historical PDF quarter reconciliations required')
+            elif all(isinstance(p,dict) and p.get('year') for p in source['periods']):
+                from import_klp_production import snapshot_from_rows
+                try:
+                    snapshot=snapshot_from_rows(source['periods'])
+                    if (snapshot['year'],snapshot['quarter'],snapshot['metrics'])!=(source.get('year'),source.get('quarter'),source.get('metrics')):
+                        raise ValueError('Latest snapshot mismatch')
+                except (ValueError,KeyError,TypeError):
+                    errors.append('KLP: invalid rolling PDF quarter history')
     return errors
 
 def main():
