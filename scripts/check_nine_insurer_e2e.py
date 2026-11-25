@@ -105,6 +105,8 @@ def check(feed,extended,comparison,gaps):
             if item.get('metrics',{}).get(metric)!=source.get('metrics',{}).get(metric):
                 errors.append(company+': metric mismatch '+metric)
         if company=='Alm. Brand':
+            from import_alm_brand_supplemental import validate_supplemental
+            errors.extend(validate_supplemental(source))
             ev=source.get('presentation_evidence',{})
             if (source.get('metrics',{}).get('solvency_ratio')!=238
                 or ev.get('source_page')!=19
