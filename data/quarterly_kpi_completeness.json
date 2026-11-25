@@ -3,6 +3,10 @@
   "purpose": "non_destructive_latest_quarter_kpi_gap_inventory",
   "all_nine_metrics_present": false,
   "all_nine_unattended_extraction_verified": false,
+  "expected_metric_count": 78,
+  "present_metric_count": 67,
+  "missing_metric_count": 11,
+  "reporting_exception_count": 3,
   "note": "Missing values must remain null until validated against issuer sources. This inventory is not proof of PDF extraction, source comparison, automated scheduled ingestion or investor readiness.",
   "companies": [
     {
