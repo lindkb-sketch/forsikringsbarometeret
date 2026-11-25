@@ -47,6 +47,11 @@ class DeployConcurrencyTests(unittest.TestCase):
         self.assertIn("'data/stock_prices.json', 'data/broker_commentary.json', 'data/official_news.json'", script)
         self.assertIn('FINANCIAL_PUBLISH_REBASE stock/broker/news changes retained', script)
 
+    def test_stock_deployer_can_read_actions_artifacts(self):
+        source = (WORKFLOWS / 'stock-prices.yml').read_text(encoding='utf-8')
+        permissions = source.split('permissions:', 1)[1].split('jobs:', 1)[0]
+        self.assertRegex(permissions, r'(?m)^  actions: read\\b')
+
     def test_pages_artifact_uses_github_required_name(self):
         # deploy-pages queries the artifact API using a Pages-specific lookup.
         # Custom artifact names upload successfully but fail deployment.
