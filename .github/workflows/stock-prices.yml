@@ -102,6 +102,11 @@ jobs:
         with:
           name: github-pages
           path: .
+      - name: Wait for GitHub Pages artifact API visibility
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/wait_pages_artifact.py
       - uses: actions/deploy-pages@v4
         if: steps.changes.outputs.changed == 'true'
         id: deployment
