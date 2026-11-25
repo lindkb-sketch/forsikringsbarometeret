@@ -124,7 +124,7 @@ def parse_pdf(pages,anchor,digest):
         except ValueError:continue
     if len(candidates)!=1:raise ValueError('Pre-tax financial columns ambiguous: '+repr(lines[index]))
     vals,label=candidates[0]
-    return [_observation(anchor,'quarter',vals[0],page,digest,label.split('  ')[0] if '  ' in label else 'Reported group profit before tax'),
+    return [_observation(anchor,'quarter',vals[0],page,digest,'Reported group profit before tax'),
             _observation(anchor,'ytd',vals[0] if q==1 else vals[2],page,digest,'Reported group profit before tax; year-to-date')]
 
 def parse_storebrand(pages,anchor,digest):
@@ -172,6 +172,11 @@ def parse_frende(html,anchor):
 
 def choose_anchors(rows):
     candidates={}
+    latest_by_url={}
+    for r in rows:
+        if r.get('scope')=='group' and r.get('metric')=='insurance_revenue' and r.get('period_type')=='quarter' and r.get('source_url'):
+            key=(r['company'],r['source_url'])
+            latest_by_url[key]=max(latest_by_url.get(key,(0,0)),(r['year'],r['quarter']))
     for r in rows:
         if (r.get('company') not in COMPANIES or r.get('scope')!='group'
             or r.get('metric')!='insurance_revenue' or r.get('period_type')!='quarter'
@@ -179,7 +184,9 @@ def choose_anchors(rows):
             or r.get('source_type')!='official_quarterly_report' or r.get('year',0)<2025):
             continue
         # Avoid assigning comparatives from a more recent document to earlier periods.
-        if r.get('source_document_period')!=f"Q{r['quarter']} {r['year']}":continue
+        period=r.get('source_document_period')
+        if period and period!=f"Q{r['quarter']} {r['year']}":continue
+        if not period and latest_by_url.get((r['company'],r['source_url']))!=(r['year'],r['quarter']):continue
         key=(r['company'],r['year'],r['quarter'])
         candidates.setdefault(key,[]).append(r)
     return [v[0] for _,v in sorted(candidates.items()) if len(v)==1]
