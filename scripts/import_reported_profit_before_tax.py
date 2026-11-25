@@ -143,7 +143,9 @@ def parse_storebrand(pages,anchor,digest):
                 vals,_=_row([lines[i]],LABELS['Storebrand'],count)
                 hits.append((page,vals))
             except ValueError:continue
-    if len(hits)!=1:raise ValueError('Consolidated Storebrand Group pre-tax quarter/HIÅ table not uniquely verified')
+    if len(hits)!=1:
+        diagnostic=[(p,[l.strip()[:200] for l in t.splitlines() if re.search(r'profit before tax|result before tax|income statement',l,re.I)][:7]) for p,t in pages if re.search(r'profit before tax|result before tax',t,re.I)]
+        raise ValueError('Consolidated Storebrand Group pre-tax quarter/HIÅ table not uniquely verified: '+repr(diagnostic[:5]))
     page,vals=hits[0]
     return [_observation(anchor,'quarter',vals[0],page,digest,'Storebrand Group consolidated profit before tax (not insurance segment)'),
             _observation(anchor,'ytd',vals[0] if q==1 else vals[2],page,digest,'Storebrand Group consolidated profit before tax; HIÅ (not insurance segment)')]
@@ -202,14 +204,21 @@ def ingest(anchor):
         pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
     return parse_pdf(pages,anchor,digest)
 
-def run(path=DATA):
+def run(path=DATA, historical=False):
     data=json.loads(path.read_text(encoding='utf-8'))
     rows=data['observations']
     if not audit(data)['ok']:raise ValueError('Baseline financial audit failed')
     existing={(r['company'],r['year'],r['quarter'],r['period_type']) for r in rows
               if r.get('scope')=='group' and r.get('metric')=='profit_before_tax'}
     added=[];missing=[]
-    for anchor in choose_anchors(rows):
+    anchors=choose_anchors(rows)
+    if not historical:
+        latest={}
+        for anchor in anchors:
+            c=anchor['company']
+            if c not in latest or (anchor['year'],anchor['quarter'])>(latest[c]['year'],latest[c]['quarter']):latest[c]=anchor
+        anchors=list(latest.values())
+    for anchor in anchors:
         key=(anchor['company'],anchor['year'],anchor['quarter'])
         if all((*key,p) in existing for p in ('quarter','ytd')):continue
         try:
@@ -228,4 +237,9 @@ def run(path=DATA):
     print('PRETAX_IMPORT',json.dumps({'added':len(added),'unverified':missing},ensure_ascii=False),flush=True)
     return added
 
-if __name__=='__main__':run()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--historical',action='store_true')
+    args=parser.parse_args()
+    run(historical=args.historical)
