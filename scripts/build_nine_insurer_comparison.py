@@ -31,6 +31,9 @@ def build(feed, extended):
                       else 'issuer_announcement_only' if state=='verified_issuer_announcement'
                       else 'unverified_missing')
             currency = item.get('currency') if verified else None
+            if verified and company=='Alm. Brand' and state=='verified_official_pdf_reconciled':
+                for key,page in item.get('source_pages',{}).items():
+                    metric_sources[key]={'source_url':item.get('source_url'),'source_sha256':item.get('source_sha256'),'source_page':page,'period_type':'quarter','source_definition':item.get('return_on_equity_definition') if key=='return_on_equity' else 'Alm. Brand consolidated issuer report'}
             if verified and company=='Alm. Brand':
                 evidence=item.get('supplemental_pdf_evidence',{})
                 for key,record in evidence.get('metrics',{}).items():
