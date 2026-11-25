@@ -94,6 +94,8 @@ jobs:
         run: python scripts/update_extended_insurers.py || echo "::warning::Alm Brand source temporarily unavailable; retaining last verified snapshot"
       - name: Import Alm Brand Q3 official presentation solvency (fail closed)
         run: python scripts/import_alm_brand_presentation.py
+      - name: Reconcile Alm Brand ROE and pre-tax profit with original quarterly PDF
+        run: python scripts/import_alm_brand_supplemental.py
       - name: Import real KLP Q1-Q3 PDF financial metrics after independent HIÅ reconciliation
         run: python scripts/import_klp_production.py
       - name: Verify KLP source provenance before publication
