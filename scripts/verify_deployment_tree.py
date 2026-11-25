@@ -22,6 +22,7 @@ ESSENTIAL=(
  'data/strategic_market.json',
  'data/investor_readiness.json',
  'data/nine_insurer_comparison.json',
+ 'data/quarterly_kpi_completeness.json',
  'data/frende_skade_reports.json',
  'data/frende_skade_financials.json',
  'data/profitability_coverage.json',
