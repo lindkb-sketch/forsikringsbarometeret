@@ -137,7 +137,8 @@ def advance(existing,*,today=None,fetcher=fetch_archive,downloader=download,extr
             if not q3_raw.startswith(b'%PDF-') or q3_sha!=previous['source_sha256']:
                 raise ValueError('KLP previous approved Q3 PDF has changed')
             annual=parse_annual(texts,year,url,digest,views=annual_views(raw,texts) if extractor is pages else None)
-            q3=parse_q3(extractor(q3_raw),year,q3_url,q3_sha)
+            q3_texts=extractor(q3_raw)
+            q3=parse_q3(q3_texts,year,q3_url,q3_sha,views=annual_views(q3_raw,q3_texts) if extractor is pages else None)
             row=derive(annual,q3)
             errors=validate_derived(row,previous)
             if errors:raise ValueError('; '.join(errors))
