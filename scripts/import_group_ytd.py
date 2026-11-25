@@ -255,7 +255,16 @@ def run(path=DATA):
                 raise ValueError('Conflicting verified HIÅ source '+repr(k))
             continue
         rows.append(row);index[k]=row;n+=1
-    if n:
+    # Correct the legacy label only after the same document explicitly states
+    # the YTD value. A distinct reported isolated-quarter figure is retained.
+    migrated=0
+    for row in added:
+        if row['company']!='Gjensidige' or row['metric']!='return_on_equity' or row['period_type']!='ytd':continue
+        old=index.get((row['company'],row['year'],row['quarter'],'group','quarter','return_on_equity'))
+        if old and old.get('source_sha256')==row['source_sha256'] and old['value']==row['value'] and old.get('source_definition')=='ROE annualised':
+            rows.remove(old);migrated+=1
+            print('GJENSIDIGE_LEGACY_ROE_RECLASSIFIED_YTD',row['year'],row['quarter'],row['value'],flush=True)
+    if n or migrated:
         if not audit(data)['ok']:raise ValueError('New HIÅ rows failed financial audit')
         atomic_write(path,data)
     for c,name,error in errors:
