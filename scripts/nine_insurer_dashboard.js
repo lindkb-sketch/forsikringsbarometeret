@@ -8,7 +8,7 @@
     ['loss_ratio','Skadeprosent','percent'],
     ['expense_ratio','Kostnadsprosent','percent'],
     ['combined_ratio','Combined ratio','percent'],
-    ['return_on_equity','ROE / ROOF','percent'],
+    ['return_on_equity','ROE / ROOF / RoEOF','percent'],
     ['solvency_ratio','Solvensgrad','percent'],
     ['profit_before_tax','Resultat før skatt','amount'],
   ];
@@ -91,7 +91,9 @@
         if(key==='return_on_equity' && (company.metrics?.[key]===null || company.metrics?.[key]===undefined)){
           td(row,'—');
         }else{
-          td(row,fmt(company.metrics?.[key],kind));
+          const label=company.metric_periods?.[key]==='ytd'?' (HIÅ)':'';
+          const cell=td(row,fmt(company.metrics?.[key],kind)+label);
+          if(company.metric_sources?.[key]?.source_definition)cell.title=company.metric_sources[key].source_definition;
         }
       }
       const status={
