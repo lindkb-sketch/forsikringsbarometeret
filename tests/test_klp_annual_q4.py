@@ -110,6 +110,15 @@ class KLPAnnualQ4Tests(unittest.TestCase):
         bad=annual_fixture();bad[-1]=bad[-1].replace('ingen nye eller endrede','nye og endrede')
         with self.assertRaisesRegex(ValueError,'policy'):parse_annual(bad,2025,ANNUAL,A_SHA)
 
+    def test_policy_columns_require_both_explicit_disclosures(self):
+        from klp_annual_q4 import policy_pages
+        texts=['Note 2 Informasjon om vesentlige regnskapsprinsipp\nIFRS Accounting Standards og årsregnskapsforskriften.\nDet er ingen nye X irrelevant spaltetekst eller endrede IFRS']
+        views={0:['IFRS Accounting Standards og årsregnskapsforskriften.',
+                   'Det er ingen nye eller endrede IFRS Accounting Standard eller IFRIC-fortolkninger som er trådt i kraft for 2025 årsregnskapet som påvirker foretakets årsregnskap i vesentlig grad.']}
+        self.assertEqual(policy_pages(texts,True,views=views,year=2025),[1])
+        with self.assertRaises(ValueError):policy_pages(texts,True,views=views,year=2026)
+        with self.assertRaises(ValueError):policy_pages(texts,True,views={0:views[0][:1]},year=2025)
+
     def test_owner_approved_fallback_in_rolling_pipeline(self):
         from import_klp_production import row_from_reconciliation,snapshot_from_rows
         from test_extended_rolling_periods import klp_fixture,base_alm
@@ -149,7 +158,7 @@ class KLPAnnualQ4Tests(unittest.TestCase):
         a_raw=download(a_url,'KLP Skadeforsikring');q_raw=download(q_url,'KLP Skadeforsikring')
         a_text=pages(a_raw);q_text=pages(q_raw)
         annual=parse_annual(a_text,2025,a_url,hashlib.sha256(a_raw).hexdigest(),annual_views(a_raw,a_text))
-        q3=parse_q3(q_text,2025,q_url,hashlib.sha256(q_raw).hexdigest())
+        q3=parse_q3(q_text,2025,q_url,hashlib.sha256(q_raw).hexdigest(),views=annual_views(q_raw,q_text))
         row=derive(annual,q3)
         expected(row,self)
         print('KLP_ACTUAL_2025_Q4_RESIDUAL_VERIFIED',row['metrics'],row['source_documents'],flush=True)
