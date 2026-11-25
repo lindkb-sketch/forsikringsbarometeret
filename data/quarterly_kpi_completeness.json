@@ -4,8 +4,8 @@
   "all_nine_metrics_present": false,
   "all_nine_unattended_extraction_verified": false,
   "expected_metric_count": 78,
-  "present_metric_count": 67,
-  "missing_metric_count": 11,
+  "present_metric_count": 70,
+  "missing_metric_count": 8,
   "reporting_exception_count": 3,
   "note": "Missing values must remain null until validated against issuer sources. This inventory is not proof of PDF extraction, source comparison, automated scheduled ingestion or investor readiness.",
   "companies": [
@@ -98,20 +98,19 @@
         "combined_ratio",
         "loss_ratio",
         "expense_ratio",
-        "insurance_revenue_growth"
-      ],
-      "missing_metrics": [
+        "insurance_revenue_growth",
         "return_on_equity",
         "solvency_ratio",
         "profit_before_tax"
       ],
+      "missing_metrics": [],
       "not_reported_metrics": [],
       "reporting_exception_basis": null,
-      "present_count": 6,
+      "present_count": 9,
       "expected_count": 9,
-      "all_metrics_present": false,
+      "all_metrics_present": true,
       "unattended_extraction_verified": false,
-      "missing_reason": "not_verified_in_comparison_feed"
+      "missing_reason": null
     },
     {
       "company": "Frende",

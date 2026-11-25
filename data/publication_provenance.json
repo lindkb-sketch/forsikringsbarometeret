@@ -45,11 +45,11 @@
     {
       "company": "Sampo",
       "latest_verified_period": "2026-Q3",
-      "group_quarter_observations": 5,
+      "group_quarter_observations": 7,
       "official_source_urls": [
         "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf"
       ],
-      "observation_sha256": "178dbe4392599b7b898ff8637da5ff2d11b4bed41de5858fcfbd3144c6b32bdc",
+      "observation_sha256": "bcfe614184e68a39bbcc2ce2a5ae1d525c647d4206bbae07aeb454b2ce6d51ab",
       "source_to_feed_parity": true,
       "public_pages_parity": "pending_deployment_check",
       "new_report_discovery_proven": false,

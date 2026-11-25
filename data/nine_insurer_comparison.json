@@ -74,9 +74,35 @@
         "loss_ratio": 57.7,
         "expense_ratio": 24.9,
         "insurance_revenue_growth": 8.684324793747278,
-        "return_on_equity": null,
-        "solvency_ratio": null,
-        "profit_before_tax": null
+        "return_on_equity": 33.4,
+        "solvency_ratio": 175.0,
+        "profit_before_tax": 323.0
+      },
+      "metric_periods": {
+        "return_on_equity": "ytd"
+      },
+      "metric_sources": {
+        "profit_before_tax": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_page": 8,
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_definition": "Profit before taxes",
+          "period_type": "quarter"
+        },
+        "solvency_ratio": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_page": 8,
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_definition": "Group Solvency II ratio including accrual (quarter-end snapshot)",
+          "period_type": "quarter"
+        },
+        "return_on_equity": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_page": 8,
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_definition": "Return on equity own funds (RoEOF; issuer definition)",
+          "period_type": "ytd"
+        }
       },
       "revenue_comparable": true
     },
