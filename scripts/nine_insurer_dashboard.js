@@ -59,6 +59,12 @@
           ' mangler og '+exempt+' er dokumenterte rapporteringsunntak. '+
           'Tilstedeværelse er ikke bevis på ubetjent kildeimport.';
         section.appendChild(status);
+        if(completeness.all_nine_same_period===false){
+          const periodWarning=document.createElement('p');
+          periodWarning.className='hint';
+          periodWarning.textContent='Selskapene har ulike siste rapportperioder. Samlet KPI-dekning betyr ikke at alle har rapportert samme kvartal.';
+          section.appendChild(periodWarning);
+        }
         const list=document.createElement('ul');
         list.setAttribute('aria-label','Manglende nøkkeltall per selskap');
         for (const issuer of completeness.companies) {
