@@ -105,14 +105,18 @@ def check(feed,extended,comparison,gaps):
             if item.get('metrics',{}).get(metric)!=source.get('metrics',{}).get(metric):
                 errors.append(company+': metric mismatch '+metric)
         if company=='Alm. Brand':
-            from import_alm_brand_supplemental import validate_supplemental
-            errors.extend(validate_supplemental(source))
-            ev=source.get('presentation_evidence',{})
-            if (source.get('metrics',{}).get('solvency_ratio')!=238
-                or ev.get('source_page')!=19
-                or ev.get('metrics',{}).get('solvency_ratio')!=238
-                or len(str(ev.get('source_sha256','')))!=64):
-                errors.append('Alm. Brand: Q3 presentation provenance mismatch')
+            if (source.get('year',0),source.get('quarter',0))>(2026,3):
+                from rolling_alm_brand_reports import validate_rolling
+                errors.extend(validate_rolling(source))
+            else:
+                from import_alm_brand_supplemental import validate_supplemental
+                errors.extend(validate_supplemental(source))
+                ev=source.get('presentation_evidence',{})
+                if (source.get('metrics',{}).get('solvency_ratio')!=238
+                    or ev.get('source_page')!=19
+                    or ev.get('metrics',{}).get('solvency_ratio')!=238
+                    or len(str(ev.get('source_sha256','')))!=64):
+                    errors.append('Alm. Brand: Q3 presentation provenance mismatch')
         if company=='KLP Skadeforsikring':
             if source.get('metrics',{}).get('return_on_equity') is not None:
                 errors.append('KLP: unverified ROE must remain absent')
