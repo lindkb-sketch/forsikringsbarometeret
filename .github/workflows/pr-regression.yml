@@ -199,9 +199,17 @@ jobs:
           assert len(rows)==1 and rows[0]['value']==589,rows
           print('PROTECTOR_NORWAY_2024_PDF_VERIFIED',rows[0]['value'])
           PY
+      - name: Reconcile and import real nine-insurer HIÅ before browser regression
+        run: |
+          python scripts/import_group_ytd.py
+          python scripts/import_alm_brand_supplemental.py
+          python scripts/import_extended_ytd.py
+          python scripts/check_extended_insurer_evidence.py
       - name: Build final website data for browser regression
         run: |
           python scripts/build_verified_feed.py
+          python scripts/build_nine_insurer_comparison.py
+          python scripts/quarterly_kpi_completeness.py
           python scripts/build_editorial.py
           python scripts/update.py
           python scripts/verify_feed_coverage.py
