@@ -83,6 +83,37 @@ class ExtendedRolloverTests(unittest.TestCase):
         self.assertNotIn('return_on_equity',result['metrics'])
         self.assertEqual(result['ytd_metrics']['profit_before_tax'],result['metrics']['profit_before_tax'])
         self.assertEqual(advance_klp(result,**opts),result)
+    def test_real_klp_q3_parser_replay_and_annual_archive_candidate(self):
+        import hashlib
+        from import_extended_pdfs import download,pages
+        from rolling_klp_reports import fetch_archive
+        from klp_q2_q3_discovery import discover
+        html=fetch_archive()
+        found=discover(html,year=2026,periods=(3,))
+        self.assertEqual(len(found[3]),1)
+        url=found[3][0]
+        raw=download(url,'KLP Skadeforsikring')
+        item=verify_klp(pages(raw),2026,3,url,hashlib.sha256(raw).hexdigest())
+        self.assertEqual(item['reported_quarter_amounts']['insurance_revenue'],1041.0)
+        self.assertEqual(item['reported_ytd_amounts']['insurance_revenue'],3073.6)
+        self.assertEqual(item['reported_management_metrics']['profit_before_tax'],154.6)
+        self.assertEqual(item['reported_management_metrics']['profit_before_tax_ytd'],349.1)
+        self.assertEqual(item['reported_management_metrics']['solvency_ratio'],219)
+        self.assertAlmostEqual(item['ratios']['combined_ratio'],89.08742,places=4)
+        historical=discover(html,year=2025,periods=(4,))
+        self.assertEqual(len(historical[4]),1)
+        print('KLP_ROLLING_PARSER_REAL_Q3_REPLAY',item['reported_quarter_amounts'],item['reported_ytd_amounts'],flush=True)
+        # An official annual report is discovered, but not misclassified
+        # as an isolated Q4 report. Audit the historical actual header.
+        annual=download(historical[4][0],'KLP Skadeforsikring')
+        annual_pages=pages(annual)
+        headers=[(i+1,l.strip()) for i,t in enumerate(annual_pages) for l in t.splitlines()
+                 if 'MILLIONER KRONER' in l and ('2025' in l or '2024' in l)][:10]
+        isolated=any('4. kvartal 2025' in t and '4. kvartal 2024' in t
+                     for t in annual_pages if 'Resultatregnskap' in t)
+        print('KLP_2025_ANNUAL_DISCLOSURE',{'source_url':historical[4][0],
+             'sha256':hashlib.sha256(annual).hexdigest(),'explicit_isolated_q4':isolated,'headers':headers},flush=True)
+
     def test_klp_invalid_note_and_wrong_year_fail(self):
         x=klp_fixture(2026,4)
         with self.assertRaises(ValueError):verify_klp(x,2027,4,KLPU4,SHA)
