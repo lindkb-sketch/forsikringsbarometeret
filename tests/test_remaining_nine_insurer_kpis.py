@@ -35,6 +35,23 @@ class PreTaxTests(unittest.TestCase):
         with self.assertRaises(ValueError):parse_pdf(pages(),anchor(),'b'*64)
         with self.assertRaises(ValueError):
             parse_pdf([(5,pages()[0][1].replace('Profit/(loss) before tax','Operating profit'))],anchor(),SHA)
+    def test_actual_layout_labels_and_neighbouring_rows(self):
+        cases=[
+            ('Fremtind','Resultatutvikling og nøkkeltall\nInntekter fra forsikringstjenester',
+             'Resultat før skatt 1 810 1 621 4 933 3 845 5 335 segment (%)',1810,4933),
+            ('Gjensidige','Insurance revenue from general insurance\nInsurance service result general insurance\nNOK millions',
+             'Profit or loss before tax expense Pension -3.3 -414.5 -92.6 -136.2 50.7\nProfit or loss before tax expense 2,780.6 2,067.4 7,625.0 6,741.5 8,495.3',2780.6,7625),
+            ('Tryg','Income overview\nInsurance revenue\nInsurance service result',
+             'Profit/loss before taxa) 2,123 1,980 4,476 5,505 7,212',2123,4476),
+            ('Storebrand','Storebrand Group\nIncome statement\nNOK million\nNet insurance service result\nTax expenses',
+             'Profit before income tax 1,001 990 3,009 2,990 4,000',1001,3009),
+        ]
+        for company,heading,line,q,ytd in cases:
+            with self.subTest(company=company):
+                p=[(5,heading+'\nQ3 2026 Q3 2025 01.01 - 30.09 2026 2025 FY 2025\n'+line)]
+                result=parse_pdf(p,anchor(company),SHA)
+                self.assertEqual([r['value'] for r in result],[q,ytd])
+
     def test_frende_group_thousand_conversion(self):
         a=anchor('Frende')
         a['source_url']='https://frende.wrep.it/q3-2026-frende-holding-as/sec/7'
