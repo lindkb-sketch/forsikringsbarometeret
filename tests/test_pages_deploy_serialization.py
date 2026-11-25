@@ -57,6 +57,12 @@ class DeployConcurrencyTests(unittest.TestCase):
             self.assertNotIn('github-pages-${{', source)
             self.assertNotIn('github-pages-stocks-', source)
 
+    def test_finance_publisher_has_pages_environment(self):
+        source = (WORKFLOWS / 'update.yml').read_text(encoding='utf-8')
+        publisher = source.split('  publish:', 1)[1]
+        self.assertIn('    environment:\n      name: github-pages\n', publisher)
+        self.assertIn('url: ${{ steps.deployment.outputs.page_url }}', publisher)
+
 
 if __name__ == '__main__':
     unittest.main()
