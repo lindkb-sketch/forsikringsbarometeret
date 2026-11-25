@@ -19,6 +19,7 @@ def build(feed, extended):
     for company in COMPANIES:
         metric_periods = {}
         metric_sources = {}
+        metric_methods = {}
         if company in ext:
             item = ext[company]
             values = item.get('metrics', {})
@@ -34,6 +35,13 @@ def build(feed, extended):
             if verified and company=='Alm. Brand' and state=='verified_official_pdf_reconciled':
                 for key,page in item.get('source_pages',{}).items():
                     metric_sources[key]={'source_url':item.get('source_url'),'source_sha256':item.get('source_sha256'),'source_page':page,'period_type':'quarter','source_definition':item.get('return_on_equity_definition') if key=='return_on_equity' else 'Alm. Brand consolidated issuer report'}
+            if verified and company=='KLP Skadeforsikring' and item.get('quarter_calculation'):
+                metric_methods=item.get('metric_methods',{})
+                for key,method in metric_methods.items():
+                    metric_sources[key]={'source_url':item.get('source_url'),'source_sha256':item.get('source_sha256'),
+                        'source_page':item['quarter_calculation']['annual']['document']['ratio_page' if key=='solvency_ratio' else 'statement_page'],
+                        'source_definition':'Rapportert ved årsslutt' if key=='solvency_ratio' else 'Beregnet fra årsrapport minus HIÅ per Q3, med avstemte regnskapsgrunnlag',
+                        'period_type':'quarter','source_documents':item['source_documents'] if key!='solvency_ratio' else item['source_documents'][:1]}
             if verified and company=='Alm. Brand':
                 evidence=item.get('supplemental_pdf_evidence',{})
                 for key,record in evidence.get('metrics',{}).items():
@@ -88,6 +96,7 @@ def build(feed, extended):
             'status': status, 'source_url': source,
             'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
             **({'metric_periods': metric_periods, 'metric_sources': metric_sources} if metric_periods or metric_sources else {}),
+            **({'metric_methods':metric_methods} if metric_methods else {}),
             'revenue_comparable': company not in ('Frende', 'Storebrand', 'KLP Skadeforsikring') and status != 'unverified_missing',
         })
     return {'schema_version': 1, 'count': len(result),
