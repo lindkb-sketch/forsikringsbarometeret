@@ -110,6 +110,7 @@ class ExtendedRolloverTests(unittest.TestCase):
         self.assertEqual(result['metrics'],result['ytd_metrics'])
         self.assertEqual(validate_rolling(result),[])
         self.assertEqual(advance_alm(result,**opts),result)
+        self.assertEqual(result['periods'][1]['ytd_metrics']['profit_before_tax'],1100)
         bad=copy.deepcopy(result);bad['presentation_evidence']['metrics']['solvency_ratio']=999
         self.assertTrue(validate_rolling(bad))
         texts[raw[PRES1]]=presentation(2027,1)
