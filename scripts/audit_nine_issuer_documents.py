@@ -46,6 +46,17 @@ RELEASE_SEEDS={('Fremtind',2026,3):684332,('Gjensidige',2026,3):684673,
 EXCHANGE_HOSTS={'attachment.news.eu.nasdaq.com','newsweb.oslobors.no','www.newsweb.no','newsweb.no',
                 'api3.oslo.oslobors.no','storage.mfn.se','mb.cision.com','kommunikasjon.ntb.no'}
 AMOUNTS={'insurance_revenue','insurance_service_result','profit_before_tax'}
+# Project owner confirmed these issuers do not publish a separate results deck.
+# Keep discovering new sources: an actual candidate reactivates the requirement.
+REPORT_ONLY_ISSUERS=frozenset({'Fremtind','KLP Skadeforsikring','Frende'})
+
+def presentation_policy(company,documents):
+    expected=company not in REPORT_ONLY_ISSUERS
+    discovered=any(d.get('document_type')=='results_presentation' for d in documents)
+    return {'presentation_required':expected or discovered,
+            'presentation_exception':'owner_confirmed_no_separate_results_presentation' if not expected and not discovered else None,
+            'presentation_exception_under_review':not expected and discovered}
+
 PRESENTATION=re.compile(r'\b(?:presentation|presentasjon|præsentation|slides|analyst presentation)\b',re.I)
 EXCLUDE=re.compile(r'pre[- ]?close|pre[- ]?silent|invitation|transcript|roadshow|capital.market|bond|supplement|sustainability|factbook|newsletter|consensus|estimate|company.presentation',re.I)
 ENTITY={
@@ -343,7 +354,11 @@ def collect_company(company,y,q,feed,extended):
     presentation_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='results_presentation'}
     both=bool(report_hashes and presentation_hashes-report_hashes)
     status='conflicting_metric_evidence' if any(m['status']=='conflict' for m in matches) else 'partial_metric_reconciliation' if both and matches else 'both_documents_read_metrics_not_certified' if both else 'presentation_not_verified' if not presentation_found else 'report_not_verified'
+    policy=presentation_policy(company,verified)
+    if policy['presentation_exception']:
+        status='report_only_verified' if report_hashes else 'report_only_not_verified'
     return dict(company=company,year=y,quarter=q,report_verified=bool(report_hashes),presentation_verified=presentation_found,
+                **policy,
                 both_distinct_documents_verified=both,metric_reconciliation_status=status,
                 archives_checked=indexes,exchange_announcements=news,documents=verified,cross_document_matches=matches,errors=errors)
 
@@ -358,10 +373,18 @@ def audit(feed,extended,comparison):
         q,y=map(int,m.groups());tasks.append((company,y,q))
     with ThreadPoolExecutor(max_workers=4) as pool:
         result=list(pool.map(lambda t:collect_company(*t,feed,extended),tasks))
-    out={'schema_version':1,'purpose':'issuer_document_and_metric_verification',
+    required=[x for x in result if x['presentation_required']]
+    exceptions=[x for x in result if x['presentation_exception']]
+    out={'schema_version':2,'purpose':'issuer_document_and_metric_verification',
+         'report_verified_count':sum(x['report_verified'] for x in result),
+         'presentation_required_count':len(required),
+         'presentation_verified_count':sum(x['presentation_verified'] for x in required),
+         'report_only_issuers':[x['company'] for x in exceptions],
+         'applicable_document_pairs_verified_count':sum(x['both_distinct_documents_verified'] for x in required),
+         'all_required_documents_verified':all(x['report_verified'] for x in result) and all(x['both_distinct_documents_verified'] for x in required),
          'all_nine_both_documents_verified':all(x['both_distinct_documents_verified'] for x in result),
          'all_nine_dual_document_verified':False,'financial_observations_modified':False,
-         'note':'Document verification is separate from independent metric extraction. No unverified presentation is treated as missing or as a proven reporting exception.',
+         'note':'Document verification is separate from independent metric extraction. Owner-confirmed report-only issuers are exempt from presentation requirements, but must pass original-report verification. Discovery continues for every issuer; a new presentation candidate reopens the requirement. Unverified presentation candidates are not reporting exceptions.',
          'companies':result}
     return out
 
@@ -370,12 +393,15 @@ def main():
     report=audit(load('verified_financial_feed.json'),load('extended_insurer_financials.json'),load('nine_insurer_comparison.json'))
     atomic_write(OUT,report)
     for item in report['companies']:
-        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
+        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
         for d in item['documents']:print('DUAL_DOCUMENT',item['company'],json.dumps(d,ensure_ascii=False),flush=True)
         for m in item['cross_document_matches']:print('DUAL_METRIC_MATCH',item['company'],json.dumps(m,ensure_ascii=False),flush=True)
     print('DUAL_DOCUMENT_SUMMARY',json.dumps({'report_verified':sum(x['report_verified'] for x in report['companies']),
         'presentation_verified':sum(x['presentation_verified'] for x in report['companies']),
         'distinct_pairs':sum(x['both_distinct_documents_verified'] for x in report['companies']),
+        'presentations_expected':report['presentation_required_count'],
+        'report_only_issuers':report['report_only_issuers'],
+        'all_required_documents_verified':report['all_required_documents_verified'],
         'metric_matches':sum(m['status']=='match' for x in report['companies'] for m in x['cross_document_matches']),
         'metric_conflicts':sum(m['status']=='conflict' for x in report['companies'] for m in x['cross_document_matches']),
         'full_reconciliation':report['all_nine_dual_document_verified']},ensure_ascii=False),flush=True)
