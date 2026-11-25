@@ -2,7 +2,7 @@
 """KLP official-PDF quarterly importer. Fail closed without issuer ratio concordance.
 
 This importer is additive: no replacement of existing seven-insurer feed, and
-no use of HIÅ subtraction for KLP isolated quarter amounts.
+reported isolated-quarter amounts, except the explicitly approved annual-minus-Q3 Q4 fallback.
 """
 import json
 from pathlib import Path
@@ -102,12 +102,12 @@ def snapshot_from_rows(rows):
         raise ValueError('KLP verified period history incomplete or out of order')
     return {'company':KLP,'status':'verified_official_pdf_reconciled',
             'year':rows[-1]['year'],'quarter':rows[-1]['quarter'],'scope':'company','currency':'NOK',
-            'source_type':'official_quarterly_report','source_url':rows[-1]['source_url'],
+            'source_type':rows[-1]['source_type'],'source_url':rows[-1]['source_url'],
             'source_sha256':rows[-1]['source_sha256'],
             'source_pages':rows[-1]['source_pages'],
             'metrics':rows[-1]['metrics'],
             'periods':rows,'report_archive':ARCHIVE,
-            **({'ytd_metrics':rows[-1]['ytd_metrics']} if 'ytd_metrics' in rows[-1] else {})}
+            **{k:rows[-1][k] for k in ('ytd_metrics','metric_methods','quarter_calculation','source_documents') if k in rows[-1]}}
 
 def verify_latest(existing,new):
     if not existing:return
