@@ -31,6 +31,10 @@ def build(feed, extended):
                       else 'issuer_announcement_only' if state=='verified_issuer_announcement'
                       else 'unverified_missing')
             currency = item.get('currency') if verified else None
+            if verified and company=='Alm. Brand':
+                evidence=item.get('supplemental_pdf_evidence',{})
+                for key,record in evidence.get('metrics',{}).items():
+                    metric_sources[key]={'source_url':evidence.get('source_url'), 'source_sha256':evidence.get('source_sha256'), 'source_page':record.get('source_page'), 'source_definition':record.get('definition'), 'period_type':'quarter'}
         else:
             rows = [r for r in observations if r.get('company') == company
                     and r.get('scope') == 'group'
@@ -55,6 +59,9 @@ def build(feed, extended):
                 for row in current:
                     if row.get('metric') in ('return_on_equity','profit_before_tax','solvency_ratio'):
                         metric_sources[row['metric']] = {k:row.get(k) for k in ('source_url','source_page','source_sha256','source_definition','period_type')}
+            for row in current:
+                if row.get('metric')=='profit_before_tax':
+                    metric_sources['profit_before_tax']={k:row.get(k) for k in ('source_url','source_page','source_sha256','source_definition','period_type','source_entity')}
             # Match current isolated quarter with the same quarter one year
             # earlier, on the same company, scope, unit and revenue definition.
             if latest and 'insurance_revenue_growth' not in values:
