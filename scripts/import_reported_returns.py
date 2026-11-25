@@ -189,6 +189,10 @@ def run():
         if document_year and int(document_year.group())>year:
             print('::warning::RETURN_PERIOD_DOCUMENT_MISMATCH',company,year,quarter,url,flush=True)
             continue
+        # Gjensidige discloses annualised year-to-date ROE. Once the explicit
+        # cumulative statement is verified, do not recreate a legacy quarter row.
+        if company=='Gjensidige' and (company,year,quarter,'group','ytd','return_on_equity') in existing:
+            continue
         k=(company,year,quarter,'group','quarter','return_on_equity')
         old=existing.get(k)
         # Recheck a known report only against its original, period-matched

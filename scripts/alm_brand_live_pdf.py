@@ -210,7 +210,12 @@ def verify_pages(texts,url,raw,regions=None):
                            'unit':'%' if key in ('combined_ratio','loss_ratio','expense_ratio') else 'DKK million'})
     # extract_table's issuer host allowlist additionally checks this PDF provider.
     extracted=extract_table(raw,url,2026,3,table_rows)
-    extracted.update({'metrics':result_metrics,'reported_ytd_ratios':{
+    ytd_metrics={'insurance_revenue':float(rows['insurance_revenue'][2]),
+        'insurance_service_result':float(rows['insurance_service_result'][2]),
+        'insurance_revenue_growth':float(ytd_growth),'return_on_equity':roe_ytd,
+        'profit_before_tax':float(before_tax[2]),'solvency_ratio':solvency,
+        **{k:float(rows[k][2]) for k in ('combined_ratio','loss_ratio','expense_ratio')}}
+    extracted.update({'metrics':result_metrics,'ytd_metrics':ytd_metrics,'reported_ytd_ratios':{
         key:float(rows[key][2]) for key in PERCENT},
         'source_pages':{key:(solvency_index+1 if key=='solvency_ratio' else page_index+1) for key in result_metrics},
         'return_on_equity_definition':'Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation',

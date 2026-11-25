@@ -80,6 +80,34 @@ async function main(){
     check(name+' primary-source link exists', await page.locator('#app a[href^="https://"]').count()>0);
     await page.locator('#nav-home').click();
   }
+  // The nine-company table has its own explicit period selector.
+  const nineResponse=await page.request.get(BASE+'data/nine_insurer_comparison.json?browser_audit='+Date.now());
+  if(nineResponse.ok()){
+    const nine=await nineResponse.json();
+    if(nine.companies?.every(c=>c.ytd_metrics)){
+      await page.locator('#nine-company-kpi-comparison').waitFor({state:'visible',timeout:15000});
+      const quarterButton=page.locator('#nine-kpi-view-quarter');
+      const ytdButton=page.locator('#nine-kpi-view-ytd');
+      await ytdButton.click();
+      check('Nine-company HIÅ selected',await ytdButton.getAttribute('aria-pressed')==='true');
+      const table=page.locator('#nine-company-kpi-comparison table tbody');
+      check('Nine-company HIÅ comparison has nine rows',await table.locator('tr').count()===9);
+      const fields=['insurance_revenue','insurance_revenue_growth','insurance_service_result','loss_ratio','expense_ratio','combined_ratio','return_on_equity','solvency_ratio','profit_before_tax'];
+      for(const company of nine.companies){
+        const tr=table.locator('tr').filter({hasText:company.company});
+        for(const [i,key] of fields.entries()){
+          const value=company.ytd_metrics[key];
+          const text=norm(await tr.locator('td').nth(i+2).innerText());
+          if(typeof value==='number'){
+            const expected=norm(new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1,minimumFractionDigits:['insurance_revenue','insurance_service_result','profit_before_tax'].includes(key)?0:1}).format(value));
+            check(company.company+' nine-company HIÅ '+key,text.startsWith(expected),text+' expected '+expected);
+          }else check(company.company+' missing HIÅ '+key,/Ikke rapportert|—/.test(text),text);
+        }
+      }
+      await quarterButton.click();
+      check('Nine-company quarter view restored',await quarterButton.getAttribute('aria-pressed')==='true');
+    }
+  }
   // Publication diagnostics remain machine-readable; they are never a reader-facing
   // investor approval label. The reader sees source-backed figures and dated blanks.
   check('Internal data audit exists independently of dashboard labels',

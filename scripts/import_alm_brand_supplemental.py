@@ -62,6 +62,11 @@ def attach(existing,pdf):
                 definition='Group profit/loss before tax, continuing operations; DKK million')})
     result={**existing,'metrics':{**existing['metrics'],**{k:pdf['metrics'][k] for k in KEYS}},
         'supplemental_pdf_evidence':evidence}
+    if 'ytd_metrics' in pdf:
+        from import_extended_ytd import make_alm,validate_baseline
+        result['ytd_pdf_evidence']=make_alm(result,pdf)
+        errors=validate_baseline(result)
+        if errors:raise ValueError('; '.join(errors))
     errors=validate_supplemental(result)
     if errors:raise ValueError('; '.join(errors))
     return result
@@ -73,6 +78,11 @@ def preserve(new,previous):
         return new
     result={**new,'metrics':{**new['metrics'],**{k:previous['metrics'][k] for k in KEYS}},
             'supplemental_pdf_evidence':previous['supplemental_pdf_evidence']}
+    if previous.get('ytd_pdf_evidence'):
+        from import_extended_ytd import validate_baseline
+        result['ytd_pdf_evidence']=previous['ytd_pdf_evidence']
+        errors=validate_baseline(result)
+        if errors:raise ValueError('; '.join(errors))
     errors=validate_supplemental(result)
     if errors:raise ValueError('; '.join(errors))
     return result

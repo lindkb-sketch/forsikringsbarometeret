@@ -183,6 +183,11 @@
         const roe=find('return_on_equity');
         if(Number.isFinite(roe))profitabilityReturns[name][l]={
           label:'Rapportert avkastningsmål fra rapport',value:roe};
+        else {
+          const sample=periodRows[0];
+          const cumulative=sample&&lookup(name,'ytd',sample.year,sample.quarter,'return_on_equity');
+          if(cumulative&&Number.isFinite(cumulative.value))profitabilityReturns[name][l]={label:'Rapportert annualisert avkastning HIÅ',value:cumulative.value};
+        }
       }
     }
     profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(profitabilityCompany));
