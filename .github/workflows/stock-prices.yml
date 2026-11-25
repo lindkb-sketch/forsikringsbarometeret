@@ -98,6 +98,7 @@ jobs:
       - uses: actions/configure-pages@v5
         if: steps.changes.outputs.changed == 'true'
       - uses: actions/upload-pages-artifact@v3
+        id: pages_upload
         if: steps.changes.outputs.changed == 'true'
         with:
           name: github-pages
@@ -107,6 +108,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/wait_pages_artifact.py
+      - name: Install matching Actions artifact client outside site tree
+        if: steps.changes.outputs.changed == 'true'
+        run: npm install --prefix "$RUNNER_TEMP/pages-runtime-gate" --no-save --ignore-scripts --no-audit --no-fund @actions/artifact@2.1.3
+      - name: Wait for deploy-pages runtime service to see exact uploaded artifact
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          PAGES_ARTIFACT_ID: ${{ steps.pages_upload.outputs.artifact_id }}
+        with:
+          script: |
+            const path = require('path');
+            const {DefaultArtifactClient} = require(path.join(process.env.RUNNER_TEMP,'pages-runtime-gate','node_modules','@actions/artifact'));
+            const {waitForRuntimeArtifact} = require(path.join(process.env.GITHUB_WORKSPACE,'scripts','wait_pages_runtime_artifact.cjs'));
+            await waitForRuntimeArtifact({client:new DefaultArtifactClient(),expectedId:process.env.PAGES_ARTIFACT_ID});
       - uses: actions/deploy-pages@v4
         if: steps.changes.outputs.changed == 'true'
         id: deployment
