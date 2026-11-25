@@ -1,12 +1,24 @@
 name: Verify official reports and presentations (diagnostic)
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '8 6,12,18 * * *'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/audit_nine_issuer_documents.py'
+      - 'scripts/reconcile_issuer_presentation_metrics.py'
+      - 'tests/test_nine_issuer_dual_audit.py'
+      - '.github/workflows/verify-dual-documents.yml'
   push:
     branches: [main]
     paths:
+      - 'scripts/audit_nine_issuer_documents.py'
+      - 'scripts/reconcile_issuer_presentation_metrics.py'
       - 'scripts/reconcile_nine_pdf_metrics.py'
       - 'scripts/verify_nine_document_bytes.py'
       - '.github/workflows/verify-dual-documents.yml'
+      - 'data/nine_insurer_comparison.json'
 permissions:
   contents: read
 jobs:
@@ -19,22 +31,17 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements-reports.txt
-      - name: Discover issuer-linked PDFs without changing financial feed
-        run: python scripts/discover_reports.py
-      - name: Inventory imported and discovered report/presentation evidence
-        run: python scripts/build_nine_document_source_inventory.py
-      - name: Verify downloaded PDF bytes, period, issuer and SHA256
-        run: python scripts/verify_nine_document_bytes.py
-      - name: Re-download actual issuer PDFs and reconcile unambiguous page metrics
-        run: python scripts/reconcile_nine_pdf_metrics.py
-      - name: Save document verification evidence
+      - name: Test period-specific issuer discovery and evidence gates
+        run: python -m unittest discover -s tests -p 'test_nine_issuer_dual_audit.py' -v
+      - name: Download and audit current issuer documents without publishing financial values
+        run: python scripts/audit_nine_issuer_documents.py
+      - name: Save actual issuer documents and audit evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: nine-issuer-dual-document-evidence
           path: |
-            data/report_candidates.json
-            data/dual_document_verification.json
-            data/nine_document_source_inventory.json
-            data/nine_document_metric_reconciliation.json
+            dual-audit/
+            data/nine_issuer_dual_audit.json
           if-no-files-found: warn
+          retention-days: 14
