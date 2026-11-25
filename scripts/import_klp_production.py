@@ -17,7 +17,7 @@ ARCHIVE=INDEX[KLP]
 
 def row_from_reconciliation(item):
     q=item['quarter']
-    if item.get('year')!=2026 or q not in (1,2,3):
+    if type(item.get('year')) is not int or item['year']<2026 or q not in (1,2,3,4):
         raise ValueError('Unexpected issuer period')
     if item.get('status') not in ('q1_2026_pdf_reconciled_not_published',
                                 'issuer_pdf_quarter_and_ytd_reconciled_not_published'):
@@ -55,7 +55,7 @@ def row_from_reconciliation(item):
              'profit_before_tax':management['profit_before_tax']}
     if not set(REQUIRED).issubset(metrics) or metrics['insurance_revenue']<=0:
         raise ValueError('Incomplete KLP issuer metrics')
-    return {'company':KLP,'year':2026,'quarter':q,'scope':'company',
+    return {'company':KLP,'year':item['year'],'quarter':q,'scope':'company',
             'currency':'NOK','unit':'NOK million for financial amounts; percent for ratios',
             'source_type':'official_quarterly_report',
             'source_url':docs[0]['source_url'],
@@ -69,14 +69,14 @@ def row_from_reconciliation(item):
                 'profit_before_tax_ytd':management['profit_before_tax_ytd'],
                 'source_metric':'reported_solvency_and_pre_tax_profit'},
             'revenue_growth_evidence':{
-                'quarter':{'year':2026,'quarter':q,'current':values['insurance_revenue'],
+                'quarter':{'year':item['year'],'quarter':q,'current':values['insurance_revenue'],
                            'prior_year':prior['insurance_revenue'],'growth_percent':quarter_growth,
                            'source_page':docs[0]['source_pages'][0]},
-                'ytd':{'year':2026,'quarter':q,'current':ytd['insurance_revenue'],
+                'ytd':{'year':item['year'],'quarter':q,'current':ytd['insurance_revenue'],
                        'prior_year':prior_ytd['insurance_revenue'],'growth_percent':ytd_growth,
                        'source_page':docs[0]['source_pages'][0]},
                 'revenue_definition':'KLP Forsikringsinntekter; NOK million; same company basis',
-                'previous_year':2025,
+                'previous_year':item['year']-1,
                 'source_sha256':docs[0]['source_sha256']},
             'status':'verified_official_pdf_reconciled'}
 
@@ -84,8 +84,17 @@ def build_snapshot(q1,q2,q3):
     rows=[row_from_reconciliation(x) for x in (q1,q2,q3)]
     if [(r['year'],r['quarter']) for r in rows]!=[(2026,1),(2026,2),(2026,3)]:
         raise ValueError('KLP Q1-Q3 incomplete or out of order')
+    return snapshot_from_rows(rows)
+
+
+def snapshot_from_rows(rows):
+    if not rows:raise ValueError('No verified KLP periods')
+    periods=[(p['year'],p['quarter']) for p in rows]
+    ordinals=[y*4+q-1 for y,q in periods]
+    if periods[0]!=(2026,1) or ordinals!=list(range(ordinals[0],ordinals[-1]+1)):
+        raise ValueError('KLP verified period history incomplete or out of order')
     return {'company':KLP,'status':'verified_official_pdf_reconciled',
-            'year':2026,'quarter':3,'scope':'company','currency':'NOK',
+            'year':rows[-1]['year'],'quarter':rows[-1]['quarter'],'scope':'company','currency':'NOK',
             'source_type':'official_quarterly_report','source_url':rows[-1]['source_url'],
             'source_sha256':rows[-1]['source_sha256'],
             'source_pages':rows[-1]['source_pages'],
@@ -101,6 +110,8 @@ def verify_latest(existing,new):
     if (existing.get('year'),existing.get('quarter'))>(new['year'],new['quarter']):
         raise ValueError('Refusing rollback of KLP quarter')
     previous={(p['year'],p['quarter']):p for p in existing.get('periods',[])}
+    if not set(previous).issubset({(p['year'],p['quarter']) for p in new['periods']}):
+        raise ValueError('Refusing loss of previously approved KLP evidence')
     for item in new['periods']:
         key=item['year'],item['quarter']
         if key in previous and previous[key]!=item:
@@ -110,6 +121,15 @@ def update(root, q1=None, q2=None, q3=None):
     root=Path(root)
     path=root/'data/extended_insurer_financials.json'
     current=json.loads(path.read_text(encoding='utf-8'))
+    if all(x is None for x in (q1,q2,q3)) and current.get('insurers',{}).get(KLP,{}).get('status')=='verified_official_pdf_reconciled':
+        from rolling_klp_reports import advance
+        snapshot=advance(current['insurers'][KLP])
+        verify_latest(current['insurers'][KLP],snapshot)
+        if current['insurers'][KLP]==snapshot:return False
+        current['insurers'][KLP]=snapshot
+        from publish_geographic_workbooks import atomic_write
+        atomic_write(path,current)
+        return True
     if any(x is None for x in (q1,q2,q3)):
         q1=run_q1()
         discovered=discover()
