@@ -121,8 +121,31 @@ def advance(existing,*,today=None,fetcher=fetch_archive,downloader=download,extr
         url=links[0]
         raw=downloader(url,'KLP Skadeforsikring')
         if not raw.startswith(b'%PDF-'):raise ValueError('Not an issuer PDF')
-        item=verify_report(extractor(raw),year,q,url,hashlib.sha256(raw).hexdigest())
-        rows.append(row_from_reconciliation(item))
+        texts=extractor(raw)
+        digest=hashlib.sha256(raw).hexdigest()
+        from klp_annual_q4 import is_annual,parse_annual,parse_q3,derive,validate_derived,annual_views
+        # Prefer the explicitly reported quarter; the approved exception
+        # applies only when the issuer releases an annual-only statement.
+        if q==4 and is_annual(texts,year) and not any(
+                f'4. kvartal {year} 4. kvartal {year-1}' in t and 'Resultatregnskap' in t for t in texts):
+            previous=rows[-1]
+            if (previous['year'],previous['quarter'])!=(year,3):
+                raise ValueError('Missing previously verified Q3 snapshot')
+            q3_url=previous['source_url']
+            q3_raw=downloader(q3_url,'KLP Skadeforsikring')
+            q3_sha=hashlib.sha256(q3_raw).hexdigest()
+            if not q3_raw.startswith(b'%PDF-') or q3_sha!=previous['source_sha256']:
+                raise ValueError('KLP previous approved Q3 PDF has changed')
+            annual=parse_annual(texts,year,url,digest,views=annual_views(raw,texts) if extractor is pages else None)
+            q3=parse_q3(extractor(q3_raw),year,q3_url,q3_sha)
+            row=derive(annual,q3)
+            errors=validate_derived(row,previous)
+            if errors:raise ValueError('; '.join(errors))
+            rows.append(row)
+            print('KLP_Q4_DERIVED_FROM_ANNUAL_AND_Q3',year,row['metrics'],flush=True)
+        else:
+            item=verify_report(texts,year,q,url,digest)
+            rows.append(row_from_reconciliation(item))
         print('KLP_ROLLING_REPORT_VERIFIED',year,q,flush=True)
         year,q=next_period(year,q)
     if len(rows)==len(existing['periods']):return existing
