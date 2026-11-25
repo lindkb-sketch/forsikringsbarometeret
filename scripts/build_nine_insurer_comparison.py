@@ -17,6 +17,8 @@ def build(feed, extended):
     ext = extended.get('insurers', {})
     result = []
     for company in COMPANIES:
+        metric_periods = {}
+        metric_sources = {}
         if company in ext:
             item = ext[company]
             values = item.get('metrics', {})
@@ -38,6 +40,21 @@ def build(feed, extended):
             latest = periods[-1] if periods else None
             current = [r for r in rows if (r['year'], r['quarter']) == latest] if latest else []
             values = {r['metric']: r['value'] for r in current if r.get('metric') in METRICS}
+            if company == 'Sampo' and latest:
+                # A source-labelled YTD RoEOF is not an isolated-quarter ROE.
+                ytd = [r for r in observations if r.get('company') == company
+                       and r.get('scope') == 'group' and r.get('period_type') == 'ytd'
+                       and (r.get('year'), r.get('quarter')) == latest
+                       and r.get('metric') == 'return_on_equity'
+                       and r.get('status') == 'reported'
+                       and r.get('source_definition') == 'Return on equity own funds (RoEOF; issuer definition)']
+                if 'return_on_equity' not in values and len(ytd) == 1:
+                    values['return_on_equity'] = ytd[0]['value']
+                    metric_periods['return_on_equity'] = 'ytd'
+                    current = current + ytd
+                for row in current:
+                    if row.get('metric') in ('return_on_equity','profit_before_tax','solvency_ratio'):
+                        metric_sources[row['metric']] = {k:row.get(k) for k in ('source_url','source_page','source_sha256','source_definition','period_type')}
             # Match current isolated quarter with the same quarter one year
             # earlier, on the same company, scope, unit and revenue definition.
             if latest and 'insurance_revenue_growth' not in values:
@@ -60,6 +77,7 @@ def build(feed, extended):
             'company': company, 'period': period, 'currency': currency,
             'status': status, 'source_url': source,
             'metrics': {key: values.get(key) if status != 'unverified_missing' else None for key in METRICS},
+            **({'metric_periods': metric_periods, 'metric_sources': metric_sources} if metric_periods or metric_sources else {}),
             'revenue_comparable': company not in ('Frende', 'Storebrand', 'KLP Skadeforsikring') and status != 'unverified_missing',
         })
     return {'schema_version': 1, 'count': len(result),

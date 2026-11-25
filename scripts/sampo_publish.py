@@ -7,6 +7,7 @@ import pdfplumber
 from audit_financials import DATA,audit
 from build_verified_feed import OUT,build
 from publish_geographic_workbooks import atomic_write
+from sampo_group_kpis import parse_overview
 SOURCES={
  (2025,1):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q1/sampo_interim_statement_q1_2025.pdf',
  (2025,2):'https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q2/sampo-groups-half-year-financial-report-2025.pdf',
@@ -132,12 +133,21 @@ def run():
   req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
   with urllib.request.urlopen(req,timeout=45) as response:blob=response.read(30_000_001)
   if len(blob)>30_000_000:raise ValueError('PDF too large')
-  for row in parse(blob,url,year,q):
+  rows=parse(blob,url,year,q)
+  try:
+   with pdfplumber.open(io.BytesIO(blob)) as pdf:
+    pages=[(i+1,p.extract_text() or '') for i,p in enumerate(pdf.pages)]
+   rows+=parse_overview(pages,url,year,q,hashlib.sha256(blob).hexdigest())
+  except ValueError as exc:
+   print('::warning::SAMPO_SUPPLEMENTAL_KPI_UNVERIFIED',year,q,str(exc),flush=True)
+  for row in rows:
    key=tuple(row.get(k) for k in KEYS)
    if key in index:
     if abs(index[key]['value']-row['value'])>0.001:raise ValueError(f'Conflicting historical Sampo value: {key}')
    else:index[key]=row;added+=1
  merged={**baseline,'observations':list(index.values())}
+ if any(r.get('metric')=='profit_before_tax' for r in merged['observations']):
+  merged['metrics']=list(dict.fromkeys([*merged.get('metrics',[]),'profit_before_tax']))
  feed=build(merged)
  # Repair a stale/missing verified feed even when every source observation already exists.
  # Do not rewrite unchanged artifacts on hourly runs.

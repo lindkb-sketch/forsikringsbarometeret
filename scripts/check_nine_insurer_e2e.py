@@ -69,6 +69,21 @@ def check(feed,extended,comparison,gaps):
                 errors.append(company+': duplicate optional metric '+metric)
             if len(matching)==1 and item.get('metrics',{}).get(metric)!=matching[0]['value']:
                 errors.append(company+': optional value mismatch '+metric)
+        if company == 'Sampo' and item.get('metric_periods',{}).get('return_on_equity') == 'ytd':
+            matches=[x for x in rows if x.get('company')==company
+                     and x.get('scope')=='group' and x.get('period_type')=='ytd'
+                     and (x.get('year'),x.get('quarter'))==latest
+                     and x.get('metric')=='return_on_equity' and x.get('status')=='reported'
+                     and x.get('source_definition')=='Return on equity own funds (RoEOF; issuer definition)']
+            evidence=item.get('metric_sources',{}).get('return_on_equity',{})
+            if (len(matches)!=1 or not finite(matches[0].get('value'))
+                or item.get('metrics',{}).get('return_on_equity')!=matches[0]['value']
+                or evidence.get('period_type')!='ytd'
+                or any(evidence.get(k)!=matches[0].get(k) for k in ('source_url','source_page','source_sha256','source_definition'))
+                or not str(evidence.get('source_url','')).startswith('https://')
+                or not isinstance(evidence.get('source_page'),int) or evidence['source_page']<1
+                or len(str(evidence.get('source_sha256','')))!=64):
+                errors.append(company+': unverified YTD RoEOF evidence')
         gap=gap_companies.get(company,{})
         if gap.get('both_documents_checked_for_this_period') is True and gap.get('quarter_presentation_sourced_observations',0)==0:
             errors.append(company+': unjustified both-documents-checked flag')

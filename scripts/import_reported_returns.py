@@ -161,7 +161,7 @@ def run():
     data=json.loads(DATA.read_text(encoding='utf-8'))
     records=data['observations']
     sources=sorted({(r['company'],r['year'],r['quarter'],r['source_url'])
-        for r in records if r.get('company') in LABELS and
+        for r in records if r.get('company') in LABELS and r.get('company')!='Sampo' and
         r.get('scope')=='group' and r.get('period_type')=='quarter'
         and r.get('metric')=='insurance_revenue' and
         r.get('source_type')=='official_quarterly_report' and r.get('year')>=2025
