@@ -9,6 +9,8 @@ import math
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+from import_alm_brand_supplemental import validate_supplemental
+
 REQUIRED = {'insurance_revenue', 'insurance_service_result',
             'combined_ratio', 'loss_ratio', 'expense_ratio'}
 COMPANIES = {'Fremtind', 'Gjensidige', 'Tryg', 'Sampo', 'Frende',
@@ -46,10 +48,11 @@ def validate(extended, sources, calendar):
     if alm.get('year') != 2026 or alm.get('quarter') != 3:
         errors.append('Alm. Brand verified snapshot is not Q3 2026')
     metrics = alm.get('metrics', {})
-    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth','solvency_ratio'}) or any(
+    if not REQUIRED.issubset(metrics) or not set(metrics).issubset(REQUIRED|{'insurance_revenue_growth','solvency_ratio','return_on_equity','profit_before_tax'}) or any(
         isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in metrics.values()
     ) or ('insurance_revenue_growth' in metrics and abs(metrics['insurance_revenue_growth']-1.6)>0.001):
         errors.append('Alm. Brand verified metric set is incomplete or invalid')
+    errors.extend(validate_supplemental(alm))
     klp = insurers.get('KLP Skadeforsikring', {})
     if klp.get('status') == 'awaiting_source_verified_metrics' and klp.get('metrics') == {}:
         pass
