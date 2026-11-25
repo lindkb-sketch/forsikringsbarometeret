@@ -182,23 +182,34 @@ def read_report(raw):
 def validate_rolling(row):
     errors=[];metrics=row.get('metrics',{});ytd=row.get('ytd_metrics',{});ev=row.get('presentation_evidence',{})
     period=(row.get('year'),row.get('quarter'))
-    sha=row.get('source_sha256','')
+    sha=str(row.get('source_sha256') or '')
     if (row.get('status')!='verified_official_pdf_reconciled' or row.get('scope')!='group'
         or row.get('currency')!='DKK' or row.get('source_type')!='official_quarterly_report'
-        or not trusted_pdf_link(row.get('source_url','')) or not re.fullmatch(r'[0-9a-f]{64}',sha)
+        or not trusted_pdf_link(row.get('source_url') or '') or not re.fullmatch(r'[0-9a-f]{64}',sha)
         or set(metrics)!=set(REQUIRED) or set(ytd)!=set(REQUIRED)
         or not all(type(x) in (int,float) and math.isfinite(x) for x in [*metrics.values(),*ytd.values()])
         or any(type(row.get('source_pages',{}).get(k)) is not int or row['source_pages'][k]<1 for k in REQUIRED)):
         errors.append('Alm. Brand rolling report evidence incomplete')
     em=ev.get('metrics',{})
-    if (ev.get('source_type')!='official_results_presentation' or not trusted_pdf_link(ev.get('source_url',''))
-        or not re.fullmatch(r'[0-9a-f]{64}',ev.get('source_sha256',''))
+    if (ev.get('source_type')!='official_results_presentation' or not trusted_pdf_link(ev.get('source_url') or '')
+        or not re.fullmatch(r'[0-9a-f]{64}',str(ev.get('source_sha256') or ''))
         or ev.get('source_sha256')==sha or type(ev.get('source_page')) is not int or ev.get('source_page',0)<1
         or (ev.get('year'),ev.get('quarter'))!=period or ev.get('scope')!='group' or ev.get('currency')!='DKK'
         or em.get('solvency_ratio')!=metrics.get('solvency_ratio') or ytd.get('solvency_ratio')!=metrics.get('solvency_ratio')
         or type(em.get('own_funds')) not in (int,float) or type(em.get('solvency_capital_requirement')) not in (int,float)
         or em.get('solvency_capital_requirement',0)<=0 or round(em['own_funds']/em['solvency_capital_requirement']*100)!=em.get('solvency_ratio')):
         errors.append('Alm. Brand rolling independent presentation evidence invalid')
+    history=row.get('periods')
+    if history is not None:
+        try:
+            periods=[(p['year'],p['quarter']) for p in history]
+            if (not periods or periods[0]!=BASELINE or periods[-1]!=period
+                or any(next_period(*a)!=b for a,b in zip(periods,periods[1:]))
+                or {k:v for k,v in row.items() if k!='periods'}!=history[-1]
+                or any(validate_rolling(p) for p in history[1:])):
+                errors.append('Alm. Brand rolling history is incomplete or changed')
+        except (TypeError,KeyError,ValueError):
+            errors.append('Alm. Brand rolling history is invalid')
     return errors
 
 def advance(existing,*,today=None,fetcher=fetch_html,downloader=download_report,reader=read_report):
