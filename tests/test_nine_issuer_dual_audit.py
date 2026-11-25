@@ -192,6 +192,26 @@ Combined ratio 75.3 82.2'''
         docs=alm_archive_documents(markup,page,2027,1)
         self.assertEqual({d['document_type'] for d in docs},{'quarterly_report','results_presentation'})
         self.assertEqual(len(docs),2)
+    def test_alm_actual_issuer_feed_documents_no_cross_record_inference(self):
+        from audit_nine_issuer_documents import alm_feed_documents
+        page='https://investorrelations.almbrand.dk/English/financials/default.aspx'
+        endpoint='https://investorrelations.almbrand.dk/feed/FinancialReport.svc/GetFinancialReportList?year=2027'
+        prefix='https://s29.q4cdn.com/228553818/files/content_files/'
+        data={'GetFinancialReportListResult':[{
+            'Title':'Q2 2027',
+            'Documents':[{'Title':'Quarterly report Q2 2027','DocumentPath':prefix+'AB-GROUP-2Q-2027.pdf'},
+            {'Title':'Investor presentation Q2 2027','Url':prefix+'Investor-presentation-Q2-2027.pdf'},
+            {'Title':'Quarterly report Q2 2026','Url':prefix+'report.pdf'},
+            {'Title':'Investor presentation Q2 2026','Url':prefix+'Investor-presentation-Q2-2026.pdf'},
+            {'Title':'Roadshow presentation Q2 2027','Url':prefix+'Roadshow-presentation-Q2-2027.pdf'},
+            {'Title':'Quarterly report Q2 2027','Url':'https://evil.test/AB-GROUP-2Q-2027.pdf'},
+            {'Title':'Quarterly report Q2 2027'},
+            {'Url':prefix+'unlabelled.pdf'}]}]}
+        docs=alm_feed_documents(data,endpoint,page,2027,2)
+        self.assertEqual({d['url'] for d in docs},{prefix+'AB-GROUP-2Q-2027.pdf',prefix+'Investor-presentation-Q2-2027.pdf'})
+        self.assertTrue(all(d['origin_kind']=='issuer_public_document_feed' for d in docs))
+        self.assertEqual(alm_feed_documents(data,'https://evil.test/feed/FinancialReport.svc/GetFinancialReportList',page,2027,2),[])
+        self.assertEqual(alm_feed_documents(data,page,page,2027,2),[])
 if __name__=='__main__':unittest.main()
 
 

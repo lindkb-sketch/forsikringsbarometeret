@@ -238,6 +238,17 @@ def rendered_issuer_html(company,url,y,q):
         browser=pw.chromium.launch(channel='chrome',headless=True,args=['--no-sandbox'])
         try:
             page=browser.new_page()
+            feed_responses=[]
+            feed_docs=[]
+            feed_diagnostics=[]
+            page_errors=[]
+            if company=='Alm. Brand':
+                def track_response(response):
+                    if (response.request.resource_type in ('xhr','fetch')
+                            and alm_public_feed(response.url)):
+                        feed_responses.append(response)
+                page.on('response',track_response)
+                page.on('pageerror',lambda exc:page_errors.append(type(exc).__name__))
             page.goto(url,wait_until='domcontentloaded',timeout=30000)
             try:
                 if company=='Gjensidige':
@@ -246,18 +257,116 @@ def rendered_issuer_html(company,url,y,q):
                     # The Q4 investor portal inserts document links asynchronously.
                     # Wait for both correctly dated candidates, not a generic PDF
                     # or a navigation link. Return the actual DOM, never guess URLs.
-                    for _ in range(24):
+                    # Q4 pages may use a year selector and deliver PDFs in a
+                    # JSON response rather than as directly visible anchors.
+                    # Only select a year explicitly present on the page.
+                    # Never click a legal disclaimer or alter location.
+                    selected=set()
+                    for i in range(36):
                         if not issuer_web_page(company,page.url):
                             raise ValueError('Browser left issuer website')
+                        if i in (4,12,20):
+                            for select in page.locator('select').all()[:12]:
+                                try:
+                                    if not select.is_visible():continue
+                                    options=select.locator('option').all_text_contents()
+                                    if str(y) in [v.strip() for v in options]:
+                                        key=select.get_attribute('id') or str(options)
+                                        if key not in selected:
+                                            select.select_option(label=str(y),timeout=2500)
+                                            selected.add(key)
+                                except PlaywrightTimeout:pass
                         kinds={d['document_type'] for d in alm_archive_documents(page.content(),page.url,y,q)}
                         if kinds=={'quarterly_report','results_presentation'}:break
                         page.wait_for_timeout(500)
+                    for response in feed_responses[:80]:
+                        item={'endpoint':urlsplit(response.url).path,'status':response.status}
+                        try:
+                            if response.status==200 and 'json' in response.headers.get('content-type','').lower():
+                                raw=response.body()
+                                if len(raw)<=5_000_000:
+                                    data=json.loads(raw)
+                                    discovered=alm_feed_documents(data,response.url,page.url,y,q)
+                                    feed_docs.extend(discovered)
+                                    item['candidate_count']=len(discovered)
+                        except Exception as exc:
+                            item['error']=type(exc).__name__
+                        feed_diagnostics.append(item)
+                    # Preserve enough evidence to debug missing links without
+                    # storing cookies, query-string API keys or raw responses.
+                    parser=Anchors();parser.feed(page.content())
+                    pdf_links=[]
+                    for href,label,heading in parser.links:
+                        target=urljoin(page.url,href)
+                        if trusted('Alm. Brand',target) and urlsplit(target).path.lower().endswith('.pdf'):
+                            pdf_links.append({'path':urlsplit(target).path,'label':label[:180],'heading':heading[:180]})
+                    folder=ARTIFACTS/'Alm-Brand'/f'Q{q}-{y}'
+                    folder.mkdir(parents=True,exist_ok=True)
+                    suffix='danish' if '/Danish/' in url else 'english'
+                    (folder/f'portal-{suffix}.json').write_text(json.dumps({
+                        'page':urlsplit(page.url).path,'title':page.title(),
+                        'feed_responses':feed_diagnostics,'pdf_links':pdf_links[:100],
+                        'page_error_types':page_errors[:30],
+                        'headings':page.locator('h1,h2,h3,h4').all_text_contents()[:40],
+                        'selected_year_widgets':len(selected)},ensure_ascii=False,indent=2),encoding='utf-8')
+                    print('ALM_PORTAL_FEEDS',json.dumps({'page':urlsplit(page.url).path,
+                        'feed_responses':feed_diagnostics,'pdf_link_count':len(pdf_links),
+                        'page_errors':len(page_errors)},ensure_ascii=False),flush=True)
                 else:
                     page.wait_for_selector('a[href*="/pressreleases/"], a[href*="storage.mfn.se"]',timeout=12000)
             except PlaywrightTimeout:pass
             if not issuer_web_page(company,page.url):raise ValueError('Browser left issuer website')
-            return page.content(),page.url
+            return page.content(),page.url,feed_docs
         finally:browser.close()
+
+def alm_public_feed(url):
+    """Only actual financial document feeds requested by the issuer page."""
+    if not issuer_web_page('Alm. Brand',url):return False
+    path=urlsplit(url).path
+    return bool(re.match(r'^/(?:feed|Services)/',path,re.I) and
+        re.search(r'(?:FinancialReport|Presentation|Event|ContentAsset)(?:Service)?\.svc/',path,re.I))
+
+def alm_feed_documents(data,response_url,index,y,q):
+    """Extract explicit document URLs from a same-issuer public JSON response.
+
+    Never combine a title from one record with a URL from another record.
+    Never infer a URL from a naming convention or from an imported value.
+    """
+    if not alm_public_feed(response_url) or not issuer_web_page('Alm. Brand',index):return []
+    found={}
+    def walk(value,depth=0):
+        if depth>20:return
+        if isinstance(value,str):
+            if value.lstrip().startswith(('{','[')):
+                try:walk(json.loads(value),depth+1)
+                except (ValueError,TypeError):pass
+            return
+        if isinstance(value,list):
+            for row in value:walk(row,depth+1)
+            return
+        if not isinstance(value,dict):return
+        labels=[v for k,v in value.items() if isinstance(v,str) and
+            re.fullmatch(r'(?:title|name|label|linktext|filename|documenttitle|reporttitle|presentationtitle|documenttype|reporttype|reportsubtype|presentationtype)',str(k),re.I)
+            and len(v)<300]
+        for key,href in value.items():
+            if isinstance(href,str) and len(href)<2000:
+                target=urljoin(index,href)
+                if trusted('Alm. Brand',target) and urlsplit(target).path.lower().endswith('.pdf'):
+                    # Explicit filename is sufficient; only if it is generic
+                    # try labels from this exact document record.
+                    anchor=lambda label:f'<a href="{html.escape(target,quote=True)}">{html.escape(label)}</a>'
+                    candidates=alm_archive_documents(anchor(''),index,y,q)
+                    if not candidates:
+                        candidates=alm_archive_documents(anchor(' '.join(labels)),index,y,q)
+                    for d in candidates:
+                        d.update(origin_kind='issuer_public_document_feed',feed_endpoint=urlsplit(response_url).path)
+                        found[(d['document_type'],d['url'])]=d
+            elif isinstance(href,(list,dict)):
+                walk(href,depth+1)
+            if isinstance(href,str) and href.lstrip().startswith(('{','[')):
+                walk(href,depth+1)
+    walk(data)
+    return list(found.values())
 
 ALM_REPORT=re.compile(r'\b(?:AB\s+GROUP|interim\s+report|quarterly\s+report|delårsrapport|kvartalsrapport|annual\s+report|årsrapport)\b',re.I)
 ALM_EXCLUDE=re.compile(r'\b(?:preliminary|preliminær|announcement|selskabsmeddelelse|press\s+release|webcast|key\s+figures|nøgletal|SFCR|solvency|parent\s+company|roadshow|seminar|conference|capital\s+markets?\s+day|investor\s+meeting|consensus|sustainability)\b',re.I)
@@ -467,7 +576,7 @@ def verify_document(company,doc,y,q,feed=None):
             semantic_matches.append({'metric':r['metric'],'period_type':r['period_type'],'value':r['value'],'prior_sha256':r['source_sha256']})
         if not old:raise ValueError('Changed HTML without original observations')
     if fmt=='pdf' and any(p>len(texts) for p in doc.get('source_pages',[])):raise ValueError('Imported source page outside document')
-    result=dict(url=final,requested_url=url,document_type=kind,origin=doc['origin'],origin_kind=doc.get('origin_kind','previously_verified_source' if doc.get('expected_sha256') else 'exchange_reserve'),label=doc.get('label',''),
+    result=dict(url=final,requested_url=url,document_type=kind,origin=doc['origin'],feed_endpoint=doc.get('feed_endpoint'),origin_kind=doc.get('origin_kind','previously_verified_source' if doc.get('expected_sha256') else 'exchange_reserve'),label=doc.get('label',''),
         format=fmt,source_sha256=digest,issuer_verified=True,period_verified=True,
         expected_fingerprint_matches=bool(expected) and set(expected)=={digest},semantic_matches=semantic_matches,
         fingerprint_status='changed_html_values_reparsed_and_matched' if semantic_matches else 'exact_match' if expected else 'new_source',source_pages_examined=len(texts),status='verified_document')
@@ -482,12 +591,14 @@ def collect_company(company,y,q,feed,extended):
         if url in checked and not render:return [],[]
         if not render:checked.add(url)
         try:
+            feed_docs=[]
             if render:
-                markup,final=rendered_issuer_html(company,url,y,q)
+                markup,final,feed_docs=rendered_issuer_html(company,url,y,q)
             else:
                 raw,final=fetch(company,url,limit=5_000_000)
                 markup=raw.decode('utf-8','replace')
             found=archive_links(company,markup,final,y,q)
+            found=list({(d['document_type'],d['url']):d for d in [*feed_docs,*found]}.values())
             details=issuer_detail_links(company,markup,final,y,q)
             indexes.append(dict(url=final,status='checked',method='rendered_issuer_page' if render else 'issuer_html',
                                 presentation_candidates=sum(d['document_type']=='results_presentation' for d in found),
