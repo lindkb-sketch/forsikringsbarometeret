@@ -59,12 +59,12 @@ def row(text,label,count,percent=False):
 def amount_rows(text,count):
     return {key:row(text,re.escape(label),count) for key,label in LABELS.items()}
 
-def components(a):
+def components(a,*,tolerance=TOL):
     a={k:dec(a[k]) for k in LABELS}
     rev=a['insurance_revenue'];gross=-a['gross_claims_cost'];expense=-a['operating_expenses'];reins=-a['reinsurance_result']
     if min(rev,gross,expense)<=0:
         raise ValueError('KLP revenue or expense sign invalid')
-    if abs(rev-gross-expense-reins-a['insurance_service_result'])>TOL:
+    if abs(rev-gross-expense-reins-a['insurance_service_result'])>tolerance:
         raise ValueError('KLP insurance accounting reconciliation failed')
     return dict(insurance_revenue=rev,gross_claims_cost=gross,operating_expenses=expense,reinsurance_effect=reins)
 
@@ -112,6 +112,7 @@ def parse_annual(texts,year,url,digest,views=None):
         raise ValueError('KLP annual report cover/period not verified')
     statements=[]
     ratio_tables=[]
+    diagnostics=[]
     for i,t in enumerate(texts):
         variants=[t,*((views or {}).get(i,[]))]
         for v in variants:
@@ -132,7 +133,9 @@ def parse_annual(texts,year,url,digest,views=None):
                 profit=row(v,'Resultat før skattekostnad',2)
                 solvency=row(v,r'Solvenskapitaldekning(?:\s*\(%\))?',2,True)
                 ratio_tables.append((i+1,reported,revenue,profit,solvency))
-            except ValueError:continue
+            except ValueError as exc:
+                diagnostics.append((i+1,str(exc),v[:1800]))
+                continue
     def unique(items,what):
         result=[]
         for x in items:
@@ -140,7 +143,7 @@ def parse_annual(texts,year,url,digest,views=None):
         if len(result)!=1:
             diagnostic=[(i+1,[l[:200] for l in t.splitlines() if re.search(r'Hovedtall|Solvenskapitaldekning|Skadeprosent[- ]brutto|NOTE MILLIONER KRONER|Forsikringsinntekter',l,re.I)][:8])
                         for i,t in enumerate(texts) if re.search(r'Hovedtall|^Resultatregnskap$',t,re.I|re.M)][:5]
-            raise ValueError('Unique annual '+what+' not found: '+repr(diagnostic))
+            raise ValueError('Unique annual '+what+' not found: '+repr(diagnostic)+'; table diagnostics: '+repr(diagnostics[:5]))
         return result[0]
     sp,amounts=unique(statements,'income statement')
     rp,reported,rev,pbt,solvency=unique(ratio_tables,'key figures')
@@ -217,8 +220,11 @@ def derive(annual,q3):
     components(q3['prior']);components(q3['prior_full_year'])
     current={k:dec(annual['current'][k])-dec(q3['current'][k]) for k in LABELS}
     prior={k:dec(annual['prior'][k])-dec(q3['prior'][k]) for k in LABELS}
-    quarter_ratios=ratios(components(current))
-    components(prior)
+    # Each independently reconciled statement is rounded to NOK 0.1m.
+    # The residual may accumulate BOTH statements' maximum rounding error.
+    # Do not relax the checks on the original annual and Q3 amounts.
+    quarter_ratios=ratios(components(current,tolerance=2*TOL))
+    components(prior,tolerance=2*TOL)
     solvency=dec(annual['solvency'])
     if not 0<solvency<1000:raise ValueError('Invalid KLP year-end solvency')
     def metrics(amounts,ratio_values,prior_amounts):
@@ -281,6 +287,27 @@ def annual_views(raw,texts):
         for i,t in enumerate(texts):
             if re.search(r'Hovedtall\s+20\d{2}',t,re.I):
                 p=pdf.pages[i]
-                result[i]=[p.crop((0,0,p.width*0.52,p.height)).extract_text() or '',
-                           p.crop((p.width*0.48,0,p.width,p.height)).extract_text() or '']
+                views=[]
+                # The annual report uses three text columns; the highlights
+                # table can sit in the middle column between two prose blocks.
+                for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1),(.30,.70)):
+                    views.append(p.crop((p.width*x0,0,p.width*x1,p.height)).extract_text() or '')
+                words=p.extract_words()
+                for heading in (w for w in words if w['text'].lower()=='hovedtall'):
+                    nearby=[w for w in words if heading['top']<=w['top']<=heading['top']+70
+                            and heading['x0']-15<=w['x0']<=heading['x0']+p.width*.40]
+                    # Determine the table bounds using its printed title and
+                    # two year column labels; never infer data from location alone.
+                    for first in (w for w in nearby if re.fullmatch(r'20\d{2}',w['text'])):
+                        for second in (w for w in nearby if abs(w['top']-first['top'])<3
+                            and w['x0']>first['x0'] and w['text']==str(int(first['text'])-1)):
+                            end_rows=[w for w in words if w['text'].startswith('Solvenskapitaldekning')
+                                      and w['top']>first['top'] and abs(w['x0']-heading['x0'])<25]
+                            for end in end_rows:
+                                for margin in (3,7,12):
+                                    x0=max(0,min(heading['x0'],end['x0'])-margin)
+                                    x1=min(p.width,second['x1']+margin)
+                                    if x1>x0:
+                                        views.append(p.crop((x0,max(0,heading['top']-3),x1,min(p.height,end['bottom']+5))).extract_text() or '')
+                result[i]=list(dict.fromkeys(views))
     return result
