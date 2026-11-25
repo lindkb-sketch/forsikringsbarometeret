@@ -46,4 +46,42 @@ class NineIssuerAuditTests(unittest.TestCase):
               'presentation_evidence':{'source_url':'https://s29.q4cdn.com/228553818/files/p.pdf','source_sha256':'b'*64,'source_page':19}}}}
         docs=report_sources({},ext,'Alm. Brand',2026,3)
         self.assertEqual({x['document_type'] for x in docs},{'quarterly_report','results_presentation'})
+
+    def test_presentation_explicit_reported_not_forecast(self):
+        from reconcile_issuer_presentation_metrics import extract
+        text='''Reported figures Q3 2026 and Consensus 2026-2028
+Q3 2026 Q3 2026 2026 2027 2028
+DKKm Reported Consensus Consensus Consensus Consensus
+Insurance revenue 10,591 10,577 42,182 43,851 45,596
+Combined ratio 76.8 78.3 83.1 80.5 80.3'''
+        values={r['metric']:r['value'] for r in extract('Tryg',[text],2026,3)}
+        self.assertEqual(values,{'insurance_revenue':10591.,'combined_ratio':76.8})
+        self.assertEqual(extract('Tryg',[text.replace('DKKm Reported','DKKm Consensus')],2026,3),[])
+        self.assertEqual(extract('Tryg',[text],2026,2),[])
+    def test_sampo_different_periods_and_no_segment_leakage(self):
+        from reconcile_issuer_presentation_metrics import extract
+        text='''Group: results and key figures
+EURm 1–9/2026 Q3/2026 Q3/2025 FY 2025
+Insurance revenue, net 7,303 2,503 2,303 9,078
+Underwriting result 1,221 435 392 1,485
+Combined ratio, % 83.3 82.6 83.0 83.6'''
+        rows=extract('Sampo',[text],2026,3)
+        values={(r['metric'],r['period_type']):r['value'] for r in rows}
+        self.assertEqual(values['insurance_revenue','quarter'],2503.)
+        self.assertEqual(values['insurance_revenue','ytd'],7303.)
+        self.assertEqual(values['combined_ratio','ytd'],83.3)
+        self.assertEqual(extract('Sampo',[text.replace('Group:','Private Nordic:')],2026,3),[])
+    def test_conflict_and_distinct_document_fingerprints(self):
+        from reconcile_issuer_presentation_metrics import reconcile
+        text='''Reported figures Q3 2026 and Consensus 2026-2028
+Q3 2026 Q3 2026 2026 2027 2028
+DKKm Reported Consensus Consensus Consensus Consensus
+Combined ratio 76.8 78.3 83.1 80.5 80.3'''
+        row=dict(company='Tryg',year=2026,quarter=3,scope='group',metric='combined_ratio',period_type='quarter',unit='percent',
+                 source_sha256='a'*64,source_url='https://tryg.com/r.pdf',source_page=4,value=77.1)
+        report=dict(expected_fingerprint_matches=True,source_sha256='a'*64,requested_url=row['source_url'])
+        pres=dict(source_sha256='b'*64,url='https://tryg.com/p.pdf')
+        self.assertEqual(reconcile('Tryg',2026,3,{'observations':[row]},[report],pres,[text])[0]['status'],'conflict')
+        self.assertEqual(reconcile('Tryg',2026,3,{'observations':[row]},[report],dict(pres,source_sha256='a'*64),[text]),[])
 if __name__=='__main__':unittest.main()
+
