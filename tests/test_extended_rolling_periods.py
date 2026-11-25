@@ -116,6 +116,56 @@ class ExtendedRolloverTests(unittest.TestCase):
         texts[raw[PRES1]]=presentation(2027,1)
         texts[raw[PRES1]][1]=texts[raw[PRES1]][1].replace('240%','230%')
         with self.assertRaisesRegex(ValueError,'ratio mismatch'):advance_alm(old,**opts)
+    def test_all_nine_comparison_and_audit_rollover(self):
+        from check_nine_insurer_e2e import check,SEVEN
+        from check_extended_insurer_evidence import validate,COMPANIES as ALL
+        old_klp=build_snapshot(*[reconciled(q) for q in (1,2,3)])
+        old_alm=base_alm()
+        klp_html=f'<h2>KLP Skadeforsikring</h2><h3>2026</h3><a href="{KLPU4}">Kvartalsrapport 4. kvartal</a><h3>2027</h3><a href="{KLPU1}">Kvartalsrapport 1. kvartal</a>'
+        k_raw={KLPU4:b'%PDF-Q4',KLPU1:b'%PDF-Q1'}
+        k_pages={b'%PDF-Q4':klp_fixture(2026,4),b'%PDF-Q1':klp_fixture(2027,1)}
+        alm_html=''.join(f'<a href="{u}">{u.rsplit("/",1)[-1]}</a>' for u in (ALMU4,ALMU1,PRES4,PRES1))
+        a_raw={u:('%PDF-'+str(i)).encode() for i,u in enumerate((ALMU4,ALMU1,PRES4,PRES1))}
+        a_pages={a_raw[ALMU4]:alm_fixture(2026,4),a_raw[ALMU1]:alm_fixture(2027,1),
+                 a_raw[PRES4]:presentation(2026,4),a_raw[PRES1]:presentation(2027,1)}
+        rows=[]
+        for y,q,today in [(2026,4,date(2027,2,1)),(2027,1,date(2027,5,1))]:
+            klp=advance_klp(old_klp,today=today,fetcher=lambda:klp_html,downloader=lambda u,c:k_raw[u],extractor=lambda b:k_pages[b])
+            alm=advance_alm(old_alm,today=today,fetcher=lambda u:alm_html,downloader=lambda u:a_raw[u],reader=lambda b:(a_pages[b],{}))
+            for company in SEVEN:
+                metrics={'insurance_revenue':1000,'insurance_service_result':200,
+                    'combined_ratio':80,'loss_ratio':60,'expense_ratio':20,
+                    'insurance_revenue_growth':25,'profit_before_tax':150}
+                if company!='Frende':
+                    metrics['solvency_ratio']=200
+                    metrics['return_on_equity']=20
+                for metric,value in metrics.items():
+                    periods=['quarter','ytd']
+                    if company=='Sampo' and metric=='return_on_equity':periods=['ytd']
+                    for period in periods:
+                        rows.append(dict(company=company,year=y,quarter=q,scope='group',source_scope='group',
+                            period_type=period,metric=metric,value=value,unit='percent' if metric.endswith('ratio') or metric in ('return_on_equity','insurance_revenue_growth') else 'MNOK',
+                            status='reported',source_type='official_quarterly_report',
+                            source_url=f'https://simulation.invalid/{company}/Q{q}-{y}.pdf',source_sha256='a'*64,source_page=1,
+                            source_definition='Return on equity own funds (RoEOF; issuer definition)' if company=='Sampo' and metric=='return_on_equity' else 'Synthetic regression fixture'))
+            self.assertTrue(audit({'observations':rows})['ok'])
+            feed=verified_feed({'observations':rows})
+            ext={'insurers':{KLP:klp,ALM:alm}}
+            self.assertEqual(validate(ext,{'sources':[{'company':c} for c in ALL]},{c:{} for c in ALL}),[])
+            comp=build(feed,ext)
+            gaps={'all_seven_dual_document_verified':False,'companies':[{'company':c} for c in SEVEN]}
+            self.assertEqual(check(feed,ext,comp,gaps),[])
+            kpis=coverage(comp)
+            self.assertEqual((kpis['present_metric_count'],kpis['expected_metric_count']),(78,78))
+            self.assertTrue(kpis['all_nine_same_period'])
+            self.assertEqual(kpis['common_period'],f'Q{q} {y}')
+            self.assertFalse(comp['investor_use_approved'])
+            self.assertFalse(kpis['all_nine_unattended_extraction_verified'])
+            mixed=coverage(build(feed,{'insurers':{KLP:old_klp,ALM:alm}}))
+            self.assertFalse(mixed['all_nine_same_period'])
+            self.assertIsNone(mixed['common_period'])
+            old_klp,old_alm=klp,alm
+
     def test_alm_wrong_period_or_annual_only_blocks(self):
         with self.assertRaises(ValueError):verify_alm(alm_fixture(2026,4),ALMU4,b'%PDF-Q4',2027,4)
         x=alm_fixture(2026,4)
