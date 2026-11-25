@@ -83,5 +83,23 @@ Combined ratio 76.8 78.3 83.1 80.5 80.3'''
         pres=dict(source_sha256='b'*64,url='https://tryg.com/p.pdf')
         self.assertEqual(reconcile('Tryg',2026,3,{'observations':[row]},[report],pres,[text])[0]['status'],'conflict')
         self.assertEqual(reconcile('Tryg',2026,3,{'observations':[row]},[report],dict(pres,source_sha256='a'*64),[text]),[])
+    def test_owner_confirmed_report_only_issuers(self):
+        from audit_nine_issuer_documents import presentation_policy,REPORT_ONLY_ISSUERS
+        self.assertEqual(REPORT_ONLY_ISSUERS,{'Fremtind','KLP Skadeforsikring','Frende'})
+        for company in REPORT_ONLY_ISSUERS:
+            p=presentation_policy(company,[{'document_type':'quarterly_report','status':'verified_document'}])
+            self.assertFalse(p['presentation_required'])
+            self.assertEqual(p['presentation_exception'],'owner_confirmed_no_separate_results_presentation')
+            self.assertFalse(p['presentation_exception_under_review'])
+            # A new candidate is investigated even before it is verified.
+            changed=presentation_policy(company,[{'document_type':'results_presentation','status':'unverified'}])
+            self.assertTrue(changed['presentation_required'])
+            self.assertTrue(changed['presentation_exception_under_review'])
+            self.assertIsNone(changed['presentation_exception'])
+        for company in ('Gjensidige','Tryg','Sampo','Protector','Storebrand','Alm. Brand'):
+            p=presentation_policy(company,[])
+            self.assertTrue(p['presentation_required'])
+            self.assertIsNone(p['presentation_exception'])
 if __name__=='__main__':unittest.main()
+
 
