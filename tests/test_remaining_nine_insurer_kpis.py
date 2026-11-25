@@ -75,7 +75,8 @@ class PreTaxTests(unittest.TestCase):
 class AlmSupplementalTests(unittest.TestCase):
     def test_real_report_reconciliation_and_preservation(self):
         data=json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8'))
-        original=data['insurers']['Alm. Brand']
+        current=data['insurers']['Alm. Brand']
+        original=current.get('periods',[current])[0]
         pdf=live_alm()
         row=attach(original,pdf)
         self.assertEqual(validate_supplemental(row),[])
