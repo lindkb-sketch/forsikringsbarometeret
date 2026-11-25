@@ -124,7 +124,8 @@ def parse_pdf(pages,anchor,digest):
             # Fremtind's neighbouring two-column graphic can append its label.
             source_line=lines[index]
             if company=='Fremtind':
-                source_line=re.sub(r'\s+segment\s*\(%\)\s*
+                source_line=re.sub(r'\s+segment\s*\(%\)\s*$','',source_line,flags=re.I)
+            vals,label=_row([source_line],LABELS[company],count,company=='Fremtind')
             candidates.append((vals,label))
         except ValueError:continue
     if len(candidates)!=1:raise ValueError('Pre-tax financial columns ambiguous: '+repr(lines[index]))
