@@ -96,7 +96,7 @@ def check():
                 original=json.loads((ROOT/'data/extended_insurer_financials.json').read_text(encoding='utf-8'))
                 source=original['insurers']['KLP Skadeforsikring']
                 if (source.get('status')!='verified_official_pdf_reconciled'
-                    or klp.get('period')!='Q3 2026'
+                    or klp.get('period')!=f"Q{source.get('quarter')} {source.get('year')}"
                     or not klp_metrics_match(klp.get('metrics',{}),source.get('metrics',{}))):
                     raise ValueError('KLP public PDF metrics differ from reconciled source')
             else:
