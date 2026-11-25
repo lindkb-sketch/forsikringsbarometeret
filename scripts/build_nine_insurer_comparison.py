@@ -38,6 +38,18 @@ def build(feed, extended):
             latest = periods[-1] if periods else None
             current = [r for r in rows if (r['year'], r['quarter']) == latest] if latest else []
             values = {r['metric']: r['value'] for r in current if r.get('metric') in METRICS}
+            # Solvency is a quarter-end snapshot, regardless of flow period.
+            if latest:
+                snapshots = [r['value'] for r in observations
+                             if r.get('company') == company and r.get('scope') == 'group'
+                             and (r['year'], r['quarter']) == latest
+                             and r.get('metric') == 'solvency_ratio'
+                             and r.get('status') in ('reported', 'calculated')
+                             and r.get('source_url')]
+                if snapshots and len(set(snapshots)) == 1:
+                    values['solvency_ratio'] = snapshots[0]
+                elif snapshots:
+                    values.pop('solvency_ratio', None)
             # Match current isolated quarter with the same quarter one year
             # earlier, on the same company, scope, unit and revenue definition.
             if latest and 'insurance_revenue_growth' not in values:
