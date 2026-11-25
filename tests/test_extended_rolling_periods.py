@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from rolling_klp_reports import advance as advance_klp, verify_report as verify_klp
-from rolling_alm_brand_reports import advance as advance_alm, verify_report as verify_alm, validate_rolling
+from rolling_alm_brand_reports import advance as advance_alm, verify_report as verify_alm, validate_rolling, read_report, presentation_evidence
 from import_klp_production import build_snapshot
 from test_klp_production_import import reconciled
 from test_klp_q2q3_reconcile import pages as klp_q3_pages
@@ -44,7 +44,7 @@ def alm_fixture(year,q):
       ('INCOME Insurance revenue','1,000','800','4,000','3,200'),
       ('Claims expenses','500','400','2,000','1,600'),
       ('Insurance operating expenses','150','120','600','480'),
-      ('Profit/loss on reinsurance','50','40','200','160'),
+      ('Profit/loss on reinsurance','-50','-40','-200','-160'),
       ('Insurance service result','300','240','1,200','960'),
       ('Gross claims ratio','50.0','50.0','50.0','50.0'),
       ('Net reinsurance ratio','5.0','5.0','5.0','5.0'),
@@ -165,6 +165,24 @@ class ExtendedRolloverTests(unittest.TestCase):
             self.assertFalse(mixed['all_nine_same_period'])
             self.assertIsNone(mixed['common_period'])
             old_klp,old_alm=klp,alm
+
+    def test_real_alm_q3_pdf_layout_replay(self):
+        from alm_brand_live_pdf import OFFICIAL_FILING_PDF,download_report
+        from import_alm_brand_presentation import PRESENTATION
+        raw=download_report(OFFICIAL_FILING_PDF)
+        texts,regions=read_report(raw)
+        parsed=verify_alm(texts,OFFICIAL_FILING_PDF,raw,2026,3,regions)
+        self.assertEqual(parsed['metrics']['profit_before_tax'],544)
+        self.assertEqual(parsed['metrics']['return_on_equity'],18.0)
+        self.assertEqual(parsed['ytd_metrics']['profit_before_tax'],907)
+        self.assertEqual(parsed['ytd_metrics']['return_on_equity'],10.0)
+        self.assertEqual(parsed['ytd_metrics']['insurance_revenue'],8982)
+        self.assertEqual(parsed['ytd_metrics']['insurance_service_result'],1199)
+        p_raw=download_report(PRESENTATION)
+        p_texts,_=read_report(p_raw)
+        parsed['presentation_evidence']=presentation_evidence(p_texts,PRESENTATION,p_raw,2026,3,238)
+        self.assertEqual(validate_rolling(parsed),[])
+        print('ALM_ROLLING_PARSER_REAL_Q3_REPLAY',parsed['metrics'],parsed['ytd_metrics'],flush=True)
 
     def test_alm_wrong_period_or_annual_only_blocks(self):
         with self.assertRaises(ValueError):verify_alm(alm_fixture(2026,4),ALMU4,b'%PDF-Q4',2027,4)
