@@ -48,8 +48,13 @@ def build(comparison):
             'unattended_extraction_verified': False,
             'missing_reason': 'not_verified_in_comparison_feed' if missing else None,
         })
+    periods = sorted({r['period'] for r in result if r['period']}, key=lambda p:(p.split()[-1],p.split()[0]))
+    common_period = periods[0] if len(periods)==1 and all(r['period']==periods[0] for r in result) else None
     return {
         'schema_version': 1,
+        'all_nine_same_period': common_period is not None,
+        'common_period': common_period,
+        'reported_periods': periods,
         'purpose': 'non_destructive_latest_quarter_kpi_gap_inventory',
         'all_nine_metrics_present': all(r['all_metrics_present'] for r in result),
         'all_nine_unattended_extraction_verified': False,
