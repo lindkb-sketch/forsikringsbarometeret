@@ -30,8 +30,10 @@ class TestQuarterlyCoverage(unittest.TestCase):
    q=[r for r in rows if r['scope']==scope and r['period_type']=='quarter']
    self.assertTrue(q,f'Missing Protector Q3 {scope}')
    self.assertTrue(all(r.get('source_page') and r.get('source_url','').startswith('https://') for r in q))
-  group={r['metric']:r['value'] for r in rows if r['scope']=='group'}
+  group={r['metric']:r['value'] for r in rows if r['scope']=='group' and r['period_type']=='quarter'}
+  ytd={r['metric']:r['value'] for r in rows if r['scope']=='group' and r['period_type']=='ytd'}
   self.assertAlmostEqual(group['combined_ratio'],82.7,delta=0.1)
+  self.assertAlmostEqual(ytd['combined_ratio'],83.0,delta=0.1)
  def test_gjensidige_not_prematurely_published(self):
   # On 22 October Gjensidige Q3 2026 has not been released (23 October).
   from datetime import date
