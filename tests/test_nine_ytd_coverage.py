@@ -64,6 +64,32 @@ class YTDContracts(unittest.TestCase):
         self.assertEqual(parsed[0]['value'],34.2)
         with self.assertRaises(ValueError):returns([(6,'The annualised return on equity was 34.2 per cent.')],a,{})
 
+    def test_actual_fremtind_and_tryg_header_layouts(self):
+        fremtind=row('Fremtind','insurance_revenue',6305,period='quarter',unit='NOKm')
+        fremtind_text=('Resultatutvikling og nøkkeltall1\n'
+            'MNOK Q3 2026 Q3 2025 30.09.2026 30.09.2025 31.12.2025 MNOK Q3 2026 Q3 2025 30.09.2026 30.09.2025 31.12.2025\n'
+            'Annualisert egenkapitalavkastning justert for\n'
+            'transaksjonen med Eika Forsikring AS 40,2 % 41,4 % 41,7 % 34,5 % 40,5 %')
+        result=returns([(3,fremtind_text)],fremtind,{'return_on_equity':40.2})
+        self.assertEqual(result[0]['value'],41.7)
+        tryg=row('Tryg','insurance_revenue',10591,period='quarter',unit='MDKK')
+        tryg_text=('Income overview\nQ3 Q3 Q1-Q3 Q1-Q3 Full Year\nDKKm 2026 2025 2026 2025 2025\n'
+                   'Return on Own Funds (%)a) 47.0 42.2 33.3 40.1 40.3')
+        result=returns([(4,tryg_text)],tryg,{'return_on_equity':47.0})
+        self.assertEqual(result[0]['value'],33.3)
+        with self.assertRaises(ValueError):
+            returns([(4,tryg_text.replace('DKKm 2026 2025 2026 2025 2025','DKKm 2026 2025 2025 2026 2025'))],tryg,{'return_on_equity':47.0})
+
+    def test_gjensidige_cumulative_prose_in_physical_column(self):
+        anchor=row('Gjensidige','insurance_revenue',100,period='quarter',unit='MNOK')
+        interleaved='The annualised return on equity for the OTHER COLUMN year-to-date was 34.2 per cent.'
+        column='The annualised return on equity for the year-to-\ndate was 34.2 per cent (29.6).'
+        result=returns([(8,interleaved)],anchor,{},positioned={8:[column]})
+        self.assertEqual(result[0]['value'],34.2)
+        self.assertEqual(result[0]['source_page'],8)
+        with self.assertRaises(ValueError):
+            returns([(8,interleaved)],anchor,{})
+
     def test_live_q3_2026_all_nine_ytd_source_replay(self):
         # Replay original documents, even after future imports: no fixture
         # values are written to the repository or admitted to production.
