@@ -24,7 +24,7 @@ LABELS = {
     'Gjensidige': r'Profit or loss before tax expense',
     'Tryg': r'(?:Profit/loss|Profit|Result) before tax(?:es)?',
     'Protector': r'Profit\s*/\s*\(loss\) before tax',
-    'Storebrand': r'(?:Profit|Result) before tax(?:es)?',
+    'Storebrand': r'Profit before income tax',
 }
 GROUP_MARKERS = {
     'Fremtind': ('Resultatutvikling og nøkkeltall','Inntekter fra forsikringstjenester'),
@@ -136,7 +136,11 @@ def parse_storebrand(pages,anchor,digest):
     """Storebrand's consolidated Group income statement, not insurance APM."""
     year=anchor['year'];q=anchor['quarter']; hits=[]
     for page,text in pages:
-        if not re.search(r'(?:Consolidated (?:income statement|statement of profit)|Income statement\s+Storebrand Group|Storebrand Group\s+Income statement)',text,re.I):
+        # Require consolidated group statement markers, excluding the parent-only
+        # Storebrand ASA statement and the insurance segment APM table.
+        if not (re.search(r'Storebrand Group',text,re.I) and re.search(r'Income statement',text,re.I)
+                and 'Net insurance service result' in text and 'Tax expenses' in text
+                and 'NOK million' in text):
             continue
         lines=text.splitlines()
         indexes=[i for i,l in enumerate(lines) if re.match(r'^\s*'+LABELS['Storebrand']+FOOT+r'\s+',l,re.I)]
@@ -149,7 +153,7 @@ def parse_storebrand(pages,anchor,digest):
                 hits.append((page,vals))
             except ValueError:continue
     if len(hits)!=1:
-        diagnostic=[(p,[l.strip()[:200] for l in t.splitlines() if re.search(r'profit before tax|result before tax|income statement',l,re.I)][:7]) for p,t in pages if re.search(r'profit before tax|result before tax',t,re.I)]
+        diagnostic=[(p,[l.strip()[:200] for l in t.splitlines() if re.search(r'profit before (?:income )?tax|result before tax|income statement',l,re.I)][:7]) for p,t in pages if re.search(r'profit before (?:income )?tax|result before tax',t,re.I)]
         raise ValueError('Consolidated Storebrand Group pre-tax quarter/HIÅ table not uniquely verified: '+repr(diagnostic[:5]))
     page,vals=hits[0]
     return [_observation(anchor,'quarter',vals[0],page,digest,'Storebrand Group consolidated profit before tax (not insurance segment)'),
