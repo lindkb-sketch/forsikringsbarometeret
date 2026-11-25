@@ -100,6 +100,45 @@ Combined ratio 76.8 78.3 83.1 80.5 80.3'''
             p=presentation_policy(company,[])
             self.assertTrue(p['presentation_required'])
             self.assertIsNone(p['presentation_exception'])
+    def test_newsweb_id_name_attachment(self):
+        from audit_nine_issuer_documents import attachment_url
+        self.assertEqual(attachment_url(684673,{'id':1234,'name':'Interim presentation Q3 2026.pdf'}),
+            'https://api3.oslo.oslobors.no/v1/newsreader/attachment?messageId=684673&attachmentId=1234')
+        self.assertEqual(attachment_url(684673,{'id':'../x'}),'')
+        self.assertEqual(attachment_url(True,{'id':1}),'')
+    def test_protector_period_labelled_income_statement(self):
+        from reconcile_issuer_presentation_metrics import extract,number_columns
+        text='''Income statement
+All figures in NOKm unless otherwise stated.
+NOKm Q3 2026 Q3 2025 Q1-Q3 2026 Q1-Q3 2025 FY 2025
+Insurance revenue 3 864 3 529 11 258 10 197 13 756
+Net result from reinsurance contracts held (161) (198) (513) (523) (541)
+Insurance service result 670 598 1 912 1 571 2 106
+Profit/(loss) before tax 1 120 640 2 402 2 541 3 438
+Loss ratio 67.5% 66.6% 67.6% 68.5% 69.7%
+Loss ratio, net of reinsurance 71.7% 72.2% 72.2% 73.6% 73.6%
+Cost ratio 10.9% 10.9% 10.8% 11.0% 11.1%
+Combined ratio 82.7% 83.1% 83.0% 84.6% 84.7%'''
+        result={(x['metric'],x['period_type']):x['value'] for x in extract('Protector',[text],2026,3)}
+        self.assertEqual(result['insurance_revenue','quarter'],3864)
+        self.assertEqual(result['insurance_revenue','ytd'],11258)
+        self.assertEqual(result['loss_ratio','quarter'],71.7)
+        self.assertEqual(result['combined_ratio','ytd'],83.0)
+        self.assertEqual(extract('Protector',[text],2027,3),[])
+        self.assertIsNone(number_columns('1 234 567',2))
+    def test_alm_financial_results_excludes_segment_and_forecast(self):
+        from reconcile_issuer_presentation_metrics import extract
+        text='''Financial highlights, Q3
+Financial results
+DKKm
+Q3 2026 Q3 2025
+Insurance revenue 3,054 3,006
+Insurance service result 755 535
+Combined ratio 75.3 82.2'''
+        vals={x['metric']:x['value'] for x in extract('Alm. Brand',[text],2026,3)}
+        self.assertEqual(vals,{'insurance_revenue':3054.,'insurance_service_result':755.,'combined_ratio':75.3})
+        self.assertEqual(extract('Alm. Brand',[text.replace('Financial results','Guidance')],2026,3),[])
 if __name__=='__main__':unittest.main()
+
 
 

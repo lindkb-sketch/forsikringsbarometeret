@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote,urljoin,urlsplit
+from urllib.parse import unquote,urljoin,urlsplit,urlencode
 from urllib.request import Request,build_opener,HTTPRedirectHandler
 from verify_nine_document_bytes import COMPANIES,DELIVERY
 from update_newsweb_notices import Client,ISSUERS,timestamp
@@ -46,6 +46,23 @@ RELEASE_SEEDS={('Fremtind',2026,3):684332,('Gjensidige',2026,3):684673,
 EXCHANGE_HOSTS={'attachment.news.eu.nasdaq.com','newsweb.oslobors.no','www.newsweb.no','newsweb.no',
                 'api3.oslo.oslobors.no','storage.mfn.se','mb.cision.com','kommunikasjon.ntb.no'}
 AMOUNTS={'insurance_revenue','insurance_service_result','profit_before_tax'}
+# Q3 2026 baseline fallback links published by the issuer's release distributor.
+# The primary route remains identity-verified NewsWeb attachments for any period.
+KNOWN_PRESENTATIONS={
+ ('Gjensidige',2026,3):('https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf','https://newsweb.oslobors.no/message/684673','Interim presentation Q3 2026.pdf'),
+ ('Protector',2026,3):('https://storage.mfn.se/34c23717-cdf0-4183-99f6-5c9af439bfca/investor-presentation-q3-2026-prot.pdf','https://newsweb.oslobors.no/message/684546','Investor Presentation Q3 2026 (PROT).pdf')
+}
+
+def attachment_url(message_id,attachment):
+    # The public NewsWeb detail response commonly contains only {id,name}.
+    # Construct the documented endpoint using the exact returned identifiers.
+    if not re.fullmatch(r'[1-9][0-9]*',str(message_id)) or not isinstance(attachment,dict):
+        return ''
+    attachment_id=attachment.get('id')
+    if isinstance(attachment_id,bool) or not re.fullmatch(r'[1-9][0-9]*',str(attachment_id)):
+        return ''
+    return 'https://api3.oslo.oslobors.no/v1/newsreader/attachment?'+urlencode({'messageId':int(message_id),'attachmentId':int(attachment_id)})
+
 # Project owner confirmed these issuers do not publish a separate results deck.
 # Keep discovering new sources: an actual candidate reactivates the requirement.
 REPORT_ONLY_ISSUERS=frozenset({'Fremtind','KLP Skadeforsikring','Frende'})
@@ -188,6 +205,7 @@ def exchange_links(company,y,q,client):
             if not isinstance(a,dict):continue
             label=next((a[k] for k in ('fileName','filename','attachmentName','name','title','description') if isinstance(a.get(k),str)), '')
             href=next((a[k] for k in ('url','attachmentUrl','downloadUrl','fileUrl','href') if isinstance(a.get(k),str)), '')
+            if not href:href=attachment_url(mid,a)
             if not href or not label or not trusted(company,href,exchange=True):continue
             if not period_label(label,y,q) and not period_label(title,y,q):continue
             if PRESENTATION.search(label) and not EXCLUDE.search(label):
@@ -305,15 +323,22 @@ def collect_company(company,y,q,feed,extended):
     try:
         found,news=exchange_links(company,y,q,Client());docs.extend(found)
     except Exception as exc:errors.append('Exchange discovery: '+str(exc)[:300])
+    known=KNOWN_PRESENTATIONS.get((company,y,q))
+    if known:
+        url,origin,label=known
+        docs.append(dict(url=url,document_type='results_presentation',origin=origin,label=label,exchange=True))
     unique={}
     for doc in docs:
         key=(doc['document_type'],doc['url'])
         if key not in unique or doc.get('expected_sha256'):unique[key]=doc
-    verified=[];loaded=[]
+    verified=[];loaded=[];seen_verified=set()
     for doc in list(unique.values())[:12]:
         try:
             evidence,raw,texts=verify_document(company,doc,y,q,feed)
-            verified.append(evidence);loaded.append((evidence,raw,texts))
+            verified.append(evidence)
+            identity=(evidence['document_type'],evidence['source_sha256'])
+            if identity not in seen_verified:
+                loaded.append((evidence,raw,texts));seen_verified.add(identity)
             # Actual PDF/text evidence is a CI artifact, not a new web feed.
             folder=ARTIFACTS/re.sub(r'[^A-Za-z0-9]+','-',company).strip('-')/f'Q{q}-{y}'
             folder.mkdir(parents=True,exist_ok=True)
@@ -326,11 +351,30 @@ def collect_company(company,y,q,feed,extended):
     presentation_found='results_presentation' in types
     # Byte identity is not metric reconciliation. Explicitly compare at least
     # Alm. Brand solvency using the two existing independently verified parsers.
-    from reconcile_issuer_presentation_metrics import reconcile
+    from reconcile_issuer_presentation_metrics import reconcile,storebrand_flow_tables,gjensidige_positioned_metrics
     matches=[]
+    report_docs=[e for e,_,_ in loaded if e['document_type']=='quarterly_report']
+    verified_feed=feed
+    if company=='Alm. Brand':
+        from rolling_alm_brand_reports import read_report,verify_report
+        extra=[]
+        for ev,raw,_ in loaded:
+            if ev['document_type']!='quarterly_report' or not ev['expected_fingerprint_matches']:continue
+            try:
+                texts,regions=read_report(raw);rr=verify_report(texts,ev['url'],raw,y,q,regions)
+                for period,values in [('quarter',rr['metrics']),('ytd',rr['ytd_metrics'])]:
+                    for k,v in values.items():
+                        extra.append(dict(company=company,year=y,quarter=q,scope='group',period_type=period,metric=k,value=v,
+                            unit='MDKK' if k in AMOUNTS else 'percent',source_url=ev['requested_url'],source_sha256=ev['source_sha256'],
+                            source_page=rr['source_pages'][k],status='reported'))
+            except (ValueError,KeyError,TypeError) as exc:errors.append('Alm report metric replay: '+str(exc))
+        verified_feed={'observations':feed.get('observations',[])+extra}
     for pe,pr,pt in loaded:
         if pe['document_type']=='results_presentation':
-            matches.extend(reconcile(company,y,q,feed,[e for e,_,_ in loaded if e['document_type']=='quarterly_report'],pe,pt))
+            additional=[]
+            if company=='Storebrand':additional=storebrand_flow_tables(pr,y,q)
+            elif company=='Gjensidige':additional=gjensidige_positioned_metrics(pr,y,q)
+            matches.extend(reconcile(company,y,q,verified_feed,report_docs,pe,pt,additional=additional))
     if company=='Alm. Brand' and types=={'quarterly_report','results_presentation'}:
         from rolling_alm_brand_reports import read_report,verify_report,presentation_evidence
         reports=[(e,r,t) for e,r,t in loaded if e['document_type']=='quarterly_report' and e['expected_fingerprint_matches']]
@@ -350,6 +394,14 @@ def collect_company(company,y,q,feed,extended):
                                 'presentation':{'source_url':pe['url'],'source_sha256':pe['source_sha256'],'source_page':checked['source_page']}})
                     except ValueError as exc:errors.append('Alm presentation reconciliation: '+str(exc))
             except ValueError as exc:errors.append('Alm report reconciliation: '+str(exc))
+    # Deduplicate the same metric from independent delivery mirrors; retain
+    # every distinct disagreement instead of counting duplicates as more KPIs.
+    grouped={}
+    for m in matches:
+        key=(m['metric'],m['period_type'],m['scope'],m['unit'])
+        if key not in grouped or (m['status']=='conflict' and grouped[key]['status']!='conflict'):
+            grouped[key]=m
+    matches=list(grouped.values())
     report_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='quarterly_report'}
     presentation_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='results_presentation'}
     both=bool(report_hashes and presentation_hashes-report_hashes)
@@ -373,6 +425,20 @@ def audit(feed,extended,comparison):
         q,y=map(int,m.groups());tasks.append((company,y,q))
     with ThreadPoolExecutor(max_workers=4) as pool:
         result=list(pool.map(lambda t:collect_company(*t,feed,extended),tasks))
+    for item in result:
+        row=next(r for r in rows if r['company']==item['company'])
+        matches={(m['metric'],m['period_type']):m['status'] for m in item['cross_document_matches']}
+        slots=[]
+        for period,values in [('quarter',row.get('metrics',{})),('ytd',row.get('ytd_metrics',{}))]:
+            for metric in METRICS:
+                if values.get(metric) is None:continue
+                basis=row.get('metric_periods',{}).get(metric,period) if period=='quarter' else period
+                key=(metric,basis)
+                state=matches.get(key)
+                if state is None and metric=='solvency_ratio':state=matches.get((metric,'quarter'))
+                status=('report_only_verified' if item['report_verified'] else 'report_unverified') if item['presentation_exception'] else ('matched' if state=='match' else 'conflict' if state=='conflict' else 'presentation_metric_not_yet_verified')
+                slots.append(dict(metric=metric,view=period,period_basis=basis,status=status))
+        item['metric_inventory']=slots
     required=[x for x in result if x['presentation_required']]
     exceptions=[x for x in result if x['presentation_exception']]
     out={'schema_version':2,'purpose':'issuer_document_and_metric_verification',
@@ -384,6 +450,9 @@ def audit(feed,extended,comparison):
          'all_required_documents_verified':all(x['report_verified'] for x in result) and all(x['both_distinct_documents_verified'] for x in required),
          'all_nine_both_documents_verified':all(x['both_distinct_documents_verified'] for x in result),
          'all_nine_dual_document_verified':False,'financial_observations_modified':False,
+         'presentation_metric_slots':sum(len(x['metric_inventory']) for x in required),
+         'presentation_metric_slots_matched':sum(m['status']=='matched' for x in required for m in x['metric_inventory']),
+         'presentation_metric_slots_unresolved':sum(m['status']=='presentation_metric_not_yet_verified' for x in required for m in x['metric_inventory']),
          'note':'Document verification is separate from independent metric extraction. Owner-confirmed report-only issuers are exempt from presentation requirements, but must pass original-report verification. Discovery continues for every issuer; a new presentation candidate reopens the requirement. Unverified presentation candidates are not reporting exceptions.',
          'companies':result}
     return out
@@ -396,6 +465,7 @@ def main():
         print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
         for d in item['documents']:print('DUAL_DOCUMENT',item['company'],json.dumps(d,ensure_ascii=False),flush=True)
         for m in item['cross_document_matches']:print('DUAL_METRIC_MATCH',item['company'],json.dumps(m,ensure_ascii=False),flush=True)
+        print('DUAL_METRIC_INVENTORY',item['company'],json.dumps(item['metric_inventory'],ensure_ascii=False),flush=True)
     print('DUAL_DOCUMENT_SUMMARY',json.dumps({'report_verified':sum(x['report_verified'] for x in report['companies']),
         'presentation_verified':sum(x['presentation_verified'] for x in report['companies']),
         'distinct_pairs':sum(x['both_distinct_documents_verified'] for x in report['companies']),
@@ -404,5 +474,8 @@ def main():
         'all_required_documents_verified':report['all_required_documents_verified'],
         'metric_matches':sum(m['status']=='match' for x in report['companies'] for m in x['cross_document_matches']),
         'metric_conflicts':sum(m['status']=='conflict' for x in report['companies'] for m in x['cross_document_matches']),
+        'presentation_metric_slots':report['presentation_metric_slots'],
+        'presentation_metric_slots_matched':report['presentation_metric_slots_matched'],
+        'presentation_metric_slots_unresolved':report['presentation_metric_slots_unresolved'],
         'full_reconciliation':report['all_nine_dual_document_verified']},ensure_ascii=False),flush=True)
 if __name__=='__main__':main()
