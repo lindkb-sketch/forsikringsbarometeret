@@ -20,6 +20,7 @@ on:
     - cron: '9,24,39,54 6-18 * * 1-5'
 permissions:
   contents: write
+  actions: read # deploy-pages must enumerate workflow artifacts
   pages: write
   id-token: write
 # Serialize with the full financial deployment; avoid overwriting its Pages artifact.
