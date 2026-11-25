@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"data"/"financial_observations.json"
 OUT=ROOT/"data"/"financial_audit.json"
 COMPANIES={"Fremtind","Gjensidige","Tryg","Sampo","Frende","Protector","Storebrand"}
-METRICS={"insurance_revenue","insurance_revenue_growth","insurance_service_result","combined_ratio","loss_ratio","expense_ratio","return_on_equity","solvency_ratio"}
+METRICS={"insurance_revenue","insurance_revenue_growth","insurance_service_result","combined_ratio","loss_ratio","expense_ratio","return_on_equity","solvency_ratio","profit_before_tax"}
 def audit(data):
     errors=[]; warnings=[]; records=data.get("observations",[])
     seen={}; calculated=[]
@@ -27,7 +27,7 @@ def audit(data):
         percent_metrics={"combined_ratio","loss_ratio","expense_ratio","return_on_equity","solvency_ratio","insurance_revenue_growth"}
         if metric in percent_metrics and unit and unit not in ("%", "percent", "percentage"):
             errors.append(f"{label}: percentage metric has invalid unit")
-        if metric in ("insurance_revenue","insurance_service_result") and unit in ("%", "percent", "percentage"):
+        if metric in ("insurance_revenue","insurance_service_result","profit_before_tax") and unit in ("%", "percent", "percentage"):
             errors.append(f"{label}: financial amount cannot have percentage unit")
         if r.get("source_type")=="official_quarterly_report" and r.get("status")=="reported" and r.get("source_scope")=="group" and r.get("scope")=="norway":
             errors.append(f"{label}: group source cannot support Norway value")
