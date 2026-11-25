@@ -84,9 +84,9 @@ def sampo(pages,anchor,quarter_values):
     labels={
         'insurance_revenue':(r'Insurance revenue(?:\s*\(incl\.\s*brokerage\))?(?:,\s*net)?','EURm'),
         'insurance_service_result':(r'Underwriting result','EURm'),
-        'combined_ratio':(r'Combined ratio','%'),
-        'loss_ratio':(r'Risk ratio','%'),
-        'expense_ratio':(r'Cost ratio','%')}
+        'combined_ratio':(r'Combined ratio,?','%'),
+        'loss_ratio':(r'Risk ratio,?','%'),
+        'expense_ratio':(r'Cost ratio,?','%')}
     for page,text in pages:
         if 'Financial overview' not in text or 'Nordic underlying development' not in text:continue
         block=text.split('Nordic underlying development',1)[0]
@@ -116,7 +116,7 @@ def sampo(pages,anchor,quarter_values):
                 raise ValueError('Sampo HIÅ column mismatch: '+metric)
             vals=[float(c.replace(',','').replace('−','-')) for c in cells]
             check_quarter(metric,vals[qcol],quarter_values)
-            definition='Sampo interim statement; Sampo Group reported financial table'
+            definition='Sampo Group official financial overview; explicitly labelled HIÅ columns'
             rows.append(obs(anchor,metric,y,vals[ycol],page,definition))
             if metric=='insurance_revenue':
                 rows.append(obs(anchor,metric,y-1,vals[pcol],page,definition+' (explicit prior-year HIÅ comparative)'))
@@ -218,7 +218,9 @@ def collect(rows,downloader=download):
         needed=CORE if c in ('Sampo','Protector') else set()
         if c!='Sampo':needed=needed|{'return_on_equity'}
         present={r['metric'] for r in current if r['period_type']=='ytd'}
-        if needed<=present:continue
+        prior_revenue=any(r.get('company')==c and r.get('scope')=='group' and (r.get('year'),r.get('quarter'),r.get('period_type'),r.get('metric'))==(y-1,q,'ytd','insurance_revenue') for r in rows)
+        missing_prior=c in ('Sampo','Protector') and not prior_revenue
+        if needed<=present and not missing_prior:continue
         try:
             raw=downloader(anchor['source_url'])
             if not raw.startswith(b'%PDF-') or hashlib.sha256(raw).hexdigest()!=anchor['source_sha256']:
@@ -228,8 +230,8 @@ def collect(rows,downloader=download):
         except (ValueError,OSError,TimeoutError) as exc:
             errors.append((c,'PDF',str(exc)));continue
         tasks=[]
-        if c=='Sampo' and not CORE<=present:tasks.append(('core',sampo))
-        if c=='Protector' and not CORE<=present:tasks.append(('core',protector))
+        if c=='Sampo' and (not CORE<=present or missing_prior):tasks.append(('core',sampo))
+        if c=='Protector' and (not CORE<=present or missing_prior):tasks.append(('core',protector))
         if c!='Sampo' and 'return_on_equity' not in present:tasks.append(('return',returns))
         for name,parser in tasks:
             try:
