@@ -102,8 +102,17 @@ def policy_pages(texts,annual,views=None,year=None):
     for i,t in enumerate(texts):
         # The policy heading and IFRS disclosure can be in different columns.
         # Only examine Note 2 pages (and a possible immediately following page).
-        context=' '.join(texts[max(0,i-1):i+1])
-        if not re.search(r'Note\s+2\b.{0,160}?regnskapsprinsipp', ' '.join(context.split()),re.I):
+        # pdfplumber's default reading order may interleave Note 2 with
+        # the neighbouring note or column. Identify the heading using all
+        # physical views, not a fixed distance in the interleaved text.
+        context_parts=[]
+        for j in range(max(0,i-1),i+1):
+            context_parts.extend([texts[j],*variants.get(j,[])])
+        context=' '.join(' '.join(v.split()) for v in context_parts)
+        heading=(re.search(r'\bNote\s*2\b',context,re.I) and
+                 re.search(r'regnskapsprinsipp',context,re.I))
+        annual_heading=annual and re.search(r'\b2\.1\s+BASISPRINSIPPER\b',context,re.I) and re.search(r'\b2\.1\.1\b',context)
+        if not (heading or annual_heading):
             continue
         candidates=[' '.join(v.replace('\u00ad','').split()) for v in [t,*variants.get(i,[])]]
         for compact in candidates:
@@ -310,7 +319,7 @@ def annual_views(raw,texts):
         for i,t in enumerate(texts):
             if re.search(r'Hovedtall\s+20\d{2}|regnskapsprinsipp|IFRS\s+Accounting|IFRIC',t,re.I):
                 p=pdf.pages[i]
-                views=[]
+                views=[p.extract_text(layout=False,use_text_flow=True) or '']
                 # The annual report uses three text columns; the highlights
                 # table can sit in the middle column between two prose blocks.
                 for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1),(.30,.70),(.03,.33),(.34,.66),(.67,.98),(.02,.36),(.31,.69),(.64,.99)):
