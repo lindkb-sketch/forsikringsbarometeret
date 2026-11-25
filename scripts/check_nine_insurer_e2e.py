@@ -69,12 +69,12 @@ def check(feed,extended,comparison,gaps):
                 errors.append(company+': duplicate optional metric '+metric)
             if len(matching)==1 and item.get('metrics',{}).get(metric)!=matching[0]['value']:
                 errors.append(company+': optional value mismatch '+metric)
-        if company == 'Sampo' and item.get('metric_periods',{}).get('return_on_equity') == 'ytd':
+        if company in ('Sampo','Gjensidige') and item.get('metric_periods',{}).get('return_on_equity') == 'ytd':
             matches=[x for x in rows if x.get('company')==company
                      and x.get('scope')=='group' and x.get('period_type')=='ytd'
                      and (x.get('year'),x.get('quarter'))==latest
                      and x.get('metric')=='return_on_equity' and x.get('status')=='reported'
-                     and x.get('source_definition')=='Return on equity own funds (RoEOF; issuer definition)']
+                     and x.get('source_definition')==('Return on equity own funds (RoEOF; issuer definition)' if company=='Sampo' else 'ROE annualised; issuer explicitly reports year-to-date')]
             evidence=item.get('metric_sources',{}).get('return_on_equity',{})
             if (len(matches)!=1 or not finite(matches[0].get('value'))
                 or item.get('metrics',{}).get('return_on_equity')!=matches[0]['value']
@@ -83,7 +83,7 @@ def check(feed,extended,comparison,gaps):
                 or not str(evidence.get('source_url','')).startswith('https://')
                 or not isinstance(evidence.get('source_page'),int) or evidence['source_page']<1
                 or len(str(evidence.get('source_sha256','')))!=64):
-                errors.append(company+': unverified YTD RoEOF evidence')
+                errors.append(company+': unverified YTD return evidence')
         gap=gap_companies.get(company,{})
         if gap.get('both_documents_checked_for_this_period') is True and gap.get('quarter_presentation_sourced_observations',0)==0:
             errors.append(company+': unjustified both-documents-checked flag')
@@ -136,6 +136,15 @@ def check(feed,extended,comparison,gaps):
                         errors.append('KLP derived Q4 metric methods missing from comparison')
                 except (ValueError,KeyError,TypeError):
                     errors.append('KLP: invalid rolling PDF quarter history')
+    from nine_insurer_ytd import build_for
+    for item in companies:
+        if 'ytd_metrics' not in item:continue # legacy fixture; production builder always emits it
+        try:
+            values,evidence=build_for(item['company'],item['period'],rows,extended.get('insurers',{}))
+            if item['ytd_metrics']!={k:values.get(k) for k in METRICS} or item.get('ytd_metric_sources')!=evidence:
+                errors.append(item['company']+': HIÅ source-to-comparison mismatch')
+        except (ValueError,KeyError,TypeError) as exc:
+            errors.append(item['company']+': invalid HIÅ evidence '+str(exc))
     return errors
 
 def main():
