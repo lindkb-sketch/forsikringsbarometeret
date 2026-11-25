@@ -1,5 +1,10 @@
 {
   "schema_version": 1,
+  "all_nine_same_period": true,
+  "common_period": "Q3 2026",
+  "reported_periods": [
+    "Q3 2026"
+  ],
   "purpose": "non_destructive_latest_quarter_kpi_gap_inventory",
   "all_nine_metrics_present": true,
   "all_nine_unattended_extraction_verified": false,
