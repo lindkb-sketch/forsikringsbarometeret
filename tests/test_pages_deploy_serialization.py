@@ -47,6 +47,22 @@ class DeployConcurrencyTests(unittest.TestCase):
         self.assertIn("'data/stock_prices.json', 'data/broker_commentary.json', 'data/official_news.json'", script)
         self.assertIn('FINANCIAL_PUBLISH_REBASE stock/broker/news changes retained', script)
 
+    def test_pages_artifact_uses_github_required_name(self):
+        # deploy-pages queries the artifact API using a Pages-specific lookup.
+        # Custom artifact names upload successfully but fail deployment.
+        for filename in ('update.yml', 'stock-prices.yml'):
+            source = (WORKFLOWS / filename).read_text(encoding='utf-8')
+            self.assertIn('name: github-pages\n', source)
+            self.assertIn('artifact_name: github-pages\n', source)
+            self.assertNotIn('github-pages-${{', source)
+            self.assertNotIn('github-pages-stocks-', source)
+
+    def test_finance_publisher_has_pages_environment(self):
+        source = (WORKFLOWS / 'update.yml').read_text(encoding='utf-8')
+        publisher = source.split('  publish:', 1)[1]
+        self.assertIn('    environment:\n      name: github-pages\n', publisher)
+        self.assertIn('url: ${{ steps.deployment.outputs.page_url }}', publisher)
+
 
 if __name__ == '__main__':
     unittest.main()
