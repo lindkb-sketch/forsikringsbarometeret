@@ -851,7 +851,7 @@
   ],
   "ok": true,
   "release_ready": false,
-  "observation_count": 893,
+  "observation_count": 907,
   "derived_growth": [
     {
       "company": "Tryg",
@@ -2230,6 +2230,36 @@
       "inputs": [
         "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
         "https://www.sampo.com/globalassets/investors/quarterly-reporting/2025/q3/sampo-groups-interim-statement-q3-2025.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Protector",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 10.405021084632725,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+        "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf"
+      ],
+      "status": "calculated_from_quarterly_reports"
+    },
+    {
+      "company": "Sampo",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "group",
+      "period_type": "ytd",
+      "metric": "insurance_revenue_growth",
+      "value": 8.11250925240563,
+      "calculation": "(current/prior-1)*100",
+      "inputs": [
+        "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+        "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf"
       ],
       "status": "calculated_from_quarterly_reports"
     }

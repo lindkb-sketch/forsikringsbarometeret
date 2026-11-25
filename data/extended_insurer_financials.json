@@ -60,6 +60,39 @@
             "definition": "Group profit/loss before tax, continuing operations; DKK million"
           }
         }
+      },
+      "ytd_pdf_evidence": {
+        "year": 2026,
+        "quarter": 3,
+        "scope": "group",
+        "currency": "DKK",
+        "source_type": "official_quarterly_report",
+        "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+        "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+        "metrics": {
+          "insurance_revenue": 8982.0,
+          "insurance_service_result": 1199.0,
+          "insurance_revenue_growth": 1.9060585432266848,
+          "return_on_equity": 10.0,
+          "profit_before_tax": 907.0,
+          "solvency_ratio": 238.0,
+          "combined_ratio": 86.6,
+          "loss_ratio": 69.6,
+          "expense_ratio": 17.0
+        },
+        "source_pages": {
+          "insurance_revenue": 3,
+          "insurance_service_result": 3,
+          "combined_ratio": 3,
+          "loss_ratio": 3,
+          "expense_ratio": 3,
+          "insurance_revenue_growth": 3,
+          "profit_before_tax": 3,
+          "return_on_equity": 3,
+          "solvency_ratio": 5
+        },
+        "current_revenue": 8982.0,
+        "prior_revenue": 8814.0
       }
     },
     "KLP Skadeforsikring": {
@@ -302,7 +335,38 @@
           "status": "verified_official_pdf_reconciled"
         }
       ],
-      "report_archive": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner"
+      "report_archive": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner",
+      "ytd_pdf_evidence": {
+        "year": 2026,
+        "quarter": 3,
+        "scope": "company",
+        "currency": "NOK",
+        "source_type": "official_quarterly_report",
+        "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+        "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+        "metrics": {
+          "insurance_revenue": 3073.6,
+          "insurance_service_result": 116.7,
+          "insurance_revenue_growth": 32.7058417166789,
+          "profit_before_tax": 349.1,
+          "solvency_ratio": 219.0,
+          "combined_ratio": 96.2,
+          "loss_ratio": 83.6,
+          "expense_ratio": 12.6
+        },
+        "source_pages": {
+          "insurance_revenue": 6,
+          "insurance_service_result": 6,
+          "insurance_revenue_growth": 6,
+          "profit_before_tax": 6,
+          "solvency_ratio": 20,
+          "combined_ratio": 20,
+          "loss_ratio": 20,
+          "expense_ratio": 20
+        },
+        "current_revenue": 3073.6,
+        "prior_revenue": 2316.1
+      }
     }
   }
 }

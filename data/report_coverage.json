@@ -65,7 +65,7 @@
       "direct_pdf_registered": 0,
       "official_report_candidates": 0,
       "candidate_discovery_verified": false,
-      "group_quarter_observations": 53,
+      "group_quarter_observations": 52,
       "group_quarters_with_required_metrics": [
         "2024-Q3",
         "2024-Q4",
@@ -90,13 +90,13 @@
         "reason": "verified comparable revenue years"
       },
       "return_kpi_coverage": {
-        "historical_source_verified": true,
+        "historical_source_verified": false,
         "quarters": {
           "Q3 2025": true,
           "Q4 2025": true,
           "Q1 2026": true,
           "Q2 2026": true,
-          "Q3 2026": true
+          "Q3 2026": false
         },
         "scheduled_import_configured": true,
         "future_quarter_end_to_end_verified": false
@@ -106,7 +106,7 @@
         "Q4 2025": true,
         "Q1 2026": true,
         "Q2 2026": true,
-        "Q3 2026": true
+        "Q3 2026": false
       },
       "missing_e2e_evidence": [
         "fresh_report_discovery_observed",
@@ -199,7 +199,9 @@
       },
       "prior_year_growth_ytd": {
         "available": false,
-        "reason": "no verified revenue period"
+        "year": 2025,
+        "quarter": 3,
+        "reason": "missing verified revenue for prior-prior year"
       },
       "return_kpi_coverage": null,
       "e2e_evidence": {
@@ -288,10 +290,10 @@
         "reason": "verified comparable revenue years"
       },
       "prior_year_growth_ytd": {
-        "available": false,
-        "year": 2024,
+        "available": true,
+        "year": 2025,
         "quarter": 3,
-        "reason": "missing verified revenue for prior-prior year"
+        "reason": "verified comparable revenue years"
       },
       "return_kpi_coverage": {
         "historical_source_verified": true,
@@ -375,6 +377,6 @@
       "reason": "Missing end-to-end evidence: fresh_report_discovery_observed, fresh_report_ingested_without_manual_intervention, public_pages_parity_observed_in_same_scheduled_run"
     }
   ],
-  "return_kpi_history_complete": true,
+  "return_kpi_history_complete": false,
   "definition": "Automatic requires issuer discovery, fresh unattended import, official parsing, audited feed parity and public Pages parity in the same scheduled run; static repository evidence is insufficient."
 }

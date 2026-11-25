@@ -21,6 +21,153 @@
         "solvency_ratio": 189,
         "profit_before_tax": 1810.0
       },
+      "ytd_metrics": {
+        "insurance_revenue": 18373,
+        "insurance_service_result": 4280,
+        "combined_ratio": 76.7,
+        "loss_ratio": 55.1,
+        "expense_ratio": 21.6,
+        "insurance_revenue_growth": 5.737799263351739,
+        "return_on_equity": 41.7,
+        "solvency_ratio": 189,
+        "profit_before_tax": 4933.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Inntekter fra forsikringstjenester",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 18373,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Resultat fra forsikringstjenester",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 4280,
+          "method": "reported"
+        },
+        "combined_ratio": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Combined ratio, netto etter gjenforsikring (%)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 76.7,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Skadeprosent, netto etter gjenforsikring (%)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 55.1,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Kostnadsprosent (%)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 21.6,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS; HIÅ",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 41.7,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Solvensmargin per rapporteringsdato (identisk i kvartals- og HIÅ-visning)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 189,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Reported group profit before tax; year-to-date",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 4933.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 5.737799263351739,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+              "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+              "source_page": 3,
+              "source_definition": "Inntekter fra forsikringstjenester",
+              "unit": "NOKm",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 18373,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+              "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+              "source_page": 3,
+              "source_definition": "Inntekter fra forsikringstjenester (sammenligningskolonne fra Q3 2026)",
+              "unit": "NOKm",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 17376,
+              "method": "reported"
+            }
+          ]
+        }
+      },
       "metric_periods": {},
       "metric_sources": {
         "profit_before_tax": {
@@ -51,7 +198,156 @@
         "solvency_ratio": 190.0,
         "profit_before_tax": 2780.6
       },
-      "metric_periods": {},
+      "ytd_metrics": {
+        "insurance_revenue": 33629.3,
+        "insurance_service_result": 7666.7,
+        "combined_ratio": 77.2,
+        "loss_ratio": 65.6,
+        "expense_ratio": 11.6,
+        "insurance_revenue_growth": 6.12294487045979,
+        "return_on_equity": 34.2,
+        "solvency_ratio": 190.0,
+        "profit_before_tax": 7625.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": null,
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 33629.3,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": null,
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 7666.7,
+          "method": "reported"
+        },
+        "combined_ratio": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 77.2,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 65.6,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 11.6,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 8,
+          "source_definition": "ROE annualised; issuer explicitly reports year-to-date",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 34.2,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 8,
+          "source_definition": "Reported quarter-end Group solvency ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "quarter",
+          "value": 190.0,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": "Reported group profit before tax; year-to-date",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 7625.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_page": 5,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 6.12294487045979,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "source_page": 5,
+              "source_definition": null,
+              "unit": "MNOK",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 33629.3,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "source_page": 5,
+              "source_definition": null,
+              "unit": "MNOK",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 31689,
+              "method": "reported"
+            }
+          ]
+        }
+      },
+      "metric_periods": {
+        "return_on_equity": "ytd"
+      },
       "metric_sources": {
         "profit_before_tax": {
           "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
@@ -60,6 +356,20 @@
           "source_definition": "Reported group profit before tax",
           "period_type": "quarter",
           "source_entity": "Gjensidige Group"
+        },
+        "solvency_ratio": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_page": 8,
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_definition": "Reported quarter-end Group solvency ratio",
+          "period_type": "quarter"
+        },
+        "return_on_equity": {
+          "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "source_page": 8,
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "source_definition": "ROE annualised; issuer explicitly reports year-to-date",
+          "period_type": "ytd"
         }
       },
       "revenue_comparable": true
@@ -80,6 +390,153 @@
         "return_on_equity": 47,
         "solvency_ratio": 203.0,
         "profit_before_tax": 2123.0
+      },
+      "ytd_metrics": {
+        "insurance_revenue": 31563,
+        "insurance_service_result": 5299,
+        "combined_ratio": 83.2,
+        "loss_ratio": 69.9,
+        "expense_ratio": 13.3,
+        "insurance_revenue_growth": 4.989522003792035,
+        "return_on_equity": 33.3,
+        "solvency_ratio": 203.0,
+        "profit_before_tax": 4476.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": null,
+          "unit": "MDKK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 31563,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": null,
+          "unit": "MDKK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 5299,
+          "method": "reported"
+        },
+        "combined_ratio": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 83.2,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 69.9,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": null,
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 13.3,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": "ROOF annualised; issuer HIÅ table",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 33.3,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 5,
+          "source_definition": "Reported quarter-end Group solvency ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "quarter",
+          "value": 203.0,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": "Reported group profit before tax; year-to-date",
+          "unit": "MDKK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 4476.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "source_page": 4,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "MDKK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 4.989522003792035,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "source_page": 4,
+              "source_definition": null,
+              "unit": "MDKK",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 31563,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "source_page": 4,
+              "source_definition": null,
+              "unit": "MDKK",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 30063,
+              "method": "reported"
+            }
+          ]
+        }
       },
       "metric_periods": {},
       "metric_sources": {
@@ -110,6 +567,153 @@
         "return_on_equity": 33.4,
         "solvency_ratio": 175.0,
         "profit_before_tax": 323.0
+      },
+      "ytd_metrics": {
+        "insurance_revenue": 7303.0,
+        "insurance_service_result": 1221.0,
+        "combined_ratio": 83.3,
+        "loss_ratio": 58.2,
+        "expense_ratio": 25.0,
+        "insurance_revenue_growth": 8.11250925240563,
+        "return_on_equity": 33.4,
+        "solvency_ratio": 175.0,
+        "profit_before_tax": 934.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+          "unit": "EURm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 7303.0,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+          "unit": "EURm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 1221.0,
+          "method": "reported"
+        },
+        "combined_ratio": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 83.3,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 58.2,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 25.0,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Return on equity own funds (RoEOF; issuer definition)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 33.4,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Group Solvency II ratio including accrual (quarter-end snapshot)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "quarter",
+          "value": 175.0,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Profit before taxes",
+          "unit": "EURm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 934.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "source_page": 8,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "EURm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 8.11250925240563,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+              "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+              "source_page": 8,
+              "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns",
+              "unit": "EURm",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 7303.0,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+              "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+              "source_page": 8,
+              "source_definition": "Sampo Group official financial overview; explicitly labelled HIÅ columns (explicit prior-year HIÅ comparative)",
+              "unit": "EURm",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 6755.0,
+              "method": "reported"
+            }
+          ]
+        }
       },
       "metric_periods": {
         "return_on_equity": "ytd"
@@ -157,6 +761,129 @@
         "solvency_ratio": null,
         "profit_before_tax": 236.548
       },
+      "ytd_metrics": {
+        "insurance_revenue": 3731.895,
+        "insurance_service_result": 458.586,
+        "combined_ratio": 86.3,
+        "loss_ratio": 65.4,
+        "expense_ratio": 20.9,
+        "insurance_revenue_growth": 14.255452621382215,
+        "return_on_equity": null,
+        "solvency_ratio": null,
+        "profit_before_tax": 674.217
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+          "source_sha256": "e4722273ff4efd314cf65e9bb690913f45e6bd46f4741ea7b9e82968387f6bd7",
+          "source_page": 7,
+          "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 3731.895,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+          "source_sha256": "e4722273ff4efd314cf65e9bb690913f45e6bd46f4741ea7b9e82968387f6bd7",
+          "source_page": 7,
+          "source_definition": "Driftsresultat fra forsikring uten finansinntekter",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 458.586,
+          "method": "calculated"
+        },
+        "combined_ratio": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "source_sha256": "d71fd29eae254e177b85f3334727f00bb6fe85686988e5ea5d4894be9ec479e0",
+          "source_page": 6,
+          "source_definition": "Combined ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 86.3,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "source_sha256": "d71fd29eae254e177b85f3334727f00bb6fe85686988e5ea5d4894be9ec479e0",
+          "source_page": 6,
+          "source_definition": "Skadeprosent f.e.r",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 65.4,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "source_sha256": "d71fd29eae254e177b85f3334727f00bb6fe85686988e5ea5d4894be9ec479e0",
+          "source_page": 6,
+          "source_definition": "Kostnads %",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 20.9,
+          "method": "reported"
+        },
+        "profit_before_tax": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "source_sha256": "a60f3c8aa5a8a231a044327f5b712b3fb90b59826cc7bdbc88b5b80695fd0f8a",
+          "source_page": 6,
+          "source_definition": "Resultat før skatt; konsern, NOK 1 000 omregnet til millioner",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 674.217,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+          "source_sha256": "e4722273ff4efd314cf65e9bb690913f45e6bd46f4741ea7b9e82968387f6bd7",
+          "source_page": 7,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "NOKm",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 14.255452621382215,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+              "source_sha256": "e4722273ff4efd314cf65e9bb690913f45e6bd46f4741ea7b9e82968387f6bd7",
+              "source_page": 7,
+              "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
+              "unit": "NOKm",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 3731.895,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://frende.wrep.it/q3-2025-frende-holding-as/sec/7",
+              "source_sha256": "9bceb367fff00712dc4c0617813a4df592845e696afac126e9a37a613adcac5f",
+              "source_page": 7,
+              "source_definition": "Sum driftsinntekter (group operating revenue, not insurance-only revenue)",
+              "unit": "NOKm",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 3266.273,
+              "method": "reported"
+            }
+          ]
+        }
+      },
       "metric_periods": {},
       "metric_sources": {
         "profit_before_tax": {
@@ -186,6 +913,153 @@
         "return_on_equity": 47.9,
         "solvency_ratio": 231.0,
         "profit_before_tax": 1120.0
+      },
+      "ytd_metrics": {
+        "insurance_revenue": 11258.0,
+        "insurance_service_result": 1912.0,
+        "combined_ratio": 83.0,
+        "loss_ratio": 72.2,
+        "expense_ratio": 10.8,
+        "insurance_revenue_growth": 10.405021084632725,
+        "return_on_equity": 33.8,
+        "solvency_ratio": 231.0,
+        "profit_before_tax": 2402.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 11258.0,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 1912.0,
+          "method": "reported"
+        },
+        "combined_ratio": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 83.0,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 72.2,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 10.8,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 18,
+          "source_definition": "ROE annualised; issuer HIÅ table",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 33.8,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 3,
+          "source_definition": "Reported quarter-end Group solvency ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "quarter",
+          "value": 231.0,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Reported group profit before tax; year-to-date",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 2402.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "source_page": 5,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 10.405021084632725,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+              "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+              "source_page": 5,
+              "source_definition": "Protector issuer group income overview; explicitly labelled cumulative period",
+              "unit": "MNOK",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 11258.0,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://storage.mfn.se/34613cd2-9b91-47d8-bae6-1c5274fa1298/interim-report-q3-2025-prot.pdf",
+              "source_sha256": "7530e6f9414ff63e41cb02647b8d57ac50ec4a87c5c41bd2d996f944e8c8d0b2",
+              "source_page": 5,
+              "source_definition": "IFRS insurance revenue; official Q3 2025 income overview comparison column",
+              "unit": "MNOK",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 10197,
+              "method": "reported"
+            }
+          ]
+        }
       },
       "metric_periods": {},
       "metric_sources": {
@@ -217,6 +1091,153 @@
         "solvency_ratio": 200,
         "profit_before_tax": 1372.0
       },
+      "ytd_metrics": {
+        "insurance_revenue": 8379,
+        "insurance_service_result": 934,
+        "combined_ratio": 89,
+        "loss_ratio": 71,
+        "expense_ratio": 18,
+        "insurance_revenue_growth": 17.352941176470594,
+        "return_on_equity": 15,
+        "solvency_ratio": 200,
+        "profit_before_tax": 4173.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 8379,
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "Insurance segment Cash equivalent earnings from operations",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 934,
+          "method": "calculated"
+        },
+        "combined_ratio": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "Insurance segment combined ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 89,
+          "method": "reported"
+        },
+        "loss_ratio": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "Insurance segment claims ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 71,
+          "method": "reported"
+        },
+        "expense_ratio": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "Insurance segment cost ratio",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 18,
+          "method": "reported"
+        },
+        "return_on_equity": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 5,
+          "source_definition": "Group key figures; Cash return on equity, annualised (%)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 15,
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 5,
+          "source_definition": "Group key figures; Solvency II ratio (%)",
+          "unit": "percent",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 200,
+          "method": "reported_quarter_end"
+        },
+        "profit_before_tax": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 17,
+          "source_definition": "Storebrand Group consolidated profit before tax; HIÅ (not insurance segment)",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 4173.0,
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "source_page": 8,
+          "source_definition": "Same-basis current HIÅ revenue / prior-year HIÅ revenue - 1",
+          "unit": "MNOK",
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 17.352941176470594,
+          "method": "calculated",
+          "source_documents": [
+            {
+              "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+              "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+              "source_page": 8,
+              "source_definition": "APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue",
+              "unit": "MNOK",
+              "year": 2026,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 8379,
+              "method": "reported"
+            },
+            {
+              "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+              "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+              "source_page": 8,
+              "source_definition": "APM: Insurance segment premiums f.o.a.; not IFRS insurance revenue",
+              "unit": "MNOK",
+              "year": 2025,
+              "quarter": 3,
+              "period_type": "ytd",
+              "value": 7140,
+              "method": "reported"
+            }
+          ]
+        }
+      },
       "metric_periods": {},
       "metric_sources": {
         "profit_before_tax": {
@@ -247,6 +1268,111 @@
         "solvency_ratio": 219.0,
         "profit_before_tax": 154.6
       },
+      "ytd_metrics": {
+        "insurance_revenue": 3073.6,
+        "insurance_service_result": 116.7,
+        "combined_ratio": 96.2,
+        "loss_ratio": 83.6,
+        "expense_ratio": 12.6,
+        "insurance_revenue_growth": 32.7058417166789,
+        "return_on_equity": null,
+        "solvency_ratio": 219.0,
+        "profit_before_tax": 349.1
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 6,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 3073.6,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "insurance_service_result": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 6,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 116.7,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 6,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 32.7058417166789,
+          "method": "calculated",
+          "source_definition": "Verified issuer HIÅ PDF",
+          "inputs": {
+            "current": 3073.6,
+            "prior_year": 2316.1
+          }
+        },
+        "profit_before_tax": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 6,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 349.1,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "solvency_ratio": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 20,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 219.0,
+          "method": "reported_quarter_end",
+          "source_definition": "Reported balance-sheet date solvency"
+        },
+        "combined_ratio": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 20,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 96.2,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "loss_ratio": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 20,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 83.6,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "expense_ratio": {
+          "source_url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "source_page": 20,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 12.6,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        }
+      },
       "revenue_comparable": false
     },
     {
@@ -265,6 +1391,122 @@
         "return_on_equity": 18.0,
         "solvency_ratio": 238.0,
         "profit_before_tax": 544.0
+      },
+      "ytd_metrics": {
+        "insurance_revenue": 8982.0,
+        "insurance_service_result": 1199.0,
+        "combined_ratio": 86.6,
+        "loss_ratio": 69.6,
+        "expense_ratio": 17.0,
+        "insurance_revenue_growth": 1.9060585432266848,
+        "return_on_equity": 10.0,
+        "solvency_ratio": 238.0,
+        "profit_before_tax": 907.0
+      },
+      "ytd_metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 8982.0,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "insurance_service_result": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 1199.0,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 1.9060585432266848,
+          "method": "calculated",
+          "source_definition": "Verified issuer HIÅ PDF",
+          "inputs": {
+            "current": 8982.0,
+            "prior_year": 8814.0
+          }
+        },
+        "return_on_equity": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 10.0,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "profit_before_tax": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 907.0,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "solvency_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 5,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 238.0,
+          "method": "reported_quarter_end",
+          "source_definition": "Reported balance-sheet date solvency"
+        },
+        "combined_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 86.6,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "loss_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 69.6,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        },
+        "expense_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 17.0,
+          "method": "reported",
+          "source_definition": "Verified issuer HIÅ PDF"
+        }
       },
       "metric_periods": {},
       "metric_sources": {

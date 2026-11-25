@@ -44,13 +44,13 @@
         "insurance_service_result",
         "loss_ratio",
         "profit_before_tax",
-        "return_on_equity",
         "solvency_ratio"
       ],
       "not_present_in_quarter_feed": [
-        "insurance_revenue_growth"
+        "insurance_revenue_growth",
+        "return_on_equity"
       ],
-      "quarter_report_sourced_observations": 8,
+      "quarter_report_sourced_observations": 7,
       "quarter_presentation_sourced_observations": 0,
       "unverified_report_candidates_all_periods": 0,
       "unverified_presentation_candidates_all_periods": 0,
