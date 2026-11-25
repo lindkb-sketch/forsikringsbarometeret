@@ -87,6 +87,7 @@ def check():
             if public['quarterly_kpi_completeness.json'] != build_completeness(comparison):
                 raise ValueError('Public nine-company KPI completeness does not match deployed comparison')
             print('PUBLIC_NINE_KPI_COVERAGE',public['quarterly_kpi_completeness.json']['present_metric_count'],public['quarterly_kpi_completeness.json']['expected_metric_count'],flush=True)
+            print('PUBLIC_NINE_YTD_COVERAGE',public['quarterly_kpi_completeness.json']['ytd']['present_metric_count'],public['quarterly_kpi_completeness.json']['ytd']['expected_metric_count'],flush=True)
             if comparison.get('investor_use_approved') is not False:
                 raise ValueError('Nine-insurer comparison must not claim investor approval')
             klp=next((x for x in comparison['companies'] if x['company']=='KLP Skadeforsikring'),None)
