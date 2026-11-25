@@ -246,6 +246,10 @@ jobs:
         with:
           name: github-pages
           path: .
+      - name: Wait for GitHub Pages artifact API visibility
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/wait_pages_artifact.py
       - uses: actions/deploy-pages@v4
         id: deployment
         with:
