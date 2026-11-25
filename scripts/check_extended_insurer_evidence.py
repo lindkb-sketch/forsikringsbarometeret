@@ -128,6 +128,9 @@ def validate(extended, sources, calendar):
                 errors.append('KLP latest published quarter does not match last verified period')
     else:
         errors.append('KLP metrics require source verification before publication')
+    from import_extended_ytd import validate_baseline
+    for item in insurers.values():
+        errors.extend(validate_baseline(item))
     return errors
 
 
