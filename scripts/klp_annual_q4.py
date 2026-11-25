@@ -82,19 +82,42 @@ def check_ratios(amounts,reported):
 def as_floats(data):
     return {k:float(v) for k,v in data.items()}
 
-def policy_pages(texts,annual):
-    hits=[]
+def policy_pages(texts,annual,views=None,year=None):
+    """Read Note 2, allowing separate PDF columns on the same note page.
+
+    Never infer continuity merely from an IFRS reference or a matching ratio.
+    Both the accounting framework and the issuer's explicit no-material-change
+    statement must be found. Preserve the original physical page references.
+    """
+    variants=views or {}
+    base_pattern=r'IFRS\s+Accounting\s+Standards?'
+    law_pattern=r'årsregnskap(?:s)?forskriften|Forskrift om årsregnskap for skadeforsikringsforetak'
+    if annual:
+        period=rf'\s+{year}\s+årsregnskapet' if year else r'\s+20\d{2}\s+årsregnskapet'
+        no_change=r'ingen\s+nye\s+eller\s+endrede\s+IFRS\s+Accounting\s+Standards?\s+eller\s+IFRIC[\s-]+fortolkninger\s+som\s+er\s+trådt\s+i\s+kraft\s+for'+period+r'\s+som\s+påvirker\s+(?:foretakets|konsernets)\s+årsregnskap\s+i\s+vesentlig\s+grad'
+    else:
+        period=rf'\s+per\s+30\.09\.{year}' if year else r'\s+per\s+30\.09\.20\d{2}'
+        no_change=r'ikke\s+foretatt\s+(?:andre\s+)?endringer\s+i\s+regnskapsprinsippene\s+som\s+har\s+hatt\s+betydning\s+for\s+delårsregnskapet'+period
+    basis_pages=set();change_pages=set();diagnostics=[]
     for i,t in enumerate(texts):
-        compact=' '.join(t.split())
-        if not re.search(r'IFRS\s+Accounting\s+Standards?',compact,re.I):continue
-        if not re.search(r'årsregnskap(?:s)?forskriften|Forskrift om årsregnskap for skadeforsikringsforetak',compact,re.I):continue
-        if annual:
-            ok=re.search(r'ingen nye eller endrede IFRS.{0,250}?påvirker.{0,100}?vesentlig grad',compact,re.I)
-        else:
-            ok=('IAS 34' in compact and re.search(r'ikke foretatt (?:andre )?endringer i regnskapsprinsippene.{0,160}?hatt betydning',compact,re.I))
-        if ok:hits.append(i+1)
-    if not hits:raise ValueError('KLP explicit comparable accounting policy disclosure missing')
-    return hits
+        # The policy heading and IFRS disclosure can be in different columns.
+        # Only examine Note 2 pages (and a possible immediately following page).
+        context=' '.join(texts[max(0,i-1):i+1])
+        if not re.search(r'Note\s+2\b.{0,160}?regnskapsprinsipp', ' '.join(context.split()),re.I):
+            continue
+        candidates=[' '.join(v.replace('\u00ad','').split()) for v in [t,*variants.get(i,[])]]
+        for compact in candidates:
+            if re.search(base_pattern,compact,re.I) and re.search(law_pattern,compact,re.I) and (annual or re.search(r'IAS\s*34\b',compact,re.I)):
+                basis_pages.add(i+1)
+            if re.search(no_change,compact,re.I):
+                change_pages.add(i+1)
+            if re.search(r'ingen\s+nye|ikke\s+foretatt|vesentlig\s+grad|IFRIC',compact,re.I):
+                matches=[m.group()[:400] for m in re.finditer(r'.{0,30}(?:ingen\s+nye|ikke\s+foretatt|IFRIC).{0,320}',compact,re.I)]
+                diagnostics.extend((i+1,m) for m in matches[:3])
+    pairs=[(a,b) for a in basis_pages for b in change_pages if abs(a-b)<=1]
+    if not pairs:
+        raise ValueError('KLP explicit comparable accounting policy disclosure missing; basis pages='+repr(sorted(basis_pages))+'; change pages='+repr(sorted(change_pages))+'; excerpts='+repr(list(dict.fromkeys(diagnostics))[:8]))
+    return sorted({p for pair in pairs for p in pair})
 
 def source(url,digest,statement_page,ratios_page,policy,year,quarter):
     if not approved(url,COMPANY) or not url.startswith('https://www.klp.no/') or not re.fullmatch(r'[0-9a-f]{64}',digest):
@@ -154,13 +177,13 @@ def parse_annual(texts,year,url,digest,views=None):
             raise ValueError('Annual headline and income statement disagree')
         check_ratios(a,{k:v[idx] for k,v in reported.items()})
     if not 0<solvency[0]<1000:raise ValueError('Invalid KLP year-end solvency')
-    return dict(document=source(url,digest,sp,rp,policy_pages(texts,True),year,4),
+    return dict(document=source(url,digest,sp,rp,policy_pages(texts,True,views=views,year=year),year,4),
                 current=as_floats(current),prior=as_floats(prior),
                 reported_ratios=as_floats({k:v[0] for k,v in reported.items()}),
                 prior_reported_ratios=as_floats({k:v[1] for k,v in reported.items()}),
                 solvency=float(solvency[0]))
 
-def parse_q3(texts,year,url,digest):
+def parse_q3(texts,year,url,digest,views=None):
     cover=' '.join(texts[:3])
     if not re.search(r'KLP\s+Skadeforsikring',cover,re.I) or not re.search(rf'3\.\s*kvartal(?:sregnskap)?\s+{year}',cover,re.I):
         raise ValueError('KLP Q3 report issuer/period mismatch')
@@ -193,7 +216,7 @@ def parse_q3(texts,year,url,digest):
     reported={k:first(label,True) for k,label in RATIOS.items()}
     check_ratios(current,reported)
     components(prior);components(prior_fy)
-    return dict(document=source(url,digest,sp,rp,policy_pages(texts,False),year,3),
+    return dict(document=source(url,digest,sp,rp,policy_pages(texts,False,views=views,year=year),year,3),
                 current=as_floats(current),prior=as_floats(prior),prior_full_year=as_floats(prior_fy),
                 reported_ratios=as_floats(reported))
 
@@ -285,12 +308,12 @@ def annual_views(raw,texts):
     result={}
     with pdfplumber.open(io.BytesIO(raw)) as pdf:
         for i,t in enumerate(texts):
-            if re.search(r'Hovedtall\s+20\d{2}',t,re.I):
+            if re.search(r'Hovedtall\s+20\d{2}|regnskapsprinsipp|IFRS\s+Accounting|IFRIC',t,re.I):
                 p=pdf.pages[i]
                 views=[]
                 # The annual report uses three text columns; the highlights
                 # table can sit in the middle column between two prose blocks.
-                for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1),(.30,.70)):
+                for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1),(.30,.70),(.03,.33),(.34,.66),(.67,.98),(.02,.36),(.31,.69),(.64,.99)):
                     views.append(p.crop((p.width*x0,0,p.width*x1,p.height)).extract_text() or '')
                 words=p.extract_words()
                 for heading in (w for w in words if w['text'].lower()=='hovedtall'):
