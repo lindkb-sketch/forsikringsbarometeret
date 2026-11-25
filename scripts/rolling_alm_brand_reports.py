@@ -53,7 +53,31 @@ def column_layout(text,year,q):
     # Distinct current and prior quarter; Q1 is also HIÅ. For Q4,
     # accept explicitly labelled current/prior annual columns, not an annual-only report.
     current=f'Q{q} {year}';prior=f'Q{q} {year-1}'
-    text=' '.join(text.replace('–','-').split())
+    # The actual issuer PDF prints period labels and years on two
+    # consecutive rows (Q3 Q3 Q1-Q3 Q1-Q3 FY / DKKm 2026 ...).
+    # Verify the paired rows, rather than assuming the first numeric column.
+    normalized=text.replace('–','-')
+    line_pairs=[]
+    for a,b in zip(normalized.splitlines(),normalized.splitlines()[1:]):
+        years=re.search(r'\bDKKm\s+((?:20\d{2}(?:\s+|$))+)',b,re.I)
+        if not years:continue
+        ys=[int(v) for v in years.group(1).split()]
+        labels=re.findall(r'\bQ1-Q[1-4]\b|\bQ[1-4]\b|\bFY\b',a,re.I)
+        labels=[v.upper() for v in labels]
+        if len(labels)!=len(ys):continue
+        if q==1 and labels[:2]==['Q1','Q1'] and ys[:2]==[year,year-1]:
+            if len(ys)==2 or (len(ys)==3 and labels[-1]=='FY' and ys[-1]==year-1):
+                line_pairs.append((len(ys),0,1))
+        elif q>1:
+            prefix=[f'Q{q}',f'Q{q}']
+            cumulative=[f'Q1-Q{q}',f'Q1-Q{q}']
+            if q==4 and labels[2:4]==['FY','FY']:cumulative=['FY','FY']
+            if labels[:4]==prefix+cumulative and ys[:4]==[year,year-1,year,year-1]:
+                if len(ys)==4 or (len(ys)==5 and labels[-1]=='FY' and ys[-1]==year-1):
+                    line_pairs.append((len(ys),2,3))
+    if len(set(line_pairs))==1:return line_pairs[0]
+    if line_pairs:raise ValueError('Ambiguous issuer period column headers')
+    text=' '.join(normalized.split())
     base=re.escape(current+' '+prior)
     if q==1:
         if re.search(base+r'\s+'+str(year-1)+r'\b',text):return (3,0,1)
@@ -76,7 +100,11 @@ def row(text,label,count):
     pattern=re.compile(r'^\s*(?:(?:INCOME|STATEMENT)\s+)?'+re.escape(label)+r'\s+(.+?)\s*$',re.I)
     matches=[m.group(1) for line in text.splitlines() if (m:=pattern.fullmatch(line))]
     if len(matches)!=1:raise ValueError('Missing or ambiguous Alm. Brand group row: '+label)
-    return numeric_values(matches[0],count)
+    # The half-page crop occasionally retains a fragment of the adjacent
+    # balance sheet/financial-ratios heading, as in the original Q3 PDF.
+    # Strip only the known fragments, never extra numeric cells.
+    tail=re.sub(r'\s+(?:BA|SH|FIN|RA)\s*$','',matches[0])
+    return numeric_values(tail,count)
 
 def verify_report(texts,url,raw,year,quarter,regions=None):
     if not trusted_pdf_link(url) or not raw.startswith(b'%PDF-'):
@@ -118,7 +146,7 @@ def verify_report(texts,url,raw,year,quarter,regions=None):
     def at(idx,prior):
         rev=rows['insurance_revenue'][idx]
         claims=abs(rows['claims_expenses'][idx]);cost=abs(rows['operating_expenses'][idx])
-        reins=abs(rows['reinsurance'][idx]);service=rows['insurance_service_result'][idx]
+        reins=-rows['reinsurance'][idx];service=rows['insurance_service_result'][idx]
         if min(rev,rows['insurance_revenue'][prior],claims,cost)<=0 or abs(rev-claims-cost-reins-service)>Decimal('1.5'):
             raise ValueError('Alm. Brand income statement arithmetic mismatch')
         check={'gross_claims_ratio':claims/rev*100,'reinsurance_ratio':reins/rev*100,
@@ -140,7 +168,7 @@ def verify_report(texts,url,raw,year,quarter,regions=None):
     result=extract_table(raw,url,year,quarter,table_rows)
     result.update(status='verified_official_pdf_reconciled',metrics=current,ytd_metrics=ytd,
         source_pages={k:j+1 if k=='solvency_ratio' else i+1 for k in current},
-        return_on_equity_definition='Annualised Group return on equity after tax (% p.a.)',
+        return_on_equity_definition='Annualised Group return on equity after tax (% p.a.), issuer definition',
         return_on_equity_ytd=ytd['return_on_equity'],profit_before_tax_ytd=ytd['profit_before_tax'],
         issuer_page_url=ARCHIVE,
         growth_evidence={'quarter_prior':float(rows['insurance_revenue'][1]),'ytd_prior':float(rows['insurance_revenue'][pi])},
@@ -205,7 +233,7 @@ def validate_rolling(row):
     for period_kind,values,prior_key in (('quarter',metrics,'quarter_prior'),('ytd',ytd,'ytd_prior')):
         e=evidence.get(period_kind,{})
         try:
-            rev=e['insurance_revenue'];claims=abs(e['claims_expenses']);cost=abs(e['operating_expenses']);reins=abs(e['reinsurance']);prior=growth[prior_key]
+            rev=e['insurance_revenue'];claims=abs(e['claims_expenses']);cost=abs(e['operating_expenses']);reins=-e['reinsurance'];prior=growth[prior_key]
             if (rev<=0 or prior<=0 or abs(rev-claims-cost-reins-e['insurance_service_result'])>1.5
                 or any(values[k]!=e[k] for k in ('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'))
                 or abs((claims+reins)/rev*100-values['loss_ratio'])>0.20
