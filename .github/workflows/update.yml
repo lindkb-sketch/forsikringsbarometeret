@@ -132,6 +132,10 @@ jobs:
         run: python scripts/publication_provenance.py
       - name: Build investor readiness manifest (fail closed on missing evidence)
         run: python scripts/investor_readiness.py
+      - name: Build current nine-insurer quarter and HIÅ comparison before browser checks
+        run: |
+          python scripts/build_nine_insurer_comparison.py
+          python scripts/quarterly_kpi_completeness.py
       - name: Prepare preinstalled Google Chrome browser automation
         run: |
           npm install --no-save playwright
