@@ -9,6 +9,7 @@ import hashlib
 import html
 import io
 import json
+import os
 import re
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
@@ -28,7 +29,7 @@ METRICS=('insurance_revenue','insurance_service_result','combined_ratio','loss_r
          'insurance_revenue_growth','return_on_equity','solvency_ratio','profit_before_tax')
 INDEXES={
  'Fremtind':['https://www.fremtind.no/finansiell-informasjon'],
- 'Gjensidige':['https://www.gjensidige.com/investor-relations/reports-and-presentations','https://www.gjensidige.com/investor-relations/'],
+ 'Gjensidige':['https://www.gjensidige.com/investor-relations/reports-and-presentations','https://www.gjensidige.com/no/investorinformasjon/rapporter-og-presentasjoner','https://www.gjensidige.com/investor-relations/','https://www.gjensidige.com/press/stock-exchange-disclosures'],
  'Tryg':['https://tryg.com/en/downloads-{year}'],
  'Sampo':['https://www.sampo.com/investors/quarterly-reporting/','https://www.sampo.com/result','https://www.sampo.com/investors/financial-information/quarterly-reporting/{year}/'],
  'Frende':['https://www.frende.no/om-oss/finansiell-informasjon/frende-holding/'],
@@ -46,12 +47,27 @@ RELEASE_SEEDS={('Fremtind',2026,3):684332,('Gjensidige',2026,3):684673,
 EXCHANGE_HOSTS={'attachment.news.eu.nasdaq.com','newsweb.oslobors.no','www.newsweb.no','newsweb.no',
                 'api3.oslo.oslobors.no','storage.mfn.se','mb.cision.com','kommunikasjon.ntb.no'}
 AMOUNTS={'insurance_revenue','insurance_service_result','profit_before_tax'}
-# Q3 2026 baseline fallback links published by the issuer's release distributor.
-# The primary route remains identity-verified NewsWeb attachments for any period.
-KNOWN_PRESENTATIONS={
- ('Gjensidige',2026,3):('https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf','https://newsweb.oslobors.no/message/684673','Interim presentation Q3 2026.pdf'),
- ('Protector',2026,3):('https://storage.mfn.se/34c23717-cdf0-4183-99f6-5c9af439bfca/investor-presentation-q3-2026-prot.pdf','https://newsweb.oslobors.no/message/684546','Investor Presentation Q3 2026 (PROT).pdf')
+# Historical issuer-portal release pages supplement dynamic archive discovery.
+# Fetch the issuer page and follow its real links, not guessed PDF addresses.
+ISSUER_RELEASE_PAGES={
+ ('Gjensidige',2026,3):('https://www.gjensidige.com/news?releaseid=5449048',),
+ ('Protector',2026,3):('https://investor.protectorforsikring.no/pressreleases/q3-2026-cr-827-earnings-per-share-nok-102-dividend-nok-500-per-share-mviclalu',)
 }
+# Previously verified historical source: never describe this as newly
+# discovered from an issuer archive. No new exchange lookups by default.
+KNOWN_PRESENTATIONS={
+ ('Gjensidige',2026,3):('https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf','https://newsweb.oslobors.no/message/684673','Interim presentation Q3 2026.pdf','13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740')
+}
+ISSUER_WEB_HOSTS={
+ 'Gjensidige':{'gjensidige.com','www.gjensidige.com'},
+ 'Protector':{'investor.protectorforsikring.no','protectorforsikring.no','www.protectorforsikring.no'}
+}
+
+def issuer_web_page(company,url):
+    p=urlsplit(url)
+    return (p.scheme=='https' and p.hostname in ISSUER_WEB_HOSTS.get(company,set())
+            and not p.username and not p.password and p.port in (None,443))
+
 
 def attachment_url(message_id,attachment):
     # The public NewsWeb detail response commonly contains only {id,name}.
@@ -139,8 +155,101 @@ class Anchors(HTMLParser):
             self.links.append((self.current['href'],normalize(' '.join(self.current['parts'])),self.current['heading']))
             self.current=None
 
+class IssuerQuarterTable(HTMLParser):
+    """Preserve actual header, row and link cells from the group archive."""
+    def __init__(self):
+        super().__init__();self.heading=None;self.group_heading='';self.table=None
+        self.row=None;self.cell=None;self.tables=[];self.depth=0
+    def handle_starttag(self,tag,attrs):
+        attrs=dict(attrs)
+        if re.fullmatch(r'h[1-6]',tag):self.heading=[]
+        if tag=='table':
+            self.depth+=1
+            if self.depth==1:self.table={'heading':self.group_heading,'rows':[]}
+        if self.depth!=1:return
+        if tag=='tr':self.row=[]
+        if tag in ('td','th') and self.row is not None:
+            self.cell={'parts':[],'links':[],'span':attrs.get('colspan','1')}
+        if tag=='a' and self.cell is not None:
+            self.cell['links'].append(attrs.get('href',''))
+    def handle_data(self,data):
+        if self.heading is not None:self.heading.append(data)
+        if self.cell is not None:self.cell['parts'].append(data)
+    def handle_endtag(self,tag):
+        if re.fullmatch(r'h[1-6]',tag) and self.heading is not None:
+            text=normalize(' '.join(self.heading))
+            if re.search(r'20\d{2}.*Gjensidige',text,re.I):self.group_heading=text
+            self.heading=None
+        if self.depth==1:
+            if tag in ('td','th') and self.cell is not None and self.row is not None:
+                self.row.append(self.cell);self.cell=None
+            if tag=='tr' and self.row is not None and self.table is not None:
+                self.table['rows'].append(self.row);self.row=None
+            if tag=='table' and self.table is not None:
+                self.tables.append(self.table);self.table=None
+        if tag=='table':self.depth=max(0,self.depth-1)
+
+def gjensidige_quarter_table(markup,index,y,q):
+    if not issuer_web_page('Gjensidige',index):return []
+    parser=IssuerQuarterTable();parser.feed(markup);out=[]
+    for table in parser.tables:
+        heading=table['heading']
+        if not re.search(rf'\b{y}\b.*Gjensidige\s+Forsikring\s+(?:Group|Konsern)\b',heading,re.I):continue
+        if re.search(r'pensjon',heading,re.I):continue
+        rows=table['rows']
+        for i,row in enumerate(rows):
+            labels=[normalize(' '.join(c['parts'])) for c in row]
+            if any(c['span']!='1' for c in row):continue
+            if not all(labels.count(f'Q{k}')==1 for k in range(1,5)):continue
+            column=labels.index(f'Q{q}')
+            for rr in rows[i+1:]:
+                if len(rr)!=len(row) or any(c['span']!='1' for c in rr):continue
+                label=normalize(' '.join(rr[0]['parts']))
+                if label.casefold() not in ('presentation','presentasjon'):continue
+                links=[urljoin(index,u) for u in rr[column]['links'] if u]
+                links=[u for u in links if trusted('Gjensidige',u) and urlsplit(u).path.lower().endswith('.pdf')]
+                if len(set(links))==1:
+                    out.append(dict(url=links[0],document_type='results_presentation',origin=index,
+                        label=f'{heading}: Q{q} {label}',exchange=False,origin_kind='issuer_quarter_table'))
+    return list({x['url']:x for x in out}.values())
+
+def issuer_detail_links(company,markup,index,y,q):
+    if not issuer_web_page(company,index):return []
+    parser=Anchors();parser.feed(markup);out=[]
+    for href,label,_ in parser.links:
+        url=urljoin(index,html.unescape(href))
+        if not issuer_web_page(company,url):continue
+        p=urlsplit(url)
+        if company=='Protector':
+            if not p.path.startswith('/pressreleases/'):continue
+        elif company=='Gjensidige':
+            if p.path!='/news' or not re.fullmatch(r'releaseid=\d+',p.query):continue
+        else:continue
+        descriptor=normalize(label+' '+unquote(p.path).replace('-',' '))
+        if period_label(descriptor,y,q) and not EXCLUDE.search(descriptor):out.append(url)
+    return list(dict.fromkeys(out))[:8]
+
+def rendered_issuer_html(company,url):
+    """Read dynamically rendered issuer tables only when static HTML is insufficient."""
+    if not issuer_web_page(company,url):raise ValueError('Non-issuer browser URL')
+    from playwright.sync_api import sync_playwright,TimeoutError as PlaywrightTimeout
+    with sync_playwright() as pw:
+        browser=pw.chromium.launch(channel='chrome',headless=True,args=['--no-sandbox'])
+        try:
+            page=browser.new_page()
+            page.goto(url,wait_until='domcontentloaded',timeout=30000)
+            try:
+                if company=='Gjensidige':
+                    page.wait_for_selector('table a[href], a[href*="releaseid="]',timeout=12000)
+                else:
+                    page.wait_for_selector('a[href*="/pressreleases/"], a[href*="storage.mfn.se"]',timeout=12000)
+            except PlaywrightTimeout:pass
+            if not issuer_web_page(company,page.url):raise ValueError('Browser left issuer website')
+            return page.content(),page.url
+        finally:browser.close()
+
 def archive_links(company,markup,index,y,q):
-    parser=Anchors();parser.feed(markup);results=[]
+    parser=Anchors();parser.feed(markup);results=gjensidige_quarter_table(markup,index,y,q) if company=='Gjensidige' else []
     for href,label,heading in parser.links:
         url=urljoin(index,html.unescape(href))
         if not trusted(company,url):continue
@@ -159,7 +268,7 @@ def archive_links(company,markup,index,y,q):
         if company=='KLP Skadeforsikring' and not re.search(r'skadeforsikring',descriptor,re.I):continue
         if company=='Fremtind' and not re.search(r'holding',descriptor,re.I):continue
         if company=='Frende' and not re.search(r'holding',descriptor,re.I):continue
-        results.append(dict(url=url,document_type='results_presentation',origin=index,label=label or name,exchange=False))
+        results.append(dict(url=url,document_type='results_presentation',origin=index,label=label or name,exchange=False,origin_kind='issuer_archive_or_release'))
     # Some archives encode labelled PDF assets in JSON. A filename alone is
     # accepted only when both presentation type and period are explicit and
     # the exact HTTPS asset occurs in the issuer's returned markup.
@@ -167,7 +276,7 @@ def archive_links(company,markup,index,y,q):
         for href in re.findall(r'(?:https?://[^"\'<>\s\\]+|/globalassets/[^"\'<>\s\\]+)\.pdf(?:\?[^"\'<>\s\\]*)?',markup.replace('\\/','/'),re.I):
             url=urljoin(index,html.unescape(href));name=unquote(urlsplit(url).path.rsplit('/',1)[-1]).replace('_',' ').replace('-',' ')
             if trusted(company,url) and PRESENTATION.search(name) and not EXCLUDE.search(name) and period_label(name,y,q):
-                results.append(dict(url=url,document_type='results_presentation',origin=index,label=name,exchange=False))
+                results.append(dict(url=url,document_type='results_presentation',origin=index,label=name,exchange=False,origin_kind='issuer_archive_or_release'))
     return list({x['url']:x for x in results}.values())
 
 def exchange_links(company,y,q,client):
@@ -247,7 +356,15 @@ def report_sources(feed,extended,company,y,q):
 
 def verify_pdf_identity(company,texts,y,q,kind):
     head=normalize(' '.join(texts[:6] if company=='Gjensidige' else texts[:3]))
-    if not re.search(ENTITY[company],head,re.I):raise ValueError('Issuer/entity not established on opening pages')
+    issuer_confirmed=bool(re.search(ENTITY[company],head,re.I))
+    # Protector uses a graphical logo on its cover; the last-page legal
+    # attribution explicitly identifies the issuer of the presentation.
+    if company=='Protector' and kind=='results_presentation' and not issuer_confirmed:
+        attribution=normalize(' '.join(texts[-2:]))
+        issuer_confirmed=bool(re.search(r'Investor Presentation',head,re.I)
+            and re.search(r'prepared by and is the sole responsibility of Protector Forsikring ASA',attribution,re.I)
+            and period_label(normalize(texts[0]),y,q))
+    if not issuer_confirmed:raise ValueError('Issuer/entity not established on opening pages or explicit issuer attribution')
     if not period_label(head,y,q):
         # Explicit cover phrases with the quarter number separated from year
         # are allowed only on the cover itself and require a current-period title.
@@ -302,7 +419,7 @@ def verify_document(company,doc,y,q,feed=None):
             semantic_matches.append({'metric':r['metric'],'period_type':r['period_type'],'value':r['value'],'prior_sha256':r['source_sha256']})
         if not old:raise ValueError('Changed HTML without original observations')
     if fmt=='pdf' and any(p>len(texts) for p in doc.get('source_pages',[])):raise ValueError('Imported source page outside document')
-    result=dict(url=final,requested_url=url,document_type=kind,origin=doc['origin'],label=doc.get('label',''),
+    result=dict(url=final,requested_url=url,document_type=kind,origin=doc['origin'],origin_kind=doc.get('origin_kind','previously_verified_source' if doc.get('expected_sha256') else 'exchange_reserve'),label=doc.get('label',''),
         format=fmt,source_sha256=digest,issuer_verified=True,period_verified=True,
         expected_fingerprint_matches=bool(expected) and set(expected)=={digest},semantic_matches=semantic_matches,
         fingerprint_status='changed_html_values_reparsed_and_matched' if semantic_matches else 'exact_match' if expected else 'new_source',source_pages_examined=len(texts),status='verified_document')
@@ -310,27 +427,66 @@ def verify_document(company,doc,y,q,feed=None):
 
 def collect_company(company,y,q,feed,extended):
     docs=report_sources(feed,extended,company,y,q);indexes=[];errors=[];news=[]
-    def discover_index(template):
+    detail_urls=[]
+    checked=set()
+    def discover_index(template,render=False):
         url=template.format(year=y)
+        if url in checked and not render:return [],[]
+        if not render:checked.add(url)
         try:
-            raw,final=fetch(company,url,limit=5_000_000)
-            found=archive_links(company,raw.decode('utf-8','replace'),final,y,q)
-            return dict(url=final,status='checked',presentation_candidates=len(found)),found
+            if render:
+                markup,final=rendered_issuer_html(company,url)
+            else:
+                raw,final=fetch(company,url,limit=5_000_000)
+                markup=raw.decode('utf-8','replace')
+            found=archive_links(company,markup,final,y,q)
+            details=issuer_detail_links(company,markup,final,y,q)
+            indexes.append(dict(url=final,status='checked',method='rendered_issuer_page' if render else 'issuer_html',
+                                presentation_candidates=len(found),release_candidates=len(details)))
+            return found,details
         except Exception as exc:
-            return dict(url=url,status='unavailable',error=str(exc)[:240]),[]
+            indexes.append(dict(url=url,status='unavailable',method='rendered_issuer_page' if render else 'issuer_html',error=str(exc)[:240]))
+            return [],[]
     for template in INDEXES[company]:
-        entry,found=discover_index(template);indexes.append(entry);docs.extend(found)
-    try:
-        found,news=exchange_links(company,y,q,Client());docs.extend(found)
-    except Exception as exc:errors.append('Exchange discovery: '+str(exc)[:300])
+        found,details=discover_index(template);docs.extend(found);detail_urls.extend(details)
+    for url in dict.fromkeys([*detail_urls,*ISSUER_RELEASE_PAGES.get((company,y,q),())]):
+        found,_=discover_index(url);docs.extend(found)
+    def primary_candidate():
+        return any(d['document_type']=='results_presentation' and d.get('origin_kind','').startswith('issuer_') for d in docs)
+    # Do not fall back to a stock exchange just because the issuer page
+    # needs JavaScript. Only render the missing company's relevant index.
+    if company in ('Gjensidige','Protector') and not primary_candidate():
+        templates=INDEXES[company][:2] if company=='Gjensidige' else [INDEXES[company][-1]]
+        for template in templates:
+            found,details=discover_index(template,render=True);docs.extend(found)
+            for url in details:
+                found,_=discover_index(url);docs.extend(found)
+            if primary_candidate():break
+    # A stock-exchange attachment may be used only in an expressly enabled
+    # diagnostic fallback; normal report/presentation discovery is issuer-only.
+    if not primary_candidate() and os.environ.get('BAROMETER_ALLOW_EXCHANGE_DOCUMENT_FALLBACK')=='1':
+        try:
+            found,news=exchange_links(company,y,q,Client())
+            docs.extend(dict(d,origin_kind='exchange_reserve') for d in found)
+        except Exception as exc:errors.append('Exchange reserve discovery: '+str(exc)[:300])
+    # Keep the verified historical document for auditing existing data, but
+    # expose it as historical rather than issuer-website discovery.
     known=KNOWN_PRESENTATIONS.get((company,y,q))
-    if known:
-        url,origin,label=known
-        docs.append(dict(url=url,document_type='results_presentation',origin=origin,label=label,exchange=True))
+    if known and not primary_candidate():
+        url,origin,label,digest=known
+        docs.append(dict(url=url,document_type='results_presentation',origin=origin,label=label,exchange=True,
+                         origin_kind='historical_verified_exchange_attachment',expected_sha256=[digest]))
     unique={}
     for doc in docs:
         key=(doc['document_type'],doc['url'])
-        if key not in unique or doc.get('expected_sha256'):unique[key]=doc
+        if key not in unique:
+            unique[key]=doc;continue
+        old=unique[key]
+        # Keep a verified fingerprint when the same URL is also rediscovered
+        # on the issuer's own website; prefer the fresh issuer origin.
+        preferred=doc if doc.get('origin_kind','').startswith('issuer_') else old
+        unique[key]={**old,**preferred,'expected_sha256':list(dict.fromkeys(old.get('expected_sha256',[])+doc.get('expected_sha256',[]))),
+                     'source_pages':sorted(set(old.get('source_pages',[])+doc.get('source_pages',[])))}
     verified=[];loaded=[];seen_verified=set()
     for doc in list(unique.values())[:12]:
         try:
@@ -406,11 +562,12 @@ def collect_company(company,y,q,feed,extended):
     presentation_hashes={x['source_sha256'] for x in verified if x['status']=='verified_document' and x['document_type']=='results_presentation'}
     both=bool(report_hashes and presentation_hashes-report_hashes)
     status='conflicting_metric_evidence' if any(m['status']=='conflict' for m in matches) else 'partial_metric_reconciliation' if both and matches else 'both_documents_read_metrics_not_certified' if both else 'presentation_not_verified' if not presentation_found else 'report_not_verified'
+    issuer_presentation_verified=any(d['status']=='verified_document' and d['document_type']=='results_presentation' and d.get('origin_kind','').startswith('issuer_') for d in verified)
     policy=presentation_policy(company,verified)
     if policy['presentation_exception']:
         status='report_only_verified' if report_hashes else 'report_only_not_verified'
     return dict(company=company,year=y,quarter=q,report_verified=bool(report_hashes),presentation_verified=presentation_found,
-                **policy,
+                **policy,issuer_presentation_verified=issuer_presentation_verified,
                 both_distinct_documents_verified=both,metric_reconciliation_status=status,
                 archives_checked=indexes,exchange_announcements=news,documents=verified,cross_document_matches=matches,errors=errors)
 
@@ -445,6 +602,7 @@ def audit(feed,extended,comparison):
          'report_verified_count':sum(x['report_verified'] for x in result),
          'presentation_required_count':len(required),
          'presentation_verified_count':sum(x['presentation_verified'] for x in required),
+         'issuer_presentation_verified_count':sum(x['issuer_presentation_verified'] for x in required),
          'report_only_issuers':[x['company'] for x in exceptions],
          'applicable_document_pairs_verified_count':sum(x['both_distinct_documents_verified'] for x in required),
          'all_required_documents_verified':all(x['report_verified'] for x in result) and all(x['both_distinct_documents_verified'] for x in required),
@@ -462,7 +620,7 @@ def main():
     report=audit(load('verified_financial_feed.json'),load('extended_insurer_financials.json'),load('nine_insurer_comparison.json'))
     atomic_write(OUT,report)
     for item in report['companies']:
-        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
+        print('DUAL_ISSUER_AUDIT',json.dumps({k:item[k] for k in ('company','year','quarter','report_verified','presentation_verified','both_distinct_documents_verified','metric_reconciliation_status','issuer_presentation_verified','presentation_required','presentation_exception','presentation_exception_under_review','archives_checked','exchange_announcements','errors')},ensure_ascii=False),flush=True)
         for d in item['documents']:print('DUAL_DOCUMENT',item['company'],json.dumps(d,ensure_ascii=False),flush=True)
         for m in item['cross_document_matches']:print('DUAL_METRIC_MATCH',item['company'],json.dumps(m,ensure_ascii=False),flush=True)
         print('DUAL_METRIC_INVENTORY',item['company'],json.dumps(item['metric_inventory'],ensure_ascii=False),flush=True)
@@ -470,6 +628,7 @@ def main():
         'presentation_verified':sum(x['presentation_verified'] for x in report['companies']),
         'distinct_pairs':sum(x['both_distinct_documents_verified'] for x in report['companies']),
         'presentations_expected':report['presentation_required_count'],
+        'issuer_presentations_verified':report['issuer_presentation_verified_count'],
         'report_only_issuers':report['report_only_issuers'],
         'all_required_documents_verified':report['all_required_documents_verified'],
         'metric_matches':sum(m['status']=='match' for x in report['companies'] for m in x['cross_document_matches']),

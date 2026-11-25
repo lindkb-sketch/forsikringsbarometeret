@@ -138,6 +138,29 @@ Combined ratio 75.3 82.2'''
         vals={x['metric']:x['value'] for x in extract('Alm. Brand',[text],2026,3)}
         self.assertEqual(vals,{'insurance_revenue':3054.,'insurance_service_result':755.,'combined_ratio':75.3})
         self.assertEqual(extract('Alm. Brand',[text.replace('Financial results','Guidance')],2026,3),[])
+    def test_issuer_quarter_table_requires_group_year_and_correct_column(self):
+        from audit_nine_issuer_documents import gjensidige_quarter_table
+        page='https://www.gjensidige.com/no/investorinformasjon/rapporter-og-presentasjoner'
+        table='''<h2>2026 - Gjensidige Forsikring Konsern</h2>
+        <table><tr><th></th><th>Hele året</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>
+        <tr><th>Rapport</th><td></td><td></td><td></td><td><a href="/r3.pdf">PDF</a></td><td></td></tr>
+        <tr><th>Presentasjon</th><td></td><td><a href="/p1.pdf">PDF</a></td><td><a href="/p2.pdf">PDF</a></td>
+        <td><a href="https://mb.cision.com/Public/1122/abc.pdf">PDF</a></td><td></td></tr></table>'''
+        self.assertEqual([x['url'] for x in gjensidige_quarter_table(table,page,2026,3)],['https://mb.cision.com/Public/1122/abc.pdf'])
+        self.assertEqual(gjensidige_quarter_table(table,page,2027,3),[])
+        self.assertEqual(gjensidige_quarter_table(table.replace('Forsikring Konsern','Pensjonsforsikring'),page,2026,3),[])
+    def test_protector_issuer_detail_link_and_legal_attribution(self):
+        from audit_nine_issuer_documents import issuer_detail_links,archive_links,verify_pdf_identity
+        page='https://investor.protectorforsikring.no/press-releases'
+        body='<a href="/pressreleases/q3-2026-results-abc">Q3 2026 results</a><a href="https://evil.test/pressreleases/q3-2026-results">Q3 2026 results</a>'
+        self.assertEqual(issuer_detail_links('Protector',body,page,2026,3),['https://investor.protectorforsikring.no/pressreleases/q3-2026-results-abc'])
+        detail='<a href="https://storage.mfn.se/id/investor-presentation-q3-2026-prot.pdf">Investor Presentation Q3 2026 (PROT)</a>'
+        self.assertEqual(len(archive_links('Protector',detail,page,2026,3)),1)
+        pages=['Investor Presentation\nQ3 2026 Interim results','Highlights','Claims',
+               'This presentation has been prepared by and is the sole responsibility of Protector Forsikring ASA']
+        self.assertTrue(verify_pdf_identity('Protector',pages,2026,3,'results_presentation'))
+        with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages[:-1]+['Mentions Protector Forsikring ASA'],2026,3,'results_presentation')
+        with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages,2026,2,'results_presentation')
 if __name__=='__main__':unittest.main()
 
 
