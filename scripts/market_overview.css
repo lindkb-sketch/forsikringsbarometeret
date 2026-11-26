@@ -56,3 +56,5 @@
 
 /* CR medals use the actual displayed CR order, below each company name. */
 .mo-name{min-height:76px;gap:5px;justify-content:flex-start}.mo-medal,.mo-medal-placeholder{display:block;flex:none;height:26px;line-height:26px}.mo-medal{font-size:23px;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}.mo-medal-placeholder{width:26px}@media(max-width:600px){.mo-name{min-height:76px}.mo-medal{font-size:21px}}
+
+.mo-report-filter select{height:40px;padding:0 28px 0 12px;border:1px solid #dbe5eb;border-radius:8px;background:#f3f7f9;color:#173447;font:inherit;font-size:13px;font-weight:650;cursor:pointer}.mo-report-filter select:focus-visible{outline:2px solid #087f82;outline-offset:2px}

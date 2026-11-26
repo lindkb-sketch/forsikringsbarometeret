@@ -160,7 +160,9 @@
       const old=selectUnique(prior,key);
       deltas[key]=values[key]&&old&&old.unit==='percent'&&basis(old)===basis(values[key])?values[key].value-old.value:null;
     }
-    return {company,segment:g.displaySegment||g.segment,source:revenue.source_url,revenue:revenue.value,currency:cur,
+    const evidence=[...Object.values(values).filter(Boolean),...prior.filter(r=>METRICS.includes(r.metric)),...g.rows.filter(r=>r.metric==='insurance_revenue_growth')];
+    const sources=[...new Map(evidence.flatMap(r=>[r,...(r.source_documents||[])]).filter(d=>source(d.source_url)).map(d=>[[d.source_url,d.source_sha256,d.source_page].join('|'),{url:d.source_url,sha256:d.source_sha256,page:d.source_page}])).values()];
+    return {company,segment:g.displaySegment||g.segment,source:revenue.source_url,sources,revenue:revenue.value,currency:cur,
       revenueBasis:basis(revenue),cr,loss,cost,growth,deltas,split,calculatedCR:values.combined_ratio.status==='calculated'};
   }
   function fremtindNorway(rows,p){
@@ -190,7 +192,7 @@
         deltas[k]=weighted(short)-((pm[short]-pm.deltas[k])*a+(bm[short]-bm.deltas[k])*b)/(a+b);
       }
     }
-    return {company:'Fremtind',segment:'PM + BM · Norge (beregnet)',source:pm.source,revenue,currency:'NOK',revenueBasis:pm.revenueBasis,
+    return {company:'Fremtind',segment:'PM + BM · Norge (beregnet)',source:pm.source,sources:[...(pm.sources||[]),...(bm.sources||[])],revenue,currency:'NOK',revenueBasis:pm.revenueBasis,
       cr:weighted('cr'),loss:weighted('loss'),cost:weighted('cost'),growth,deltas,split:true};
   }
   function extendedRow(c,p){
@@ -199,7 +201,7 @@
     if(METRICS.some(k=>!num(m[k]))||m.insurance_revenue<=0||
       !['NOK','DKK','EUR','SEK'].includes(c.currency)||Math.min(m.loss_ratio,m.expense_ratio,m.combined_ratio)<0||
       Math.abs(m.combined_ratio-m.loss_ratio-m.expense_ratio)>.25)return null;
-    return {company:c.company,segment:null,source:c.source_url,revenue:m.insurance_revenue,currency:c.currency,
+    return {company:c.company,segment:null,source:c.source_url,sources:Object.values(p.mode==='ytd'?(c.ytd_metric_sources||{}):(c.metric_sources||{})).filter(d=>source(d.source_url)).map(d=>({url:d.source_url,sha256:d.source_sha256,page:d.source_page})),revenue:m.insurance_revenue,currency:c.currency,
       revenueBasis:'Forsikringsinntekter',cr:m.combined_ratio,loss:m.loss_ratio,cost:m.expense_ratio,
       growth:num(m.insurance_revenue_growth)?m.insurance_revenue_growth:null,deltas:{}};
   }
@@ -285,11 +287,35 @@
     }
     return [{label:'Inntektsvekst',paragraphs:growth},{label:'CR – skade- og kostnadsprosent',paragraphs:cr},{label:'Enkelthendelser og særtrekk',paragraphs:special}];
   }
-  let comparison=null,fx=null,segments=null,context=null,scope='group',market='all',mode='quarter',pending=null,failed=false;
+  const viewKey=(scope,market,mode)=>[scope,market,mode].join('/');
+  function makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode){
+    const m=model(feed,comparison,fx,scope,market,segments,mode,context);
+    const period=title(m.period),names=new Set(m.eligible.map(r=>r.company));
+    const es=editorial?.periods?.[period]||(editorial?.period===period?editorial:null);
+    const notes=(context?.insights||[]).filter(x=>x.period===period&&x.period_type===mode&&x.views?.includes(scope+'/'+market)&&names.has(x.company));
+    const brief=(es?.brief||[]).filter(x=>x.period===period&&Array.isArray(x.companies)&&x.companies.length&&x.companies.every(c=>names.has(c))&&mode==='quarter'&&(scope==='group'&&market==='all'||scope==='norway'&&market==='all'&&x.companies.every(c=>NORWAY_EQUIVALENT.includes(c))));
+    const links=[...m.eligible.flatMap(r=>[{name:pretty(r.company),url:r.source},...(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))]),...notes.map(x=>({name:pretty(x.company),url:x.source_url,sha256:x.source_sha256,page:x.source_page})),...brief.flatMap(x=>[x.source_url,...(x.source_urls||[])].map(url=>({name:x.companies.map(pretty).join(', '),url})))];
+    return {model:m,comments:comments(m,editorial,scope,market,context),sources:[...new Map(links.filter(x=>source(x.url)).map(x=>[[x.url,x.sha256||'',x.page||''].join('|'),x])).values()]};
+  }
+  function archivedView(archive,requested,scope,market,mode){
+    const label=requested==='latest'?archive?.active_period:requested,entry=archive?.periods?.[label],view=entry?.views?.[viewKey(scope,market,mode)];
+    if(!periodOf(label)||!view||title(view.model?.period)!==label||view.model.mode!==mode)return null;
+    return {...view,locked:entry.locked===true};
+  }
+  let comparison=null,fx=null,segments=null,context=null,archive=null,scope='group',market='all',mode='quarter',reportPeriod='latest',pending=null,failed=false;
+  function currentView(){
+    if(archive?.active_period){
+      return archivedView(archive,reportPeriod,scope,market,mode)||{model:{period:null,mode,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0},comments:[],sources:[],locked:false};
+    }
+    return makeView(window.FBQuarterly?.verified,comparison,fx,segments,context,window.FBNews?.editorial,scope,market,mode);
+  }
   function controls(){
     const group=(id,caption,options,current)=>'<fieldset class="mo-filter" id="'+id+'"><legend>'+caption+'</legend><div role="group" aria-label="'+caption+'">'+options.map(([key,label])=>
       '<button type="button" data-mo-'+id+'="'+key+'" aria-pressed="'+(current===key)+'" onclick="FBMarketOverview.select(\''+id+'\',\''+key+'\')">'+label+'</button>').join('')+'</div></fieldset>';
-    return '<div class="mo-filters">'+group('scope','Geografi',[['group','Gruppe'],['norway','Norge']],scope)+
+    const periods=Object.keys(archive?.periods||{}).filter(x=>periodOf(x)).sort((a,b)=>cmpPeriod(periodOf(b),periodOf(a)));
+    const chosen=reportPeriod==='latest'?(archive?.active_period||''):reportPeriod;
+    const periodControl=periods.length?'<fieldset class="mo-filter mo-report-filter"><legend>Rapportkvartal</legend><select id="mo-report-period" aria-label="Rapportkvartal" onchange="FBMarketOverview.select(\'reportPeriod\',this.value)">'+periods.map(label=>'<option value="'+safe(label)+'" '+(label===chosen?'selected':'')+'>'+safe(label)+(archive.periods[label].locked?' · Låst':'')+'</option>').join('')+'</select></fieldset>':'';
+    return '<div class="mo-filters">'+periodControl+group('scope','Geografi',[['group','Gruppe'],['norway','Norge']],scope)+
       group('market','Marked',[['all','Totalt'],['pm','PM'],['bm','BM']],market)+group('mode','Periode',[['quarter','Kvartal'],['ytd','HIÅ']],mode)+'</div>';
   }
   function graph(m){
@@ -319,7 +345,7 @@
       '<div class="mo-chart-body"><div class="mo-guides" aria-hidden="true">'+ticks.map(t=>'<i style="bottom:'+t/cap*100+'%"></i>').join('')+'</div><div class="mo-bars">'+bars+'</div></div></div></div>';
   }
   function html(){
-    const m=model(window.FBQuarterly?.verified,comparison,fx,scope,market,segments,mode,context);
+    const view=currentView(),m=view.model;
     const latest=title(m.period);
     const contextual=scope==='norway'?'Norge':'Gruppe';
     const filter=market==='all'?'Totalt':market==='pm'?'PM':'BM';
@@ -327,13 +353,13 @@
     const count=m.selected.length;
     return '<div class="top mo-top"><div><div class="eyebrow">MARKEDSOVERSIKT</div><h1>Forsikringsbarometeret</h1><p class="sub">Lønnsomhet og vekst i forsikringsmarkedet</p></div>'+
       '<div class="tag" id="mo-period">'+safe(latest||'Laster rapportperiode')+'</div></div>'+
-      '<section id="market-overview" class="panel mo-panel" data-period="'+safe(latest)+'" data-scope="'+scope+'" data-market="'+market+'" data-mode="'+mode+'">'+
+      '<section id="market-overview" class="panel mo-panel" data-period="'+safe(latest)+'" data-scope="'+scope+'" data-market="'+market+'" data-mode="'+mode+'" data-locked="'+Boolean(view.locked)+'">'+
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2></div>'+
-      (latest?'<span class="pill">'+m.reported+' / 9 rapportert</span>':'')+'</div>'+
+      (latest?'<span class="pill">'+(view.locked?'Låst · ':'')+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
       '</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer · '+safe(descriptor)+'</h2></div></div>'+
-      (latest?'<div class="mo-comment-grid">'+comments(m,window.FBNews?.editorial,scope,market,context).map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
+      (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
   }
   function render(){
     if(typeof current!=='undefined'&&current==='home'&&typeof show==='function')show('home',true);
@@ -342,15 +368,17 @@
     if(kind==='scope'&&['group','norway'].includes(value))scope=value;
     else if(kind==='market'&&['all','pm','bm'].includes(value))market=value;
     else if(kind==='mode'&&['quarter','ytd'].includes(value))mode=value;
+    else if(kind==='reportPeriod'&&archive?.periods?.[value])reportPeriod=value===archive.active_period?'latest':value;
     else return;
     render();
-    document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
+    if(kind==='reportPeriod')document.querySelector('#mo-report-period')?.focus({preventScroll:true});
+    else document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
   }
   function refresh(){
     if(pending)return pending;
     pending=(async()=>{
     try{
-      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json'].map(async f=>{
+      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json','market_overview_archive.json'].map(async f=>{
         const r=await fetch('data/'+f+'?t='+Date.now(),{cache:'no-store'});
         if(!r.ok)throw Error('HTTP '+r.status);return r.json();
       }));
@@ -358,6 +386,7 @@
       if(results[1].status==='fulfilled')fx=results[1].value;
       if(results[2].status==='fulfilled')segments=results[2].value;
       if(results[3].status==='fulfilled')context=results[3].value;
+      if(results[4].status==='fulfilled'&&results[4].value?.active_period)archive=results[4].value;
       failed=results.some(r=>r.status==='rejected');
     }finally{pending=null;render();}
     })();
@@ -365,15 +394,14 @@
   }
   function start(){refresh();setInterval(refresh,300000);}
   function methodology(){
-    const m=model(window.FBQuarterly?.verified,comparison,fx,scope,market,segments,mode,context);
-    const src=(context?.insights||[]).filter(x=>x.period===title(m.period)&&x.period_type===mode&&x.views?.includes(scope+'/'+market)&&source(x.source_url));
-    const sourceLinks=[...new Map([...m.eligible.map(r=>({name:pretty(r.company),url:r.source})),...src.map(r=>({name:pretty(r.company)+' · '+r.theme,url:r.source_url}))].filter(r=>source(r.url)).map(r=>[r.url,r])).values()];
+    const view=currentView(),m=view.model,sourceLinks=view.sources;
     return '<div class="panel" id="market-overview-methodology"><h2>Markedsoversikt – rangering, avgrensninger og kilder</h2>'+
       '<p>De fem største selskapene velges etter rapporterte inntekter omregnet til NOK. Selskapene sorteres deretter etter stigende CR. Kvartal viser isolert kvartal; HIÅ viser fra årets start til rapporteringskvartalets slutt. Inntektsveksten beregnes mot samme periode året før i rapportert valuta. Valutakursene er gjennomsnittlige dagskurser for den valgte perioden fra <a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>.</p>'+
       '<p>Frende Holding, KLP Skadeforsikring AS og Storebrand ASA (Insurance) inngår i Gruppe totalt og Norge totalt med samme tallgrunnlag etter avgrensningen av markedsoversikten, men ikke PM eller BM. KLP gjelder skadeforsikringsselskapet, ikke hele KLP-konsernet. Frendes inntektsmål er samlede driftsinntekter, ikke et rent IFRS 17-premiemål. Storebrand gjelder Insurance-segmentet i ASA. Protector bruker rapportert total for den geografien i BM, som omfatter offentlig sektor og affinity. Fremtind bruker de samme PM/BM-segmentene for Gruppe og Norge. Kun Fremtind PM/BM kan vises med CR uten separat skade-/kostnadssplitt. Fremtinds isolerte kvartalsinntekter kommer fra differansen mellom kumulative APM-tabeller, mens CR og vekst hentes fra rapporterte APM-tall.</p>'+
       '<p>HIÅ bruker rapporterte kumulative beløp og prosenter når de finnes. Der bare komplette kvartalstall finnes, beregnes inntekt som sum og CR-komponenter som inntektsvektet gjennomsnitt. Avrunding og ulike APM-/IFRS-definisjoner kan gi mindre avvik. Ingen eldre perioder eller konserntall brukes for et urelatert segment. Selskaper uten komplett grunnlag utelates. Kommentarene oppsummerer sammenlignbare nøkkeltall i valgt marked; hendelser brukes bare når rapportens periode og virksomhet støtter avgrensningen.</p>'+
-      (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+'</a></li>').join('')+'</ul>'+
+      '<p>Det aktive rapportkvartalet oppdateres når nye verifiserte rapporter kommer. Når neste kvartal åpnes, fryses forrige publiserte kvartals rangeringer, tall, valutagrunnlag og kommentarer. Velg et låst kvartal for å se det opprinnelige bildet.</p>'+
+      (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,html,methodology,select,refresh,start};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,refresh,start};
 });
