@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source": "Norges Bank",
-  "method": "Mean of daily NOK mid-rates per single unit of currency, completed reporting quarter",
+  "method": "Mean of daily NOK mid-rates per single unit of currency, completed reporting quarter or year-to-date period",
   "periods": {
     "Q3 2026": {
       "rates": {
@@ -30,6 +30,34 @@
           "first_date": "2026-07-01",
           "last_date": "2026-09-30",
           "source_url": "https://data.norges-bank.no/api/data/EXR/B.SEK.NOK.SP?format=csvfile&startPeriod=2026-07-01&endPeriod=2026-09-30&locale=en"
+        }
+      },
+      "ytd_rates": {
+        "EUR": 11.093210106382978,
+        "DKK": 1.4844127659574469,
+        "SEK": 1.0185632978723405
+      },
+      "ytd_evidence": {
+        "EUR": {
+          "rate": 11.093210106382978,
+          "observations": 188,
+          "first_date": "2026-01-02",
+          "last_date": "2026-09-30",
+          "source_url": "https://data.norges-bank.no/api/data/EXR/B.EUR.NOK.SP?format=csvfile&startPeriod=2026-01-01&endPeriod=2026-09-30&locale=en"
+        },
+        "DKK": {
+          "rate": 1.4844127659574469,
+          "observations": 188,
+          "first_date": "2026-01-02",
+          "last_date": "2026-09-30",
+          "source_url": "https://data.norges-bank.no/api/data/EXR/B.DKK.NOK.SP?format=csvfile&startPeriod=2026-01-01&endPeriod=2026-09-30&locale=en"
+        },
+        "SEK": {
+          "rate": 1.0185632978723405,
+          "observations": 188,
+          "first_date": "2026-01-02",
+          "last_date": "2026-09-30",
+          "source_url": "https://data.norges-bank.no/api/data/EXR/B.SEK.NOK.SP?format=csvfile&startPeriod=2026-01-01&endPeriod=2026-09-30&locale=en"
         }
       }
     }
