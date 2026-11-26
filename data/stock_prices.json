@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-11-26T12:38:38.935093+00:00",
+  "updated_at": "2026-11-26T12:53:38.366740+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 283.4,
+      "close": 283.6,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:22:34+00:00",
+      "observed_at": "2026-11-26T12:38:11+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 281.2,
@@ -1015,7 +1015,7 @@
         },
         {
           "date": "2026-11-26",
-          "price": 283.4
+          "price": 283.6
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/GJF.OL",
@@ -1028,7 +1028,7 @@
       "currency": "NOK",
       "close": 478.0,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:22:08+00:00",
+      "observed_at": "2026-11-26T12:38:23+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 477.0,
@@ -2049,7 +2049,7 @@
       "currency": "NOK",
       "close": 198.8,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:22:13+00:00",
+      "observed_at": "2026-11-26T12:36:15+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 196.5,
@@ -3068,9 +3068,9 @@
       "symbol": "TRYG.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 167.3,
+      "close": 167.2,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:29:30+00:00",
+      "observed_at": "2026-11-26T12:49:04+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 166.8,
@@ -4070,7 +4070,7 @@
         },
         {
           "date": "2026-11-26",
-          "price": 167.3
+          "price": 167.2
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/TRYG.CO",
@@ -4081,9 +4081,9 @@
       "symbol": "SAMPO.HE",
       "exchange": "Nasdaq Helsinki",
       "currency": "EUR",
-      "close": 9.998,
+      "close": 10.0,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:33:22+00:00",
+      "observed_at": "2026-11-26T12:53:09+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 9.914,
@@ -5091,7 +5091,7 @@
         },
         {
           "date": "2026-11-26",
-          "price": 9.998
+          "price": 10.0
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/SAMPO.HE",
@@ -5102,9 +5102,9 @@
       "symbol": "ALMB.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 17.62,
+      "close": 17.61,
       "trading_date": "2026-11-26",
-      "observed_at": "2026-11-26T12:31:28+00:00",
+      "observed_at": "2026-11-26T12:43:29+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 17.48,
@@ -6104,7 +6104,7 @@
         },
         {
           "date": "2026-11-26",
-          "price": 17.62
+          "price": 17.61
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/ALMB.CO",
