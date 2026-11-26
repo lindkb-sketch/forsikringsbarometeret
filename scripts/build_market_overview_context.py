@@ -13,7 +13,7 @@ from fremtind_apm_market import parse_income,parse_cr,BASIS
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGET=ROOT/'data/market_overview_context.json'
-VERSION=3
+VERSION=4
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
 NUM=r'[-−]?\d[\d,]*(?:\.\d+)?'
 KEYS=('company','year','quarter','period_type','scope','segment','metric')
@@ -206,8 +206,8 @@ def verify_alm_market_quarter(pages,year,quarter,url,digest):
     from build_market_overview_segments import valid_batch
     if not trusted_pdf_link(url) or not re.fullmatch(r'[0-9a-f]{64}',digest):
         raise ValueError('Untrusted Alm market report provenance')
-    cover=norm(pages[0][1]) if pages and pages[0][0]==1 else ''
-    if not re.search(r'\bAlm\.?\s+Brand\s+Group\b',cover,re.I) or not re.search(rf'\bInterim\s+report\s+Q\s*{quarter}\s+{year}\b',cover,re.I):
+    cover=' '.join(norm(t) for page,t in pages if page in (1,2))
+    if not re.search(r'\bAlm\.?\s+Brand\b',cover,re.I) or not re.search(rf'\bQ\s*{quarter}\s+{year}\b',cover,re.I):
         raise ValueError('Alm market report issuer/period cover mismatch')
     rows=parse_alm(pages,year,quarter,url,digest)
     anchor=dict(company='Alm. Brand',year=year,quarter=quarter,source_url=url,source_sha256=digest)
@@ -223,141 +223,7 @@ def verify_alm_market_quarter(pages,year,quarter,url,digest):
         if len(headers)!=1:raise ValueError('Ambiguous Alm segment financial table')
         amounts={}
         for label in labels:
-            pattern=r'(?<!\w)'+re.escape(label)+r'\s+('+NUM+r')\s+('+NUM+r')\s+('+NUM+r')\s*
-    y,q=a['year'],a['quarter']
-    from alm_brand_report_discovery import discover
-    from alm_brand_live_pdf import download_report,trusted_pdf_link
-    rows=parse_alm(pages,y,q,a['source_url'],a['source_sha256'])
-    if q==1:return [{**r,'period_type':'ytd','market_anchor':{k:a[k] for k in ('source_url','source_sha256')}} for r in rows]
-    # The segment overview gives isolated periods. Recover prior quarters
-    # from separately verified original reports, not group-level allocation.
-    for earlier in range(1,q):
-        # The live archive/RSS may no longer list old filings. Only use these
-        # exact, period-specific full-report attachments from the official notices
-        # if normal discovery yields no verified report. All PDF checks still apply.
-        historical={
-            (2026,1):'https://attachment.news.eu.nasdaq.com/a8aef29e05c3998da5abf849fa270f731',  # notice b2d48c4d379c12081e49d1522f59831e1
-            (2026,2):'https://attachment.news.eu.nasdaq.com/a0593252bfc0d0f3ddce26fe6f42f412c',  # notice b6990c765bf880f867dde692f4c1dd59f
-        }
-        fallback=historical.get((y,earlier))
-        try:docs=discover(y,earlier)
-        except Exception as exc:
-            if not fallback:raise
-            print('::warning::ALM_MARKET_DISCOVERY',earlier,type(exc).__name__,str(exc)[:150],flush=True)
-            docs=[]
-        urls=list(dict.fromkeys(x['url'] for x in docs if x.get('document_type')=='quarterly_report' and trusted_pdf_link(x['url'])))
-        batches={}
-        def admit(url):
-            try:
-                raw=download_report(url)
-                sha=hashlib.sha256(raw).hexdigest()
-                batch=verify_alm_market_quarter(read_pages(raw),y,earlier,url,sha)
-                batches[sha]=batch
-                print('ALM_MARKET_PRIOR_VERIFIED',y,earlier,url,sha,flush=True)
-            except Exception as exc:print('::warning::ALM_MARKET_PRIOR',earlier,type(exc).__name__,str(exc)[:150],flush=True)
-        for url in urls[:5]:admit(url)
-        if not batches and fallback and fallback not in urls[:5] and trusted_pdf_link(fallback):
-            admit(fallback)
-        if len(batches)!=1:raise ValueError('Unique verified Alm report missing Q'+str(earlier))
-        rows.extend(next(iter(batches.values())))
-    return [r for seg in SEGMENTS for r in weighted(a,'reported_segment',seg,rows)]
-
-def insight(a,page,views,theme,text,mode='quarter'):
-    return dict(company=a['company'],period=f"Q{a['quarter']} {a['year']}",period_type=mode,views=views,theme=theme,text=text,**source(a,page))
-
-def narratives(a,pages):
-    out=[];c=a['company']
-    if c=='Gjensidige':
-        for seg,page,lines,v,ytd in gj_blocks(a,pages):
-            market='pm' if seg.startswith('Private') else 'bm'
-            views=['norway/'+market,'norway/all'] if seg.endswith('Norway') else ['group/'+market,'group/all']
-            label={'Private':'privatmarkedet','Commercial':'bedriftsmarkedet','Private Norway':'norsk privatmarked','Commercial Norway':'norsk bedriftsmarked'}[seg]
-            for l in lines:
-                m=re.search(r'\bLarge losses, net of reinsurance[¹²³⁴⁵⁶⁷⁸⁹*]?\s+(.+)$',l,re.I)
-                if not m or re.search(r'[A-Za-z]',m[1]):continue
-                nums=re.findall(NUM,m[1])
-                if len(nums) not in (4,5):continue
-                for mode,pos in [('quarter',(0,1)),('ytd',ytd)]:
-                    now,prior=[float(nums[i].replace(',','')) for i in pos]
-                    if min(now,prior)<0 or abs(now-prior)<10:continue
-                    out.append(insight(a,page,views,'large_claims','Gjensidige rapporterer '+('lavere' if now<prior else 'høyere')+' storskader i '+label+' enn samme periode i fjor.',mode))
-    elif c=='Fremtind':
-        for page,t in pages:
-            text=norm(t)
-            if not re.search(r'Segment Privatmarkedet og Bedriftsmarkedet|Segmentresultater',text,re.I):continue
-            for market,label in [('pm','Privatmarkedet'),('bm','Bedriftsmarkedet')]:
-                hit=re.search(r'\b'+label+r'\s+utgjorde\s+([\d ]+)\s+millioner kroner i kvartalet',text,re.I)
-                if not hit or not re.search(r'Netto storskader i',text[max(0,hit.start()-400):hit.start()],re.I):continue
-                value=int(hit[1].replace(' ',''))
-                views=['group/'+market,'norway/'+market,'group/all','norway/all']
-                msg=f'Fremtind oppgir netto storskader på {value} mill. kroner i '+label.lower()+' i kvartalet.'
-                out.extend([insight(a,page,views,'large_claims',msg),insight(a,page,views,'large_claims','I siste kvartal: '+msg,'ytd')])
-    elif c=='Tryg':
-        for page,t in pages:
-            text=norm(t)
-            if re.search(r'Key figures\s*[-–]\s*Commercial',text,re.I) and re.search(r'Supreme Court ruling on Danish workers.{0,20}compensation insurance',text,re.I) and re.search(r'one-off provision of DKK 1\.2bn',text,re.I):
-                out.append(insight(a,page,['group/bm','group/all'],'regulation','Tryg opplyser at HIÅ-resultatet i bedriftsmarkedet er påvirket av en engangsavsetning etter dansk høyesterettsdom om yrkesskadeforsikring.','ytd'))
-    elif c=='Alm. Brand':
-        qrows=parse_alm(pages,a['year'],a['quarter'],a['source_url'],a['source_sha256'])
-        for seg,market,label in [('Private','pm','privatmarkedet'),('Commercial','bm','bedriftsmarkedet')]:
-            page=next((r['source_page'] for r in qrows if r['segment']==seg),None)
-            for p,t in pages:
-                if p!=page:continue
-                hits=[]
-                for l in t.splitlines():
-                    m=re.search(r'\bMajor claims, net of reinsurance\s+('+NUM+r')\s+('+NUM+r')\s+('+NUM+r')\s*$',norm(l),re.I)
-                    if m:hits.append([float(x.replace(',','')) for x in m.groups()])
-                if len(hits)==1:
-                    now,prior,_=hits[0]
-                    if abs(abs(now)-abs(prior))>=.5:
-                        msg='Alm. Brand rapporterer '+('lavere' if abs(now)<abs(prior) else 'høyere')+' storskadebelastning i '+label+' i kvartalet enn året før.'
-                        out.extend([insight(a,page,['group/'+market,'group/all'],'large_claims',msg),insight(a,page,['group/'+market,'group/all'],'large_claims','I siste kvartal: '+msg,'ytd')])
-    return out
-
-def extra_anchors(feed):
-    rows=[r for r in feed.get('observations',[]) if r.get('company')=='Protector' and r.get('scope')=='group' and r.get('period_type')=='quarter' and r.get('metric')=='insurance_revenue' and r.get('source_type')=='official_quarterly_report' and re.fullmatch(r'[0-9a-f]{64}',r.get('source_sha256',''))]
-    if rows:yield max(rows,key=lambda r:(r['year'],r['quarter']))
-def fetch(a):
-    if a['company']=='Protector':
-        from ingest_official_pdf import download as get
-        if urlsplit(a['source_url']).hostname!='storage.mfn.se':raise ValueError('Untrusted Protector source')
-        return get(a['source_url'])
-    return download(a)
-def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
-    previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
-    for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
-        c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
-        old=previous.get('status',{}).get(c,{})
-        if previous.get('schema_version')==VERSION and old.get('period')==period and old.get('source_sha256')==a['source_sha256'] and old.get('source_url')==a['source_url'] and old.get('status')=='verified':
-            out['observations'].extend(r for r in previous.get('observations',[]) if r.get('company')==c)
-            out['insights'].extend(r for r in previous.get('insights',[]) if r.get('company')==c and r.get('period')==period)
-            out['status'][c]=old;continue
-        state={'period':period,'source_url':a['source_url'],'source_sha256':a['source_sha256'],'status':'not_verified'}
-        try:
-            raw=fetcher(a)
-            if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original report fingerprint changed')
-            pages=reader(raw)
-            try:
-                batch={'Fremtind':fremtind_ytd,'Gjensidige':gj_ytd,'Tryg':tryg_ytd,'Alm. Brand':alm_ytd,'Protector':protector_ytd}[c](a,pages)
-                out['observations'].extend(batch)
-                scopes=sorted({(r['scope'],r.get('segment') or '') for r in batch if r['year']==y and r['metric']=='insurance_revenue'})
-                expected=5 if c=='Gjensidige' else 3 if c=='Tryg' else 1 if c=='Protector' else 2
-                state.update(status='verified' if len(scopes)==expected else 'partial',scopes=scopes,observations=len(batch))
-                print('MARKET_CONTEXT_YTD',c,period,scopes,flush=True)
-            except Exception as exc:print('::warning::MARKET_CONTEXT_YTD_ERROR',c,type(exc).__name__,str(exc)[:260],flush=True)
-            try:out['insights'].extend(narratives(a,pages))
-            except Exception as exc:print('::warning::MARKET_CONTEXT_NARRATIVE_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
-        except Exception as exc:print('::warning::MARKET_CONTEXT_SOURCE_ERROR',c,type(exc).__name__,str(exc)[:220],flush=True)
-        out['status'][c]=state
-    return out
-def main():
-    load=lambda n:json.loads((ROOT/'data'/n).read_text(encoding='utf-8'))
-    result=build(load('verified_financial_feed.json'),load('nine_insurer_comparison.json'),load(TARGET.name) if TARGET.exists() else {})
-    from publish_geographic_workbooks import atomic_write
-    atomic_write(TARGET,result)
-    print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)
-if __name__=='__main__':main()
-
+            pattern=r'(?<!\w)'+re.escape(label)+r'\s+('+NUM+r')\s+('+NUM+r')\s+('+NUM+r')\s*$'
             hits=[m.groups() for l in lines[headers[0]+1:] if (m:=re.search(pattern,l,re.I))]
             if len(hits)!=1:raise ValueError('Missing/ambiguous Alm segment amount: '+label)
             amounts[label]=[float(v.replace(',','').replace('−','-')) for v in hits[0]]
@@ -377,23 +243,39 @@ if __name__=='__main__':main()
                 raise ValueError('Alm segment amount/ratio mismatch')
     return rows
 
-def alm_ytd(a,pages):
+def alm_ytd(a,pages,report_sources=None):
     y,q=a['year'],a['quarter']
     from alm_brand_report_discovery import discover
     from alm_brand_live_pdf import download_report,trusted_pdf_link
-    from rolling_alm_brand_reports import read_report,verify_report
+    from build_market_overview_segments import valid_batch
+    report_sources={} if report_sources is None else report_sources
+    # The current report has already been checked against the official feed's
+    # fingerprint. Its verified source is retained across scheduled updates.
     rows=parse_alm(pages,y,q,a['source_url'],a['source_sha256'])
-    if q==1:return [{**r,'period_type':'ytd','market_anchor':{k:a[k] for k in ('source_url','source_sha256')}} for r in rows]
-    # The segment overview gives isolated periods. Recover prior quarters
-    # from separately verified original reports, not group-level allocation.
+    if not valid_batch(rows,a):raise ValueError('Invalid current Alm segment batch')
+    if q<4:rows=verify_alm_market_quarter(pages,y,q,a['source_url'],a['source_sha256'])
+    report_sources[f'Q{q} {y}']={k:a[k] for k in ('source_url','source_sha256')}
+    if q==1:return [{**r,'period_type':'ytd','market_anchor':{k:a[k] for k in ('source_url','source_sha256')},'source_documents':[source(a,r['source_page'])]} for r in rows]
+    # Bootstrap only: official historical filings predating this registry.
+    # All future quarters are remembered automatically from verified reports.
+    historical={
+        (2026,1):'https://attachment.news.eu.nasdaq.com/a8aef29e05c3998da5abf849fa270f731',
+        (2026,2):'https://attachment.news.eu.nasdaq.com/a0593252bfc0d0f3ddce26fe6f42f412c',
+    }
     for earlier in range(1,q):
-        # The live archive/RSS may no longer list old filings. Only use these
-        # exact, period-specific full-report attachments from the official notices
-        # if normal discovery yields no verified report. All PDF checks still apply.
-        historical={
-            (2026,1):'https://attachment.news.eu.nasdaq.com/a8aef29e05c3998da5abf849fa270f731',  # notice b2d48c4d379c12081e49d1522f59831e1
-            (2026,2):'https://attachment.news.eu.nasdaq.com/a0593252bfc0d0f3ddce26fe6f42f412c',  # notice b6990c765bf880f867dde692f4c1dd59f
-        }
+        period=f'Q{earlier} {y}'
+        saved=report_sources.get(period)
+        if saved is not None:
+            # Never silently replace a previously verified document with a new
+            # PDF; retry on the next scheduled run if the source is unavailable.
+            url=saved['source_url']
+            if not trusted_pdf_link(url):raise ValueError('Untrusted saved Alm report')
+            raw=download_report(url)
+            sha=hashlib.sha256(raw).hexdigest()
+            if sha!=saved['source_sha256']:raise ValueError('Saved Alm report fingerprint changed: '+period)
+            rows.extend(verify_alm_market_quarter(read_pages(raw),y,earlier,url,sha))
+            print('ALM_MARKET_PRIOR_REUSED',period,url,sha,flush=True)
+            continue
         fallback=historical.get((y,earlier))
         try:docs=discover(y,earlier)
         except Exception as exc:
@@ -406,18 +288,20 @@ def alm_ytd(a,pages):
             try:
                 raw=download_report(url)
                 sha=hashlib.sha256(raw).hexdigest()
-                texts,regions=read_report(raw)
-                verify_report(texts,url,raw,y,earlier,regions)
-                batch=parse_alm(read_pages(raw),y,earlier,url,sha)
-                batches[sha]=batch
+                batch=verify_alm_market_quarter(read_pages(raw),y,earlier,url,sha)
+                batches[sha]=(url,batch)
                 print('ALM_MARKET_PRIOR_VERIFIED',y,earlier,url,sha,flush=True)
             except Exception as exc:print('::warning::ALM_MARKET_PRIOR',earlier,type(exc).__name__,str(exc)[:150],flush=True)
         for url in urls[:5]:admit(url)
         if not batches and fallback and fallback not in urls[:5] and trusted_pdf_link(fallback):
             admit(fallback)
-        if len(batches)!=1:raise ValueError('Unique verified Alm report missing Q'+str(earlier))
-        rows.extend(next(iter(batches.values())))
-    return [r for seg in SEGMENTS for r in weighted(a,'reported_segment',seg,rows)]
+        if len(batches)!=1:raise ValueError('Unique verified Alm report missing '+period)
+        sha,(url,batch)=next(iter(batches.items()))
+        report_sources[period]=dict(source_url=url,source_sha256=sha)
+        rows.extend(batch)
+    result=[r for seg in SEGMENTS for r in weighted(a,'reported_segment',seg,rows)]
+    if len(result)!=16:raise ValueError('Incomplete Alm HIÅ segment coverage')
+    return result
 
 def insight(a,page,views,theme,text,mode='quarter'):
     return dict(company=a['company'],period=f"Q{a['quarter']} {a['year']}",period_type=mode,views=views,theme=theme,text=text,**source(a,page))
@@ -482,6 +366,7 @@ def fetch(a):
     return download(a)
 def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
+    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version')==VERSION else {}
     for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
         c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
         old=previous.get('status',{}).get(c,{})
@@ -495,7 +380,7 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
             if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original report fingerprint changed')
             pages=reader(raw)
             try:
-                batch={'Fremtind':fremtind_ytd,'Gjensidige':gj_ytd,'Tryg':tryg_ytd,'Alm. Brand':alm_ytd,'Protector':protector_ytd}[c](a,pages)
+                batch=alm_ytd(a,pages,out['alm_report_sources']) if c=='Alm. Brand' else {'Fremtind':fremtind_ytd,'Gjensidige':gj_ytd,'Tryg':tryg_ytd,'Protector':protector_ytd}[c](a,pages)
                 out['observations'].extend(batch)
                 scopes=sorted({(r['scope'],r.get('segment') or '') for r in batch if r['year']==y and r['metric']=='insurance_revenue'})
                 expected=5 if c=='Gjensidige' else 3 if c=='Tryg' else 1 if c=='Protector' else 2
