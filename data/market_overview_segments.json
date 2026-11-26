@@ -1,5 +1,1755 @@
 {
   "schema_version": 1,
-  "observations": [],
-  "status": {}
+  "observations": [
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 7327.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 78.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 65.6,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 12.8,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 6943.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 80.8,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 67.9,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 12.9,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Private"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 3265.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 73.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 59.1,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 14.4,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 3233.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 73.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 59.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Tryg",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 14.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 34,
+      "source_document_period": "Q3 2026",
+      "source_section": "Quarterly outline - Segments / Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 4964.4,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 69.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 59.2,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 10.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 4814.6,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 76.9,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 65.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 11.2,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 11,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Private"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 5794.4,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 67.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 58.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 8.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 5799.5,
+      "unit": "MNOK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 76.6,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 67.9,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Gjensidige",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 8.6,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "source_document_period": "Q3 2026",
+      "source_section": "General Insurance Commercial"
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 5341,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 10,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Styrets beretning / Segmentresultater (isolert differanse)",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 71.6,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 3,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Resultatutvikling og nøkkeltall / Combined ratio per segment",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 78.4,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 3,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Resultatutvikling og nøkkeltall / Combined ratio per segment",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 4.4,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Styrets beretning / Resultatutvikling i kvartalet",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 965,
+      "unit": "NOKm",
+      "status": "calculated",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 10,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Styrets beretning / Segmentresultater (isolert differanse)",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 80.8,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 3,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Resultatutvikling og nøkkeltall / Combined ratio per segment",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 67.2,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 3,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Resultatutvikling og nøkkeltall / Combined ratio per segment",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Fremtind",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue_growth",
+      "value": 3.6,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_definition": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+      "source_section": "Styrets beretning / Resultatutvikling i kvartalet",
+      "calculation": "fremtind_reported_apm_segment",
+      "market_period": "Q3 2026",
+      "market_anchor": {
+        "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+        "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52"
+      },
+      "source_documents": [
+        {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        }
+      ],
+      "apm_evidence": {
+        "end": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 10,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 15497,
+            "Commercial": 2877
+          },
+          "total": 18373
+        },
+        "before": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/b1524ed0d699fe3763c37eed69d187ffef46c6d9.pdf",
+          "source_sha256": "d0474c5fd25f3bf6e25fdd2550069673a07facbef2890690b8b401d7b1877190",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 2,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "unit": "MNOK",
+          "income": {
+            "Private": 10156,
+            "Commercial": 1912
+          },
+          "total": 12068
+        },
+        "cr": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": {
+              "current": 71.6,
+              "prior": 78.4
+            },
+            "Commercial": {
+              "current": 80.8,
+              "prior": 67.2
+            }
+          }
+        },
+        "growth": {
+          "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "source_page": 9,
+          "year": 2026,
+          "quarter": 3,
+          "basis": "Fremtind APM: adjusted insurance service revenue and reported net combined ratio",
+          "values": {
+            "Private": 4.4,
+            "Commercial": 3.6
+          }
+        },
+        "old_end": null,
+        "old_before": null
+      }
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 1658.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 78.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 61.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 17.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 1584.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 83.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 66.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Private",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 16.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "source_document_period": "Q3 2026",
+      "source_section": "Personal Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 1396.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 71.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 56.7,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2026,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 15.0,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "insurance_revenue",
+      "value": 1422.0,
+      "unit": "MDKK",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "combined_ratio",
+      "value": 81.3,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "loss_ratio",
+      "value": 66.5,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    },
+    {
+      "company": "Alm. Brand",
+      "year": 2025,
+      "quarter": 3,
+      "scope": "reported_segment",
+      "segment": "Commercial",
+      "period_type": "quarter",
+      "metric": "expense_ratio",
+      "value": 14.8,
+      "unit": "percent",
+      "status": "reported",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 9,
+      "source_document_period": "Q3 2026",
+      "source_section": "Commercial Lines"
+    }
+  ],
+  "status": {
+    "Tryg": {
+      "period": "Q3 2026",
+      "status": "verified",
+      "observations": 16
+    },
+    "Gjensidige": {
+      "period": "Q3 2026",
+      "status": "verified",
+      "observations": 16
+    },
+    "Fremtind": {
+      "period": "Q3 2026",
+      "status": "verified",
+      "observations": 8
+    },
+    "Alm. Brand": {
+      "period": "Q3 2026",
+      "status": "verified",
+      "observations": 16
+    }
+  }
 }
