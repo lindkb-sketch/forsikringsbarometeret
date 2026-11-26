@@ -24,8 +24,17 @@ if latest is None or minutes>70:
     with urllib.request.urlopen(active_req,timeout=25) as response:
         active=json.load(response)["workflow_runs"]
     underway=[x for x in active if x.get("status") in ("queued","pending","waiting","in_progress","requested")]
+    recent=[]
+    for item in active:
+        try:
+            age=(now-datetime.fromisoformat(item['created_at'].replace('Z','+00:00'))).total_seconds()/60
+            if -2<=age<30:recent.append(item)
+        except (KeyError,TypeError,ValueError):
+            continue
     if underway:
         print("WATCHDOG_RECOVERY active_update_exists; no duplicate dispatched.")
+    elif recent:
+        print("WATCHDOG_RECOVERY recent_update_attempt; no duplicate dispatched.")
     else:
         request=urllib.request.Request(f"https://api.github.com/repos/{REPO}/actions/workflows/update.yml/dispatches",
            data=json.dumps({"ref":"main"}).encode("utf-8"),method="POST",
@@ -38,4 +47,4 @@ if latest is None or minutes>70:
     summary=os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary,"a",encoding="utf-8") as output:
-            output.write("### Scheduled import watchdog\n\n- "+message+"\n- Recovery: "+("An update is already running." if underway else "Requested a new update.yml run.")+"\n- This does not certify the original cron trigger or the import result.\n")
+            output.write("### Scheduled import watchdog\n\n- "+message+"\n- Recovery: "+("An update is already running." if underway else "A recent recovery attempt exists." if recent else "Requested a new update.yml run.")+"\n- This does not certify the original cron trigger or the import result.\n")

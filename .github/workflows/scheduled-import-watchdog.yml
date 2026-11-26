@@ -34,6 +34,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/check_scheduled_runs.py
       - name: Recover missed stock price refresh without duplicate jobs
+        if: ${{ !cancelled() }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/check_stock_schedule.py

@@ -8,7 +8,9 @@ is missing. Scheduled triggers are best-effort, not a guaranteed 15-minute SLA.
 import json
 import os
 import urllib.request
-from datetime import datetime,timezone
+import urllib.error
+import time
+from datetime import datetime,timezone,timedelta
 from stock_market_window import should_poll
 
 ACTIVE={'queued','pending','waiting','in_progress','requested'}
@@ -26,7 +28,7 @@ def github_request(url,token,data=None):
     with urllib.request.urlopen(request,timeout=25) as response:
         return None if data is not None else json.load(response)
 
-def check(now=None,fetch=github_request,token=None,repo=None):
+def check(now=None,fetch=github_request,token=None,repo=None,*,sleeper=time.sleep,retries=3):
     now=now or datetime.now(timezone.utc)
     if now.tzinfo is None:raise ValueError('Clock must be timezone-aware')
     if not should_poll(now):
@@ -53,7 +55,14 @@ def check(now=None,fetch=github_request,token=None,repo=None):
         if -2<=age<MAX_RECENT_MINUTES:
             print(f'STOCK_WATCHDOG recent stock attempt ({age:.1f} min); no duplicate')
             return 'recent'
-    fetch(api+'/dispatches',token,{'ref':'main'})
+    try:
+        fetch(api+'/dispatches',token,{'ref':'main'})
+    except urllib.error.HTTPError as exc:
+        if exc.code not in (500,502,503,504) or retries<=1:
+            raise
+        print(f'::warning::Stock dispatch HTTP {exc.code}; recheck run history before retry')
+        sleeper(15)
+        return check(now+timedelta(seconds=15),fetch,token,repo,sleeper=sleeper,retries=retries-1)
     print('::warning::STOCK_WATCHDOG no recent stock run; dispatched stock-prices.yml')
     return 'dispatched'
 

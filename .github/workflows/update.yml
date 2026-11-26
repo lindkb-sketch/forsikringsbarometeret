@@ -27,7 +27,7 @@ jobs:
       - name: Recover missed stock refresh during Nordic market hours
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/check_stock_schedule.py
+        run: python scripts/check_stock_schedule.py || echo '::warning::Stock recovery failed; independent stock watchdog remains responsible'
 
       - uses: actions/setup-node@v4
         with:
@@ -203,6 +203,8 @@ jobs:
         run: python scripts/audit_seven_document_sources.py
       - name: Fail closed on nine-insurer source-to-comparison E2E parity
         run: python scripts/check_nine_insurer_e2e.py
+      - name: Require complete latest quarter and HIÅ for all nine and check overdue releases
+        run: python scripts/check_nine_release.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4
@@ -285,6 +287,15 @@ jobs:
           google-chrome --version
       - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
         run: node tests/live_browser_e2e.cjs
+      - name: Record nine-company scheduled advance and public parity evidence
+        run: python scripts/nine_import_receipt.py
+      - name: Save nine-company import evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: nine-import-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/nine-import-receipt.json
+          if-no-files-found: error
+          retention-days: 90
       - name: Save browser screenshots and audit
         if: always()
         uses: actions/upload-artifact@v4
