@@ -65,7 +65,7 @@ def reconcile(existing,evidence):
 
 def run(out=DATA,raw=None):
     existing=json.loads(out.read_text(encoding='utf-8'))['insurers']['Alm. Brand']
-    if (existing.get('year',0),existing.get('quarter',0))>(2026,3):
+    if existing.get('status')=='verified_official_pdf_reconciled' or (existing.get('year',0),existing.get('quarter',0))>(2026,3):
         print('ALM_LEGACY_PRESENTATION_SKIPPED rolling snapshot retained',flush=True)
         return
     if raw is None:

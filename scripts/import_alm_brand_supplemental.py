@@ -47,6 +47,11 @@ def attach(existing,pdf):
         raise ValueError('Alm. Brand PDF and existing report period differ')
     if pdf.get('status')!='verified_official_pdf_reconciled':
         raise ValueError('Alm. Brand report did not pass PDF reconciliation')
+    if existing.get('status')=='verified_official_pdf_reconciled':
+        from rolling_alm_brand_reports import validate_rolling
+        if validate_rolling(existing) or existing.get('source_sha256')!=pdf.get('source_sha256') or existing['metrics']!=pdf['metrics'] or existing.get('ytd_metrics')!=pdf.get('ytd_metrics'):
+            raise ValueError('Report-first snapshot does not match independent baseline PDF replay')
+        return existing
     for k,v in existing['metrics'].items():
         if k in KEYS:continue
         if k not in pdf['metrics'] or abs(v-pdf['metrics'][k])>0.001:
@@ -90,7 +95,7 @@ def preserve(new,previous):
 def run(path=DATA,pdf=None):
     data=json.loads(path.read_text(encoding='utf-8'))
     existing=data['insurers']['Alm. Brand']
-    if (existing.get('year',0),existing.get('quarter',0))>(2026,3):
+    if existing.get('status')=='verified_official_pdf_reconciled' or (existing.get('year',0),existing.get('quarter',0))>(2026,3):
         print('ALM_LEGACY_SUPPLEMENTAL_SKIPPED rolling snapshot retained',flush=True)
         return existing
     new=attach(existing,pdf if pdf is not None else reconcile_pdf())

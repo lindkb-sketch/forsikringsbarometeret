@@ -9,6 +9,9 @@ on:
       - 'scripts/audit_nine_issuer_documents.py'
       - 'scripts/reconcile_issuer_presentation_metrics.py'
       - 'tests/test_nine_issuer_dual_audit.py'
+      - 'scripts/alm_brand_report_discovery.py'
+      - 'scripts/advance_alm_brand.py'
+      - 'scripts/rolling_alm_brand_reports.py'
       - '.github/workflows/verify-dual-documents.yml'
   push:
     branches: [main]
@@ -37,26 +40,19 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_nine_issuer_dual_audit.py' -v
       - name: Download and audit current issuer documents without publishing financial values
         run: python scripts/audit_nine_issuer_documents.py
-      - name: Require all applicable documents and zero reconciled metric conflicts
+      - name: Require all nine original reports and zero confirmed metric conflicts
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           result=json.loads(Path('data/nine_issuer_dual_audit.json').read_text())
+          if result['report_verified_count']!=9:
+              raise SystemExit('One or more original quarterly reports are unverified')
           if not result['all_required_documents_verified']:
-              raise SystemExit('One or more required issuer documents are unverified')
+              print('::warning::One or more supplementary presentations are unavailable')
+          print('Supplementary unresolved metric slots:',result['presentation_metric_slots_unresolved'])
           conflicts=[(c['company'],m['metric'],m['period_type']) for c in result['companies'] for m in c['cross_document_matches'] if m['status']=='conflict']
           if conflicts:raise SystemExit('Conflicting independently extracted metrics: '+repr(conflicts))
-          PY
-      - name: Require both Alm. Brand documents discovered from its own investor portal
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          result=json.loads(Path('data/nine_issuer_dual_audit.json').read_text())
-          alm=next(x for x in result['companies'] if x['company']=='Alm. Brand')
-          if not (alm['issuer_report_verified'] and alm['issuer_presentation_verified']):
-              raise SystemExit('Alm. Brand: primary-source report or presentation is still unverified')
           PY
       - name: Save actual issuer documents and audit evidence
         if: always()

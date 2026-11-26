@@ -90,13 +90,7 @@ jobs:
         run: python scripts/discover_frende_skade_reports.py || echo '::warning::Frende Skade archive unavailable; retaining previously documented report links'
       - name: Import separate Frende Skade financial observations from issuer reports
         run: python scripts/import_frende_skade.py
-      - name: Refresh source-verified Alm Brand data without overwriting last approved feed
-        run: python scripts/update_extended_insurers.py || echo "::warning::Alm Brand source temporarily unavailable; retaining last verified snapshot"
-      - name: Import Alm Brand Q3 official presentation solvency (fail closed)
-        run: python scripts/import_alm_brand_presentation.py
-      - name: Reconcile Alm Brand ROE and pre-tax profit with original quarterly PDF
-        run: python scripts/import_alm_brand_supplemental.py
-      - name: Discover and verify next Alm Brand quarter from official report and presentation
+      - name: Import Alm Brand from original quarter report, with optional secondary presentation
         run: python scripts/advance_alm_brand.py
       - name: Import real KLP Q1-Q3 PDF financial metrics after independent HIÅ reconciliation
         run: python scripts/import_klp_production.py
@@ -205,6 +199,8 @@ jobs:
         run: python scripts/check_nine_insurer_e2e.py
       - name: Require complete latest quarter and HIÅ for all nine and check overdue releases
         run: python scripts/check_nine_release.py
+      - name: Require original quarterly report provenance for all nine insurers
+        run: python scripts/check_nine_report_primary.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4

@@ -804,7 +804,7 @@ def audit(feed,extended,comparison):
          'presentation_metric_slots':sum(len(x['metric_inventory']) for x in required),
          'presentation_metric_slots_matched':sum(m['status']=='matched' for x in required for m in x['metric_inventory']),
          'presentation_metric_slots_unresolved':sum(m['status']=='presentation_metric_not_yet_verified' for x in required for m in x['metric_inventory']),
-         'note':'Document verification is separate from independent metric extraction. Owner-confirmed report-only issuers are exempt from presentation requirements, but must pass original-report verification. Discovery continues for every issuer; a new presentation candidate reopens the requirement. Unverified presentation candidates are not reporting exceptions.',
+         'note':'Quarterly reports are the primary evidence. Presentation verification is supplementary; unresolved presentation slots are not missing primary-source metrics. Confirmed conflicts must be investigated. Direct issuer-portal rediscovery is reported separately from verified official exchange delivery.',
          'companies':result}
     return out
 

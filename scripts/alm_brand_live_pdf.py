@@ -36,9 +36,15 @@ LABELS={'insurance_revenue':'Insurance revenue',
 PERCENT={'gross_claims_ratio','reinsurance_ratio','loss_ratio','expense_ratio','combined_ratio'}
 NUM=re.compile(r'(?<![\w])-?\d{1,3}(?:,\d{3})*(?:\.\d+)?(?![\w])')
 
+def nasdaq_attachment(url):
+    p=urllib.parse.urlsplit(url)
+    return (p.scheme=='https' and p.hostname=='attachment.news.eu.nasdaq.com'
+            and not p.username and not p.password and p.port in (None,443)
+            and not p.query and not p.fragment and bool(re.fullmatch(r'/[0-9a-f]{32}',p.path)))
+
 def trusted_pdf_link(url):
     p=urllib.parse.urlsplit(url)
-    return p.scheme=='https' and (url==OFFICIAL_FILING_PDF or 
+    return p.scheme=='https' and not p.username and not p.password and p.port in (None,443) and (nasdaq_attachment(url) or 
         (p.hostname=='s29.q4cdn.com'
          and p.path.startswith('/228553818/files/')
          and p.path.lower().endswith('.pdf')) or
