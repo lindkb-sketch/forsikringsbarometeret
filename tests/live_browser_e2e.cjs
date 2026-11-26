@@ -36,20 +36,36 @@ async function main(){
   const marketComparison=compResponse.ok()?await compResponse.json():{};
   const segmentResponse=await page.request.get(BASE+'data/market_overview_segments.json?browser_audit='+Date.now());
   const marketSegments=segmentResponse.ok()?await segmentResponse.json():{};
+  const contextResponse=await page.request.get(BASE+'data/market_overview_context.json?browser_audit='+Date.now());
+  const marketContext=contextResponse.ok()?await contextResponse.json():{};
+  const archiveResponse=await page.request.get(BASE+'data/market_overview_archive.json?browser_audit='+Date.now());
+  const marketArchive=archiveResponse.ok()?await archiveResponse.json():{};
+  check('Market quarter snapshot available',Boolean(marketArchive.active_period&&marketArchive.periods?.[marketArchive.active_period]));
   await page.evaluate(()=>FBMarketOverview.refresh());
-  const verifyMarket=async(scope,market)=>{
+  const verifyMarket=async(scope,market,mode='quarter')=>{
+   await page.locator('[data-mo-mode="'+mode+'"]').click();
    await page.locator('[data-mo-scope="'+scope+'"]').click();
    await page.locator('[data-mo-market="'+market+'"]').click();
-   const state=await page.evaluate(({marketFx,marketComparison,marketSegments,scope,market})=>{
-    const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments);
-    return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length};
-   },{marketFx,marketComparison,marketSegments,scope,market});
+   const state=await page.evaluate(({marketFx,marketComparison,marketSegments,marketContext,marketArchive,scope,market,mode})=>{
+    const model=FBMarketOverview.archivedView(marketArchive,'latest',scope,market,mode)?.model||FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments,mode,marketContext);
+    return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length,medals:[...document.querySelectorAll('.mo-company')].map(el=>({rank:el.querySelector('.mo-name .mo-medal')?.dataset.crRank||null,text:el.querySelector('.mo-name .mo-medal')?.textContent||null,afterName:!!el.querySelector('.mo-name button + .mo-medal')}))};
+   },{marketFx,marketComparison,marketSegments,marketContext,marketArchive,scope,market,mode});
    check('Market '+scope+'/'+market+' uses exact eligible income-ranked companies',JSON.stringify(state.expected)===JSON.stringify(state.actual),JSON.stringify(state));
    check('Market '+scope+'/'+market+' sorts CR ascending and aligns growth',state.cr.every((v,i)=>!i||v>=state.cr[i-1])&&state.growth===state.actual.length&&state.actual.length<=5);
-   check('Market '+scope+'/'+market+' has three comment groups',state.comments===3);
+   check('Market '+scope+'/'+market+'/'+mode+' has three comment groups',state.comments===3);
+   check('CR medals under company names '+scope+'/'+market+'/'+mode,state.medals.length===state.actual.length&&state.medals.every((m,i)=>i<3?m.rank===String(i+1)&&m.text===['🥇','🥈','🥉'][i]&&m.afterName:m.rank===null),JSON.stringify(state.medals));
    if(state.missing.length)check('FX missing: no misleading ranking',state.empty&&state.actual.length===0);
+   if(state.period==='Q3 2026'){const expected={'group/all':5,'group/pm':4,'group/bm':5,'norway/all':5,'norway/pm':2,'norway/bm':3};check('Complete Q3 displayed '+scope+'/'+market+'/'+mode,state.actual.length===expected[scope+'/'+market],JSON.stringify(state));}
   };
-  for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market);
+  for(const mode of ['quarter','ytd'])for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market,mode);
+  for(const label of Object.keys(marketArchive.periods||{})){
+   await page.locator('#mo-report-period').selectOption(label);
+   check('Select archived reporting quarter '+label,await page.locator('#mo-period').textContent()===label&&await page.locator('#market-overview').getAttribute('data-locked')===String(marketArchive.periods[label].locked));
+  }
+  if(marketArchive.active_period)await page.locator('#mo-report-period').selectOption(marketArchive.active_period);
+  await verifyMarket('norway','all');
+  check('Five companies in Norway total for baseline quarter',await page.locator('#mo-period').textContent()!=='Q3 2026'||await page.locator('.mo-company').count()===5);
+  check('Market footnotes moved off overview',await page.locator('.mo-note,.mo-excluded,.mo-source,.mo-name small').count()===0);
   await verifyMarket('group','all');
   const eligibility=await page.evaluate(({marketFx,marketComparison,marketSegments})=>{
     const f=[['group','all'],['group','pm'],['group','bm'],['norway','all'],['norway','pm'],['norway','bm']];
@@ -61,8 +77,9 @@ async function main(){
     check('Gjensidige eligible for all six views with distinct segment figures',eligibility.byCompany.Gjensidige.every(Boolean),JSON.stringify(eligibility));
     check('Fremtind PM and BM use reported quarter CR in group and Norway',JSON.stringify(eligibility.byCompany.Fremtind)===JSON.stringify([true,true,true,true,true,true]),JSON.stringify(eligibility));
     check('Alm Brand has group Personal and Commercial only',JSON.stringify(eligibility.byCompany['Alm. Brand'])===JSON.stringify([true,true,true,false,false,false]),JSON.stringify(eligibility));
-    for(const c of ['Sampo','Frende','Storebrand','KLP Skadeforsikring'])
+    for(const c of ['Sampo'])
       check(c+' is group only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,false,false,false]),JSON.stringify(eligibility));
+    for(const c of ['Frende','KLP Skadeforsikring','Storebrand'])check(c+' group and Norway total only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,true,false,false]),JSON.stringify(eligibility));
     check('Current Q3 FX covers all required currencies',Boolean(marketFx.periods?.['Q3 2026']?.rates?.EUR&&marketFx.periods?.['Q3 2026']?.rates?.DKK));
     const f=await page.evaluate(({marketFx,marketComparison,marketSegments})=>Object.fromEntries(['pm','bm'].map(m=>[m,FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,'group',m,marketSegments).eligible.find(r=>r.company==='Fremtind')])),{marketFx,marketComparison,marketSegments});
     check('Fremtind published APM quarter CR and revenue (not IFRS note)',f.pm?.cr===71.6&&f.bm?.cr===80.8&&f.pm?.revenue===5341&&f.bm?.revenue===965&&f.pm?.growth===4.4&&f.bm?.growth===3.6&&f.pm?.loss===null&&f.bm?.cost===null,JSON.stringify(f));

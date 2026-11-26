@@ -28,7 +28,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
           node --check scripts/market_overview.js
-          node --test tests/test_market_overview.cjs
+          node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
       - name: Reconcile official live market-segment PDFs
         run: |
           python scripts/build_market_overview_segments.py
@@ -39,3 +39,8 @@ jobs:
               assert data['status'].get(c,{}).get('status')=='verified', (c,data['status'])
           print('MARKET_FOCUSED_LIVE_OK',data['status'])
           PY
+      - name: Verify complete quarter and HIÅ market snapshots
+        run: |
+          python scripts/build_market_overview_fx.py
+          python scripts/build_market_overview_context.py
+          node scripts/build_market_overview_archive.cjs --require-baseline

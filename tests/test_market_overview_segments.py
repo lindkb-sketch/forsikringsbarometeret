@@ -53,4 +53,73 @@ class MarketSegmentTests(unittest.TestCase):
         out=build({'observations':[row]},{'observations':[]},lambda _:b'%PDF-test')
         self.assertEqual(out['observations'],[])
         self.assertEqual(out['status']['Tryg']['status'],'not_verified')
+
+    def test_alm_q1_market_validation_independent_of_group_pbt(self):
+        from build_market_overview_context import verify_alm_market_quarter, weighted
+        # Isolated segment-table fixture; never used as published data.
+        cover='ALM. BRAND GROUP\nInterim report Q1\n2026'
+        pm=('Personal Lines\nQ1 Q1\nDKKm 2026 2025 Change\n'
+            'Insurance revenue 1,591 1,496 95\n'
+            'Claims expenses -1,006 -970 -36\n'
+            'Insurance operating expenses -319 -305 -14\n'
+            'Profit/loss on reinsurance -20 -30 10\n'
+            'Insurance service result 246 191 55\n'
+            'Claims ratio 64.5 66.8 -2.3\n'
+            'Gross expense ratio 20.0 20.3 -0.3\n'
+            'Combined ratio 84.5 87.1 -2.6\n')
+        bm=('Commercial Lines\nQ1 Q1\nDKKm 2026 2025 Change\n'
+            'Insurance revenue 1,338 1,362 -24\n'
+            'Claims expenses -792 -891 99\n'
+            'Insurance operating expenses -216 -227 11\n'
+            'Profit/loss on reinsurance -80 -98 18\n'
+            'Insurance service result 250 146 104\n'
+            'Claims ratio 65.1 72.6 -7.5\n'
+            'Gross expense ratio 16.2 16.7 -0.5\n'
+            'Combined ratio 81.3 89.3 -8.0\n')
+        pages=[(1,cover),(7,pm),(8,bm)]
+        url='https://attachment.news.eu.nasdaq.com/a8aef29e05c3998da5abf849fa270f731'
+        rows=verify_alm_market_quarter(pages,2026,1,url,SHA)
+        self.assertEqual(len(rows),16)
+        self.assertEqual({(r['segment'],r['source_page']) for r in rows},{('Private',7),('Commercial',8)})
+        self.assertEqual(next(r['value'] for r in rows if r['year']==2026 and r['segment']=='Commercial' and r['metric']=='combined_ratio'),81.3)
+        anchor=dict(company='Alm. Brand',year=2026,quarter=2,source_url=url,source_sha256=SHA)
+        self.assertEqual(weighted(anchor,'reported_segment','Private',rows),[])
+        second=[{**r,'quarter':2,'source_document_period':'Q2 2026'} for r in rows]
+        ytd=weighted(anchor,'reported_segment','Private',rows+second)
+        self.assertEqual(len(ytd),8)
+        self.assertEqual(next(r['value'] for r in ytd if r['year']==2026 and r['metric']=='insurance_revenue'),3182)
+        for bad in ([(1,cover.replace('2026','2025')),(7,pm),(8,bm)],
+                    pages[:2],[(1,cover),(7,pm.replace('246 191 55','346 191 155')),(8,bm)],
+                    [(1,cover),(7,pm.replace('64.5 66.8 -2.3','65.5 66.8 -1.3').replace('84.5 87.1 -2.6','85.5 87.1 -1.6')),(8,bm)]):
+            with self.assertRaises(ValueError):verify_alm_market_quarter(bad,2026,1,url,SHA)
+        with self.assertRaises(ValueError):verify_alm_market_quarter(pages,2026,1,'https://example.com/report.pdf',SHA)
+
+        # A future year has no bootstrap link. Discover the historical report
+        # once, then reuse its exact URL/fingerprint on subsequent updates.
+        from unittest.mock import patch
+        from build_market_overview_context import alm_ytd
+        def future_pages(q):
+            return [(n,t.replace('Q1',f'Q{q}').replace('2026','2027').replace('2025','2026')) for n,t in pages]
+        blobs={1:b'%PDF-fixture-q1',2:b'%PDF-fixture-q2'}
+        urls={1:'https://almbrand.dk/q1-fixture.pdf',2:'https://almbrand.dk/q2-fixture.pdf',3:'https://almbrand.dk/q3-fixture.pdf'}
+        def anchor(q):
+            return dict(company='Alm. Brand',year=2027,quarter=q,source_url=urls[q],source_sha256=hashlib.sha256(blobs.get(q,b'%PDF-fixture-q3')).hexdigest())
+        registry={}
+        with patch('alm_brand_report_discovery.discover',return_value=[dict(url=urls[1],document_type='quarterly_report')]) as discover, \
+             patch('alm_brand_live_pdf.download_report',side_effect=lambda u:blobs[1] if u==urls[1] else blobs[2]), \
+             patch('build_market_overview_context.read_pages',side_effect=lambda raw:future_pages(1 if raw==blobs[1] else 2)):
+            q2=alm_ytd(anchor(2),future_pages(2),registry)
+            self.assertEqual(len(q2),16)
+            discover.assert_called_once_with(2027,1)
+            self.assertEqual(registry['Q1 2027']['source_sha256'],anchor(1)['source_sha256'])
+            self.assertEqual(registry['Q2 2027']['source_url'],urls[2])
+            q3=alm_ytd(anchor(3),future_pages(3),registry)
+            self.assertEqual(len(q3),16)
+            self.assertEqual(discover.call_count,1)
+            self.assertEqual(next(r['value'] for r in q3 if r['year']==2027 and r['segment']=='Private' and r['metric']=='insurance_revenue'),4773)
+            self.assertEqual({d['quarter'] for d in q3[0]['source_documents']},{1,2,3})
+            registry['Q1 2027']['source_sha256']='f'*64
+            with self.assertRaisesRegex(ValueError,'fingerprint changed'):
+                alm_ytd(anchor(3),future_pages(3),registry)
+
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,20 @@
+name: Market HIÅ source layouts
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_market_ytd_layouts.py'
+      - '.github/workflows/market-ytd-layout.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-reports.txt
+      - run: python scripts/inspect_market_ytd_layouts.py
