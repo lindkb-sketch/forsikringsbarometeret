@@ -45,19 +45,17 @@ def values(lines,company,count):
     result={}
     for metric,label in LABELS[company].items():
         found=[]
+        pattern=r'^'+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
         for line in lines:
-            # Some PDFs place the text of a separate narrative column before
-            # or after a table row. Locate the exact label + numeric columns.
-            prefix=r'(?<![\w])' if company=='Gjensidige' else r'^'
-            pattern=prefix+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
-            for m in re.finditer(pattern,norm(line),re.I):
-                tail=norm(line)[m.end():]
-                match=re.match(r'((?:'+NUMBER+r'\s*%?\s*){'+str(count)+r'})(?=$|[A-Za-zÆØÅæøå])',tail)
-                if not match:continue
-                parts=re.findall(NUMBER,match[1])
-                if len(parts)==count:found.append(tuple(float(v.replace(',','').replace('−','-')) for v in parts))
-        # Alm. Brand repeats the claims ratio in the explanatory table.
-        # Identical duplicates are acceptable only for that precise metric.
+            line=norm(line)
+            m=re.match(pattern,line,re.I)
+            if not m:continue
+            tail=line[m.end():]
+            pattern2=r'('+NUMBER+r')\s*%?'
+            exact=r'\s+'.join([pattern2]*count)+r'\s*$'
+            hit=re.fullmatch(exact,tail)
+            if not hit:continue
+            found.append(tuple(float(v.replace(',','').replace('−','-')) for v in hit.groups()))
         unique=set(found)
         if len(unique)!=1 or (len(found)!=1 and not(company=='Alm. Brand' and metric=='loss_ratio')):
             raise ValueError('Missing/ambiguous '+company+' '+metric)
@@ -137,7 +135,7 @@ def parse_gjensidige(pages,year,quarter,url,digest):
         # The report may place the financial table on the page immediately
         # following the segment heading. Geography headings reset the scope.
         headers=[m.group(1).strip() for l in lines
-            if (m:=re.fullmatch(r'General Insurance (Private(?: Norway| Denmark)?|Commercial(?: Norway| Denmark)?|Sweden)',l,re.I))]
+            if (m:=re.fullmatch(r'General Insurance (Private(?: Norway| Denmark)?|Commercial(?: Norway| Denmark)?|Sweden)(?: \(change in local currency\))?',l,re.I))]
         if len(set(headers))>1:active=None;continue
         if headers:active=headers[0].title()
         elif any(re.fullmatch(r'(?:Pension|Management of the investment portfolio|Group highlights|Consolidated financial statement|Notes and key figures)',l,re.I) for l in lines):
@@ -159,15 +157,23 @@ def parse_alm(pages,year,quarter,url,digest):
     found={seg:[] for seg in SEGMENTS}
     for page,text in pages:
         lines=[norm(l) for l in text.splitlines()]
-        # The original quarterly report contains Personal Lines and
-        # Commercial Lines tables; isolate the Qx / Qx comparative header.
         headers=[i for i,l in enumerate(lines) if re.search(r'\bDKKm\s+'+str(year)+r'\s+'+str(year-1)+r'\s+Change\b',l,re.I)]
         if len(headers)!=1:continue
         i=headers[0]
-        before=' '.join(lines[max(0,i-5):i])
+        before=' '.join(lines[max(0,i-6):i])
         if len(re.findall(r'\bQ'+str(quarter)+r'\b',before,re.I))<2:continue
-        explicit=[seg for seg,label in [('Private','Personal Lines'),('Commercial','Commercial Lines')]
-                  if any(re.fullmatch(re.escape(label),l,re.I) or re.search(re.escape(label)+r'
+        titles=[(j,seg) for j,l in enumerate(lines[:i])
+                for seg,label in [('Private','Personal Lines'),('Commercial','Commercial Lines')]
+                if re.fullmatch(re.escape(label),l,re.I) or re.search(re.escape(label)+r'$',l,re.I)]
+        if not titles:continue
+        j,seg=max(titles)
+        if i-j>8:continue
+        v=values(lines[i+1:],'Alm. Brand',3)
+        found[seg].append(emit('Alm. Brand',seg,v,year,quarter,url,digest,page,[(year,0),(year-1,1)]))
+    if any(len(found[x])!=1 for x in SEGMENTS):raise ValueError('Unique Alm. Brand Personal/Commercial quarterly tables not found')
+    return [r for seg in SEGMENTS for r in found[seg][0]]
+
+def anchors(feed,comparison=None):
     rows=feed.get('observations',[])
     for company in COMPANIES:
         if company=='Alm. Brand':
@@ -262,177 +268,5 @@ def main():
     atomic_write(TARGET,result)
     if args.require_baseline and any(result['status'].get(c,{}).get('status')!='verified' for c in COMPANIES):
         raise SystemExit('Current official Tryg/Gjensidige/Fremtind/Alm. Brand segment figures must be verified before merge')
-
-if __name__=='__main__':main()
-,l,re.I) for l in lines[:i])]
-        # A page may mention both lines in prose. The table title must be
-        # the closest exact heading before its own quarter header.
-        titles=[(j,seg) for j,l in enumerate(lines[:i])
-                for seg,label in [('Private','Personal Lines'),('Commercial','Commercial Lines')]
-                if re.fullmatch(re.escape(label),l,re.I) or re.search(re.escape(label)+r'
-    rows=feed.get('observations',[])
-    for company in COMPANIES:
-        current=[r for r in rows if r.get('company')==company and r.get('scope')=='group'
-            and r.get('period_type')=='quarter' and r.get('metric')=='insurance_revenue'
-            and r.get('source_type')=='official_quarterly_report' and r.get('status') in ('reported','calculated')
-            and re.fullmatch(r'[0-9a-f]{64}',r.get('source_sha256',''))]
-        if not current:continue
-        y,q=max((r['year'],r['quarter']) for r in current)
-        candidates=[r for r in current if (r['year'],r['quarter'])==(y,q)]
-        if len(candidates)!=1:raise ValueError('Ambiguous original report anchor: '+company)
-        yield candidates[0]
-
-def valid_batch(batch,anchor):
-    if not isinstance(batch,list) or len(batch)!=16:return False
-    year,q=anchor['year'],anchor['quarter']
-    keys=set()
-    for r in batch:
-        if (r.get('company')!=anchor['company'] or r.get('source_url')!=anchor['source_url']
-            or r.get('source_sha256')!=anchor['source_sha256'] or r.get('source_document_period')!=f'Q{q} {year}'
-            or r.get('year') not in (year,year-1) or r.get('quarter')!=q or r.get('segment') not in SEGMENTS
-            or r.get('scope')!='reported_segment' or r.get('source_type')!='official_quarterly_report'
-            or r.get('period_type')!='quarter' or r.get('status')!='reported' or type(r.get('source_page')) is not int
-            or r['source_page']<1 or r.get('metric') not in METRICS or type(r.get('value')) not in (int,float)
-            or not math.isfinite(r['value'])):return False
-        k=(r['year'],r['segment'],r['metric'])
-        if k in keys:return False
-        keys.add(k)
-    for yr in (year,year-1):
-        for seg in SEGMENTS:
-            v={r['metric']:r['value'] for r in batch if r['year']==yr and r['segment']==seg}
-            if set(v)!=set(METRICS) or v['insurance_revenue']<=0 or abs(v['combined_ratio']-v['loss_ratio']-v['expense_ratio'])>.21:return False
-    return True
-
-def download(anchor):
-    url=anchor['source_url'];host=urlsplit(url).hostname
-    if urlsplit(url).scheme!='https' or host not in HOSTS[anchor['company']]:raise ValueError('Unapproved original report host')
-    if anchor['company']=='Tryg':
-        from import_tryg import download_tryg_report
-        return download_tryg_report(url,anchor['quarter'])
-    from ingest_official_pdf import download as get
-    return get(url)
-
-def build(feed,previous=None,fetcher=download,reader=read_pages):
-    old=(previous or {}).get('observations',[])
-    out={'schema_version':1,'observations':[],'status':{}}
-    for a in anchors(feed):
-        c,y,q=a['company'],a['year'],a['quarter']
-        batch=[r for r in old if r.get('company')==c and r.get('source_document_period')==f'Q{q} {y}']
-        if not valid_batch(batch,a):
-            try:
-                raw=fetcher(a)
-                if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original PDF fingerprint differs from verified feed')
-                parser=parse_tryg if c=='Tryg' else parse_gjensidige
-                batch=parser(reader(raw),y,q,a['source_url'],a['source_sha256'])
-                if not valid_batch(batch,a):raise ValueError('Segment provenance not complete')
-            except Exception as exc:
-                print('::warning::MARKET_SEGMENTS_UNAVAILABLE',c,y,q,type(exc).__name__,str(exc)[:220],flush=True)
-                out['status'][c]={'period':f'Q{q} {y}','status':'not_verified'}
-                continue
-        out['observations'].extend(batch)
-        out['status'][c]={'period':f'Q{q} {y}','status':'verified','observations':len(batch)}
-        print('MARKET_SEGMENTS_VERIFIED',c,y,q,[(s,next(r['value'] for r in batch if r['segment']==s and r['year']==y and r['metric']=='combined_ratio')) for s in SEGMENTS],flush=True)
-    return out
-
-def main():
-    import argparse
-    parser=argparse.ArgumentParser()
-    parser.add_argument('--require-baseline',action='store_true')
-    args=parser.parse_args()
-    feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text(encoding='utf-8'))
-    previous=json.loads(TARGET.read_text(encoding='utf-8')) if TARGET.exists() else {}
-    result=build(feed,previous)
-    from publish_geographic_workbooks import atomic_write
-    atomic_write(TARGET,result)
-    if args.require_baseline and any(result['status'].get(c,{}).get('status')!='verified' for c in COMPANIES):
-        raise SystemExit('Current official Tryg/Gjensidige group segments must be verified before merge')
-
-if __name__=='__main__':main()
-,l,re.I)]
-        if not titles:continue
-        j,seg=max(titles)
-        if i-j>8:continue
-        v=values(lines[i+1:],'Alm. Brand',3)
-        found[seg].append(emit('Alm. Brand',seg,v,year,quarter,url,digest,page,[(year,0),(year-1,1)]))
-    if any(len(found[s])!=1 for s in SEGMENTS):raise ValueError('Unique Alm. Brand Personal/Commercial quarterly tables not found')
-    return [r for seg in SEGMENTS for r in found[seg][0]]
-
-def anchors(feed,comparison=None):
-    rows=feed.get('observations',[])
-    for company in COMPANIES:
-        current=[r for r in rows if r.get('company')==company and r.get('scope')=='group'
-            and r.get('period_type')=='quarter' and r.get('metric')=='insurance_revenue'
-            and r.get('source_type')=='official_quarterly_report' and r.get('status') in ('reported','calculated')
-            and re.fullmatch(r'[0-9a-f]{64}',r.get('source_sha256',''))]
-        if not current:continue
-        y,q=max((r['year'],r['quarter']) for r in current)
-        candidates=[r for r in current if (r['year'],r['quarter'])==(y,q)]
-        if len(candidates)!=1:raise ValueError('Ambiguous original report anchor: '+company)
-        yield candidates[0]
-
-def valid_batch(batch,anchor):
-    if not isinstance(batch,list) or len(batch)!=16:return False
-    year,q=anchor['year'],anchor['quarter']
-    keys=set()
-    for r in batch:
-        if (r.get('company')!=anchor['company'] or r.get('source_url')!=anchor['source_url']
-            or r.get('source_sha256')!=anchor['source_sha256'] or r.get('source_document_period')!=f'Q{q} {year}'
-            or r.get('year') not in (year,year-1) or r.get('quarter')!=q or r.get('segment') not in SEGMENTS
-            or r.get('scope')!='reported_segment' or r.get('source_type')!='official_quarterly_report'
-            or r.get('period_type')!='quarter' or r.get('status')!='reported' or type(r.get('source_page')) is not int
-            or r['source_page']<1 or r.get('metric') not in METRICS or type(r.get('value')) not in (int,float)
-            or not math.isfinite(r['value'])):return False
-        k=(r['year'],r['segment'],r['metric'])
-        if k in keys:return False
-        keys.add(k)
-    for yr in (year,year-1):
-        for seg in SEGMENTS:
-            v={r['metric']:r['value'] for r in batch if r['year']==yr and r['segment']==seg}
-            if set(v)!=set(METRICS) or v['insurance_revenue']<=0 or abs(v['combined_ratio']-v['loss_ratio']-v['expense_ratio'])>.21:return False
-    return True
-
-def download(anchor):
-    url=anchor['source_url'];host=urlsplit(url).hostname
-    if urlsplit(url).scheme!='https' or host not in HOSTS[anchor['company']]:raise ValueError('Unapproved original report host')
-    if anchor['company']=='Tryg':
-        from import_tryg import download_tryg_report
-        return download_tryg_report(url,anchor['quarter'])
-    from ingest_official_pdf import download as get
-    return get(url)
-
-def build(feed,previous=None,fetcher=download,reader=read_pages):
-    old=(previous or {}).get('observations',[])
-    out={'schema_version':1,'observations':[],'status':{}}
-    for a in anchors(feed):
-        c,y,q=a['company'],a['year'],a['quarter']
-        batch=[r for r in old if r.get('company')==c and r.get('source_document_period')==f'Q{q} {y}']
-        if not valid_batch(batch,a):
-            try:
-                raw=fetcher(a)
-                if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original PDF fingerprint differs from verified feed')
-                parser=parse_tryg if c=='Tryg' else parse_gjensidige
-                batch=parser(reader(raw),y,q,a['source_url'],a['source_sha256'])
-                if not valid_batch(batch,a):raise ValueError('Segment provenance not complete')
-            except Exception as exc:
-                print('::warning::MARKET_SEGMENTS_UNAVAILABLE',c,y,q,type(exc).__name__,str(exc)[:220],flush=True)
-                out['status'][c]={'period':f'Q{q} {y}','status':'not_verified'}
-                continue
-        out['observations'].extend(batch)
-        out['status'][c]={'period':f'Q{q} {y}','status':'verified','observations':len(batch)}
-        print('MARKET_SEGMENTS_VERIFIED',c,y,q,[(s,next(r['value'] for r in batch if r['segment']==s and r['year']==y and r['metric']=='combined_ratio')) for s in SEGMENTS],flush=True)
-    return out
-
-def main():
-    import argparse
-    parser=argparse.ArgumentParser()
-    parser.add_argument('--require-baseline',action='store_true')
-    args=parser.parse_args()
-    feed=json.loads((ROOT/'data/verified_financial_feed.json').read_text(encoding='utf-8'))
-    previous=json.loads(TARGET.read_text(encoding='utf-8')) if TARGET.exists() else {}
-    result=build(feed,previous)
-    from publish_geographic_workbooks import atomic_write
-    atomic_write(TARGET,result)
-    if args.require_baseline and any(result['status'].get(c,{}).get('status')!='verified' for c in COMPANIES):
-        raise SystemExit('Current official Tryg/Gjensidige group segments must be verified before merge')
 
 if __name__=='__main__':main()
