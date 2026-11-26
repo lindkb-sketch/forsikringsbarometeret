@@ -38,22 +38,31 @@ async function main(){
   const marketSegments=segmentResponse.ok()?await segmentResponse.json():{};
   const contextResponse=await page.request.get(BASE+'data/market_overview_context.json?browser_audit='+Date.now());
   const marketContext=contextResponse.ok()?await contextResponse.json():{};
+  const archiveResponse=await page.request.get(BASE+'data/market_overview_archive.json?browser_audit='+Date.now());
+  const marketArchive=archiveResponse.ok()?await archiveResponse.json():{};
+  check('Market quarter snapshot available',Boolean(marketArchive.active_period&&marketArchive.periods?.[marketArchive.active_period]));
   await page.evaluate(()=>FBMarketOverview.refresh());
   const verifyMarket=async(scope,market,mode='quarter')=>{
    await page.locator('[data-mo-mode="'+mode+'"]').click();
    await page.locator('[data-mo-scope="'+scope+'"]').click();
    await page.locator('[data-mo-market="'+market+'"]').click();
-   const state=await page.evaluate(({marketFx,marketComparison,marketSegments,marketContext,scope,market,mode})=>{
-    const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments,mode,marketContext);
+   const state=await page.evaluate(({marketFx,marketComparison,marketSegments,marketContext,marketArchive,scope,market,mode})=>{
+    const model=FBMarketOverview.archivedView(marketArchive,'latest',scope,market,mode)?.model||FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments,mode,marketContext);
     return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length,medals:[...document.querySelectorAll('.mo-company')].map(el=>({rank:el.querySelector('.mo-name .mo-medal')?.dataset.crRank||null,text:el.querySelector('.mo-name .mo-medal')?.textContent||null,afterName:!!el.querySelector('.mo-name button + .mo-medal')}))};
-   },{marketFx,marketComparison,marketSegments,marketContext,scope,market,mode});
+   },{marketFx,marketComparison,marketSegments,marketContext,marketArchive,scope,market,mode});
    check('Market '+scope+'/'+market+' uses exact eligible income-ranked companies',JSON.stringify(state.expected)===JSON.stringify(state.actual),JSON.stringify(state));
    check('Market '+scope+'/'+market+' sorts CR ascending and aligns growth',state.cr.every((v,i)=>!i||v>=state.cr[i-1])&&state.growth===state.actual.length&&state.actual.length<=5);
    check('Market '+scope+'/'+market+'/'+mode+' has three comment groups',state.comments===3);
    check('CR medals under company names '+scope+'/'+market+'/'+mode,state.medals.length===state.actual.length&&state.medals.every((m,i)=>i<3?m.rank===String(i+1)&&m.text===['🥇','🥈','🥉'][i]&&m.afterName:m.rank===null),JSON.stringify(state.medals));
    if(state.missing.length)check('FX missing: no misleading ranking',state.empty&&state.actual.length===0);
+   if(state.period==='Q3 2026'){const expected={'group/all':5,'group/pm':4,'group/bm':5,'norway/all':5,'norway/pm':2,'norway/bm':3};check('Complete Q3 displayed '+scope+'/'+market+'/'+mode,state.actual.length===expected[scope+'/'+market],JSON.stringify(state));}
   };
   for(const mode of ['quarter','ytd'])for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market,mode);
+  for(const label of Object.keys(marketArchive.periods||{})){
+   await page.locator('#mo-report-period').selectOption(label);
+   check('Select archived reporting quarter '+label,await page.locator('#mo-period').textContent()===label&&await page.locator('#market-overview').getAttribute('data-locked')===String(marketArchive.periods[label].locked));
+  }
+  if(marketArchive.active_period)await page.locator('#mo-report-period').selectOption(marketArchive.active_period);
   await verifyMarket('norway','all');
   check('Five companies in Norway total for baseline quarter',await page.locator('#mo-period').textContent()!=='Q3 2026'||await page.locator('.mo-company').count()===5);
   check('Market footnotes moved off overview',await page.locator('.mo-note,.mo-excluded,.mo-source,.mo-name small').count()===0);

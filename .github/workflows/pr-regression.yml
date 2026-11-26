@@ -218,9 +218,11 @@ jobs:
           python scripts/investor_readiness.py
       - name: Test market overview ranking and build supplementary exchange rates
         run: |
-          node --test tests/test_market_overview.cjs
+          node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
           python scripts/build_market_overview_fx.py
           python scripts/build_market_overview_segments.py --require-baseline
+          python scripts/build_market_overview_context.py
+          node scripts/build_market_overview_archive.cjs --require-baseline
       - name: Prepare Chrome browser regression dependencies
         run: |
           npm install --no-save playwright
