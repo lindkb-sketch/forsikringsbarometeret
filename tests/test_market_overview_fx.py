@@ -5,8 +5,8 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from build_market_overview_fx import average,bounds,build,url_for
 
-def sample(currency,value,multiplier,year=2026,quarter=3):
-    start,end=bounds(year,quarter)
+def sample(currency,value,multiplier,year=2026,quarter=3,mode='quarter'):
+    start,end=bounds(year,quarter,mode)
     lines=['FREQ,BASE_CUR,QUOTE_CUR,TENOR,UNIT_MULT,TIME_PERIOD,OBS_VALUE']
     day=start
     while day<=end:
@@ -17,6 +17,11 @@ class MarketFxTests(unittest.TestCase):
     def test_units(self):
         self.assertAlmostEqual(average(sample('DKK',150,2),'DKK',2026,3)['rate'],1.5)
         self.assertAlmostEqual(average(sample('EUR',11,0),'EUR',2026,3)['rate'],11)
+    def test_ytd_uses_january_and_full_period(self):
+        item=average(sample('EUR',11,0,mode='ytd'),'EUR',2026,3,'ytd')
+        self.assertEqual(item['first_date'],'2026-01-01')
+        self.assertGreater(item['observations'],180)
+        with self.assertRaises(ValueError):average(sample('EUR',11,0),'EUR',2026,3,'ytd')
     def test_incomplete_or_wrong_currency_rejected(self):
         with self.assertRaises(ValueError):average(sample('EUR',11,0).splitlines()[0]+'\n','EUR',2026,3)
         with self.assertRaises(ValueError):average(sample('DKK',150,2),'EUR',2026,3)

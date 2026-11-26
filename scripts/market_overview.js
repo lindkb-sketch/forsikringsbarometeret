@@ -10,7 +10,7 @@
   const METRICS=['insurance_revenue','combined_ratio','loss_ratio','expense_ratio'];
   const CORE=['combined_ratio','loss_ratio','expense_ratio'];
   const EXTENDED=['KLP Skadeforsikring','Alm. Brand'];
-  const NORWAY_EQUIVALENT=['Frende','KLP Skadeforsikring'];
+  const NORWAY_EQUIVALENT=['Frende','KLP Skadeforsikring','Storebrand'];
   const SCOPE_RULES={
     'Gjensidige':['group/all','group/pm','group/bm','norway/all','norway/pm','norway/bm'],
     'Tryg':['group/all','group/pm','group/bm','norway/all'],
@@ -18,7 +18,7 @@
     'Sampo':['group/all'],
     'Protector':['group/all','group/bm','norway/all','norway/bm'],
     'Frende':['group/all','norway/all'],
-    'Storebrand':['group/all'],
+    'Storebrand':['group/all','norway/all'],
     'KLP Skadeforsikring':['group/all','norway/all'],
     'Alm. Brand':['group/all','group/pm','group/bm']
   };
@@ -369,7 +369,7 @@
     const sourceLinks=[...new Map([...m.eligible.map(r=>({name:pretty(r.company),url:r.source})),...src.map(r=>({name:pretty(r.company)+' · '+r.theme,url:r.source_url}))].filter(r=>source(r.url)).map(r=>[r.url,r])).values()];
     return '<div class="panel" id="market-overview-methodology"><h2>Markedsoversikt – rangering, avgrensninger og kilder</h2>'+
       '<p>De fem største selskapene velges etter rapporterte inntekter omregnet til NOK. Selskapene sorteres deretter etter stigende CR. Kvartal viser isolert kvartal; HIÅ viser fra årets start til rapporteringskvartalets slutt. Inntektsveksten beregnes mot samme periode året før i rapportert valuta. Valutakursene er gjennomsnittlige dagskurser for den valgte perioden fra <a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>.</p>'+
-      '<p>Frende Holding og KLP Skadeforsikring AS inngår i Gruppe totalt og Norge totalt med samme tallgrunnlag etter avgrensningen av markedsoversikten, men ikke PM eller BM. KLP gjelder skadeforsikringsselskapet, ikke hele KLP-konsernet. Frendes inntektsmål er samlede driftsinntekter, ikke et rent IFRS 17-premiemål. Storebrand gjelder Insurance-segmentet i ASA. Protector bruker rapportert total for den geografien i BM, som omfatter offentlig sektor og affinity. Fremtind bruker de samme PM/BM-segmentene for Gruppe og Norge. Kun Fremtind PM/BM kan vises med CR uten separat skade-/kostnadssplitt. Fremtinds isolerte kvartalsinntekter kommer fra differansen mellom kumulative APM-tabeller, mens CR og vekst hentes fra rapporterte APM-tall.</p>'+
+      '<p>Frende Holding, KLP Skadeforsikring AS og Storebrand ASA (Insurance) inngår i Gruppe totalt og Norge totalt med samme tallgrunnlag etter avgrensningen av markedsoversikten, men ikke PM eller BM. KLP gjelder skadeforsikringsselskapet, ikke hele KLP-konsernet. Frendes inntektsmål er samlede driftsinntekter, ikke et rent IFRS 17-premiemål. Storebrand gjelder Insurance-segmentet i ASA. Protector bruker rapportert total for den geografien i BM, som omfatter offentlig sektor og affinity. Fremtind bruker de samme PM/BM-segmentene for Gruppe og Norge. Kun Fremtind PM/BM kan vises med CR uten separat skade-/kostnadssplitt. Fremtinds isolerte kvartalsinntekter kommer fra differansen mellom kumulative APM-tabeller, mens CR og vekst hentes fra rapporterte APM-tall.</p>'+
       '<p>HIÅ bruker rapporterte kumulative beløp og prosenter når de finnes. Der bare komplette kvartalstall finnes, beregnes inntekt som sum og CR-komponenter som inntektsvektet gjennomsnitt. Avrunding og ulike APM-/IFRS-definisjoner kan gi mindre avvik. Ingen eldre perioder eller konserntall brukes for et urelatert segment. Selskaper uten komplett grunnlag utelates. Kommentarene oppsummerer sammenlignbare nøkkeltall i valgt marked; hendelser brukes bare når rapportens periode og virksomhet støtter avgrensningen.</p>'+
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';

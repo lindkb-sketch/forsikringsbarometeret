@@ -67,9 +67,9 @@ async function main(){
     check('Gjensidige eligible for all six views with distinct segment figures',eligibility.byCompany.Gjensidige.every(Boolean),JSON.stringify(eligibility));
     check('Fremtind PM and BM use reported quarter CR in group and Norway',JSON.stringify(eligibility.byCompany.Fremtind)===JSON.stringify([true,true,true,true,true,true]),JSON.stringify(eligibility));
     check('Alm Brand has group Personal and Commercial only',JSON.stringify(eligibility.byCompany['Alm. Brand'])===JSON.stringify([true,true,true,false,false,false]),JSON.stringify(eligibility));
-    for(const c of ['Sampo','Storebrand'])
+    for(const c of ['Sampo'])
       check(c+' is group only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,false,false,false]),JSON.stringify(eligibility));
-    for(const c of ['Frende','KLP Skadeforsikring'])check(c+' group and Norway total only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,true,false,false]),JSON.stringify(eligibility));
+    for(const c of ['Frende','KLP Skadeforsikring','Storebrand'])check(c+' group and Norway total only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,true,false,false]),JSON.stringify(eligibility));
     check('Current Q3 FX covers all required currencies',Boolean(marketFx.periods?.['Q3 2026']?.rates?.EUR&&marketFx.periods?.['Q3 2026']?.rates?.DKK));
     const f=await page.evaluate(({marketFx,marketComparison,marketSegments})=>Object.fromEntries(['pm','bm'].map(m=>[m,FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,'group',m,marketSegments).eligible.find(r=>r.company==='Fremtind')])),{marketFx,marketComparison,marketSegments});
     check('Fremtind published APM quarter CR and revenue (not IFRS note)',f.pm?.cr===71.6&&f.bm?.cr===80.8&&f.pm?.revenue===5341&&f.bm?.revenue===965&&f.pm?.growth===4.4&&f.bm?.growth===3.6&&f.pm?.loss===null&&f.bm?.cost===null,JSON.stringify(f));
