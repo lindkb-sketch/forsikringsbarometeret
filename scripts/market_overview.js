@@ -296,7 +296,7 @@
     if(m.fxMissing.length)return '<p class="mo-empty">Valutagrunnlaget for '+safe(title(m.period))+' er foreløpig ikke tilgjengelig for '+safe(m.fxMissing.map(pretty).join(', '))+'. Topp 5 vises når NOK-rangeringen kan beregnes korrekt.</p>';
     if(!m.selected.length)return '<p class="mo-empty">Ingen selskaper har komplett kildeverifisert inntekt, CR, skadeprosent og kostnadsprosent for dette valget i '+safe(title(m.period))+'.</p>';
     const cap=Math.max(100,Math.ceil(Math.max(...m.selected.map(r=>num(r.loss)&&num(r.cost)?r.loss+r.cost:r.cr))/20)*20);
-    const bars=m.selected.map(r=>{
+    const bars=m.selected.map((r,i)=>{
       const split=num(r.loss)&&num(r.cost);
       const stack=split?r.loss+r.cost:r.cr;
       const accessible=pretty(r.company)+': CR '+pct(r.cr)+', skadeprosent '+pct(r.loss)+', kostnadsprosent '+pct(r.cost)+', vekst '+growthText(r.growth);
@@ -308,6 +308,7 @@
         '<div class="mo-loss" style="height:'+(stack?r.loss/stack*100:0)+'%"><span>'+format(r.loss)+'</span></div>':
         '<div class="mo-cr-only" style="height:100%" title="Fremtind rapportert samlet CR (APM). Skade-/kostnadssplitt ikke rapportert."><span>CR</span></div>')+'</div></div>'+
         '<div class="mo-name"><button type="button" onclick="show(\''+safe(r.company)+'\')">'+safe(pretty(r.company))+'</button>'+
+        (i<3?'<span class="mo-medal mo-medal-'+(i+1)+'" data-cr-rank="'+(i+1)+'" role="img" aria-label="'+(i+1)+'. plass – lavest CR" title="'+(i+1)+'. plass – lavest CR">'+['🥇','🥈','🥉'][i]+'</span>':'<span class="mo-medal-placeholder" aria-hidden="true"></span>')+
         '</div>'+
         '<div class="mo-growth '+(num(r.growth)?r.growth>0?'positive':r.growth<0?'negative':'':'')+'"><span>Inntektsvekst</span><strong>'+growthText(r.growth)+'</strong></div>'+
         '<div class="mo-income" title="'+safe(r.revenueBasis)+' · '+format(r.revenue,0)+' mill. '+r.currency+'">'+format(r.revenueNok,0)+' mill. NOK</div></div>';

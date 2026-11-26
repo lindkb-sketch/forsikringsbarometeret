@@ -45,11 +45,12 @@ async function main(){
    await page.locator('[data-mo-market="'+market+'"]').click();
    const state=await page.evaluate(({marketFx,marketComparison,marketSegments,marketContext,scope,market,mode})=>{
     const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments,mode,marketContext);
-    return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length};
+    return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length,medals:[...document.querySelectorAll('.mo-company')].map(el=>({rank:el.querySelector('.mo-name .mo-medal')?.dataset.crRank||null,text:el.querySelector('.mo-name .mo-medal')?.textContent||null,afterName:!!el.querySelector('.mo-name button + .mo-medal')}))};
    },{marketFx,marketComparison,marketSegments,marketContext,scope,market,mode});
    check('Market '+scope+'/'+market+' uses exact eligible income-ranked companies',JSON.stringify(state.expected)===JSON.stringify(state.actual),JSON.stringify(state));
    check('Market '+scope+'/'+market+' sorts CR ascending and aligns growth',state.cr.every((v,i)=>!i||v>=state.cr[i-1])&&state.growth===state.actual.length&&state.actual.length<=5);
-   check('Market '+scope+'/'+market+' has three comment groups',state.comments===3);
+   check('Market '+scope+'/'+market+'/'+mode+' has three comment groups',state.comments===3);
+   check('CR medals under company names '+scope+'/'+market+'/'+mode,state.medals.length===state.actual.length&&state.medals.every((m,i)=>i<3?m.rank===String(i+1)&&m.text===['🥇','🥈','🥉'][i]&&m.afterName:m.rank===null),JSON.stringify(state.medals));
    if(state.missing.length)check('FX missing: no misleading ranking',state.empty&&state.actual.length===0);
   };
   for(const mode of ['quarter','ytd'])for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market,mode);
