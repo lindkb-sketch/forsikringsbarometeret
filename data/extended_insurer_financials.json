@@ -6,36 +6,77 @@
       "quarter": 3,
       "currency": "DKK",
       "scope": "group",
-      "source_type": "official_issuer_interim_announcement",
-      "source_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx",
-      "report_archive": "https://investorrelations.almbrand.dk/English/financials/default.aspx#section=reports",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_pages": {
+        "insurance_revenue": 3,
+        "insurance_service_result": 3,
+        "insurance_revenue_growth": 3,
+        "combined_ratio": 3,
+        "loss_ratio": 3,
+        "expense_ratio": 3,
+        "return_on_equity": 3,
+        "solvency_ratio": 5,
+        "profit_before_tax": 3
+      },
       "metrics": {
-        "insurance_revenue": 3054,
-        "insurance_service_result": 755,
+        "insurance_revenue": 3054.0,
+        "insurance_service_result": 755.0,
+        "insurance_revenue_growth": 1.6,
         "combined_ratio": 75.3,
         "loss_ratio": 59.2,
         "expense_ratio": 16.1,
-        "insurance_revenue_growth": 1.6,
-        "solvency_ratio": 238.0,
         "return_on_equity": 18.0,
+        "solvency_ratio": 238.0,
         "profit_before_tax": 544.0
       },
+      "status": "verified_official_pdf_reconciled",
       "unit": "DKK million for financial amounts; percent for ratios",
-      "status": "verified_official_presentation_reconciled",
-      "note": "Issuer announcement financial metrics; Q3 Group solvency from official presentation slide 19, SHA256 verified.",
-      "presentation_evidence": {
-        "source_type": "official_results_presentation",
-        "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
-        "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
-        "source_page": 19,
-        "year": 2026,
-        "quarter": 3,
-        "scope": "group",
-        "currency": "DKK",
-        "metrics": {
-          "solvency_ratio": 238.0,
-          "own_funds": 4685,
-          "solvency_capital_requirement": 1970
+      "ytd_metrics": {
+        "insurance_revenue": 8982.0,
+        "insurance_service_result": 1199.0,
+        "insurance_revenue_growth": 1.9060585432266848,
+        "combined_ratio": 86.6,
+        "loss_ratio": 69.6,
+        "expense_ratio": 17.0,
+        "return_on_equity": 10.0,
+        "solvency_ratio": 238.0,
+        "profit_before_tax": 907.0
+      },
+      "return_on_equity_definition": "Annualised Group return on equity after tax (% p.a.), issuer definition",
+      "return_on_equity_ytd": 10.0,
+      "profit_before_tax_ytd": 907.0,
+      "issuer_page_url": "https://investorrelations.almbrand.dk/English/financials/default.aspx",
+      "growth_evidence": {
+        "quarter_prior": 3006.0,
+        "ytd_prior": 8814.0,
+        "quarter_rounding_decimals": 1
+      },
+      "ratio_evidence": {
+        "quarter": {
+          "insurance_revenue": 3054.0,
+          "claims_expenses": 1715.0,
+          "operating_expenses": -492.0,
+          "reinsurance": -92.0,
+          "insurance_service_result": 755.0,
+          "gross_claims_ratio": 56.2,
+          "reinsurance_ratio": 3.0,
+          "loss_ratio": 59.2,
+          "expense_ratio": 16.1,
+          "combined_ratio": 75.3
+        },
+        "ytd": {
+          "insurance_revenue": 8982.0,
+          "claims_expenses": -6003.0,
+          "operating_expenses": -1526.0,
+          "reinsurance": -254.0,
+          "insurance_service_result": 1199.0,
+          "gross_claims_ratio": 66.8,
+          "reinsurance_ratio": 2.8,
+          "loss_ratio": 69.6,
+          "expense_ratio": 17.0,
+          "combined_ratio": 86.6
         }
       },
       "supplemental_pdf_evidence": {
@@ -51,7 +92,7 @@
             "quarter_value": 18.0,
             "ytd_value": 10.0,
             "source_page": 3,
-            "definition": "Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation"
+            "definition": "Annualised Group return on equity after tax (% p.a.), issuer definition"
           },
           "profit_before_tax": {
             "quarter_value": 544.0,
@@ -61,39 +102,34 @@
           }
         }
       },
-      "ytd_pdf_evidence": {
+      "reported_solvency_evidence": {
+        "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+        "source_page": 5,
+        "value": 238.0,
+        "year": 2026,
+        "quarter": 3
+      },
+      "source_discovery": {
+        "origin": "https://view.news.eu.nasdaq.com/view?id=bf0c320779f45c795395beb8fb6aa3cdd&lang=da&src=listed",
+        "origin_kind": "previously_verified_official_report"
+      },
+      "report_archive": "https://investorrelations.almbrand.dk/English/financials/default.aspx#section=reports",
+      "presentation_evidence": {
+        "source_type": "official_results_presentation",
+        "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+        "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+        "source_page": 19,
         "year": 2026,
         "quarter": 3,
         "scope": "group",
         "currency": "DKK",
-        "source_type": "official_quarterly_report",
-        "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
-        "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
         "metrics": {
-          "insurance_revenue": 8982.0,
-          "insurance_service_result": 1199.0,
-          "insurance_revenue_growth": 1.9060585432266848,
-          "return_on_equity": 10.0,
-          "profit_before_tax": 907.0,
           "solvency_ratio": 238.0,
-          "combined_ratio": 86.6,
-          "loss_ratio": 69.6,
-          "expense_ratio": 17.0
-        },
-        "source_pages": {
-          "insurance_revenue": 3,
-          "insurance_service_result": 3,
-          "combined_ratio": 3,
-          "loss_ratio": 3,
-          "expense_ratio": 3,
-          "insurance_revenue_growth": 3,
-          "profit_before_tax": 3,
-          "return_on_equity": 3,
-          "solvency_ratio": 5
-        },
-        "current_revenue": 8982.0,
-        "prior_revenue": 8814.0
-      }
+          "own_funds": 4685,
+          "solvency_capital_requirement": 1970
+        }
+      },
+      "presentation_check": "verified"
     },
     "KLP Skadeforsikring": {
       "company": "KLP Skadeforsikring",

@@ -1379,11 +1379,11 @@
       "company": "Alm. Brand",
       "period": "Q3 2026",
       "currency": "DKK",
-      "status": "verified_official_presentation_reconciled",
-      "source_url": "https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx",
+      "status": "verified_official_pdf_reconciled",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
       "metrics": {
-        "insurance_revenue": 3054,
-        "insurance_service_result": 755,
+        "insurance_revenue": 3054.0,
+        "insurance_service_result": 755.0,
         "combined_ratio": 75.3,
         "loss_ratio": 59.2,
         "expense_ratio": 16.1,
@@ -1413,7 +1413,7 @@
           "period_type": "ytd",
           "value": 8982.0,
           "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
+          "source_definition": "Issuer cumulative financial report"
         },
         "insurance_service_result": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
@@ -1424,7 +1424,7 @@
           "period_type": "ytd",
           "value": 1199.0,
           "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
+          "source_definition": "Issuer cumulative financial report"
         },
         "insurance_revenue_growth": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
@@ -1435,11 +1435,44 @@
           "period_type": "ytd",
           "value": 1.9060585432266848,
           "method": "calculated",
-          "source_definition": "Verified issuer HIÅ PDF",
+          "source_definition": "Issuer cumulative financial report",
           "inputs": {
             "current": 8982.0,
             "prior_year": 8814.0
           }
+        },
+        "combined_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 86.6,
+          "method": "reported",
+          "source_definition": "Issuer cumulative financial report"
+        },
+        "loss_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 69.6,
+          "method": "reported",
+          "source_definition": "Issuer cumulative financial report"
+        },
+        "expense_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "year": 2026,
+          "quarter": 3,
+          "period_type": "ytd",
+          "value": 17.0,
+          "method": "reported",
+          "source_definition": "Issuer cumulative financial report"
         },
         "return_on_equity": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
@@ -1450,18 +1483,7 @@
           "period_type": "ytd",
           "value": 10.0,
           "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
-        },
-        "profit_before_tax": {
-          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
-          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
-          "source_page": 3,
-          "year": 2026,
-          "quarter": 3,
-          "period_type": "ytd",
-          "value": 907.0,
-          "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
+          "source_definition": "Issuer cumulative financial report"
         },
         "solvency_ratio": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
@@ -1474,55 +1496,91 @@
           "method": "reported_quarter_end",
           "source_definition": "Reported balance-sheet date solvency"
         },
-        "combined_ratio": {
+        "profit_before_tax": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
           "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
           "source_page": 3,
           "year": 2026,
           "quarter": 3,
           "period_type": "ytd",
-          "value": 86.6,
+          "value": 907.0,
           "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
+          "source_definition": "Issuer cumulative financial report"
+        }
+      },
+      "metric_periods": {},
+      "metric_sources": {
+        "insurance_revenue": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
+        },
+        "insurance_service_result": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
+        },
+        "insurance_revenue_growth": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "calculated_from_report_comparative"
+        },
+        "combined_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 3,
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
         },
         "loss_ratio": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
           "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
           "source_page": 3,
-          "year": 2026,
-          "quarter": 3,
-          "period_type": "ytd",
-          "value": 69.6,
-          "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
         },
         "expense_ratio": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
           "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
           "source_page": 3,
-          "year": 2026,
-          "quarter": 3,
-          "period_type": "ytd",
-          "value": 17.0,
-          "method": "reported",
-          "source_definition": "Verified issuer HIÅ PDF"
-        }
-      },
-      "metric_periods": {},
-      "metric_sources": {
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
+        },
         "return_on_equity": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
           "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
           "source_page": 3,
-          "source_definition": "Annualised Group return on equity after tax (% p.a.), issuer adjusted for intangible amortisation",
-          "period_type": "quarter"
+          "period_type": "quarter",
+          "source_definition": "Annualised Group return on equity after tax (% p.a.), issuer definition",
+          "method": "reported"
+        },
+        "solvency_ratio": {
+          "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "source_page": 5,
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported_quarter_end"
         },
         "profit_before_tax": {
           "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
           "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
           "source_page": 3,
-          "source_definition": "Group profit/loss before tax, continuing operations; DKK million",
-          "period_type": "quarter"
+          "period_type": "quarter",
+          "source_definition": "Alm. Brand consolidated issuer report",
+          "method": "reported"
         }
       },
       "revenue_comparable": true
