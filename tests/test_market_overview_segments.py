@@ -3,7 +3,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from build_market_overview_segments import parse_tryg,parse_gjensidige,build
+from build_market_overview_segments import parse_tryg,parse_gjensidige,parse_alm,build
 URL='https://tryg.com/report.pdf'
 SHA=hashlib.sha256(b'%PDF-test').hexdigest()
 

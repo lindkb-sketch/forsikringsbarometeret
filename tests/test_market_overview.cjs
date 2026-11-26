@@ -90,3 +90,19 @@ test('explicit owner scope register overrides unrelated available segments',()=>
  const n=model(f,comparison,fx,'norway','all',segments).eligible.find(r=>r.company==='Fremtind');
  assert.equal(n.revenue,6000);assert.equal(n.cr,(3500*70+2500*80)/6000);
 });
+
+test('only Fremtind PM/BM permits total CR without components',()=>{
+ const obs=[...rows('Fremtind',3500,70,50,20,'NOKm','reported_segment','Private'),
+  ...rows('Fremtind',2500,80,60,20,'NOKm','reported_segment','Commercial'),
+  ...rows('Tryg',7000,78,65,13,'DKKm','reported_segment','Private')].filter(r=>!['loss_ratio','expense_ratio'].includes(r.metric));
+ const s={observations:obs};
+ for(const scope of ['group','norway'])for(const market of ['pm','bm']){
+   const m=model(feed,comp,fx,scope,market,s);
+   const a=m.eligible.find(r=>r.company==='Fremtind');
+   assert.ok(a);assert.equal(a.loss,null);assert.equal(a.cost,null);assert.equal(a.split,false);
+   assert.ok(!m.eligible.some(r=>r.company==='Tryg'));
+ }
+ const total=model(feed,comp,fx,'group','all',s).eligible.find(r=>r.company==='Fremtind');
+ assert.equal(total.split,true);
+ assert.ok(!model(feed,comp,fx,'norway','all',s).eligible.some(r=>r.company==='Fremtind'));
+});
