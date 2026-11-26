@@ -13,7 +13,7 @@ test('top five by converted income, sorted by ascending reported CR, not top fiv
  assert.equal(m.selected.find(c=>c.company==='Sampo').revenueNok,27500);
 });
 test('Norway and segment filters never substitute group data',()=>{
- assert.deepEqual(model(feed,comp,fx,'norway','all').selected.map(c=>c.company),['Gjensidige','Tryg','Protector']);
+ assert.deepEqual(model(feed,comp,fx,'norway','all').selected.map(c=>c.company),['Gjensidige','Frende','Tryg','Protector']);
  assert.deepEqual(model(feed,comp,fx,'norway','pm').selected.map(c=>c.company),['Gjensidige']);
  assert.deepEqual(model(feed,comp,fx,'norway','bm').selected.map(c=>c.company),['Gjensidige','Protector']);
  assert.deepEqual(model(feed,comp,fx,'group','pm').selected.map(c=>c.company),[]);
@@ -82,7 +82,7 @@ test('explicit owner scope register overrides unrelated available segments',()=>
  const f={observations:[...feed.observations.map(r=>r.company==='Storebrand'&&r.metric==='insurance_revenue'?{...r,source_entity:'Storebrand ASA / Insurance segment'}:r),
  ...rows('Storebrand',1000,90,70,20,'NOKm','norway'),...rows('Frende',500,80,60,20,'NOKm','norway')]};
  const filters=[['group','all'],['group','pm'],['group','bm'],['norway','all'],['norway','pm'],['norway','bm']];
- const want={'Gjensidige':[1,1,1,1,1,1],'Tryg':[1,1,1,1,0,0],'Fremtind':[1,1,1,1,1,1],'Sampo':[1,0,0,0,0,0],'Protector':[1,0,1,1,0,1],'Frende':[1,0,0,0,0,0],'Storebrand':[1,0,0,0,0,0],'KLP Skadeforsikring':[1,0,0,0,0,0],'Alm. Brand':[1,1,1,0,0,0]};
+ const want={'Gjensidige':[1,1,1,1,1,1],'Tryg':[1,1,1,1,0,0],'Fremtind':[1,1,1,1,1,1],'Sampo':[1,0,0,0,0,0],'Protector':[1,0,1,1,0,1],'Frende':[1,0,0,1,0,0],'Storebrand':[1,0,0,0,0,0],'KLP Skadeforsikring':[1,0,0,1,0,0],'Alm. Brand':[1,1,1,0,0,0]};
  for(const [name,expected] of Object.entries(want))assert.deepEqual(filters.map(([s,m])=>+model(f,comparison,fx,s,m,segments).eligible.some(r=>r.company===name)),expected,name);
  const a=model(f,comparison,fx,'group','pm',segments).eligible.find(r=>r.company==='Fremtind');
  const b=model(f,comparison,fx,'norway','pm',segments).eligible.find(r=>r.company==='Fremtind');
@@ -105,4 +105,34 @@ test('only Fremtind PM/BM permits total CR without components',()=>{
  const total=model(feed,comp,fx,'group','all',s).eligible.find(r=>r.company==='Fremtind');
  assert.equal(total.split,true);
  assert.ok(!model(feed,comp,fx,'norway','all',s).eligible.some(r=>r.company==='Fremtind'));
+});
+
+test('Frende and KLP group/Norway total share source metrics; no PM/BM substitution',()=>{
+ const c={companies:[...comp.companies,{company:'KLP Skadeforsikring',status:'verified_official_pdf_reconciled',period:'Q3 2026',currency:'NOK',source_url:'https://issuer.invalid/klp.pdf',metrics:{insurance_revenue:1041,combined_ratio:89,loss_ratio:77,expense_ratio:12}}]};
+ for(const company of ['Frende','KLP Skadeforsikring']){
+  const g=model(feed,c,fx,'group','all').eligible.find(r=>r.company===company);
+  const n=model(feed,c,fx,'norway','all').eligible.find(r=>r.company===company);
+  assert.equal(n.revenue,g.revenue);assert.equal(n.cr,g.cr);
+  for(const market of ['pm','bm'])assert.ok(!model(feed,c,fx,'norway',market).eligible.some(r=>r.company===company));
+ }
+ assert.equal(model(feed,c,fx,'norway','all').selected.length,5);
+});
+test('YTD uses period-matched values and FX, never an isolated quarter',()=>{
+ const f={observations:[...feed.observations,...rows('Fremtind',18500,77,55,22).map(r=>({...r,period_type:'ytd'})),...rows('Tryg',30000,81,66,15,'DKKm').map(r=>({...r,period_type:'ytd'})),...rows('Frende',2700,88,65,23).map(r=>({...r,period_type:'ytd'}))]};
+ const rates={periods:{'Q3 2026':{rates:{DKK:1.5,EUR:11},ytd_rates:{DKK:1.4,EUR:10.8}}}};
+ const m=model(f,comp,rates,'group','all',null,'ytd');
+ assert.equal(m.eligible.find(r=>r.company==='Fremtind').cr,77);
+ assert.equal(m.selected.find(r=>r.company==='Tryg').revenueNok,42000);
+ assert.ok(!m.eligible.some(r=>r.company==='Sampo'));
+ assert.equal(model(f,comp,fx,'group','all',null,'ytd').selected.length,0);
+});
+test('scoped commentary is period, company, geography and business-line specific',()=>{
+ const m=model(feed,comp,fx,'norway','pm');
+ const context={insights:[
+  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['norway/pm'],theme:'large_claims',text:'Relevant PM hendelse',source_url:'https://issuer.invalid/a'},
+  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['group/bm'],theme:'large_claims',text:'BAD BM',source_url:'https://issuer.invalid/a'},
+  {company:'Gjensidige',period:'Q3 2026',period_type:'ytd',views:['norway/pm'],theme:'weather',text:'BAD HIÅ',source_url:'https://issuer.invalid/a'}
+ ]};
+ const c=JSON.stringify(comments(m,{},'norway','pm',context));
+ assert.ok(c.includes('Relevant PM hendelse'));assert.ok(!c.includes('BAD'));
 });
