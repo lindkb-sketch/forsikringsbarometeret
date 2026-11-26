@@ -53,7 +53,7 @@ def values(lines,company,count):
             if not m:continue
             # Gross and underlying claims ratios are not the reported net
             # Claims ratio. Require the complete numeric tail for other rows.
-            if company=='Alm. Brand' and metric=='loss_ratio' and re.search(r'(?:gross|underlying)\s*$',line[:m.start()],re.I):continue
+            if metric=='loss_ratio' and re.search(r'(?:gross|underlying(?:\s+frequency)?)\s*$',line[:m.start()],re.I):continue
             tail=line[m.end():]
             pattern2=r'('+NUMBER+r')\s*%?'
             exact=r'\s+'.join([pattern2]*count)+r'\s*$'

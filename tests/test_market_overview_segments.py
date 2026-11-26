@@ -45,7 +45,7 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(next(r['value'] for r in rows if r['segment']=='Private' and r['metric']=='loss_ratio' and r['year']==2026),61.3)
     def test_interleaved_report_columns(self):
         p=gj_table(4964.4,69.7).replace('69.7.0','69.7').replace('57.7.0','57.7')
-        p=p.replace('Insurance revenue','the loss and cost ratios. Insurance revenue').replace('Combined ratio¹','than in the previous quarter. Combined ratio¹')
+        p=p.replace('Insurance revenue','the loss and cost ratios. Insurance revenue').replace('Combined ratio¹','than in the previous quarter. Combined ratio¹')+'\nUnderlying frequency loss ratio, net of reinsurance¹ 58.6 % 63.1 % 60.3 % 64.4 % 63.8 %'
         rows=parse_gjensidige([(10,'General Insurance Private (change in local currency)'),(11,p),(14,'General Insurance Commercial'),(15,p)],2026,3,'https://mb.cision.com/report.pdf',SHA)
         self.assertEqual({r['source_page'] for r in rows},{11,15})
     def test_bad_hash_excluded_and_no_stale_segment(self):

@@ -1,0 +1,41 @@
+name: Market overview focused tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/*market*'
+      - 'tests/*market*'
+      - '.github/workflows/market-overview-focused.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          python -m pip install -r requirements-reports.txt
+          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py
+          python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
+          python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
+          python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
+          node --check scripts/market_overview.js
+          node --test tests/test_market_overview.cjs
+      - name: Reconcile official live market-segment PDFs
+        run: |
+          python scripts/build_market_overview_segments.py
+          python - <<'PY'
+          import json
+          data=json.load(open('data/market_overview_segments.json'))
+          for c in ('Gjensidige','Fremtind','Alm. Brand'):
+              assert data['status'].get(c,{}).get('status')=='verified', (c,data['status'])
+          print('MARKET_FOCUSED_LIVE_OK',data['status'])
+          PY
