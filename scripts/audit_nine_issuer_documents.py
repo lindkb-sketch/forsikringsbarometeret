@@ -36,7 +36,7 @@ INDEXES={
  'Protector':['https://investor.protectorforsikring.no/','https://investor.protectorforsikring.no/all-reports','https://investor.protectorforsikring.no/financials','https://investor.protectorforsikring.no/press-releases'],
  'Storebrand':['https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/{year}'],
  'KLP Skadeforsikring':['https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner'],
- 'Alm. Brand':['https://investorrelations.almbrand.dk/English/financials/default.aspx','https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx'],
+ 'Alm. Brand':['https://investorrelations.almbrand.dk/English/financials/default.aspx','https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx','https://investorrelations.almbrand.dk/English/news-and-events/default.aspx','https://investorrelations.almbrand.dk/Danish/nyheder-og-events/default.aspx','https://investorrelations.almbrand.dk/news-and-events/default.aspx'],
 }
 # Q3 2026 issuer release notices checked on the official exchange. The
 # dynamic listing also checks subsequent periods; never use a seed as "latest".
@@ -50,6 +50,7 @@ AMOUNTS={'insurance_revenue','insurance_service_result','profit_before_tax'}
 # Historical issuer-portal release pages supplement dynamic archive discovery.
 # Fetch the issuer page and follow its real links, not guessed PDF addresses.
 ISSUER_RELEASE_PAGES={
+ ('Alm. Brand',2026,3):('https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx',),
  ('Gjensidige',2026,3):('https://www.gjensidige.com/news?releaseid=5449048',),
  ('Protector',2026,3):('https://investor.protectorforsikring.no/pressreleases/q3-2026-cr-827-earnings-per-share-nok-102-dividend-nok-500-per-share-mviclalu',)
 }
@@ -225,6 +226,20 @@ def issuer_detail_links(company,markup,index,y,q):
             if not p.path.startswith('/pressreleases/'):continue
         elif company=='Gjensidige':
             if p.path!='/news' or not re.fullmatch(r'releaseid=\d+',p.query):continue
+        elif company=='Alm. Brand':
+            # News list labels can omit the year; the issuer URL carries it.
+            # Require the period-specific results announcement path, not a
+            # consensus, invitation, outlook or generic portal link.
+            if not re.fullmatch(r'/(?:English/press-release-details|Danish/selskabsmeddelelse)/'+str(y)+r'/[^/]+/default\.aspx',p.path,re.I):continue
+            descriptor=normalize(label+' '+unquote(p.path).replace('-',' '))
+            if EXCLUDE.search(descriptor) or ALM_EXCLUDE.search(descriptor) and not re.search(r'interim report|delårsrapport|annual report|årsrapport',descriptor,re.I):continue
+            title=normalize(label+' '+unquote(p.path.rsplit('/',2)[-2]).replace('-',' '))
+            if not re.search(r'\b(?:interim report|delårsrapport|quarterly report|annual report|årsrapport|full year results)\b',title,re.I):continue
+            if not (period_label(title,y,q) or re.search(rf'\b(?:Q\s*{q}|{q}\.\s*kvartal)\b',title,re.I) or (q==4 and re.search(r'\b(?:annual report|årsrapport|full year results)\b',title,re.I))):continue
+            # An explicit different year/quarter in the label is a conflict.
+            if any(int(v)!=y for v in re.findall(r'\b20\d{2}\b',label)):continue
+            if any(int(v)!=q for v in re.findall(r'\bQ\s*([1-4])\b',title,re.I)):continue
+            out.append(url);continue
         else:continue
         descriptor=normalize(label+' '+unquote(p.path).replace('-',' '))
         if period_label(descriptor,y,q) and not EXCLUDE.search(descriptor):out.append(url)
@@ -302,7 +317,7 @@ def rendered_issuer_html(company,url,y,q):
                             pdf_links.append({'path':urlsplit(target).path,'label':label[:180],'heading':heading[:180]})
                     folder=ARTIFACTS/'Alm-Brand'/f'Q{q}-{y}'
                     folder.mkdir(parents=True,exist_ok=True)
-                    suffix='danish' if '/Danish/' in url else 'english'
+                    suffix=('danish' if '/Danish/' in url else 'english')+'-'+hashlib.sha256(url.encode()).hexdigest()[:8]
                     (folder/f'portal-{suffix}.json').write_text(json.dumps({
                         'page':urlsplit(page.url).path,'title':page.title(),
                         'feed_responses':feed_diagnostics,'pdf_links':pdf_links[:100],
@@ -379,7 +394,13 @@ def alm_archive_documents(markup,index,y,q):
         if not href:continue
         url=urljoin(index,html.unescape(href))
         path=urlsplit(url).path
-        if not trusted('Alm. Brand',url) or not path.lower().endswith('.pdf'):continue
+        # Nasdaq serves issuer-disclosed PDFs through extensionless attachment
+        # IDs. Accept such a link only from a verified issuer results page and
+        # only with an explicit full-report label and period. Verification still
+        # downloads the bytes and runs the issuer's full-report parser.
+        official_attachment=(urlsplit(url).hostname=='attachment.news.eu.nasdaq.com' and bool(re.fullmatch(r'/[0-9a-f]{32}',path)) and bool(re.search(r'/(?:press-release-details|selskabsmeddelelse)/'+str(y)+r'/',urlsplit(index).path,re.I)))
+        if not trusted('Alm. Brand',url,exchange=official_attachment) or not (path.lower().endswith('.pdf') or official_attachment):continue
+        if official_attachment and not (re.search(r'\bAB\s+GROUP\b',label,re.I) and period_label(label,y,q)):continue
         name=normalize(unquote(path.rsplit('/',1)[-1]).replace('_',' ').replace('-',' '))
         descriptor=normalize(label+' '+name)
         if EXCLUDE.search(descriptor) or ALM_EXCLUDE.search(descriptor):continue
@@ -395,7 +416,7 @@ def alm_archive_documents(markup,index,y,q):
         if is_report and q!=4 and re.search(r'\b(?:annual\s+report|årsrapport)\b',descriptor,re.I):continue
         kind='results_presentation' if is_presentation else 'quarterly_report'
         found[(kind,url)]=dict(url=url,document_type=kind,origin=index,label=label or name,
-                              exchange=False,origin_kind='issuer_archive_or_release')
+                              exchange=official_attachment,origin_kind='issuer_archive_or_release')
     return list(found.values())
 
 def archive_links(company,markup,index,y,q):
@@ -609,7 +630,8 @@ def collect_company(company,y,q,feed,extended):
             return [],[]
     for template in INDEXES[company]:
         found,details=discover_index(template);docs.extend(found);detail_urls.extend(details)
-    for url in dict.fromkeys([*detail_urls,*ISSUER_RELEASE_PAGES.get((company,y,q),())]):
+    release_pages=list(dict.fromkeys([*detail_urls,*ISSUER_RELEASE_PAGES.get((company,y,q),())]))
+    for url in release_pages:
         found,_=discover_index(url);docs.extend(found)
     def primary_candidate(kind='results_presentation'):
         return any(d['document_type']==kind and d.get('origin_kind','').startswith('issuer_') for d in docs)
@@ -626,6 +648,11 @@ def collect_company(company,y,q,feed,extended):
             for url in details:
                 found,_=discover_index(url);docs.extend(found)
             if not needs_render():break
+        # Result announcements can themselves load attachments asynchronously.
+        if company=='Alm. Brand' and needs_render():
+            for url in release_pages[:3]:
+                found,_=discover_index(url,render=True);docs.extend(found)
+                if not needs_render():break
     # A stock-exchange attachment may be used only in an expressly enabled
     # diagnostic fallback; normal report/presentation discovery is issuer-only.
     if not primary_candidate() and os.environ.get('BAROMETER_ALLOW_EXCHANGE_DOCUMENT_FALLBACK')=='1':

@@ -212,6 +212,22 @@ Combined ratio 75.3 82.2'''
         self.assertTrue(all(d['origin_kind']=='issuer_public_document_feed' for d in docs))
         self.assertEqual(alm_feed_documents(data,'https://evil.test/feed/FinancialReport.svc/GetFinancialReportList',page,2027,2),[])
         self.assertEqual(alm_feed_documents(data,page,page,2027,2),[])
+    def test_alm_release_discovery_uses_explicit_period_and_issuer_path(self):
+        from audit_nine_issuer_documents import issuer_detail_links,alm_archive_documents
+        page='https://investorrelations.almbrand.dk/news-and-events/default.aspx'
+        detail='https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx'
+        body=f'<a href="{detail}">Alm. Brand A/S - Interim report for Q3</a>'
+        body+=f'<a href="{detail.replace("Q3","Q2")}">Interim report for Q2</a>'
+        body+=f'<a href="{detail.replace("2026","2025")}">Interim report for Q3</a>'
+        body+=f'<a href="{detail.replace("Interim-report","Consensus-estimates")}">Consensus estimates Q3 2026</a>'
+        self.assertEqual(issuer_detail_links('Alm. Brand',body,page,2026,3),[detail])
+        good='https://attachment.news.eu.nasdaq.com/'+'a'*32
+        markup=f'<a href="{good}">AB GROUP 3Q 2026</a>'
+        markup+=f'<a href="{good.replace("a"*32,"b"*32)}">Preliminary statement Q3 2026</a>'
+        markup+=f'<a href="{good.replace("a"*32,"c"*32)}">AB GROUP 2Q 2026</a>'
+        docs=alm_archive_documents(markup,detail,2026,3)
+        self.assertEqual([(d['url'],d['document_type'],d['exchange']) for d in docs],[(good,'quarterly_report',True)])
+        self.assertEqual(alm_archive_documents(markup,page,2026,3),[])
 if __name__=='__main__':unittest.main()
 
 

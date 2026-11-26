@@ -90,7 +90,7 @@ def build(root=ROOT):
         missing=[name for name,passed in checks.items() if not passed]
         return_status=None
         if company in RETURN_TYPES:
-            checks={}
+            return_checks={}
             for year,quarter in RETURN_QUARTERS:
                 matches=[r for r in group if r.get('year')==year
                          and r.get('quarter')==quarter
@@ -102,9 +102,9 @@ def build(root=ROOT):
                          and r['source_page']>0
                          and RETURN_TYPES[company].lower() in
                              str(r.get('source_definition','')).lower()]
-                checks[f'Q{quarter} {year}']=len(matches)==1
-            return_status={'historical_source_verified':all(checks.values()),
-                           'quarters':checks,
+                return_checks[f'Q{quarter} {year}']=len(matches)==1
+            return_status={'historical_source_verified':all(return_checks.values()),
+                           'quarters':return_checks,
                            'scheduled_import_configured':True,
                            'future_quarter_end_to_end_verified':False}
         result.append({'company':company,'official_archive_registered':any(s.get('index_url') for s in sources),
