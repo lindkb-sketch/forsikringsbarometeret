@@ -51,6 +51,9 @@ def check(feed,extended,comparison):
                     errors.append(c+': missing '+view+':'+metric);continue
                 actual=item.get('metric_periods',{}).get(metric,basis) if basis=='quarter' else basis
                 matching=[r for r in current if r.get('metric')==metric and r.get('period_type')==actual]
+                # Solvency is measured at the balance-sheet date, never summed.
+                if metric=='solvency_ratio' and basis=='ytd' and not matching:
+                    matching=[r for r in current if r.get('metric')==metric and r.get('period_type')=='quarter' and r.get('value')==value]
                 if metric=='insurance_revenue_growth' and not matching:
                     # Projection computes growth only from same-scope, same
                     # basis current and prior-year revenues, not estimates.

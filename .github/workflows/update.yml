@@ -302,3 +302,23 @@ jobs:
             data/browser_home_ytd.png
             data/browser_e2e_report.json
           if-no-files-found: warn
+
+  arm-next-finance:
+    needs: [validate-and-prepare, publish]
+    if: ${{ always() && !cancelled() && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Arm guarded 30-minute finance recovery outside publication lock
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/finance_interval.py arm
