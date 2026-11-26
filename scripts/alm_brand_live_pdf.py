@@ -40,7 +40,7 @@ def nasdaq_attachment(url):
     p=urllib.parse.urlsplit(url)
     return (p.scheme=='https' and p.hostname=='attachment.news.eu.nasdaq.com'
             and not p.username and not p.password and p.port in (None,443)
-            and not p.query and not p.fragment and bool(re.fullmatch(r'/[0-9a-f]{32}',p.path)))
+            and not p.query and not p.fragment and bool(re.fullmatch(r'/[0-9a-f]{32,33}',p.path)))
 
 def trusted_pdf_link(url):
     p=urllib.parse.urlsplit(url)

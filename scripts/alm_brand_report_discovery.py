@@ -29,7 +29,7 @@ def notice_url(url):
     ids=parse_qs(p.query).get('id',[])
     return (p.scheme=='https' and p.hostname=='view.news.eu.nasdaq.com'
             and not p.username and not p.password and p.port in (None,443)
-            and p.path=='/view' and len(ids)==1 and bool(re.fullmatch(r'[0-9a-f]{32}',ids[0])))
+            and p.path=='/view' and len(ids)==1 and bool(re.fullmatch(r'[0-9a-f]{32,33}',ids[0])))
 
 def release_title(title,year,quarter,when):
     if not re.search(r'\bAlm\.?\s+Brand\s+(?:A/S|Group)\b',title,re.I):return False

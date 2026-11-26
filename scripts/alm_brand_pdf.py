@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 def official_alm_pdf(url):
     parts=urlsplit(url)
     if parts.scheme!='https' or parts.username or parts.password or parts.port not in (None,443):return False
-    return approved(url,'Alm. Brand') or (parts.hostname=='attachment.news.eu.nasdaq.com' and not parts.query and not parts.fragment and bool(re.fullmatch(r'/[0-9a-f]{32}',parts.path))) or (parts.scheme=='https' and
+    return approved(url,'Alm. Brand') or (parts.hostname=='attachment.news.eu.nasdaq.com' and not parts.query and not parts.fragment and bool(re.fullmatch(r'/[0-9a-f]{32,33}',parts.path))) or (parts.scheme=='https' and
         parts.hostname=='s29.q4cdn.com' and
         parts.path.startswith('/228553818/files/') and
         parts.path.lower().endswith('.pdf'))

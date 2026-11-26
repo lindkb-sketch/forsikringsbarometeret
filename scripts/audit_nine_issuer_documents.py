@@ -398,7 +398,7 @@ def alm_archive_documents(markup,index,y,q):
         # IDs. Accept such a link only from a verified issuer results page and
         # only with an explicit full-report label and period. Verification still
         # downloads the bytes and runs the issuer's full-report parser.
-        official_attachment=(urlsplit(url).hostname=='attachment.news.eu.nasdaq.com' and bool(re.fullmatch(r'/[0-9a-f]{32}',path)) and bool(re.search(r'/(?:press-release-details|selskabsmeddelelse)/'+str(y)+r'/',urlsplit(index).path,re.I)))
+        official_attachment=(urlsplit(url).hostname=='attachment.news.eu.nasdaq.com' and bool(re.fullmatch(r'/[0-9a-f]{32,33}',path)) and bool(re.search(r'/(?:press-release-details|selskabsmeddelelse)/'+str(y)+r'/',urlsplit(index).path,re.I)))
         if not trusted('Alm. Brand',url,exchange=official_attachment) or not (path.lower().endswith('.pdf') or official_attachment):continue
         if official_attachment and not (re.search(r'\bAB\s+GROUP\b',label,re.I) and period_label(label,y,q)):continue
         name=normalize(unquote(path.rsplit('/',1)[-1]).replace('_',' ').replace('-',' '))

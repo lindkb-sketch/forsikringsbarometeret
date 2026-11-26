@@ -36,6 +36,12 @@ class ReportFirstTests(unittest.TestCase):
         self.assertEqual(new['metrics'],old['metrics'])
         self.assertEqual(len(new['source_pages']),9)
         self.assertEqual(validate_rolling(new),[])
+    def test_historical_nasdaq_identifiers_still_admitted(self):
+        from alm_brand_live_pdf import OFFICIAL_NASDAQ_NOTICE,trusted_pdf_link
+        from alm_brand_pdf import official_alm_pdf
+        self.assertTrue(notice_url(OFFICIAL_NASDAQ_NOTICE))
+        self.assertTrue(trusted_pdf_link(OFFICIAL_FILING_PDF))
+        self.assertTrue(official_alm_pdf(OFFICIAL_FILING_PDF))
     def test_exchange_notice_is_period_and_issuer_bound(self):
         url='https://view.news.eu.nasdaq.com/view?id='+'a'*32
         title='Alm. Brand A/S - Interim report for Q4'
