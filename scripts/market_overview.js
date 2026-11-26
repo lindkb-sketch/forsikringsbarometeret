@@ -244,6 +244,9 @@
     volume_up:'økt forsikringsvolum',
     volume_down:'lavere volum i deler av porteføljen',
     customer_inflow:'kundetilgang gjennom distribusjonssamarbeid',
+    customer_growth:'vekst i kundebestanden',
+    volume_pm_products:'volumvekst innen eiendom, person og reise',
+    portfolio_growth:'porteføljevekst i utvalgte segmenter',
     retention_up:'bedret kundelojalitet',
     risk_selection:'selektiv risikoutvelgelse og prioritering av lønnsom vekst',
     competition:'konkurransepress i enkelte næringssegmenter'
@@ -254,7 +257,7 @@
     return (context?.insights||[]).filter(x=>x.period===period&&x.period_type===mode&&names.has(x.company)&&source(x.source_url)&&
       Array.isArray(x.views)&&x.views.includes(scope+'/'+market)&&typeof x.text==='string');
   }
-  function comments(m,editorial,scope,market,context=null,otherMode=null){
+  function comments(m,editorial,scope,market,context=null,otherMode=null,priorView=null){
     const rows=m.eligible,period=title(m.period),mode=m.mode||'quarter';
     const names=new Set(rows.map(r=>r.company));
     const general=scope==='group'&&market==='all';
@@ -275,18 +278,31 @@
       const breadth=comparable.length>=3?(positive/comparable.length>=.8?'Veksten er bredt fundert. ':negative/comparable.length>=.8?'Inntektsnedgangen er bredt fundert. ':'Vekstbildet er sammensatt. '):'';
       const measure=comparable.length>1?'Medianveksten blant aktørene er ':'Rapportert inntektsvekst er ';
       growth.push(breadth+measure+growthText(med)+' mot samme periode i fjor.');
-      if(m.period?.quarter>1&&otherMode&&samePeriod(m.period,otherMode.period)&&otherMode.mode!==mode){
+      // Adjacent archived quarter, same issuers and revenue definitions.
+      const prior=priorView?.model;
+      const adjacent=prior?.period&&m.period&&m.period.year*4+m.period.quarter===prior.period.year*4+prior.period.quarter+1;
+      let comparedHistory=false;
+      if(mode==='quarter'&&prior?.mode==='quarter'&&adjacent){
+        const pairs=comparable.map(r=>[r,prior.eligible.find(x=>x.company===r.company&&x.revenueBasis===r.revenueBasis&&num(x.growth))]).filter(([,x])=>x);
+        const dif=median(pairs.map(([a,b])=>a.growth-b.growth));
+        if(pairs.length>=2&&num(dif)&&Math.abs(dif)>=.3){
+          growth.push('Årsveksttakten har '+(dif>0?'økt':'avtatt')+' med '+pp(dif)+' fra forrige kvartal på samme sammenlignbare utvalg (median).');
+          comparedHistory=true;
+        }
+      }
+      if(!comparedHistory&&m.period?.quarter>1&&otherMode&&samePeriod(m.period,otherMode.period)&&otherMode.mode!==mode){
         const pairs=comparable.map(r=>[r,otherMode.eligible.find(x=>x.company===r.company&&x.revenueBasis===r.revenueBasis&&num(x.growth))]).filter(([,x])=>x);
         const dif=median(pairs.map(([a,b])=>mode==='quarter'?a.growth-b.growth:b.growth-a.growth));
         if(pairs.length>=2&&num(dif)&&Math.abs(dif)>=.3)
           growth.push('Veksttakten i siste kvartal ligger '+pp(dif)+' '+(dif>0?'over':'under')+' HIÅ-tempoet målt på samme aktører (median).');
       }
     }else growth.push('Inntektsvekst er foreløpig ikke tilgjengelig.');
-    const positiveDrivers=['price','volume_up','customer_inflow','retention_up'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
+    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','portfolio_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     const limitations=['volume_down','risk_selection','competition'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     if(positiveDrivers.length)growth.push('Rapporterte vekstdrivere omfatter '+joinNatural(positiveDrivers)+'.');
+    if(drivers.has('retention_up'))growth.push('Bedret kundelojalitet er også rapportert i deler av porteføljen.');
     if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
-    if(drivers.has('price')&&(drivers.has('volume_up')||drivers.has('volume_down')||drivers.has('customer_inflow')))
+    if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','portfolio_growth'].some(k=>drivers.has(k)))
       growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');
     if(!drivers.size){
       const qualitative=permitted.filter(x=>/^(growth|revenue_direction|revenue_decline)$/.test(x.theme||''));
@@ -308,6 +324,10 @@
       const level=median(rows.map(r=>r.cr));
       cr.push(num(level)?'CR ligger på '+pct(level)+' '+(rows.length>1?'målt som median':'i tilgjengelig rapportering')+'. Sammenlignbare endringstall mangler.':'CR er foreløpig ikke tilgjengelig.');
     }
+    const profitEvidence=scoped.filter(x=>x.theme==='profit_driver'&&/^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length);
+    const factors=new Set(profitEvidence.map(x=>x.driver));
+    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent']].filter(([k])=>factors.has(k)).map(([,v])=>v);
+    if(explanations.length)cr.push('Rapporterte lønnsomhetsdrivere omfatter '+joinNatural(explanations)+'.');
     const lowerClaims=scoped.some(x=>x.theme==='large_claims'&&/lavere storskad/i.test(x.text));
     const higherClaims=scoped.some(x=>x.theme==='large_claims'&&/høyere storskad/i.test(x.text));
     if(lowerClaims||higherClaims)
@@ -326,15 +346,15 @@
     return [{label:'Inntektsvekst',paragraphs:growth.map(safe)},{label:'CR – skade- og kostnadsprosent',paragraphs:cr.map(safe)},{label:'Enkelthendelser og særtrekk',paragraphs:special.map(safe)}];
   }
   const viewKey=(scope,market,mode)=>[scope,market,mode].join('/');
-  function makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode){
+  function makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode,priorView=null){
     const m=model(feed,comparison,fx,scope,market,segments,mode,context);
     const otherMode=m.period?.quarter>1?model(feed,comparison,fx,scope,market,segments,mode==='ytd'?'quarter':'ytd',context):null;
     const period=title(m.period),names=new Set(m.eligible.map(r=>r.company));
     const es=editorial?.periods?.[period]||(editorial?.period===period?editorial:null);
     const notes=(context?.insights||[]).filter(x=>x.period===period&&x.period_type===mode&&x.views?.includes(scope+'/'+market)&&names.has(x.company));
     const brief=(es?.brief||[]).filter(x=>x.period===period&&Array.isArray(x.companies)&&x.companies.length&&x.companies.every(c=>names.has(c))&&mode==='quarter'&&(scope==='group'&&market==='all'||scope==='norway'&&market==='all'&&x.companies.every(c=>NORWAY_EQUIVALENT.includes(c))));
-    const links=[...(otherMode?.eligible||[]).flatMap(r=>(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))),...m.eligible.flatMap(r=>[{name:pretty(r.company),url:r.source},...(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))]),...notes.map(x=>({name:pretty(x.company),url:x.source_url,sha256:x.source_sha256,page:x.source_page})),...brief.flatMap(x=>[x.source_url,...(x.source_urls||[])].map(url=>({name:x.companies.map(pretty).join(', '),url})))];
-    return {model:m,comments:comments(m,editorial,scope,market,context,otherMode),sources:[...new Map(links.filter(x=>source(x.url)).map(x=>[[x.url,x.sha256||'',x.page||''].join('|'),x])).values()]};
+    const links=[...(priorView?.sources||[]),...(otherMode?.eligible||[]).flatMap(r=>(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))),...m.eligible.flatMap(r=>[{name:pretty(r.company),url:r.source},...(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))]),...notes.map(x=>({name:pretty(x.company),url:x.source_url,sha256:x.source_sha256,page:x.source_page})),...brief.flatMap(x=>[x.source_url,...(x.source_urls||[])].map(url=>({name:x.companies.map(pretty).join(', '),url})))];
+    return {model:m,comments:comments(m,editorial,scope,market,context,otherMode,priorView),sources:[...new Map(links.filter(x=>source(x.url)).map(x=>[[x.url,x.sha256||'',x.page||''].join('|'),x])).values()]};
   }
   function archivedView(archive,requested,scope,market,mode){
     const label=requested==='latest'?archive?.active_period:requested,entry=archive?.periods?.[label],view=entry?.views?.[viewKey(scope,market,mode)];

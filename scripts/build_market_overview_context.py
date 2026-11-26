@@ -311,10 +311,17 @@ def growth_drivers(a,pages):
     An unfamiliar disclosure layout yields no driver, never a guessed cause.
     """
     company=a['company'];q=a['quarter'];out=[]
+    alm_sections={}
+    gj_sections={}
+    if company=='Alm. Brand':
+        try:alm_sections={r['source_page']:r['segment'] for r in parse_alm(pages,a['year'],q,a['source_url'],a['source_sha256'])}
+        except ValueError:return []
+    if company=='Gjensidige':gj_sections={p:seg for seg,p,_,_,_ in gj_blocks(a,pages)}
     def add(page,views,mode,driver,evidence):
         modes=('quarter','ytd') if q==1 else (mode,)
         for period_type in modes:
-            row=insight(a,page,views,'growth_driver',driver,period_type)
+            theme='profit_driver' if driver in ('lower_claim_frequency','underlying_loss_improved') else 'growth_driver'
+            row=insight(a,page,views,theme,driver,period_type)
             row.update(driver=driver,evidence=evidence)
             if not any((r['driver'],r['period_type'],r['views'])==(driver,period_type,views) for r in out):
                 out.append(row)
@@ -333,13 +340,16 @@ def growth_drivers(a,pages):
             elif hits and cumulative and not quarter:add(page,views,'ytd','price',hits[0])
             elif len(hits)==2 and quarter and cumulative:
                 for mode in ('quarter','ytd'):add(page,views,mode,'price',hits[0])
+            losses=re.findall(r'lavere skadefrekvenser på bil og næringsbygg',text,re.I)
+            totals=['group/all','norway/all']
+            if losses and quarter and not cumulative:add(page,totals,'quarter','lower_claim_frequency',losses[0])
+            elif losses and cumulative and not quarter:add(page,totals,'ytd','lower_claim_frequency',losses[0])
+            elif len(losses)==2 and quarter and cumulative:
+                for mode in ('quarter','ytd'):add(page,totals,mode,'lower_claim_frequency',losses[0])
         elif company=='Alm. Brand':
             # Validate the section and exact isolated-quarter table before
             # interpreting its management review. No Group-to-Norway inference.
-            try:segment_rows=parse_alm(pages,a['year'],q,a['source_url'],a['source_sha256'])
-            except ValueError:return []
-            sections={r['source_page']:r['segment'] for r in segment_rows}
-            seg=sections.get(page)
+            seg=alm_sections.get(page)
             if seg=='Private':
                 views=['group/pm','group/all']
                 for driver,pattern in [('price',r'price adjustments to miti-?\s*gate claims inflation'),('customer_inflow',r'customer inflow through bank partnerships')]:
@@ -356,19 +366,31 @@ def growth_drivers(a,pages):
             # adjacent Q1-Qn claims table. Never call a Nordic number Norway.
             if not re.search(rf'\bResults Q{q} {a["year"]}\b',text,re.I):continue
             views=['group/pm','group/all']
-            for driver,pattern in [('volume_up',r'growth in selected segments'),('retention_up',r'retention rates improved slightly')]:
+            for driver,pattern in [('portfolio_growth',r'portfolio.{0,80}growth in selected segments'),('retention_up',r'retention rates improved slightly'),('underlying_loss_improved',rf'underlying claims ratio improved.{0,100}in Q{q} {a["year"]}')]:
                 evidence=match(text,pattern)
                 if evidence:add(page,views,'quarter',driver,evidence)
         elif company=='Gjensidige':
-            # Group commercial narrative: explicit Norway submarket wording
-            # supports the Norway view, but never an unrelated PM claim.
+            # Require a verified segment chapter and a separately identified
+            # quarter/YTD narrative. Norwegian submarket wording is required
+            # before including Norwegian views; no Denmark-to-Norway inference.
             headers=[norm(l) for l in raw.splitlines()]
-            group_commercial=any(re.fullmatch(r'General Insurance Commercial',l,re.I) for l in headers)
-            ytd_commercial=any(seg=='Commercial' and p==page for seg,p,_,_,_ in gj_blocks(a,pages))
-            mode='quarter' if group_commercial and 'Development during the quarter' in text else 'ytd' if ytd_commercial and 'Year-to-date development' in text else None
-            if not mode or not re.search(r'\bIn Norway,\s+insurance revenue increased\b',text,re.I):continue
-            views=['group/bm','group/all','norway/bm','norway/all']
-            for driver,pattern in [('price',r'driven by price increases for all products'),('volume_down',r'decreased due to consistent prioritisation of'),('risk_selection',r'prioritisation of.{0,180}profitability over growth')]:
+            named=next((seg for seg in ('Private','Commercial') if any(re.fullmatch('General Insurance '+seg,l,re.I) for l in headers)),None)
+            if named and 'Development during the quarter' in text:seg,mode=named,'quarter'
+            elif gj_sections.get(page) in ('Private','Commercial') and 'Year-to-date development' in text:seg,mode=gj_sections[page],'ytd'
+            else:continue
+            if not re.search(r'\bIn Norway,(?:(?!In Denmark).){0,140}?insurance revenue increased\b',text,re.I):continue
+            market='pm' if seg=='Private' else 'bm'
+            views=['group/'+market,'group/all','norway/'+market,'norway/all']
+            if seg=='Private':
+                rules=[('price',r'(?:primarily )?driven by price increases and higher volumes'),
+                       ('volume_up',r'price increases and higher volumes for (?:the main product lines|property)'),
+                       ('volume_pm_products',r'higher volumes for property,.{0,100}accident and health and travel insurance'),
+                       ('customer_growth',r'number of customers increased')]
+            else:
+                rules=[('price',r'driven by price increases for all products'),
+                       ('volume_down',r'decreased due to consistent prioritisation of'),
+                       ('risk_selection',r'prioritisation of.{0,180}profitability over growth')]
+            for driver,pattern in rules:
                 evidence=match(text,pattern)
                 if evidence:add(page,views,mode,driver,evidence)
     return out

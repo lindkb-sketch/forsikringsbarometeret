@@ -135,7 +135,7 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(growth_drivers(a,[(9,q.replace('Veksten er hovedsakelig drevet av premiejusteringer.','Ingen forklaring.'))]),[])
         a['company']='Tryg'
         out=growth_drivers(a,[(9,'Key figures - Private\nResults Q3 2026\nGrowth was positively impacted by portfolio growth in selected segments. Retention rates improved slightly.')])
-        self.assertEqual({r['driver'] for r in out},{'volume_up','retention_up'})
+        self.assertEqual({r['driver'] for r in out},{'portfolio_growth','retention_up'})
         self.assertTrue(all(r['period_type']=='quarter' and 'norway/pm' not in r['views'] for r in out))
 
 if __name__=='__main__':unittest.main()

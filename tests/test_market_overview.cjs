@@ -154,3 +154,12 @@ test('trend commentary uses fixed headings, medians, matched periods and no comp
  const bad={insights:[{...evidence('Fremtind','price',['group/all']),source_sha256:'bad'}]};
  assert.doesNotMatch(JSON.stringify(comments(q,{},'group','all',bad)),/premie- og prisjusteringer/);
 });
+
+test('quarter trend uses adjacent archived matched data rather than a changed issuer population',()=>{
+ const mk=(year,quarter,mode,values)=>({period:{year,quarter},mode,eligible:values.map(([company,growth])=>({company,growth,cr:80,revenueBasis:'Forsikringsinntekter',deltas:{}}))});
+ const curr=mk(2027,1,'quarter',[['Fremtind',7],['Tryg',9]]);
+ const prev=mk(2026,4,'quarter',[['Fremtind',4],['Tryg',6],['Sampo',50]]);
+ const text=JSON.stringify(comments(curr,{},'group','all',{},null,{model:prev}));
+ assert.match(text,/økt med 3,0 prosentpoeng fra forrige kvartal/);
+ assert.doesNotMatch(JSON.stringify(comments(curr,{},'group','all',{},null,{model:mk(2026,3,'quarter',[['Fremtind',4],['Tryg',6]])})),/fra forrige kvartal/);
+});

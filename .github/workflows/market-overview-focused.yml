@@ -44,3 +44,21 @@ jobs:
           python scripts/build_market_overview_fx.py
           python scripts/build_market_overview_context.py
           node scripts/build_market_overview_archive.cjs --require-baseline
+          node - <<'JS'
+          const assert=require('node:assert/strict');
+          const a=require('./data/market_overview_archive.json');
+          const v=a.periods[a.active_period].views;
+          assert.equal(Object.keys(v).length,12);
+          for(const [key,view] of Object.entries(v)){
+            assert.deepEqual(view.comments.map(c=>c.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
+            const text=view.comments.flatMap(c=>c.paragraphs).join(' ');
+            assert.doesNotMatch(text,/\b\d+\s*(?:av|\/)\s*\d+\s+selskaper|\bhøyest vekst|\bCR varierer fra .* hos/i,key);
+          }
+          const c=require('./data/market_overview_context.json');
+          const drivers=c.insights.filter(x=>x.theme==='growth_driver');
+          assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='quarter'&&x.views.includes('norway/pm')));
+          assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='ytd'));
+          assert.ok(drivers.some(x=>x.driver==='portfolio_growth'&&x.company==='Tryg'));
+          assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Alm. Brand'));
+          console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
+          JS
