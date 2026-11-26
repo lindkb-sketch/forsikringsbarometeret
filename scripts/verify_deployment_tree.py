@@ -11,6 +11,7 @@ ESSENTIAL=(
  'scripts/market_overview.js',
  'scripts/market_overview.css',
  'data/market_overview_fx.json',
+ 'data/market_overview_segments.json',
  'data/verified_financial_feed.json',
  'data/financial_observations.json',
  'data/live.json',

@@ -41,7 +41,22 @@
   const periodOf=s=>{const m=/^Q([1-4]) (\d{4})$/.exec(s||'');return m?{year:+m[2],quarter:+m[1]}:null;};
   const samePeriod=(a,b)=>a&&b&&a.year===b.year&&a.quarter===b.quarter;
   const cmpPeriod=(a,b)=>a.year-b.year||a.quarter-b.quarter;
-  const allRows=feed=>(feed?.observations||[]).filter(valid);
+  const key=r=>[r.company,r.year,r.quarter,r.scope,r.segment||'',r.metric].join('|');
+  function allRows(feed,segments){
+    const rows=(feed?.observations||[]).filter(valid);
+    const anchors=new Set(rows.filter(r=>r.scope==='group').map(r=>[r.company,r.source_url,r.source_sha256].join('|')));
+    const index=new Map(rows.map(r=>[key(r),r]));
+    for(const r of segments?.observations||[]){
+      if(!valid(r)||r.scope!=='reported_segment'||
+        !['Tryg','Gjensidige'].includes(r.company)||
+        !['Private','Commercial'].includes(r.segment)||
+        !anchors.has([r.company,r.source_url,r.source_sha256].join('|')))continue;
+      const k=key(r),old=index.get(k);
+      if(!old)index.set(k,r);
+      else if(Math.abs(old.value-r.value)>.001||old.unit!==r.unit)index.delete(k);
+    }
+    return [...index.values()];
+  }
   function selectUnique(rows,metric){
     const matches=rows.filter(r=>r.metric===metric);
     return matches.length===1?matches[0]:null;
@@ -65,6 +80,14 @@
   function groupsFor(rows,company,p,scope,market){
     const current=rows.filter(r=>r.company===company&&samePeriod(r,p));
     if(market==='all')return [{rows:current.filter(r=>r.scope===scope),scope,segment:null}];
+    // Owner-approved market classification: Protector is commercially
+    // oriented (commercial/public/affinity); report totals are its BM proxy.
+    // Never reuse Group totals for Norway. No PM allocation is inferred.
+    if(company==='Protector'){
+      if(market==='pm')return [];
+      return [{rows:current.filter(r=>r.scope===scope),scope,segment:null,
+        displaySegment:'BM / offentlig og affinity · rapportert total'}];
+    }
     const labels=SEGMENTS[scope][market];
     const matching=[...new Set(current.filter(r=>r.scope==='reported_segment'&&labels.includes(String(r.segment||'').toLowerCase().trim())).map(r=>r.segment))];
     if(matching.length!==1)return [];
@@ -89,7 +112,7 @@
       const old=selectUnique(prior,key);
       deltas[key]=old&&old.unit==='percent'&&basis(old)===basis(values[key])?values[key].value-old.value:null;
     }
-    return {company,segment:g.segment,source:revenue.source_url,revenue:revenue.value,currency:cur,
+    return {company,segment:g.displaySegment||g.segment,source:revenue.source_url,revenue:revenue.value,currency:cur,
       revenueBasis:basis(revenue),cr,loss,cost,growth,deltas};
   }
   function extendedRow(c,p){
@@ -102,8 +125,8 @@
       revenueBasis:'Forsikringsinntekter',cr:m.combined_ratio,loss:m.loss_ratio,cost:m.expense_ratio,
       growth:num(m.insurance_revenue_growth)?m.insurance_revenue_growth:null,deltas:{}};
   }
-  function model(feed,comparison,fx,scope='group',market='all'){
-    const rows=allRows(feed),p=choosePeriod(rows,comparison);
+  function model(feed,comparison,fx,scope='group',market='all',segments=null){
+    const rows=allRows(feed,segments),p=choosePeriod(rows,comparison);
     if(!p)return {period:null,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0};
     const eligible=[];
     for(const company of COMPANIES){
@@ -159,7 +182,7 @@
       'Særskilte hendelser publiseres bare når de kan knyttes til valgt område og segment. Se Oppsummering for konsernkommentarer.');
     return [{label:'Inntektsvekst',paragraphs:growth},{label:'CR – skade- og kostnadsprosent',paragraphs:cr},{label:'Enkelthendelser og særtrekk',paragraphs:special}];
   }
-  let comparison=null,fx=null,scope='group',market='all',pending=false,failed=false;
+  let comparison=null,fx=null,segments=null,scope='group',market='all',pending=null,failed=false;
   function controls(){
     const group=(id,caption,options,current)=>'<fieldset class="mo-filter" id="'+id+'"><legend>'+caption+'</legend><div role="group" aria-label="'+caption+'">'+options.map(([key,label])=>
       '<button type="button" data-mo-'+id+'="'+key+'" aria-pressed="'+(current===key)+'" onclick="FBMarketOverview.select(\''+id+'\',\''+key+'\')">'+label+'</button>').join('')+'</div></fieldset>';
@@ -191,7 +214,7 @@
       '<div class="mo-chart-body"><div class="mo-guides" aria-hidden="true">'+ticks.map(t=>'<i style="bottom:'+t/cap*100+'%"></i>').join('')+'</div><div class="mo-bars">'+bars+'</div></div></div></div>';
   }
   function html(){
-    const m=model(window.FBQuarterly?.verified,comparison,fx,scope,market);
+    const m=model(window.FBQuarterly?.verified,comparison,fx,scope,market,segments);
     const latest=title(m.period);
     const contextual=scope==='norway'?'Norge':'Gruppe';
     const filter=market==='all'?'Totalt':market==='pm'?'PM':'BM';
@@ -205,8 +228,8 @@
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2><p class="hint">'+safe(subtitle)+'</p></div>'+
       (latest?'<span class="pill">'+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
-      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. Gruppens PM/BM kan være rapporterte nordiske delsegmenter; disse merkes.</p>':'')+
-      (latest&&m.missing.length?'<details class="mo-excluded"><summary>'+m.missing.length+' selskaper uten komplett tallgrunnlag for valget</summary><p>'+safe(m.missing.map(pretty).join(', '))+'. Ingen eldre kvartaler eller konserntall brukes som erstatning.</p></details>':'')+'</section>'+
+      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. Gruppens PM/BM følger selskapets rapporterte forretningssegmenter, som kan utelate andre geografier. Protector vises i BM med rapportert total (inkl. offentlig sektor og affinity), ikke som et separat rapportert BM-segment.</p>':'')+
+      (latest&&m.missing.length?'<details class="mo-excluded"><summary>'+m.missing.length+' selskaper uten komplett tallgrunnlag for valget</summary><p>'+safe(m.missing.map(pretty).join(', '))+'. Ingen eldre kvartaler eller urelaterte konserntall brukes som erstatning.</p></details>':'')+'</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer til kvartalet</h2><p class="hint">'+safe(latest||'Avventer tall')+' · '+safe(descriptor)+' · oppdateres når nye rapporter kommer</p></div></div>'+
       (latest?'<div class="mo-comment-grid">'+comments(m,window.FBNews?.editorial,scope,market).map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
   }
@@ -220,17 +243,21 @@
     render();
     document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
   }
-  async function refresh(){
-    if(pending)return;pending=true;
+  function refresh(){
+    if(pending)return pending;
+    pending=(async()=>{
     try{
-      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json'].map(async f=>{
+      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json'].map(async f=>{
         const r=await fetch('data/'+f+'?t='+Date.now(),{cache:'no-store'});
         if(!r.ok)throw Error('HTTP '+r.status);return r.json();
       }));
       if(results[0].status==='fulfilled')comparison=results[0].value;
       if(results[1].status==='fulfilled')fx=results[1].value;
+      if(results[2].status==='fulfilled')segments=results[2].value;
       failed=results.some(r=>r.status==='rejected');
-    }finally{pending=false;render();}
+    }finally{pending=null;render();}
+    })();
+    return pending;
   }
   function start(){refresh();setInterval(refresh,300000);}
   return {model,comments,html,select,refresh,start};

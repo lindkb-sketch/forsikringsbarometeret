@@ -220,6 +220,7 @@ jobs:
         run: |
           node --test tests/test_market_overview.cjs
           python scripts/build_market_overview_fx.py
+          python scripts/build_market_overview_segments.py --require-baseline
       - name: Prepare Chrome browser regression dependencies
         run: |
           npm install --no-save playwright

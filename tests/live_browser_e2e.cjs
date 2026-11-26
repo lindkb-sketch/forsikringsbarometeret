@@ -34,14 +34,16 @@ async function main(){
   const marketFx=fxResponse.ok()?await fxResponse.json():{periods:{}};
   const compResponse=await page.request.get(BASE+'data/nine_insurer_comparison.json?browser_audit='+Date.now());
   const marketComparison=compResponse.ok()?await compResponse.json():{};
+  const segmentResponse=await page.request.get(BASE+'data/market_overview_segments.json?browser_audit='+Date.now());
+  const marketSegments=segmentResponse.ok()?await segmentResponse.json():{};
   await page.evaluate(()=>FBMarketOverview.refresh());
   const verifyMarket=async(scope,market)=>{
    await page.locator('[data-mo-scope="'+scope+'"]').click();
    await page.locator('[data-mo-market="'+market+'"]').click();
-   const state=await page.evaluate(({marketFx,marketComparison,scope,market})=>{
-    const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market);
+   const state=await page.evaluate(({marketFx,marketComparison,marketSegments,scope,market})=>{
+    const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market,marketSegments);
     return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length};
-   },{marketFx,marketComparison,scope,market});
+   },{marketFx,marketComparison,marketSegments,scope,market});
    check('Market '+scope+'/'+market+' uses exact eligible income-ranked companies',JSON.stringify(state.expected)===JSON.stringify(state.actual),JSON.stringify(state));
    check('Market '+scope+'/'+market+' sorts CR ascending and aligns growth',state.cr.every((v,i)=>!i||v>=state.cr[i-1])&&state.growth===state.actual.length&&state.actual.length<=5);
    check('Market '+scope+'/'+market+' has three comment groups',state.comments===3);
@@ -49,6 +51,15 @@ async function main(){
   };
   for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market);
   await verifyMarket('group','all');
+  const eligibility=await page.evaluate(({marketFx,marketComparison,marketSegments})=>{
+    const f=[['group','all'],['group','pm'],['group','bm'],['norway','all'],['norway','pm'],['norway','bm']];
+    return {period:document.getElementById('mo-period').textContent,byCompany:Object.fromEntries(['Protector','Tryg','Gjensidige'].map(c=>[c,f.map(([s,m])=>FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,s,m,marketSegments).eligible.some(r=>r.company===c))]))};
+  },{marketFx,marketComparison,marketSegments});
+  if(eligibility.period==='Q3 2026'){
+    check('Protector BM uses its own country/group totals',JSON.stringify(eligibility.byCompany.Protector)===JSON.stringify([true,false,true,true,false,true]),JSON.stringify(eligibility));
+    check('Tryg group segments only; no Norway PM/BM substitution',JSON.stringify(eligibility.byCompany.Tryg)===JSON.stringify([true,true,true,true,false,false]),JSON.stringify(eligibility));
+    check('Gjensidige eligible for all six views with distinct segment figures',eligibility.byCompany.Gjensidige.every(Boolean),JSON.stringify(eligibility));
+  }
   await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
   report.screenshots.push('data/browser_market_overview.png');
   await page.locator('#nav-summary').click();

@@ -31,6 +31,7 @@ FILES = (
     'data/extended_insurer_financials.json',
     'data/nine_insurer_comparison.json',
     'data/market_overview_fx.json',
+    'data/market_overview_segments.json',
     'data/quarterly_kpi_completeness.json',
     'data/seven_insurer_source_gap_audit.json',
     'data/newsweb_notices.json',
