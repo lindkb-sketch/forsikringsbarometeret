@@ -48,7 +48,8 @@ def values(lines,company,count):
         for line in lines:
             # Some PDFs place the text of a separate narrative column before
             # or after a table row. Locate the exact label + numeric columns.
-            pattern=r'(?<![\w])'+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
+            prefix=r'(?<![\w])' if company=='Gjensidige' else r'^'
+            pattern=prefix+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
             for m in re.finditer(pattern,norm(line),re.I):
                 tail=norm(line)[m.end():]
                 match=re.match(r'((?:'+NUMBER+r'\s*%?\s*){'+str(count)+r'})(?=$|[A-Za-zÆØÅæøå])',tail)
