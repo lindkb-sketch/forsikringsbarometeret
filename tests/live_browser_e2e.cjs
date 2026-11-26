@@ -27,6 +27,31 @@ async function main(){
    return r.json();
   }));
   const [feed,editorial,news,stocks,calendarFeed,readiness]=files;
+  await page.waitForFunction(()=>window.FBQuarterly?.period&&document.querySelector('#market-overview[data-period]:not([data-period=""])'),null,{timeout:35000});
+  check('New market overview is the landing page',await page.locator('#nav-home.active').count()===1&&await page.locator('#market-overview-comments').count()===1);
+  check('Old summary not appended to new overview',await page.locator('#results-comparison,#nine-company-kpi-comparison').count()===0);
+  const fxResponse=await page.request.get(BASE+'data/market_overview_fx.json?browser_audit='+Date.now());
+  const marketFx=fxResponse.ok()?await fxResponse.json():{periods:{}};
+  const compResponse=await page.request.get(BASE+'data/nine_insurer_comparison.json?browser_audit='+Date.now());
+  const marketComparison=compResponse.ok()?await compResponse.json():{};
+  await page.evaluate(()=>FBMarketOverview.refresh());
+  const verifyMarket=async(scope,market)=>{
+   await page.locator('[data-mo-scope="'+scope+'"]').click();
+   await page.locator('[data-mo-market="'+market+'"]').click();
+   const state=await page.evaluate(({marketFx,marketComparison,scope,market})=>{
+    const model=FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,scope,market);
+    return {expected:model.selected.map(c=>c.company),actual:[...document.querySelectorAll('.mo-company')].map(c=>c.dataset.company),cr:[...document.querySelectorAll('.mo-company')].map(c=>Number(c.dataset.cr)),missing:model.fxMissing,period:document.getElementById('mo-period').textContent,growth:document.querySelectorAll('.mo-company .mo-growth').length,empty:!!document.querySelector('#market-overview .mo-empty'),comments:document.querySelectorAll('.mo-comment-grid article').length};
+   },{marketFx,marketComparison,scope,market});
+   check('Market '+scope+'/'+market+' uses exact eligible income-ranked companies',JSON.stringify(state.expected)===JSON.stringify(state.actual),JSON.stringify(state));
+   check('Market '+scope+'/'+market+' sorts CR ascending and aligns growth',state.cr.every((v,i)=>!i||v>=state.cr[i-1])&&state.growth===state.actual.length&&state.actual.length<=5);
+   check('Market '+scope+'/'+market+' has three comment groups',state.comments===3);
+   if(state.missing.length)check('FX missing: no misleading ranking',state.empty&&state.actual.length===0);
+  };
+  for(const scope of ['group','norway'])for(const market of ['all','pm','bm'])await verifyMarket(scope,market);
+  await verifyMarket('group','all');
+  await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
+  report.screenshots.push('data/browser_market_overview.png');
+  await page.locator('#nav-summary').click();
   await page.waitForFunction(()=>window.FBQuarterly?.period&&
        document.querySelector('#results-comparison tbody tr')&&
        window.FBNews?.editorial && window.FBReportCalendar?.ready &&
@@ -46,7 +71,7 @@ async function main(){
     check('Approved Gjensidige Q3 commentary visible',await panel.isVisible(),
       'panel='+await panel.count()+'; hidden='+(await panel.count()?await panel.getAttribute('hidden'):'missing')+
       '; text='+(await panel.count()?String(await panel.textContent()).slice(0,180):''));
-    await page.locator('#nav-home').click();
+    await page.locator('#nav-summary').click();
    }
   }
   // An approved safety headline must survive the frontend's material-news filter.
@@ -59,26 +84,26 @@ async function main(){
     await page.waitForTimeout(350);
     check('Approved Tryg traffic-safety news visible on company page',
       (await page.locator('.company-media-news').allTextContents()).join(' ').includes(trygSafety.headline));
-    await page.locator('#nav-home').click();
+    await page.locator('#nav-summary').click();
    }
   }
   // The news surface must be present for every insurer, even when no
   // recent source-backed article exists. Homepage always shows the sector feed.
-  await page.locator('#nav-home').click();
+  await page.locator('#nav-summary').click();
   check('Insurance news section exists on homepage',
     await page.locator('#media-news').count()===1);
   for(const insurer of ['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']){
    await page.locator('#nav-'+insurer).click();
    check(insurer+' media section exists',
      await page.locator('.company-media-news').count()===1);
-   await page.locator('#nav-home').click();
+   await page.locator('#nav-summary').click();
   }
   // New issuer pages must render without relying on legacy seven-company data.
   for(const name of ['KLP Skadeforsikring','Alm. Brand']){
     await page.locator('[id="nav-'+name+'"]').click();
     check(name+' company page renders', (await page.locator('#app').innerText()).includes(name));
     check(name+' primary-source link exists', await page.locator('#app a[href^="https://"]').count()>0);
-    await page.locator('#nav-home').click();
+    await page.locator('#nav-summary').click();
   }
   // The nine-company table has its own explicit period selector.
   const nineResponse=await page.request.get(BASE+'data/nine_insurer_comparison.json?browser_audit='+Date.now());
@@ -252,7 +277,7 @@ async function main(){
     JSON.stringify(protector).slice(0,1150));
   await page.screenshot({path:'data/browser_protector_norway.png',fullPage:true});
   report.screenshots.push('data/browser_protector_norway.png');
-  await page.evaluate(()=>show('home',true));
+  await page.evaluate(()=>show('summary',true));
   const metrics={combined_ratio:'cr',loss_ratio:'loss',expense_ratio:'cost',
       insurance_revenue:'revenue',insurance_service_result:'result'};
   const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
@@ -422,7 +447,7 @@ async function main(){
         cardText.includes(expected),JSON.stringify({expected,cardText}));
     }
   }
-  await page.evaluate(()=>show('home',true));
+  await page.evaluate(()=>show('summary',true));
   const tableQ=norm(await page.locator('body').innerText());
   for(const c of ['Fremtind','Storebrand']){
    const r=feed.observations.find(x=>x.company===c&&x.year===year&&x.quarter===quarter&&

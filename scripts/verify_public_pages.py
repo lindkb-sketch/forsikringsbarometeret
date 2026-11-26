@@ -5,7 +5,7 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 BASE='https://lindkb-sketch.github.io/forsikringsbarometeret/data/'
-FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_financial_feed.json','stock_prices.json','broker_commentary.json','broker_admin_config.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json','nine_insurer_comparison.json','quarterly_kpi_completeness.json']
+FILES=['frende_skade_financials.json','frende_skade_reports.json','verified_financial_feed.json','stock_prices.json','broker_commentary.json','broker_admin_config.json','official_news.json','quarterly_editorial.json','investor_readiness.json','publication_provenance.json','nine_insurer_comparison.json','quarterly_kpi_completeness.json','market_overview_fx.json']
 COMPANIES={'Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'}
 PAGE='https://lindkb-sketch.github.io/forsikringsbarometeret/'
 
@@ -68,6 +68,12 @@ def check():
                 raise ValueError('Rolling quarterly runtime differs from deployed artifact')
             if 'periodList=calcPeriods()' not in public_runtime:
                 raise ValueError('Published rolling quarterly model is missing period auto-selection')
+            for asset in ('market_overview.js','market_overview.css'):
+                req=urllib.request.Request(PAGE+'scripts/'+asset+'?check='+str(time.time_ns()),headers={'Cache-Control':'no-cache'})
+                with urllib.request.urlopen(req,timeout=25) as response:
+                    actual=response.read(250000).decode('utf-8')
+                if actual!=(ROOT/'scripts'/asset).read_text(encoding='utf-8'):
+                    raise ValueError('Market overview asset differs from deployed artifact: '+asset)
             provenance=public['publication_provenance.json']
             if len(provenance.get('companies', [])) != len(COMPANIES):
                 raise ValueError('Public provenance must cover all seven insurers')
