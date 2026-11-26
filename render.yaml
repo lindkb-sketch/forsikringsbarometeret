@@ -1,0 +1,13 @@
+# Optional deployment outside GitHub Actions. Import explicitly in Render.
+# Does not create a service until an authorized owner imports the Blueprint.
+services:
+  - type: cron
+    name: forsikringsbarometeret-recovery
+    runtime: python
+    branch: main
+    schedule: "*/5 * * * *"
+    buildCommand: "true"
+    startCommand: python scripts/external_scheduler.py
+    envVars:
+      - key: GITHUB_TOKEN
+        sync: false
