@@ -122,4 +122,20 @@ class MarketSegmentTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'fingerprint changed'):
                 alm_ytd(anchor(3),future_pages(3),registry)
 
+
+    def test_market_growth_drivers_are_scoped_and_period_specific(self):
+        from build_market_overview_context import growth_drivers
+        a=dict(company='Fremtind',year=2026,quarter=3,source_url='https://issuer.invalid/report.pdf',source_sha256=SHA)
+        q='Styrets beretning\nResultatutvikling i kvartalet\nprivatmarkedet har en økning og bedriftsmarkedet har en økning. Veksten er hovedsakelig drevet av premiejusteringer.'
+        y=q.replace('Resultatutvikling i kvartalet','Resultatutvikling hittil i år')
+        out=growth_drivers(a,[(9,q+'\n'+y)])
+        self.assertEqual({r['period_type'] for r in out},{'quarter','ytd'})
+        self.assertTrue(all(r['driver']=='price' and 'norway/pm' in r['views'] and r['source_page']==9 for r in out))
+        self.assertEqual({r['period_type'] for r in growth_drivers(a,[(9,q)])},{'quarter'})
+        self.assertEqual(growth_drivers(a,[(9,q.replace('Veksten er hovedsakelig drevet av premiejusteringer.','Ingen forklaring.'))]),[])
+        a['company']='Tryg'
+        out=growth_drivers(a,[(9,'Key figures - Private\nResults Q3 2026\nGrowth was positively impacted by portfolio growth in selected segments. Retention rates improved slightly.')])
+        self.assertEqual({r['driver'] for r in out},{'volume_up','retention_up'})
+        self.assertTrue(all(r['period_type']=='quarter' and 'norway/pm' not in r['views'] for r in out))
+
 if __name__=='__main__':unittest.main()

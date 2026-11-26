@@ -137,3 +137,20 @@ test('scoped commentary is period, company, geography and business-line specific
  const c=JSON.stringify(comments(m,{},'norway','pm',context));
  assert.ok(c.includes('Relevant PM hendelse'));assert.ok(!c.includes('BAD'));
 });
+
+test('trend commentary uses fixed headings, medians, matched periods and no company counts or leaderboard names',()=>{
+ const make=(mode,values)=>({period:{year:2026,quarter:3},mode,eligible:values.map(([company,growth,delta])=>({company,growth,cr:80,revenueBasis:'Forsikringsinntekter',deltas:{combined_ratio:delta,loss_ratio:delta,expense_ratio:0}}))});
+ const q=make('quarter',[['Fremtind',8,-3],['Gjensidige',10,-4],['Tryg',12,-5]]);
+ const y=make('ytd',[['Fremtind',6,-2],['Gjensidige',7,-2],['Tryg',8,-2],['Sampo',99,-2]]);
+ const evidence=(company,driver,views,period_type='quarter')=>({company,driver,views,period_type,theme:'growth_driver',period:'Q3 2026',text:driver,evidence:'reported phrase',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:8});
+ const ctx={insights:[evidence('Fremtind','price',['group/all']),evidence('Gjensidige','volume_up',['group/all']),evidence('Gjensidige','customer_inflow',['norway/pm']),evidence('Tryg','volume_down',['group/all'],'ytd')]};
+ const c=comments(q,{},'group','all',ctx,y),t=JSON.stringify(c);
+ assert.deepEqual(c.map(x=>x.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
+ assert.match(t,/Medianveksten blant aktørene er \+10,0/);
+ assert.match(t,/3,0 prosentpoeng over HIÅ/);
+ assert.match(t,/premie- og prisjusteringer og økt forsikringsvolum/);
+ assert.doesNotMatch(t,/kundetilgang|lavere volum|Fremtind|Gjensidige|Tryg|\d+ av \d+|\d+\/\d+|høyest vekst/);
+ assert.match(t,/4,0 prosentpoeng lavere CR/);
+ const bad={insights:[{...evidence('Fremtind','price',['group/all']),source_sha256:'bad'}]};
+ assert.doesNotMatch(JSON.stringify(comments(q,{},'group','all',bad)),/premie- og prisjusteringer/);
+});

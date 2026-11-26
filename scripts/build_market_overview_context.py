@@ -13,7 +13,7 @@ from fremtind_apm_market import parse_income,parse_cr,BASIS
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGET=ROOT/'data/market_overview_context.json'
-VERSION=4
+VERSION=5
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
 NUM=r'[-−]?\d[\d,]*(?:\.\d+)?'
 KEYS=('company','year','quarter','period_type','scope','segment','metric')
@@ -306,6 +306,73 @@ def alm_ytd(a,pages,report_sources=None):
 def insight(a,page,views,theme,text,mode='quarter'):
     return dict(company=a['company'],period=f"Q{a['quarter']} {a['year']}",period_type=mode,views=views,theme=theme,text=text,**source(a,page))
 
+def growth_drivers(a,pages):
+    """Positive evidence only, tied to verified original-report pages and scope.
+    An unfamiliar disclosure layout yields no driver, never a guessed cause.
+    """
+    company=a['company'];q=a['quarter'];out=[]
+    def add(page,views,mode,driver,evidence):
+        modes=('quarter','ytd') if q==1 else (mode,)
+        for period_type in modes:
+            row=insight(a,page,views,'growth_driver',driver,period_type)
+            row.update(driver=driver,evidence=evidence)
+            if not any((r['driver'],r['period_type'],r['views'])==(driver,period_type,views) for r in out):
+                out.append(row)
+    def match(text,pattern):
+        m=re.search(pattern,text,re.I)
+        return m.group(0) if m else None
+    for page,raw in pages:
+        text=norm(raw.replace('\u00ad',''))
+        if company=='Fremtind':
+            if not ('Styrets beretning' in text and 'privatmarkedet har en' in text.lower() and 'bedriftsmarkedet har en' in text.lower()):continue
+            hits=re.findall(r'Veksten er hovedsakelig drevet av premiejusteringer',text,re.I)
+            quarter='Resultatutvikling i kvartalet' in text
+            cumulative='Resultatutvikling hittil i år' in text
+            views=['group/all','norway/all','group/pm','norway/pm','group/bm','norway/bm']
+            if hits and quarter and not cumulative:add(page,views,'quarter','price',hits[0])
+            elif hits and cumulative and not quarter:add(page,views,'ytd','price',hits[0])
+            elif len(hits)==2 and quarter and cumulative:
+                for mode in ('quarter','ytd'):add(page,views,mode,'price',hits[0])
+        elif company=='Alm. Brand':
+            # Validate the section and exact isolated-quarter table before
+            # interpreting its management review. No Group-to-Norway inference.
+            try:segment_rows=parse_alm(pages,a['year'],q,a['source_url'],a['source_sha256'])
+            except ValueError:return []
+            sections={r['source_page']:r['segment'] for r in segment_rows}
+            seg=sections.get(page)
+            if seg=='Private':
+                views=['group/pm','group/all']
+                for driver,pattern in [('price',r'price adjustments to miti-?\s*gate claims inflation'),('customer_inflow',r'customer inflow through bank partnerships')]:
+                    evidence=match(text,pattern)
+                    if evidence:add(page,views,'quarter',driver,evidence)
+            elif seg=='Commercial':
+                views=['group/bm','group/all']
+                for driver,pattern in [('competition',r'(?:continued|increasingly) soft market for workers.{0,3} compensation'),('risk_selection',r'continued focus on reducing volatility for large commercial clients')]:
+                    evidence=match(text,pattern)
+                    if evidence:add(page,views,'quarter',driver,evidence)
+        elif company=='Tryg':
+            if not re.search(r'\bKey figures\s*[-–]\s*Private\b',text,re.I):continue
+            # These disclosures are in the Q-results narrative, not the
+            # adjacent Q1-Qn claims table. Never call a Nordic number Norway.
+            if not re.search(rf'\bResults Q{q} {a["year"]}\b',text,re.I):continue
+            views=['group/pm','group/all']
+            for driver,pattern in [('volume_up',r'growth in selected segments'),('retention_up',r'retention rates improved slightly')]:
+                evidence=match(text,pattern)
+                if evidence:add(page,views,'quarter',driver,evidence)
+        elif company=='Gjensidige':
+            # Group commercial narrative: explicit Norway submarket wording
+            # supports the Norway view, but never an unrelated PM claim.
+            headers=[norm(l) for l in raw.splitlines()]
+            group_commercial=any(re.fullmatch(r'General Insurance Commercial',l,re.I) for l in headers)
+            ytd_commercial=any(seg=='Commercial' and p==page for seg,p,_,_,_ in gj_blocks(a,pages))
+            mode='quarter' if group_commercial and 'Development during the quarter' in text else 'ytd' if ytd_commercial and 'Year-to-date development' in text else None
+            if not mode or not re.search(r'\bIn Norway,\s+insurance revenue increased\b',text,re.I):continue
+            views=['group/bm','group/all','norway/bm','norway/all']
+            for driver,pattern in [('price',r'driven by price increases for all products'),('volume_down',r'decreased due to consistent prioritisation of'),('risk_selection',r'prioritisation of.{0,180}profitability over growth')]:
+                evidence=match(text,pattern)
+                if evidence:add(page,views,mode,driver,evidence)
+    return out
+
 def narratives(a,pages):
     out=[];c=a['company']
     if c=='Gjensidige':
@@ -366,7 +433,7 @@ def fetch(a):
     return download(a)
 def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
-    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version')==VERSION else {}
+    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,VERSION) else {}
     for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
         c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
         old=previous.get('status',{}).get(c,{})
@@ -387,6 +454,8 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
                 state.update(status='verified' if len(scopes)==expected else 'partial',scopes=scopes,observations=len(batch))
                 print('MARKET_CONTEXT_YTD',c,period,scopes,flush=True)
             except Exception as exc:print('::warning::MARKET_CONTEXT_YTD_ERROR',c,type(exc).__name__,str(exc)[:260],flush=True)
+            try:out['insights'].extend(growth_drivers(a,pages))
+            except Exception as exc:print('::warning::MARKET_GROWTH_DRIVER_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
             try:out['insights'].extend(narratives(a,pages))
             except Exception as exc:print('::warning::MARKET_CONTEXT_NARRATIVE_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
         except Exception as exc:print('::warning::MARKET_CONTEXT_SOURCE_ERROR',c,type(exc).__name__,str(exc)[:220],flush=True)
