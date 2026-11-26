@@ -58,7 +58,7 @@ def fetch(url=SOURCE):
 def update(document=None,out=OUT):
     old=json.loads(out.read_text(encoding='utf-8')) if out.exists() else {}
     previous=old.get('insurers',{}).get('Alm. Brand',{})
-    if (previous.get('year',0),previous.get('quarter',0))>(2026,3):
+    if previous.get('status')=='verified_official_pdf_reconciled' or (previous.get('year',0),previous.get('quarter',0))>(2026,3):
         # Never let the legacy Q3 announcement reset a rolling snapshot.
         return False
     row=extract(fetch() if document is None else document)

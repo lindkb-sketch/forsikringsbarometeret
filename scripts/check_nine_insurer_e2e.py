@@ -105,7 +105,7 @@ def check(feed,extended,comparison,gaps):
             if item.get('metrics',{}).get(metric)!=source.get('metrics',{}).get(metric):
                 errors.append(company+': metric mismatch '+metric)
         if company=='Alm. Brand':
-            if (source.get('year',0),source.get('quarter',0))>(2026,3):
+            if source.get('status')=='verified_official_pdf_reconciled' or (source.get('year',0),source.get('quarter',0))>(2026,3):
                 from rolling_alm_brand_reports import validate_rolling
                 errors.extend(validate_rolling(source))
             else:

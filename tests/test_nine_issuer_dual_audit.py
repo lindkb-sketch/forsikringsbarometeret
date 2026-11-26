@@ -100,6 +100,135 @@ Combined ratio 76.8 78.3 83.1 80.5 80.3'''
             p=presentation_policy(company,[])
             self.assertTrue(p['presentation_required'])
             self.assertIsNone(p['presentation_exception'])
+    def test_newsweb_id_name_attachment(self):
+        from audit_nine_issuer_documents import attachment_url
+        self.assertEqual(attachment_url(684673,{'id':1234,'name':'Interim presentation Q3 2026.pdf'}),
+            'https://api3.oslo.oslobors.no/v1/newsreader/attachment?messageId=684673&attachmentId=1234')
+        self.assertEqual(attachment_url(684673,{'id':'../x'}),'')
+        self.assertEqual(attachment_url(True,{'id':1}),'')
+    def test_protector_period_labelled_income_statement(self):
+        from reconcile_issuer_presentation_metrics import extract,number_columns
+        text='''Income statement
+All figures in NOKm unless otherwise stated.
+NOKm Q3 2026 Q3 2025 Q1-Q3 2026 Q1-Q3 2025 FY 2025
+Insurance revenue 3 864 3 529 11 258 10 197 13 756
+Net result from reinsurance contracts held (161) (198) (513) (523) (541)
+Insurance service result 670 598 1 912 1 571 2 106
+Profit/(loss) before tax 1 120 640 2 402 2 541 3 438
+Loss ratio 67.5% 66.6% 67.6% 68.5% 69.7%
+Loss ratio, net of reinsurance 71.7% 72.2% 72.2% 73.6% 73.6%
+Cost ratio 10.9% 10.9% 10.8% 11.0% 11.1%
+Combined ratio 82.7% 83.1% 83.0% 84.6% 84.7%'''
+        result={(x['metric'],x['period_type']):x['value'] for x in extract('Protector',[text],2026,3)}
+        self.assertEqual(result['insurance_revenue','quarter'],3864)
+        self.assertEqual(result['insurance_revenue','ytd'],11258)
+        self.assertEqual(result['loss_ratio','quarter'],71.7)
+        self.assertEqual(result['combined_ratio','ytd'],83.0)
+        self.assertEqual(extract('Protector',[text],2027,3),[])
+        self.assertIsNone(number_columns('1 234 567',2))
+    def test_alm_financial_results_excludes_segment_and_forecast(self):
+        from reconcile_issuer_presentation_metrics import extract
+        text='''Financial highlights, Q3
+Financial results
+DKKm
+Q3 2026 Q3 2025
+Insurance revenue 3,054 3,006
+Insurance service result 755 535
+Combined ratio 75.3 82.2'''
+        vals={x['metric']:x['value'] for x in extract('Alm. Brand',[text],2026,3)}
+        self.assertEqual(vals,{'insurance_revenue':3054.,'insurance_service_result':755.,'combined_ratio':75.3})
+        self.assertEqual(extract('Alm. Brand',[text.replace('Financial results','Guidance')],2026,3),[])
+    def test_issuer_quarter_table_requires_group_year_and_correct_column(self):
+        from audit_nine_issuer_documents import gjensidige_quarter_table
+        page='https://www.gjensidige.com/no/investorinformasjon/rapporter-og-presentasjoner'
+        table='''<h2>2026 - Gjensidige Forsikring Konsern</h2>
+        <table><tr><th></th><th>Hele året</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>
+        <tr><th>Rapport</th><td></td><td></td><td></td><td><a href="/r3.pdf">PDF</a></td><td></td></tr>
+        <tr><th>Presentasjon</th><td></td><td><a href="/p1.pdf">PDF</a></td><td><a href="/p2.pdf">PDF</a></td>
+        <td><a href="https://mb.cision.com/Public/1122/abc.pdf">PDF</a></td><td></td></tr></table>'''
+        self.assertEqual([x['url'] for x in gjensidige_quarter_table(table,page,2026,3)],['https://mb.cision.com/Public/1122/abc.pdf'])
+        self.assertEqual(gjensidige_quarter_table(table,page,2027,3),[])
+        self.assertEqual(gjensidige_quarter_table(table.replace('Forsikring Konsern','Pensjonsforsikring'),page,2026,3),[])
+    def test_protector_issuer_detail_link_and_legal_attribution(self):
+        from audit_nine_issuer_documents import issuer_detail_links,archive_links,verify_pdf_identity
+        page='https://investor.protectorforsikring.no/press-releases'
+        body='<a href="/pressreleases/q3-2026-results-abc">Q3 2026 results</a><a href="https://evil.test/pressreleases/q3-2026-results">Q3 2026 results</a>'
+        self.assertEqual(issuer_detail_links('Protector',body,page,2026,3),['https://investor.protectorforsikring.no/pressreleases/q3-2026-results-abc'])
+        detail='<a href="https://storage.mfn.se/id/investor-presentation-q3-2026-prot.pdf">Investor Presentation Q3 2026 (PROT)</a>'
+        self.assertEqual(len(archive_links('Protector',detail,page,2026,3)),1)
+        pages=['Investor Presentation\nQ3 2026 Interim results','Highlights','Claims',
+               'This presentation has been prepared by and is the sole responsibility of Protector Forsikring ASA']
+        self.assertTrue(verify_pdf_identity('Protector',pages,2026,3,'results_presentation'))
+        with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages[:-1]+['Mentions Protector Forsikring ASA'],2026,3,'results_presentation')
+        with self.assertRaises(ValueError):verify_pdf_identity('Protector',pages,2026,2,'results_presentation')
+    def test_alm_issuer_archive_discovers_both_types_and_rejects_other_periods(self):
+        from audit_nine_issuer_documents import alm_archive_documents
+        page='https://investorrelations.almbrand.dk/English/financials/default.aspx'
+        prefix='https://s29.q4cdn.com/228553818/files/content_files/'
+        markup=''.join(f'<a href="{prefix}{name}">{label}</a>' for name,label in [
+            ('AB-GROUP-3Q-2026.pdf','Report'),
+            ('Investor-presentation-Q3-2026.pdf','Presentation'),
+            ('AB-GROUP-2Q-2026.pdf','Report'),
+            ('Investor-presentation-Q3-2025.pdf','Presentation'),
+            ('Preliminary-statement-Q3-2026.pdf','Report'),
+            ('Roadshow-presentation-Q3-2026.pdf','Presentation'),
+            ('Annual-report-2026.pdf','Report')])
+        markup+='<a href="https://evil.test/Investor-presentation-Q3-2026.pdf">Presentation</a>'
+        markup+='<a href="https://s29.q4cdn.com/999999/files/AB-GROUP-3Q-2026.pdf">Report</a>'
+        docs=alm_archive_documents(markup,page,2026,3)
+        self.assertEqual({(d['document_type'],d['url']) for d in docs},{
+            ('quarterly_report',prefix+'AB-GROUP-3Q-2026.pdf'),
+            ('results_presentation',prefix+'Investor-presentation-Q3-2026.pdf')})
+        self.assertTrue(all(d['origin']==page and d['exchange'] is False for d in docs))
+        self.assertEqual(alm_archive_documents(markup,page,2027,3),[])
+        self.assertEqual(alm_archive_documents(markup,'https://evil.test/financials',2026,3),[])
+        self.assertEqual(alm_archive_documents(markup,page,2026,2)[0]['url'],prefix+'AB-GROUP-2Q-2026.pdf')
+    def test_alm_danish_archive_and_future_period(self):
+        from audit_nine_issuer_documents import alm_archive_documents
+        page='https://investorrelations.almbrand.dk/Danish/rapporter/default.aspx'
+        prefix='https://s29.q4cdn.com/228553818/files/doc_financials/2027/q1/'
+        markup=f'<h2>Q1 2027</h2><a href="{prefix}r.pdf">Rapport</a><a href="{prefix}Investor-pr%C3%A6sentation-Q1-2027.pdf">Præsentation</a>'
+        markup+=f'<a href="{prefix}Investor-presentation-Q1-2026.pdf">Presentation</a>'
+        docs=alm_archive_documents(markup,page,2027,1)
+        self.assertEqual({d['document_type'] for d in docs},{'quarterly_report','results_presentation'})
+        self.assertEqual(len(docs),2)
+    def test_alm_actual_issuer_feed_documents_no_cross_record_inference(self):
+        from audit_nine_issuer_documents import alm_feed_documents
+        page='https://investorrelations.almbrand.dk/English/financials/default.aspx'
+        endpoint='https://investorrelations.almbrand.dk/feed/FinancialReport.svc/GetFinancialReportList?year=2027'
+        prefix='https://s29.q4cdn.com/228553818/files/content_files/'
+        data={'GetFinancialReportListResult':[{
+            'Title':'Q2 2027',
+            'Documents':[{'Title':'Quarterly report Q2 2027','DocumentPath':prefix+'AB-GROUP-2Q-2027.pdf'},
+            {'Title':'Investor presentation Q2 2027','Url':prefix+'Investor-presentation-Q2-2027.pdf'},
+            {'Title':'Quarterly report Q2 2026','Url':prefix+'report.pdf'},
+            {'Title':'Investor presentation Q2 2026','Url':prefix+'Investor-presentation-Q2-2026.pdf'},
+            {'Title':'Roadshow presentation Q2 2027','Url':prefix+'Roadshow-presentation-Q2-2027.pdf'},
+            {'Title':'Quarterly report Q2 2027','Url':'https://evil.test/AB-GROUP-2Q-2027.pdf'},
+            {'Title':'Quarterly report Q2 2027'},
+            {'Url':prefix+'unlabelled.pdf'}]}]}
+        docs=alm_feed_documents(data,endpoint,page,2027,2)
+        self.assertEqual({d['url'] for d in docs},{prefix+'AB-GROUP-2Q-2027.pdf',prefix+'Investor-presentation-Q2-2027.pdf'})
+        self.assertTrue(all(d['origin_kind']=='issuer_public_document_feed' for d in docs))
+        self.assertEqual(alm_feed_documents(data,'https://evil.test/feed/FinancialReport.svc/GetFinancialReportList',page,2027,2),[])
+        self.assertEqual(alm_feed_documents(data,page,page,2027,2),[])
+    def test_alm_release_discovery_uses_explicit_period_and_issuer_path(self):
+        from audit_nine_issuer_documents import issuer_detail_links,alm_archive_documents
+        page='https://investorrelations.almbrand.dk/news-and-events/default.aspx'
+        detail='https://investorrelations.almbrand.dk/English/press-release-details/2026/Alm--Brand-AS---Interim-report-for-Q3/default.aspx'
+        body=f'<a href="{detail}">Alm. Brand A/S - Interim report for Q3</a>'
+        body+=f'<a href="{detail.replace("Q3","Q2")}">Interim report for Q2</a>'
+        body+=f'<a href="{detail.replace("2026","2025")}">Interim report for Q3</a>'
+        body+=f'<a href="{detail.replace("Interim-report","Consensus-estimates")}">Consensus estimates Q3 2026</a>'
+        self.assertEqual(issuer_detail_links('Alm. Brand',body,page,2026,3),[detail])
+        good='https://attachment.news.eu.nasdaq.com/'+'a'*32
+        markup=f'<a href="{good}">AB GROUP 3Q 2026</a>'
+        markup+=f'<a href="{good.replace("a"*32,"b"*32)}">Preliminary statement Q3 2026</a>'
+        markup+=f'<a href="{good.replace("a"*32,"c"*32)}">AB GROUP 2Q 2026</a>'
+        docs=alm_archive_documents(markup,detail,2026,3)
+        self.assertEqual([(d['url'],d['document_type'],d['exchange']) for d in docs],[(good,'quarterly_report',True)])
+        self.assertEqual(alm_archive_documents(markup,page,2026,3),[])
 if __name__=='__main__':unittest.main()
+
 
 

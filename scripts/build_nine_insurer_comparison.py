@@ -34,7 +34,7 @@ def build(feed, extended):
             currency = item.get('currency') if verified else None
             if verified and company=='Alm. Brand' and state=='verified_official_pdf_reconciled':
                 for key,page in item.get('source_pages',{}).items():
-                    metric_sources[key]={'source_url':item.get('source_url'),'source_sha256':item.get('source_sha256'),'source_page':page,'period_type':'quarter','source_definition':item.get('return_on_equity_definition') if key=='return_on_equity' else 'Alm. Brand consolidated issuer report'}
+                    metric_sources[key]={'source_url':item.get('source_url'),'source_sha256':item.get('source_sha256'),'source_page':page,'period_type':'quarter','source_definition':item.get('return_on_equity_definition') if key=='return_on_equity' else 'Alm. Brand consolidated issuer report','method':'calculated_from_report_comparative' if key=='insurance_revenue_growth' else 'reported_quarter_end' if key=='solvency_ratio' else 'reported'}
             if verified and company=='KLP Skadeforsikring' and item.get('quarter_calculation'):
                 metric_methods=item.get('metric_methods',{})
                 for key,method in metric_methods.items():
@@ -42,7 +42,7 @@ def build(feed, extended):
                         'source_page':item['quarter_calculation']['annual']['document']['ratio_page' if key=='solvency_ratio' else 'statement_page'],
                         'source_definition':'Rapportert ved årsslutt' if key=='solvency_ratio' else 'Beregnet fra årsrapport minus HIÅ per Q3, med avstemte regnskapsgrunnlag',
                         'period_type':'quarter','source_documents':item['source_documents'] if key!='solvency_ratio' else item['source_documents'][:1]}
-            if verified and company=='Alm. Brand':
+            if verified and company=='Alm. Brand' and state!='verified_official_pdf_reconciled':
                 evidence=item.get('supplemental_pdf_evidence',{})
                 for key,record in evidence.get('metrics',{}).items():
                     metric_sources[key]={'source_url':evidence.get('source_url'), 'source_sha256':evidence.get('source_sha256'), 'source_page':record.get('source_page'), 'source_definition':record.get('definition'), 'period_type':'quarter'}

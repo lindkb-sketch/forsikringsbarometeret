@@ -25,9 +25,9 @@ jobs:
         run: python scripts/update_newsweb_notices.py --probe
       - name: Install test dependencies
         run: python -m pip install -r requirements-reports.txt
-      - name: Verify live Alm Brand official Q3 presentation PDF before merge
+      - name: Verify live Alm Brand original report and promote Q3 primary source before merge
         run: |
-          python scripts/import_alm_brand_presentation.py
+          python scripts/advance_alm_brand.py --baseline-only
           python scripts/check_extended_insurer_evidence.py
           python scripts/build_nine_insurer_comparison.py
           python - <<'PY'
@@ -35,9 +35,9 @@ jobs:
           from pathlib import Path
           x=json.loads(Path('data/nine_insurer_comparison.json').read_text())
           alm=next(c for c in x['companies'] if c['company']=='Alm. Brand')
-          assert alm['status']=='verified_official_presentation_reconciled'
+          assert alm['status']=='verified_official_pdf_reconciled'
           assert alm['metrics']['solvency_ratio']==238.0
-          print('ALM_BRAND_LIVE_PRESENTATION_PDF_VERIFIED',alm['metrics']['solvency_ratio'])
+          print('ALM_BRAND_LIVE_REPORT_PRIMARY_VERIFIED',alm['source_url'])
           PY
       - name: Audit seven-company report and presentation gaps without modifying feed
         run: |
@@ -210,6 +210,7 @@ jobs:
           python scripts/build_verified_feed.py
           python scripts/build_nine_insurer_comparison.py
           python scripts/quarterly_kpi_completeness.py
+          python scripts/check_nine_report_primary.py
           python scripts/build_editorial.py
           python scripts/update.py
           python scripts/verify_feed_coverage.py

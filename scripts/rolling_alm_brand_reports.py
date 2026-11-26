@@ -173,6 +173,20 @@ def verify_report(texts,url,raw,year,quarter,regions=None):
         issuer_page_url=ARCHIVE,
         growth_evidence={'quarter_prior':float(rows['insurance_revenue'][1]),'ytd_prior':float(rows['insurance_revenue'][pi])},
         ratio_evidence={'quarter':{k:float(v[0]) for k,v in rows.items()},'ytd':{k:float(v[yi]) for k,v in rows.items()}})
+    # Compatibility alias for page-located management metrics from the
+    # same primary quarterly PDF (not a presentation or announcement).
+    result['supplemental_pdf_evidence']={
+        'source_url':url,'source_sha256':result['source_sha256'],
+        'source_type':'official_quarterly_report','year':year,'quarter':quarter,
+        'scope':'group','currency':'DKK','metrics':{
+            k:{'quarter_value':current[k],'ytd_value':ytd[k],
+               'source_page':result['source_pages'][k],'definition':definition}
+            for k,definition in (
+                ('return_on_equity',result['return_on_equity_definition']),
+                ('profit_before_tax','Group profit/loss before tax, continuing operations; DKK million'))}}
+    result['reported_solvency_evidence']={
+        'source_sha256':result['source_sha256'],'source_page':j+1,
+        'value':solvency,'year':year,'quarter':quarter}
     return result
 
 def presentation_evidence(texts,url,raw,year,quarter,solvency):
@@ -221,7 +235,7 @@ def validate_rolling(row):
         or any(type(row.get('source_pages',{}).get(k)) is not int or row['source_pages'][k]<1 for k in REQUIRED)):
         errors.append('Alm. Brand rolling report evidence incomplete')
     em=ev.get('metrics',{})
-    if (ev.get('source_type')!='official_results_presentation' or not trusted_pdf_link(ev.get('source_url') or '')
+    if ev and (ev.get('source_type')!='official_results_presentation' or not trusted_pdf_link(ev.get('source_url') or '')
         or not re.fullmatch(r'[0-9a-f]{64}',str(ev.get('source_sha256') or ''))
         or ev.get('source_sha256')==sha or type(ev.get('source_page')) is not int or ev.get('source_page',0)<1
         or (ev.get('year'),ev.get('quarter'))!=period or ev.get('scope')!='group' or ev.get('currency')!='DKK'
@@ -229,17 +243,38 @@ def validate_rolling(row):
         or type(em.get('own_funds')) not in (int,float) or type(em.get('solvency_capital_requirement')) not in (int,float)
         or em.get('solvency_capital_requirement',0)<=0 or round(em['own_funds']/em['solvency_capital_requirement']*100)!=em.get('solvency_ratio')):
         errors.append('Alm. Brand rolling independent presentation evidence invalid')
+    # Presentation absence is not evidence of a bad quarterly report. A
+    # present, reconciled presentation must still agree with the report.
+    from alm_brand_live_pdf import nasdaq_attachment,OFFICIAL_FILING_PDF
+    if nasdaq_attachment(row.get('source_url','')) and row.get('source_url')!=OFFICIAL_FILING_PDF:
+        from alm_brand_report_discovery import notice_url
+        from audit_nine_issuer_documents import issuer_web_page
+        origin=row.get('source_discovery',{}).get('origin','')
+        if not (notice_url(origin) or issuer_web_page('Alm. Brand',origin)):
+            errors.append('Alm. Brand exchange PDF lacks official discovery origin')
+    from import_alm_brand_supplemental import validate_supplemental
+    errors.extend(validate_supplemental(row))
+    solvency=row.get('reported_solvency_evidence',{})
+    if (metrics.get('solvency_ratio')!=ytd.get('solvency_ratio')
+        or solvency.get('value')!=metrics.get('solvency_ratio')
+        or solvency.get('source_sha256')!=sha
+        or solvency.get('source_page')!=row.get('source_pages',{}).get('solvency_ratio')
+        or (solvency.get('year'),solvency.get('quarter'))!=period):
+        errors.append('Alm. Brand report quarter-end solvency mismatch')
     evidence=row.get('ratio_evidence',{});growth=row.get('growth_evidence',{})
     for period_kind,values,prior_key in (('quarter',metrics,'quarter_prior'),('ytd',ytd,'ytd_prior')):
         e=evidence.get(period_kind,{})
         try:
             rev=e['insurance_revenue'];claims=abs(e['claims_expenses']);cost=abs(e['operating_expenses']);reins=-e['reinsurance'];prior=growth[prior_key]
+            expected_growth=(rev/prior-1)*100
+            if period==BASELINE and period_kind=='quarter' and growth.get('quarter_rounding_decimals')==1:
+                expected_growth=round(expected_growth,1)
             if (rev<=0 or prior<=0 or abs(rev-claims-cost-reins-e['insurance_service_result'])>1.5
                 or any(values[k]!=e[k] for k in ('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'))
                 or abs((claims+reins)/rev*100-values['loss_ratio'])>0.20
                 or abs(cost/rev*100-values['expense_ratio'])>0.20
                 or abs((claims+reins+cost)/rev*100-values['combined_ratio'])>0.20
-                or abs((rev/prior-1)*100-values['insurance_revenue_growth'])>1e-6):
+                or abs(expected_growth-values['insurance_revenue_growth'])>1e-6):
                 raise ValueError('Mismatch')
         except (TypeError,KeyError,ValueError,ZeroDivisionError):
             errors.append('Alm. Brand rolling '+period_kind+' metric reconciliation invalid')
@@ -256,26 +291,56 @@ def validate_rolling(row):
             errors.append('Alm. Brand rolling history is invalid')
     return errors
 
-def advance(existing,*,today=None,fetcher=fetch_html,downloader=download_report,reader=read_report):
+def advance(existing,*,today=None,fetcher=fetch_html,downloader=download_report,reader=read_report,discoverer=None):
     today=today or date.today()
     year,q=next_period(existing['year'],existing['quarter'])
     current=(today.year,(today.month-1)//3+1)
     if (year,q)>=current:return existing
-    html=fetcher(ARCHIVE)
+    if discoverer is None and fetcher is fetch_html:
+        from alm_brand_report_discovery import discover as discoverer
+    html=fetcher(ARCHIVE) if discoverer is None else None
     history=list(existing.get('periods',[]))
     if not history:
         history=[{k:v for k,v in existing.items() if k!='periods'}]
     while (year,q)<current:
-        reports,presentations=discover(html,year,q)
-        if not reports and not presentations:
+        if discoverer is None:
+            reports,presentations=discover(html,year,q)
+            candidates=[dict(url=u,origin=ARCHIVE,document_type='quarterly_report') for u in reports]
+        else:
+            documents=discoverer(year,q)
+            candidates=[d for d in documents if d['document_type']=='quarterly_report']
+            presentations=sorted({d['url'] for d in documents if d['document_type']=='results_presentation'})
+        if not candidates:
             print('ALM_NEXT_REPORT_NOT_YET_FOUND',year,q,flush=True);break
-        if len(reports)!=1 or len(presentations)!=1:
-            raise ValueError(f'Incomplete or ambiguous Alm. Brand report/presentation Q{q} {year}')
-        report,presentation=reports[0],presentations[0]
-        raw=downloader(report);texts,regions=reader(raw)
-        new=verify_report(texts,report,raw,year,q,regions)
-        p_raw=downloader(presentation);p_texts,_=reader(p_raw)
-        new['presentation_evidence']=presentation_evidence(p_texts,presentation,p_raw,year,q,new['metrics']['solvency_ratio'])
+        # Multiple mirrors are fine only when their independently parsed
+        # report values and bytes agree. Different documents stay unresolved.
+        verified={}
+        for candidate in candidates:
+            report=candidate['url']
+            raw=downloader(report);texts,regions=reader(raw)
+            parsed=verify_report(texts,report,raw,year,q,regions)
+            parsed['source_discovery']={k:candidate[k] for k in ('origin','origin_kind') if k in candidate}
+            verified.setdefault(parsed['source_sha256'],parsed)
+        if len(verified)!=1:raise ValueError(f'Ambiguous official Alm. Brand report Q{q} {year}')
+        new=next(iter(verified.values()))
+        new['presentation_check']='not_available'
+        # Supplementary evidence: an unavailable or unknown-layout deck
+        # must not withhold an otherwise verified report. A confirmed ratio
+        # disagreement still stops the import for investigation.
+        for presentation in presentations:
+            try:
+                p_raw=downloader(presentation);p_texts,_=reader(p_raw)
+                evidence=presentation_evidence(p_texts,presentation,p_raw,year,q,new['metrics']['solvency_ratio'])
+                if not new.get('presentation_evidence'):
+                    new['presentation_evidence']=evidence
+                    new['presentation_check']='verified'
+            except ValueError as exc:
+                if 'ratio mismatch' in str(exc):raise
+                if not new.get('presentation_evidence'):new['presentation_check']='not_reconciled'
+                print('::warning::Alm. Brand presentation not reconciled; original report retained',flush=True)
+            except OSError:
+                if not new.get('presentation_evidence'):new['presentation_check']='unavailable'
+                print('::warning::Alm. Brand presentation unavailable; original report retained',flush=True)
         errors=validate_rolling(new)
         if errors:raise ValueError('; '.join(errors))
         history.append(new);year,q=next_period(year,q)

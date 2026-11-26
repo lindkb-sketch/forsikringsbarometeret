@@ -27,7 +27,7 @@ def validate(extended, sources, calendar):
             errors.append('Missing issuer calendar: ' + name)
     insurers = extended.get('insurers', {})
     alm = insurers.get('Alm. Brand', {})
-    if (alm.get('year',0),alm.get('quarter',0))>(2026,3):
+    if alm.get('status')=='verified_official_pdf_reconciled' or (alm.get('year',0),alm.get('quarter',0))>(2026,3):
         from rolling_alm_brand_reports import validate_rolling
         errors.extend(validate_rolling(alm))
     else:
@@ -142,7 +142,7 @@ def main():
     print(json.dumps({'nine_issuer_registry_checked': True,
                       'nine_company_financial_parity_certified': False,
                       'klp_metrics_verified': extended.get('insurers',{}).get('KLP Skadeforsikring',{}).get('status')=='verified_official_pdf_reconciled',
-                      'alm_brand_pdf_page_import_verified': False,
+                      'alm_brand_pdf_page_import_verified': extended.get('insurers',{}).get('Alm. Brand',{}).get('status')=='verified_official_pdf_reconciled' and not errors,
                       'errors': errors}, ensure_ascii=False, indent=2))
     if errors:
         raise SystemExit(1)

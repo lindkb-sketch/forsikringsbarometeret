@@ -1,0 +1,27 @@
+name: Guard next 30-minute finance refresh
+on:
+  repository_dispatch:
+    types: [finance_next_check]
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: forsikringsbarometeret-finance-timer
+  cancel-in-progress: true
+jobs:
+  next:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 38
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Wait for next finance slot and recover missing run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_FINANCE_RUN_ID: ${{ github.event.client_payload.source_run_id }}
+        run: python scripts/finance_interval.py wait
