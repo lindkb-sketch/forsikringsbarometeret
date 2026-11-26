@@ -45,11 +45,15 @@ def values(lines,company,count):
     result={}
     for metric,label in LABELS[company].items():
         found=[]
-        pattern=r'^'+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
+        prefix=r'^' if company=='Tryg' else r'(?<!\w)'
+        pattern=prefix+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
         for line in lines:
             line=norm(line)
-            m=re.match(pattern,line,re.I)
+            m=re.search(pattern,line,re.I)
             if not m:continue
+            # Gross and underlying claims ratios are not the reported net
+            # Claims ratio. Require the complete numeric tail for other rows.
+            if company=='Alm. Brand' and metric=='loss_ratio' and re.search(r'(?:gross|underlying)\s*$',line[:m.start()],re.I):continue
             tail=line[m.end():]
             pattern2=r'('+NUMBER+r')\s*%?'
             exact=r'\s+'.join([pattern2]*count)+r'\s*$'
@@ -228,17 +232,17 @@ def download(anchor):
     return get(url)
 
 def build(feed,previous=None,fetcher=download,reader=read_pages,*,comparison=None,candidates=()):
-    from fremtind_market_segments import build_notes,check_batch
+    from fremtind_apm_market import build_apm,check_apm_batch
     old=(previous or {}).get('observations',[])
     out={'schema_version':1,'observations':[],'status':{}}
     for a in anchors(feed,comparison):
         c,y,q=a['company'],a['year'],a['quarter']
         batch=[r for r in old if r.get('company')==c and r.get('market_period',r.get('source_document_period'))==f'Q{q} {y}']
-        valid=check_batch if c=='Fremtind' else valid_batch
+        valid=check_apm_batch if c=='Fremtind' else valid_batch
         if not valid(batch,a):
             try:
                 if c=='Fremtind':
-                    batch=build_notes(feed,a,candidates,fetcher,reader)
+                    batch=build_apm(feed,a,candidates,fetcher,reader)
                 else:
                     raw=fetcher(a)
                     if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original PDF fingerprint differs from verified feed')
@@ -251,7 +255,7 @@ def build(feed,previous=None,fetcher=download,reader=read_pages,*,comparison=Non
                 continue
         out['observations'].extend(batch)
         out['status'][c]={'period':f'Q{q} {y}','status':'verified','observations':len(batch)}
-        print('MARKET_SEGMENTS_VERIFIED',c,y,q,[(s,next(r['value'] for r in batch if r['segment']==s and r['year']==y and r['metric']=='combined_ratio')) for s in SEGMENTS],flush=True)
+        print('MARKET_SEGMENTS_VERIFIED',c,y,q,[(s,{r['metric']:r['value'] for r in batch if r['segment']==s and r['year']==y}) for s in SEGMENTS],flush=True)
     return out
 
 def main():

@@ -41,6 +41,7 @@
   const currency=unit=>({NOKm:'NOK',MNOK:'NOK',DKKm:'DKK',MDKK:'DKK',EURm:'EUR',MEUR:'EUR',SEKm:'SEK',MSEK:'SEK'})[unit]||null;
   const basis=r=>{
     const d=(r?.source_definition||'').toLowerCase();
+    if(d.startsWith('fremtind apm:'))return 'Forsikringsinntekter (Fremtind APM)';
     return /sum driftsinntekter|group operating revenue/.test(d)?'Driftsinntekter':
       /not ifrs insurance revenue|segment premiums|premiums f\.o\.a\.|apm/.test(d)?'Segmentpremier (APM)':'Forsikringsinntekter';
   };
@@ -65,13 +66,13 @@
     }
     const index=new Map(rows.map(r=>[key(r),r]));
     for(const r of segments?.observations||[]){
-      const note=r.company==='Fremtind'&&r.calculation==='fremtind_ifrs_note_ytd_difference';
+      const note=r.company==='Fremtind'&&r.calculation==='fremtind_reported_apm_segment';
       const anchor=note?r.market_anchor:r;
       if(!valid(r)||r.scope!=='reported_segment'||
         !BUSINESS_SEGMENT_ISSUERS.includes(r.company)||
         !['Private','Commercial'].includes(r.segment)||
         !anchors.has([r.company,anchor?.source_url,anchor?.source_sha256].join('|')))continue;
-      if(note&&(!Array.isArray(r.source_documents)||r.source_documents.length!==(r.quarter===1?1:2)||!r.source_documents.every(d=>source(d.source_url)&&/^[0-9a-f]{64}$/.test(d.source_sha256||'')&&Number.isInteger(d.source_page)&&d.source_page>0)))continue;
+      if(note&&(!Array.isArray(r.source_documents)||!r.source_documents.length||!r.source_documents.every(d=>source(d.source_url)&&/^[0-9a-f]{64}$/.test(d.source_sha256||'')&&Number.isInteger(d.source_page)&&d.source_page>0)))continue;
       const k=key(r),old=index.get(k);
       if(!old)index.set(k,r);
       else if(Math.abs(old.value-r.value)>.001||old.unit!==r.unit)index.delete(k);
@@ -106,7 +107,7 @@
     if(company==='Fremtind'&&scope==='norway'&&market!=='all'){
       const segment=market==='pm'?'Private':'Commercial';
       return [{rows:current.filter(r=>r.scope==='reported_segment'&&r.segment===segment),
-        scope:'reported_segment',segment,displaySegment:segment+' · Norge (segmentnoten)'}];
+        scope:'reported_segment',segment,displaySegment:segment+' · Norge (rapportert APM)'}];
     }
     if(market==='all'){
       const exact=current.filter(r=>r.scope===scope);
@@ -143,7 +144,7 @@
     const prior=rows.filter(r=>r.company===company&&r.year===p.year-1&&r.quarter===p.quarter&&r.scope===g.scope&&(g.scope!=='reported_segment'||r.segment===g.segment));
     const priorRev=selectUnique(prior,'insurance_revenue');
     const reported=selectUnique(g.rows,'insurance_revenue_growth');
-    const growth=priorRev&&priorRev.value>0&&priorRev.unit===revenue.unit&&basis(priorRev)===basis(revenue)?
+    const growth=company==='Fremtind'&&g.scope==='reported_segment'&&reported?.unit==='percent'&&reported.status==='reported'?reported.value:priorRev&&priorRev.value>0&&priorRev.unit===revenue.unit&&basis(priorRev)===basis(revenue)?
       (revenue.value/priorRev.value-1)*100:reported?.unit==='percent'?reported.value:null;
     const deltas={};
     for(const key of CORE){
@@ -155,7 +156,17 @@
   }
   function fremtindNorway(rows,p){
     const pm=rowFor(rows,'Fremtind',p,'norway','pm'),bm=rowFor(rows,'Fremtind',p,'norway','bm');
-    if(!pm||!bm||!pm.split||!bm.split||pm.currency!=='NOK'||bm.currency!=='NOK'||pm.source!==bm.source)return rowFor(rows,'Fremtind',p,'norway','all');
+    if(!pm||!bm||pm.currency!=='NOK'||bm.currency!=='NOK'||pm.source!==bm.source)return rowFor(rows,'Fremtind',p,'norway','all');
+    if(!pm.split||!bm.split){
+      // Owner confirms both business segments equal Norway. APM segment
+      // amounts must reconcile to the reported complete Group total before
+      // it can be reused. The partial-CR exception remains PM/BM only.
+      const group=rowFor(rows,'Fremtind',p,'group','all');
+      if(group?.split&&pm.revenueBasis==='Forsikringsinntekter (Fremtind APM)'&&bm.revenueBasis===pm.revenueBasis&&
+         group.currency==='NOK'&&group.source===pm.source&&Math.abs(group.revenue-pm.revenue-bm.revenue)<=3)
+        return {...group,segment:'PM + BM · Norge (rapportert APM-total)'};
+      return rowFor(rows,'Fremtind',p,'norway','all');
+    }
     const revenue=pm.revenue+bm.revenue;
     const weighted=k=>(pm[k]*pm.revenue+bm[k]*bm.revenue)/revenue;
     let growth=null;
@@ -262,9 +273,9 @@
         '<span class="mo-cr">'+pct(r.cr)+'</span>'+
         (split?'<div class="mo-cost" style="height:'+(stack?r.cost/stack*100:0)+'%"><span>'+format(r.cost)+'</span></div>'+
         '<div class="mo-loss" style="height:'+(stack?r.loss/stack*100:0)+'%"><span>'+format(r.loss)+'</span></div>':
-        '<div class="mo-cr-only" style="height:100%" title="Beregnet samlet CR fra IFRS-segmentnoten. Skade-/kostnadssplitt ikke rapportert."><span>CR</span></div>')+'</div></div>'+
+        '<div class="mo-cr-only" style="height:100%" title="Fremtind rapportert samlet CR (APM). Skade-/kostnadssplitt ikke rapportert."><span>CR</span></div>')+'</div></div>'+
         '<div class="mo-name"><button type="button" onclick="show(\''+safe(r.company)+'\')">'+safe(pretty(r.company))+'</button>'+
-        (r.segment?'<small>'+safe(r.segment)+'</small>':'')+(!split?'<small>CR uten splitt · beregnet</small>':'')+'</div>'+
+        (r.segment?'<small>'+safe(r.segment)+'</small>':'')+(!split?'<small>CR uten splitt · '+(r.calculatedCR?'beregnet':'rapportert')+'</small>':'')+'</div>'+
         '<div class="mo-growth '+(num(r.growth)?r.growth>0?'positive':r.growth<0?'negative':'':'')+'"><span>Inntektsvekst</span><strong>'+growthText(r.growth)+'</strong></div>'+
         '<div class="mo-income" title="'+safe(r.revenueBasis)+' · '+format(r.revenue,0)+' mill. '+r.currency+'">'+format(r.revenueNok,0)+' mill. NOK</div>'+
         '<a class="mo-source" href="'+safe(r.source)+'" target="_blank" rel="noopener noreferrer">Kvartalsrapport</a></div>';
@@ -289,7 +300,7 @@
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2><p class="hint">'+safe(subtitle)+'</p></div>'+
       (latest?'<span class="pill">'+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
-      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. PM/BM følger de avgrensede rapporterte forretningssegmentene. Fremtinds PM/BM i Norge bruker samme segmentnote som gruppe PM/BM. Isolerte kvartalstall beregnes fra to HIÅ-noter. Kun disse segmentene kan vises med CR uten skade-/kostnadssplitt. Totalvisning krever dokumentert splitt. Protector vises i BM med rapportert total (inkl. offentlig sektor og affinity), ikke som et separat rapportert BM-segment.</p>':'')+
+      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. PM/BM følger de avgrensede rapporterte forretningssegmentene. Fremtinds PM/BM i Norge bruker samme rapporterte APM-segment som gruppe PM/BM. Inntekt isoleres fra kumulative APM-tabeller; CR og vekst er rapportert når tilgjengelig. Kun disse segmentene kan vises med CR uten skade-/kostnadssplitt. Totalvisning krever dokumentert splitt. Protector vises i BM med rapportert total (inkl. offentlig sektor og affinity), ikke som et separat rapportert BM-segment.</p>':'')+
       (latest&&m.missing.length?'<details class="mo-excluded"><summary>'+m.missing.length+' selskaper uten komplett tallgrunnlag for valget</summary><p>'+safe(m.missing.map(pretty).join(', '))+'. Ingen eldre kvartaler eller urelaterte konserntall brukes som erstatning.</p></details>':'')+'</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer til kvartalet</h2><p class="hint">'+safe(latest||'Avventer tall')+' · '+safe(descriptor)+' · oppdateres når nye rapporter kommer</p></div></div>'+
       (latest?'<div class="mo-comment-grid">'+comments(m,window.FBNews?.editorial,scope,market).map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';

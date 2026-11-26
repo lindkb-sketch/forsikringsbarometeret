@@ -53,12 +53,19 @@ async function main(){
   await verifyMarket('group','all');
   const eligibility=await page.evaluate(({marketFx,marketComparison,marketSegments})=>{
     const f=[['group','all'],['group','pm'],['group','bm'],['norway','all'],['norway','pm'],['norway','bm']];
-    return {period:document.getElementById('mo-period').textContent,byCompany:Object.fromEntries(['Protector','Tryg','Gjensidige'].map(c=>[c,f.map(([s,m])=>FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,s,m,marketSegments).eligible.some(r=>r.company===c))]))};
+    return {period:document.getElementById('mo-period').textContent,byCompany:Object.fromEntries(['Protector','Tryg','Gjensidige','Fremtind','Alm. Brand','Sampo','Frende','Storebrand','KLP Skadeforsikring'].map(c=>[c,f.map(([s,m])=>FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,s,m,marketSegments).eligible.some(r=>r.company===c))]))};
   },{marketFx,marketComparison,marketSegments});
   if(eligibility.period==='Q3 2026'){
     check('Protector BM uses its own country/group totals',JSON.stringify(eligibility.byCompany.Protector)===JSON.stringify([true,false,true,true,false,true]),JSON.stringify(eligibility));
     check('Tryg group segments only; no Norway PM/BM substitution',JSON.stringify(eligibility.byCompany.Tryg)===JSON.stringify([true,true,true,true,false,false]),JSON.stringify(eligibility));
     check('Gjensidige eligible for all six views with distinct segment figures',eligibility.byCompany.Gjensidige.every(Boolean),JSON.stringify(eligibility));
+    check('Fremtind PM and BM use reported quarter CR in group and Norway',JSON.stringify(eligibility.byCompany.Fremtind)===JSON.stringify([true,true,true,true,true,true]),JSON.stringify(eligibility));
+    check('Alm Brand has group Personal and Commercial only',JSON.stringify(eligibility.byCompany['Alm. Brand'])===JSON.stringify([true,true,true,false,false,false]),JSON.stringify(eligibility));
+    for(const c of ['Sampo','Frende','Storebrand','KLP Skadeforsikring'])
+      check(c+' is group only',JSON.stringify(eligibility.byCompany[c])===JSON.stringify([true,false,false,false,false,false]),JSON.stringify(eligibility));
+    check('Current Q3 FX covers all required currencies',Boolean(marketFx.periods?.['Q3 2026']?.rates?.EUR&&marketFx.periods?.['Q3 2026']?.rates?.DKK));
+    const f=await page.evaluate(({marketFx,marketComparison,marketSegments})=>Object.fromEntries(['pm','bm'].map(m=>[m,FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,'group',m,marketSegments).eligible.find(r=>r.company==='Fremtind')])),{marketFx,marketComparison,marketSegments});
+    check('Fremtind published APM quarter CR and revenue (not IFRS note)',f.pm?.cr===71.6&&f.bm?.cr===80.8&&f.pm?.revenue===5341&&f.bm?.revenue===965&&f.pm?.growth===4.4&&f.bm?.growth===3.6&&f.pm?.loss===null&&f.bm?.cost===null,JSON.stringify(f));
   }
   await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
   report.screenshots.push('data/browser_market_overview.png');
