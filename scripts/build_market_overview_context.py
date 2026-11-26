@@ -210,10 +210,22 @@ def alm_ytd(a,pages):
     # The segment overview gives isolated periods. Recover prior quarters
     # from separately verified original reports, not group-level allocation.
     for earlier in range(1,q):
-        docs=discover(y,earlier)
+        # The live archive/RSS may no longer list old filings. Only use these
+        # exact, period-specific full-report attachments from the official notices
+        # if normal discovery yields no verified report. All PDF checks still apply.
+        historical={
+            (2026,1):'https://attachment.news.eu.nasdaq.com/a8aef29e05c3998da5abf849fa270f731',  # notice b2d48c4d379c12081e49d1522f59831e1
+            (2026,2):'https://attachment.news.eu.nasdaq.com/a0593252bfc0d0f3ddce26fe6f42f412c',  # notice b6990c765bf880f867dde692f4c1dd59f
+        }
+        fallback=historical.get((y,earlier))
+        try:docs=discover(y,earlier)
+        except Exception as exc:
+            if not fallback:raise
+            print('::warning::ALM_MARKET_DISCOVERY',earlier,type(exc).__name__,str(exc)[:150],flush=True)
+            docs=[]
         urls=list(dict.fromkeys(x['url'] for x in docs if x.get('document_type')=='quarterly_report' and trusted_pdf_link(x['url'])))
         batches={}
-        for url in urls[:5]:
+        def admit(url):
             try:
                 raw=download_report(url)
                 sha=hashlib.sha256(raw).hexdigest()
@@ -221,7 +233,11 @@ def alm_ytd(a,pages):
                 verify_report(texts,url,raw,y,earlier,regions)
                 batch=parse_alm(read_pages(raw),y,earlier,url,sha)
                 batches[sha]=batch
+                print('ALM_MARKET_PRIOR_VERIFIED',y,earlier,url,sha,flush=True)
             except Exception as exc:print('::warning::ALM_MARKET_PRIOR',earlier,type(exc).__name__,str(exc)[:150],flush=True)
+        for url in urls[:5]:admit(url)
+        if not batches and fallback and fallback not in urls[:5] and trusted_pdf_link(fallback):
+            admit(fallback)
         if len(batches)!=1:raise ValueError('Unique verified Alm report missing Q'+str(earlier))
         rows.extend(next(iter(batches.values())))
     return [r for seg in SEGMENTS for r in weighted(a,'reported_segment',seg,rows)]
