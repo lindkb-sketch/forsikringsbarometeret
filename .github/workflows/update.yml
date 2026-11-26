@@ -130,6 +130,10 @@ jobs:
         run: |
           python scripts/build_nine_insurer_comparison.py
           python scripts/quarterly_kpi_completeness.py
+      - name: Build supplementary market-ranking exchange rates
+        run: |
+          python scripts/build_market_overview_fx.py
+          python scripts/build_market_overview_segments.py
       - name: Prepare preinstalled Google Chrome browser automation
         run: |
           npm install --no-save playwright
@@ -201,6 +205,10 @@ jobs:
         run: python scripts/check_nine_release.py
       - name: Require original quarterly report provenance for all nine insurers
         run: python scripts/check_nine_report_primary.py
+      - name: Refresh market-ranking exchange rates for final report period
+        run: |
+          python scripts/build_market_overview_fx.py
+          python scripts/build_market_overview_segments.py
       - name: Package validated financial data outside the Pages lock
         run: python scripts/publish_prepared_financial.py prepare
       - uses: actions/upload-artifact@v4

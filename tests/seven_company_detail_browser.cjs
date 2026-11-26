@@ -10,6 +10,7 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.locator('#nav-summary').click();
   await page.waitForFunction(()=>window.FBQuarterly?.period&&window.FBQuarterly?.verified&&document.querySelector('#results-comparison tbody tr'),null,{timeout:30000});
   let checked=0;
   for(const mode of ['quarter','ytd']){
@@ -62,7 +63,7 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
     if(company==='Fremtind'&&state.model.revenue){
       const expectedPrior=mode==='quarter'?'11,1 %':'26,4 %';
       const homepage=await page.evaluate(({company})=>{
-        show('home');
+        show('summary');
         const row=[...document.querySelectorAll('#results-comparison tbody tr')]
            .find(tr=>tr.cells[0]?.textContent?.includes(company));
         return row?.cells[1]?.textContent?.replace(/\\s+/g,' ').trim()||'';
@@ -75,7 +76,7 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
     console.log('SEVEN_COMPANY_DETAIL_PASS',company,mode,growth.value,result.value);
    }
   }
-  await page.evaluate(()=>{period='Q3';show('home')});
+  await page.evaluate(()=>{period='Q3';show('summary')});
   if((await page.locator('#results-comparison tbody tr').count())!==7)
    throw Error('Seven company rows not rendered on homepage');
   if(errors.length)throw Error('Uncaught page exceptions: '+errors.join(' | '));

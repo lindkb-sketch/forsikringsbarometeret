@@ -30,7 +30,7 @@
   function draw(){
     const root=document.getElementById('app');
     if(!root||!lastData||root.querySelector('#nine-company-kpi-comparison'))return;
-    const home=document.getElementById('nav-home')?.classList.contains('active');
+    const home=document.getElementById('nav-summary')?.classList.contains('active');
     const method=document.getElementById('nav-methodology')?.classList.contains('active');
     if(!home&&!method)return;
     const section=document.createElement('section');
