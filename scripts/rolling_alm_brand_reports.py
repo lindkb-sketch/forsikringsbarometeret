@@ -173,6 +173,20 @@ def verify_report(texts,url,raw,year,quarter,regions=None):
         issuer_page_url=ARCHIVE,
         growth_evidence={'quarter_prior':float(rows['insurance_revenue'][1]),'ytd_prior':float(rows['insurance_revenue'][pi])},
         ratio_evidence={'quarter':{k:float(v[0]) for k,v in rows.items()},'ytd':{k:float(v[yi]) for k,v in rows.items()}})
+    # Compatibility alias for page-located management metrics from the
+    # same primary quarterly PDF (not a presentation or announcement).
+    result['supplemental_pdf_evidence']={
+        'source_url':url,'source_sha256':result['source_sha256'],
+        'source_type':'official_quarterly_report','year':year,'quarter':quarter,
+        'scope':'group','currency':'DKK','metrics':{
+            k:{'quarter_value':current[k],'ytd_value':ytd[k],
+               'source_page':result['source_pages'][k],'definition':definition}
+            for k,definition in (
+                ('return_on_equity',result['return_on_equity_definition']),
+                ('profit_before_tax','Group profit/loss before tax, continuing operations; DKK million'))}}
+    result['reported_solvency_evidence']={
+        'source_sha256':result['source_sha256'],'source_page':j+1,
+        'value':solvency,'year':year,'quarter':quarter}
     return result
 
 def presentation_evidence(texts,url,raw,year,quarter,solvency):
@@ -238,7 +252,14 @@ def validate_rolling(row):
         origin=row.get('source_discovery',{}).get('origin','')
         if not (notice_url(origin) or issuer_web_page('Alm. Brand',origin)):
             errors.append('Alm. Brand exchange PDF lacks official discovery origin')
-    if metrics.get('solvency_ratio')!=ytd.get('solvency_ratio'):
+    from import_alm_brand_supplemental import validate_supplemental
+    errors.extend(validate_supplemental(row))
+    solvency=row.get('reported_solvency_evidence',{})
+    if (metrics.get('solvency_ratio')!=ytd.get('solvency_ratio')
+        or solvency.get('value')!=metrics.get('solvency_ratio')
+        or solvency.get('source_sha256')!=sha
+        or solvency.get('source_page')!=row.get('source_pages',{}).get('solvency_ratio')
+        or (solvency.get('year'),solvency.get('quarter'))!=period):
         errors.append('Alm. Brand report quarter-end solvency mismatch')
     evidence=row.get('ratio_evidence',{});growth=row.get('growth_evidence',{})
     for period_kind,values,prior_key in (('quarter',metrics,'quarter_prior'),('ytd',ytd,'ytd_prior')):

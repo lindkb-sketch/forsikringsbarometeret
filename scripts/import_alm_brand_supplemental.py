@@ -18,7 +18,7 @@ def validate_supplemental(row):
     evidence=row.get('supplemental_pdf_evidence',{})
     metrics=row.get('metrics',{})
     present=set(KEYS)&set(metrics)
-    if not present and not evidence:return []
+    if not present and not evidence and row.get('status')!='verified_official_pdf_reconciled':return []
     if present!=set(KEYS):return ['Alm. Brand incomplete supplemental PDF metrics']
     errors=[]
     digest=evidence.get('source_sha256','')
@@ -29,8 +29,13 @@ def validate_supplemental(row):
         or (evidence.get('year'),evidence.get('quarter'))!=(row.get('year'),row.get('quarter'))
         or evidence.get('scope')!='group' or evidence.get('currency')!='DKK'):
         errors.append('Alm. Brand supplemental PDF provenance invalid')
+    primary=row.get('status')=='verified_official_pdf_reconciled'
+    if primary and (evidence.get('source_url')!=row.get('source_url') or digest!=row.get('source_sha256')):
+        errors.append('Alm. Brand management metrics must reference the primary report')
     for key in KEYS:
         metric=evidence.get('metrics',{}).get(key,{})
+        if primary and (metric.get('source_page')!=row.get('source_pages',{}).get(key) or metric.get('ytd_value')!=row.get('ytd_metrics',{}).get(key)):
+            errors.append('Alm. Brand primary report quarter/HIÅ evidence mismatch: '+key)
         if (type(metric.get('quarter_value')) not in (int,float)
             or type(metric.get('ytd_value')) not in (int,float)
             or not math.isfinite(metric['quarter_value']) or not math.isfinite(metric['ytd_value'])
@@ -78,6 +83,11 @@ def attach(existing,pdf):
 
 def preserve(new,previous):
     """Retain same-period verified supplemental observations on refresh."""
+    if previous.get('status')=='verified_official_pdf_reconciled' and (new.get('year'),new.get('quarter'))==(previous.get('year'),previous.get('quarter')):
+        from rolling_alm_brand_reports import validate_rolling
+        errors=validate_rolling(previous)
+        if errors:raise ValueError('; '.join(errors))
+        return previous
     if not previous.get('supplemental_pdf_evidence'):return new
     if (new.get('year'),new.get('quarter'))!=(previous.get('year'),previous.get('quarter')):
         return new

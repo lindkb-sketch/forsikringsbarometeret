@@ -36,6 +36,23 @@ class ReportFirstTests(unittest.TestCase):
         self.assertEqual(new['metrics'],old['metrics'])
         self.assertEqual(len(new['source_pages']),9)
         self.assertEqual(validate_rolling(new),[])
+    def test_primary_report_management_evidence_is_checked(self):
+        from import_alm_brand_supplemental import validate_supplemental
+        primary=promote(base_alm())
+        self.assertEqual(validate_supplemental(primary),[])
+        for key in ('return_on_equity','profit_before_tax'):
+            for view in ('metrics','ytd_metrics'):
+                bad=copy.deepcopy(primary)
+                bad[view][key]+=1
+                self.assertTrue(validate_supplemental(bad))
+                self.assertTrue(validate_rolling(bad))
+        bad=copy.deepcopy(primary)
+        bad['metrics']['solvency_ratio']+=1
+        bad['ytd_metrics']['solvency_ratio']+=1
+        self.assertTrue(validate_rolling(bad))
+        bad=copy.deepcopy(primary)
+        bad['supplemental_pdf_evidence']['source_sha256']='0'*64
+        self.assertTrue(validate_rolling(bad))
     def test_historical_nasdaq_identifiers_still_admitted(self):
         from alm_brand_live_pdf import OFFICIAL_NASDAQ_NOTICE,trusted_pdf_link
         from alm_brand_pdf import official_alm_pdf

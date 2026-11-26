@@ -42,7 +42,7 @@ def build(feed, extended):
                         'source_page':item['quarter_calculation']['annual']['document']['ratio_page' if key=='solvency_ratio' else 'statement_page'],
                         'source_definition':'Rapportert ved årsslutt' if key=='solvency_ratio' else 'Beregnet fra årsrapport minus HIÅ per Q3, med avstemte regnskapsgrunnlag',
                         'period_type':'quarter','source_documents':item['source_documents'] if key!='solvency_ratio' else item['source_documents'][:1]}
-            if verified and company=='Alm. Brand':
+            if verified and company=='Alm. Brand' and state!='verified_official_pdf_reconciled':
                 evidence=item.get('supplemental_pdf_evidence',{})
                 for key,record in evidence.get('metrics',{}).items():
                     metric_sources[key]={'source_url':evidence.get('source_url'), 'source_sha256':evidence.get('source_sha256'), 'source_page':record.get('source_page'), 'source_definition':record.get('definition'), 'period_type':'quarter'}
