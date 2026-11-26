@@ -1,4 +1,4 @@
-name: Seven-insurer rolling quarterly release coverage watchdog
+name: Nine-insurer rolling quarterly release coverage watchdog
 on:
   workflow_dispatch:
   schedule:
@@ -7,6 +7,9 @@ on:
     branches: [main]
     paths:
       - 'scripts/check_seven_q4_release_coverage.py'
+      - 'scripts/check_nine_release.py'
+      - 'scripts/nine_import_receipt.py'
+      - 'tests/test_nine_release_automation.py'
       - 'tests/test_seven_q4_release_coverage.py'
       - '.github/workflows/seven-q4-release-watchdog.yml'
 permissions:
@@ -21,5 +24,10 @@ jobs:
           python-version: '3.12'
       - name: Test all seven release conditions
         run: python -m unittest discover -s tests -p 'test_seven_q4_release_coverage.py' -v
-      - name: Check scheduled Q4 releases and evidence
+      - name: Test all-nine rolling release and receipt conditions
+        run: python -m unittest discover -s tests -p 'test_nine_release_automation.py' -v
+      - name: Check scheduled releases and segment evidence
         run: python scripts/check_seven_q4_release_coverage.py
+      - name: Check all nine actual comparison feeds including extended insurers
+        if: ${{ !cancelled() }}
+        run: python scripts/check_nine_release.py
