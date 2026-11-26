@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from build_market_overview_segments import read_pages
+from ingest_official_pdf import read_pdf as read_pages
 from ingest_official_pdf import download
 from alm_brand_live_pdf import download_report
 ROOT=Path(__file__).resolve().parents[1]
@@ -47,6 +47,8 @@ def main():
             blob=download(url);pages=read_pages(blob)
             print('FREMTIND_NOTE_SOURCE',url,hashlib.sha256(blob).hexdigest(),repr(' '.join(pages[0][1].split())[:200]),flush=True)
             for page,t in pages:
+                if re.search(r'Segmentresultater|Segment Privatmarkedet og Bedriftsmarkedet',t,re.I):
+                    print('FREMTIND_APM_PAGE',page,repr(t[:12000]),flush=True)
                 if re.search(r'(?:Note\s*\d+[a-z]?\s*)?Segmentopplysninger',t,re.I) and re.search(r'\bPM\b',t) and re.search(r'\bBM\b',t) and re.search(r'Inntekter fra forsikringstjenester',t,re.I):
                     print('FREMTIND_NOTE_PAGE',page,repr(t[:10000]),flush=True)
                 elif re.search(r'\bPM\b',t) and re.search(r'\bBM\b',t) and re.search(r'Erstatningskostnader|Driftskostnader|Provisjonskostnader',t,re.I):
