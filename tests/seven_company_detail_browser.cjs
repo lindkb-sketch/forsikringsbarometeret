@@ -10,6 +10,7 @@ const companies=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','St
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.locator('#nav-summary').click();
   await page.waitForFunction(()=>window.FBQuarterly?.period&&window.FBQuarterly?.verified&&document.querySelector('#results-comparison tbody tr'),null,{timeout:30000});
   let checked=0;
   for(const mode of ['quarter','ytd']){

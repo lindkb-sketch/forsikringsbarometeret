@@ -16,7 +16,7 @@ test('Norway and segment filters never substitute group data',()=>{
  assert.deepEqual(model(feed,comp,fx,'norway','all').selected.map(c=>c.company),['Gjensidige','Tryg','Protector']);
  assert.deepEqual(model(feed,comp,fx,'norway','pm').selected.map(c=>c.company),['Gjensidige']);
  assert.deepEqual(model(feed,comp,fx,'norway','bm').selected.map(c=>c.company),['Gjensidige','Protector']);
- assert.deepEqual(model(feed,comp,fx,'group','pm').selected.map(c=>c.company),['Sampo']);
+ assert.deepEqual(model(feed,comp,fx,'group','pm').selected.map(c=>c.company),[]);
  assert.deepEqual(model(feed,comp,fx,'group','bm').selected.map(c=>c.company),['Protector']);
 });
 test('no false income rank when foreign FX missing',()=>{
@@ -63,4 +63,30 @@ test('owner examples: Protector BM, Tryg split group only, Gjensidige all six',(
  assert.equal(eligible('norway','pm').find(x=>x.company==='Gjensidige').revenue,3000);
  const corrupt={observations:segments.observations.map(r=>({...r,source_sha256:'b'.repeat(64)}))};
  assert.ok(!model(feed,comp,fx,'group','pm',corrupt).eligible.some(c=>c.company==='Tryg'));
+});
+
+test('explicit owner scope register overrides unrelated available segments',()=>{
+ const almSource=comp.companies[0].source_url;
+ const comparison={companies:[{...comp.companies[0],metric_sources:{insurance_revenue:{source_url:almSource,source_sha256:'a'.repeat(64)}}},
+  {company:'KLP Skadeforsikring',status:'verified_official_pdf_reconciled',period:'Q3 2026',currency:'NOK',source_url:'https://issuer.invalid/klp.pdf',metrics:{insurance_revenue:1000,combined_ratio:89,loss_ratio:77,expense_ratio:12}}]};
+ const segments={observations:[
+  ...rows('Tryg',7000,78,65,13,'DKKm','reported_segment','Private'),
+  ...rows('Tryg',3000,74,59,15,'DKKm','reported_segment','Commercial'),
+  ...rows('Gjensidige',5000,70,59,11,'NOKm','reported_segment','Private'),
+  ...rows('Gjensidige',6000,67,58,9,'NOKm','reported_segment','Commercial'),
+  ...rows('Fremtind',3500,70,50,20,'NOKm','reported_segment','Private'),
+  ...rows('Fremtind',2500,80,60,20,'NOKm','reported_segment','Commercial'),
+  ...rows('Alm. Brand',2000,74,60,14,'DKKm','reported_segment','Private').map(r=>({...r,source_url:almSource})),
+  ...rows('Alm. Brand',1000,77,60,17,'DKKm','reported_segment','Commercial').map(r=>({...r,source_url:almSource}))
+ ]};
+ const f={observations:[...feed.observations.map(r=>r.company==='Storebrand'&&r.metric==='insurance_revenue'?{...r,source_entity:'Storebrand ASA / Insurance segment'}:r),
+ ...rows('Storebrand',1000,90,70,20,'NOKm','norway'),...rows('Frende',500,80,60,20,'NOKm','norway')]};
+ const filters=[['group','all'],['group','pm'],['group','bm'],['norway','all'],['norway','pm'],['norway','bm']];
+ const want={'Gjensidige':[1,1,1,1,1,1],'Tryg':[1,1,1,1,0,0],'Fremtind':[1,1,1,1,1,1],'Sampo':[1,0,0,0,0,0],'Protector':[1,0,1,1,0,1],'Frende':[1,0,0,0,0,0],'Storebrand':[1,0,0,0,0,0],'KLP Skadeforsikring':[1,0,0,0,0,0],'Alm. Brand':[1,1,1,0,0,0]};
+ for(const [name,expected] of Object.entries(want))assert.deepEqual(filters.map(([s,m])=>+model(f,comparison,fx,s,m,segments).eligible.some(r=>r.company===name)),expected,name);
+ const a=model(f,comparison,fx,'group','pm',segments).eligible.find(r=>r.company==='Fremtind');
+ const b=model(f,comparison,fx,'norway','pm',segments).eligible.find(r=>r.company==='Fremtind');
+ assert.equal(a.revenue,b.revenue);assert.equal(a.cr,b.cr);
+ const n=model(f,comparison,fx,'norway','all',segments).eligible.find(r=>r.company==='Fremtind');
+ assert.equal(n.revenue,6000);assert.equal(n.cr,(3500*70+2500*80)/6000);
 });

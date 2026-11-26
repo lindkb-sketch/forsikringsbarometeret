@@ -10,6 +10,18 @@
   const METRICS=['insurance_revenue','combined_ratio','loss_ratio','expense_ratio'];
   const CORE=['combined_ratio','loss_ratio','expense_ratio'];
   const EXTENDED=['KLP Skadeforsikring','Alm. Brand'];
+  const SCOPE_RULES={
+    'Gjensidige':['group/all','group/pm','group/bm','norway/all','norway/pm','norway/bm'],
+    'Tryg':['group/all','group/pm','group/bm','norway/all'],
+    'Fremtind':['group/all','group/pm','group/bm','norway/all','norway/pm','norway/bm'],
+    'Sampo':['group/all'],
+    'Protector':['group/all','group/bm','norway/all','norway/bm'],
+    'Frende':['group/all'],
+    'Storebrand':['group/all'],
+    'KLP Skadeforsikring':['group/all'],
+    'Alm. Brand':['group/all','group/pm','group/bm']
+  };
+  const BUSINESS_SEGMENT_ISSUERS=['Gjensidige','Tryg','Fremtind','Alm. Brand'];
   // Exact published segment labels only. Nordic segments are explicitly
   // identified, not mislabeled as Norway or as the whole consolidated group.
   const SEGMENTS={
@@ -42,13 +54,19 @@
   const samePeriod=(a,b)=>a&&b&&a.year===b.year&&a.quarter===b.quarter;
   const cmpPeriod=(a,b)=>a.year-b.year||a.quarter-b.quarter;
   const key=r=>[r.company,r.year,r.quarter,r.scope,r.segment||'',r.metric].join('|');
-  function allRows(feed,segments){
+  function allRows(feed,segments,comparison){
     const rows=(feed?.observations||[]).filter(valid);
     const anchors=new Set(rows.filter(r=>r.scope==='group').map(r=>[r.company,r.source_url,r.source_sha256].join('|')));
+    for(const c of comparison?.companies||[]){
+      const evidence=c.metric_sources?.insurance_revenue;
+      if(c.company==='Alm. Brand'&&c.status==='verified_official_pdf_reconciled'&&source(c.source_url)&&
+        evidence?.source_url===c.source_url&&/^[0-9a-f]{64}$/.test(evidence.source_sha256||''))
+        anchors.add([c.company,c.source_url,evidence.source_sha256].join('|'));
+    }
     const index=new Map(rows.map(r=>[key(r),r]));
     for(const r of segments?.observations||[]){
       if(!valid(r)||r.scope!=='reported_segment'||
-        !['Tryg','Gjensidige'].includes(r.company)||
+        !BUSINESS_SEGMENT_ISSUERS.includes(r.company)||
         !['Private','Commercial'].includes(r.segment)||
         !anchors.has([r.company,r.source_url,r.source_sha256].join('|')))continue;
       const k=key(r),old=index.get(k);
@@ -78,8 +96,21 @@
     return choices.sort((a,b)=>cmpPeriod(b,a))[0]||null;
   }
   function groupsFor(rows,company,p,scope,market){
+    if(!SCOPE_RULES[company]?.includes(scope+'/'+market))return [];
     const current=rows.filter(r=>r.company===company&&samePeriod(r,p));
-    if(market==='all')return [{rows:current.filter(r=>r.scope===scope),scope,segment:null}];
+    // Fremtind's PM/BM note is owner-confirmed to cover the same Norway business.
+    // Do not treat the whole Holding result as an observed geographic total.
+    if(company==='Fremtind'&&scope==='norway'&&market!=='all'){
+      const segment=market==='pm'?'Private':'Commercial';
+      return [{rows:current.filter(r=>r.scope==='reported_segment'&&r.segment===segment),
+        scope:'reported_segment',segment,displaySegment:segment+' · Norge (segmentnoten)'}];
+    }
+    if(market==='all'){
+      const exact=current.filter(r=>r.scope===scope);
+      const income=selectUnique(exact,'insurance_revenue');
+      const use=company==='Storebrand'&&!(income?.source_entity==='Storebrand ASA / Insurance segment'||(income?.source_definition||'').includes('Insurance segment'))?[]:exact;
+      return [{rows:use,scope,segment:null}];
+    }
     // Owner-approved market classification: Protector is commercially
     // oriented (commercial/public/affinity); report totals are its BM proxy.
     // Never reuse Group totals for Norway. No PM allocation is inferred.
@@ -115,6 +146,26 @@
     return {company,segment:g.displaySegment||g.segment,source:revenue.source_url,revenue:revenue.value,currency:cur,
       revenueBasis:basis(revenue),cr,loss,cost,growth,deltas};
   }
+  function fremtindNorway(rows,p){
+    const pm=rowFor(rows,'Fremtind',p,'norway','pm'),bm=rowFor(rows,'Fremtind',p,'norway','bm');
+    if(!pm||!bm||pm.currency!=='NOK'||bm.currency!=='NOK'||pm.source!==bm.source)return null;
+    const revenue=pm.revenue+bm.revenue;
+    const weighted=k=>(pm[k]*pm.revenue+bm[k]*bm.revenue)/revenue;
+    let growth=null;
+    if(num(pm.growth)&&num(bm.growth)&&pm.growth>-100&&bm.growth>-100){
+      const old=pm.revenue/(1+pm.growth/100)+bm.revenue/(1+bm.growth/100);
+      growth=(revenue/old-1)*100;
+    }
+    const deltas={};
+    for(const [k,short] of [['combined_ratio','cr'],['loss_ratio','loss'],['expense_ratio','cost']]){
+      if(num(pm.deltas[k])&&num(bm.deltas[k])&&num(pm.growth)&&num(bm.growth)&&pm.growth>-100&&bm.growth>-100){
+        const a=pm.revenue/(1+pm.growth/100),b=bm.revenue/(1+bm.growth/100);
+        deltas[k]=weighted(short)-((pm[short]-pm.deltas[k])*a+(bm[short]-bm.deltas[k])*b)/(a+b);
+      }
+    }
+    return {company:'Fremtind',segment:'PM + BM · Norge (beregnet)',source:pm.source,revenue,currency:'NOK',revenueBasis:pm.revenueBasis,
+      cr:weighted('cr'),loss:weighted('loss'),cost:weighted('cost'),growth,deltas};
+  }
   function extendedRow(c,p){
     if(!EXTENDED.includes(c.company)||c.status!=='verified_official_pdf_reconciled'||!samePeriod(periodOf(c.period),p)||!source(c.source_url))return null;
     const m=c.metrics||{};
@@ -126,11 +177,12 @@
       growth:num(m.insurance_revenue_growth)?m.insurance_revenue_growth:null,deltas:{}};
   }
   function model(feed,comparison,fx,scope='group',market='all',segments=null){
-    const rows=allRows(feed,segments),p=choosePeriod(rows,comparison);
+    const rows=allRows(feed,segments,comparison),p=choosePeriod(rows,comparison);
     if(!p)return {period:null,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0};
     const eligible=[];
     for(const company of COMPANIES){
-      let r=rowFor(rows,company,p,scope,market);
+      if(!SCOPE_RULES[company]?.includes(scope+'/'+market))continue;
+      let r=company==='Fremtind'&&scope==='norway'&&market==='all'?fremtindNorway(rows,p):rowFor(rows,company,p,scope,market);
       if(!r&&scope==='group'&&market==='all'&&EXTENDED.includes(company)){
         r=extendedRow((comparison?.companies||[]).find(c=>c.company===company)||{},p);
       }
@@ -228,7 +280,7 @@
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2><p class="hint">'+safe(subtitle)+'</p></div>'+
       (latest?'<span class="pill">'+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
-      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. Gruppens PM/BM følger selskapets rapporterte forretningssegmenter, som kan utelate andre geografier. Protector vises i BM med rapportert total (inkl. offentlig sektor og affinity), ikke som et separat rapportert BM-segment.</p>':'')+
+      (latest?'<p class="mo-note">Inntekter rangeres i NOK etter gjennomsnittlig dagskurs for kvartalet (<a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>); vekst i rapportert valuta mot samme kvartal året før. Inntektsdefinisjoner kan variere (bl.a. segmentpremier). CR kan avvike marginalt fra summen grunnet avrunding. Bare verifiserte tall i valgt kvartal og område vises. PM/BM følger de avgrensede rapporterte forretningssegmentene. Fremtinds PM/BM i Norge bruker samme segmentnote som gruppe PM/BM; Norge totalt er summen av disse, med inntektsvektet CR. Protector vises i BM med rapportert total (inkl. offentlig sektor og affinity), ikke som et separat rapportert BM-segment.</p>':'')+
       (latest&&m.missing.length?'<details class="mo-excluded"><summary>'+m.missing.length+' selskaper uten komplett tallgrunnlag for valget</summary><p>'+safe(m.missing.map(pretty).join(', '))+'. Ingen eldre kvartaler eller urelaterte konserntall brukes som erstatning.</p></details>':'')+'</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer til kvartalet</h2><p class="hint">'+safe(latest||'Avventer tall')+' · '+safe(descriptor)+' · oppdateres når nye rapporter kommer</p></div></div>'+
       (latest?'<div class="mo-comment-grid">'+comments(m,window.FBNews?.editorial,scope,market).map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
