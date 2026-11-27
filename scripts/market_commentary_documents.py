@@ -20,7 +20,8 @@ SPLIT={'Tryg','Gjensidige','Fremtind','Alm. Brand'}
 GROWTH_RULES={
     'price':r'\b(?:growth|revenue growth|premium growth|increase in (?:insurance revenue|premiums))\b.{0,100}?\b(?:driven|supported|fuelled|explained)\s+by\b.{0,85}?\b(?:price increases|pricing actions|price adjustments|premium adjustments|rate increases)\b',
     'volume_up':r'\b(?:growth|revenue growth|premium growth)\b.{0,100}?\b(?:driven|supported|fuelled|explained)\s+by\b.{0,85}?\b(?:higher volumes|volume growth|growth in volumes|increased volumes)\b',
-    'customer_growth':r'\b(?:customer base|number of customers|number of (?:active )?policies|policies in force)\b.{0,40}?\b(?:increased|grew|grown)\b',
+    'customer_growth':r'\b(?:customer base|number of customers)\b.{0,40}?\b(?:increased|grew|grown)\b',
+    'policy_count_growth':r'\b(?:number of (?:active )?policies|policies in force)\b.{0,40}?\b(?:increased|grew|grown)\b',
     'customer_inflow':r'\b(?:customer inflow|new customer acquisition)\b.{0,50}?\b(?:bank partnerships|distribution partners|distribution agreements)\b',
     'portfolio_growth':r'\b(?:growth was positively impacted by|growth driven by|growth supported by)\s+portfolio growth\b',
     'retention_up':r'\b(?:customer )?retention (?:rates? )?(?:improved|increased|rose)\b',
@@ -35,7 +36,8 @@ PROFIT_RULES={
 NORWEGIAN_GROWTH={
     'price':r'\bveksten (?:er|var) (?:hovedsakelig )?drevet av (?:premiejusteringer|prisjusteringer|prisøkninger)\b',
     'volume_up':r'\bveksten (?:er|var) (?:hovedsakelig )?drevet av (?:volumvekst|økt volum)\b',
-    'customer_growth':r'\b(?:kundebestanden|antall kunder|antall forsikringer) (?:økte|har økt|vokste)\b',
+    'customer_growth':r'\b(?:kundebestanden|antall kunder) (?:økte|har økt|vokste)\b',
+    'policy_count_growth':r'\bantall forsikringer (?:økte|har økt|vokste)\b',
 }
 NORWEGIAN_PROFIT={
     'lower_claim_frequency':r'\blavere skadefrekvens(?:er)?\b',
@@ -49,7 +51,7 @@ def page_scope(company,raw,y,q,kind):
     if not lines:return None
     # Find a current, explicitly labelled results/review heading. Do not
     # interpret mixed comparison tables, outlook, forecasts or consensus.
-    candidates=[]
+    candidates=[];period_only=False
     quarter=rf'(?:Q\s*{q}\s*[-/ ]?\s*{y}|{q}\.?\s*kvartal\s*{y})'
     cumulative=rf'(?:Q1\s*-\s*Q{q}\s+{y}|YTD\s+{y}|HIÅ\s+{y}|1-{q*3}/{y})'
     for i,line in enumerate(lines[:12]):
@@ -68,13 +70,19 @@ def page_scope(company,raw,y,q,kind):
         elif company in ('Gjensidige','Tryg','Protector') and re.fullmatch(r'(?:Norway|Norge)(?:\s*[-:–]\s*.*)?',line,re.I):
             scope='norway/all'
         elif company!='Storebrand' and re.fullmatch(rf'(?:Financial highlights[, ]*|Highlights of |Results |{re.escape(company)}\s+)?{quarter}(?:\s+highlights|\s+results)?',line,re.I):
-            scope='group/all'
+            # A date/title is period evidence, not a second business scope.
+            # A bare date cannot establish the scope of an otherwise unlabelled
+            # page. Explicit company-level highlights may serve as a fallback.
+            if re.search(r'financial highlights|highlights of |highlights$|^'+re.escape(company)+r'\s+',line,re.I):
+                period_only=True
+            continue
         elif company=='KLP Skadeforsikring' and re.fullmatch(r'KLP Skadeforsikring(?: AS)?',line,re.I):
             scope='group/all'
         else:continue
         if company=='Storebrand' and not re.match(r'Insurance|Forsikring',line,re.I):continue
         candidates.append((scope,i))
     scopes={x[0] for x in candidates}
+    if not scopes and period_only:scopes={'group/all'}
     if len(scopes)!=1:return None
     scope=next(iter(scopes))
     head=' '.join(lines[:12])

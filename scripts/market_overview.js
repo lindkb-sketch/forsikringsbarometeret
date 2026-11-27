@@ -245,6 +245,7 @@
     volume_down:'lavere volum i deler av porteføljen',
     customer_inflow:'kundetilgang gjennom distribusjonssamarbeid',
     customer_growth:'vekst i kundebestanden',
+    policy_count_growth:'vekst i antall forsikringer',
     volume_pm_products:'volumvekst innen eiendom, person og reise',
     portfolio_growth:'porteføljevekst i utvalgte segmenter',
     retention_up:'bedret kundelojalitet',
@@ -294,12 +295,12 @@
           growth.push('Veksttakten i siste kvartal ligger '+pp(dif)+' '+(dif>0?'over':'under')+' HIÅ-tempoet målt på samme aktører (median).');
       }
     }else growth.push('Inntektsvekst er foreløpig ikke tilgjengelig.');
-    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','portfolio_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
+    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     const limitations=['volume_down','risk_selection','competition'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     if(positiveDrivers.length)growth.push('Rapporterte vekstdrivere omfatter '+joinNatural(positiveDrivers)+'.');
     if(drivers.has('retention_up'))growth.push('Bedret kundelojalitet er også rapportert i deler av porteføljen.');
     if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
-    if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','portfolio_growth'].some(k=>drivers.has(k)))
+    if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].some(k=>drivers.has(k)))
       growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');
     if(!drivers.size&&comparable.length)growth.push('En sammenlignbar pris- og volumsplitt er foreløpig ikke dokumentert i kvartalsrapportene og presentasjonene for dette utvalget.');
     const crRows=rows.filter(r=>num(r.deltas?.combined_ratio));

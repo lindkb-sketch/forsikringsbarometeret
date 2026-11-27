@@ -164,6 +164,10 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q2 2026')]),[])
         self.assertEqual(document_insights('Storebrand',2026,3,doc,[text.replace('Private','Group')]),[])
         self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q3 2026 Q1-Q3 2026')]),[])
-        self.assertTrue(all(r['period_type']=='ytd' for r in document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q1-Q3 2026')])))
+        self.assertTrue(all(r['period_type']=='ytd' for r in document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q1-Q3 2026')]))
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Private\n','Private\nCommercial\n')]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Private\n','')]),[])
+        counts='Private\nQ3 2026\nNumber of active policies increased by 5%\nNumber of customers increased by 2%'
+        self.assertEqual({r['driver'] for r in document_insights('Tryg',2026,3,doc,[counts])},{'policy_count_growth','customer_growth'}))
 
 if __name__=='__main__':unittest.main()
