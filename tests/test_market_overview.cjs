@@ -280,3 +280,15 @@ test('Sampo company detail has exact Nordic segment scope, quarter and complete 
  const missing=sampoNordicSegments({observations:data.filter(x=>!(x.segment==='Private Nordic'&&x.year===2026&&x.quarter===2))},{year:2026,quarter:3},'ytd');
  assert.equal(missing[0].metrics,null);assert.ok(missing[1].metrics);
 });
+
+test('uniform financial arrows are based on the same-year comparison, never missing values',()=>{
+ const {financialNumber,financialTrend}=require('../scripts/market_overview.js');
+ assert.equal(financialNumber('1\u00a0234,5 MNOK'),1234.5);
+ assert.equal(financialNumber('−3,2 %'),-3.2);
+ assert.equal(financialNumber('Q3 2025: —'),null);
+ assert.equal(financialTrend('—',0),null);
+ assert.deepEqual(financialTrend(73,76.7,true),{direction:'down',icon:'▼',tone:'good'});
+ assert.deepEqual(financialTrend(85,80,true),{direction:'up',icon:'▲',tone:'bad'});
+ assert.deepEqual(financialTrend(4.2,3),{direction:'up',icon:'▲',tone:'good'});
+ assert.equal(financialTrend(7,7).tone,'flat');
+});

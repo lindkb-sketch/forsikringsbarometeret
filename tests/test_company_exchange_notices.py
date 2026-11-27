@@ -23,7 +23,8 @@ class ExchangeNoticesTests(unittest.TestCase):
                 self.assertTrue(row['title'].strip())
 
     def test_company_pages_include_newsweb_renderer(self):
-        self.assertIn("${stockMarketSection(c)}${stockMarketConfig[c]?'':companyExchangeNotices(c)}${companyMediaNews(c)}", HTML)
+        self.assertIn("${stockMarketSection(c)}${companyMediaNews(c)}", HTML)
+        self.assertIn("if(!Object.hasOwn(stockMarketConfig,c))return '';", HTML)
         self.assertIn('data/newsweb_notices.json', HTML)
 
     def test_renderer_behavior_in_javascript(self):
@@ -37,7 +38,7 @@ class FixedDate extends Date {
   constructor(...args) { super(...(args.length ? args : [now])); }
   static now() { return now; }
 }
-const sandbox = {window: {FBNewsWeb: {notices: {}}}, Date: FixedDate};
+const sandbox = {window: {FBNewsWeb: {notices: {}}}, Date: FixedDate, stockMarketConfig:{Gjensidige:{},Sampo:{}}};
 vm.createContext(sandbox);
 vm.runInContext(SOURCE, sandbox);
 const render = rows => {
@@ -46,6 +47,9 @@ const render = rows => {
 };
 const n = {source:'NewsWeb', title:'New <title> & value', url:'https://newsweb.oslobors.no/message/123', published_at:'2026-11-04T10:00:00Z'};
 assert.equal(render([]), '');
+for(const company of ['Fremtind','Frende','KLP Skadeforsikring']){
+  sandbox.window.FBNewsWeb.notices[company]=[n];assert.equal(sandbox.companyExchangeNotices(company),'');
+}
 assert.equal(sandbox.companyExchangeNotices('Sampo'), '');
 assert.equal(render([{...n, published_at:'2026-07-01T10:00:00Z'}]), '');
 assert.equal(render([{...n, published_at:'2026-11-06T10:00:00Z'}]), '');

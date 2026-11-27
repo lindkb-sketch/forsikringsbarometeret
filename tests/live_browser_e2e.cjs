@@ -458,6 +458,33 @@ async function main(){
   await page.locator('.company-period-actions select').selectOption('H3');
   check('Sampo HIÅ uses complete source-based Nordic segment figures',await page.locator('.company-segments tr[data-financial-source="calculated_ytd"],.company-segments tr[data-financial-source="reported_ytd"]').count()===2);
   await page.locator('.company-period-actions select').selectOption('Q3');
+  // Inspect actual computed styles, comparison values and direction on all
+  // nine issuer pages in both modes, not merely the shared CSS declaration.
+  let standardStyle=null;
+  for(const c of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand']){
+    await page.evaluate(name=>show(name,true),c);
+    for(const type of ['Q3','H3']){
+      await page.locator('.company-period-actions select').selectOption(type);
+      const result=await page.evaluate(()=>{
+        const cards=[...document.querySelectorAll('.company-financial-card:not(.market-card)')];
+        const cr=cards.find(n=>n.dataset.financialMetric==='combined_ratio');
+        const style=n=>{const s=getComputedStyle(n);return [s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight];};
+        const numeric=s=>FBMarketOverview.financialNumber(s.replace(/^\(|\)$/g,''));
+        const rows=cards.map(n=>{
+          const now=numeric(n.querySelector('.financial-current')?.textContent||''),prior=numeric(n.querySelector('.prior')?.textContent||'');
+          const metric=n.dataset.financialMetric,expected=FBMarketOverview.financialTrend(now,prior,['combined_ratio','loss_ratio','expense_ratio'].includes(metric));
+          const arrow=n.querySelector('.qoq');
+          return {metric,now,prior,correct:expected?arrow?.textContent===expected.icon&&arrow.classList.contains(expected.tone):!arrow};
+        });
+        return {rows,style:cr?['.name','.financial-current','.prior'].map(s=>style(cr.querySelector(s))):null};
+      });
+      if(!standardStyle&&result.style)standardStyle=JSON.stringify(result.style);
+      check(c+' '+type+' shared KPI typography',!!result.style&&JSON.stringify(result.style)===standardStyle,JSON.stringify(result.style));
+      check(c+' '+type+' consistent same-period trend arrows',result.rows.length>=5&&result.rows.every(r=>r.correct),JSON.stringify(result.rows));
+      console.log('COMPANY_COMPARISON_COVERAGE',c,type,JSON.stringify(result.rows.map(r=>[r.metric,r.now,r.prior])));
+    }
+    await page.locator('.company-period-actions select').selectOption('Q3');
+  }
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
   check('Company commentary has no duplicated quarter prefix',

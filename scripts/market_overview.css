@@ -79,3 +79,17 @@
 @media(max-width:600px){.mo-line-svg{min-width:430px}.mo-report-calendar .mon-cal-grid{grid-template-columns:1fr}}
 
 .company-period-actions{display:flex;align-items:center;gap:8px;font-size:12px;color:#587082}.company-period-actions select{padding:7px 10px;border:1px solid #dbe5eb;border-radius:7px;background:#fff;color:#173447;font:inherit}
+
+/* All company tabs share one type scale and comparison vocabulary. */
+#app[data-company-page] .company-financial-card,
+#app[data-company-page] .company-segments table{font-family:inherit!important;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-financial-card .value{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:6px!important;white-space:normal!important;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-financial-card .financial-current{font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;letter-spacing:inherit!important}
+#app[data-company-page] .company-financial-card .name{font-size:11px!important;font-weight:700!important}
+#app[data-company-page] .company-financial-card .prior{font-size:11px!important;font-weight:500!important;color:#687d8f!important}
+#app[data-company-page] .company-segments td .financial-current{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-segments .table-prior{display:block;font-size:11px!important;font-weight:500;color:#687d8f;margin:4px 0 0}
+#app[data-company-page] .company-financial-card .qoq,#app[data-company-page] .company-segments .qoq{display:inline-flex!important;align-items:center;justify-content:center;width:18px!important;min-width:18px!important;height:18px!important;min-height:18px!important;padding:0!important;margin:0!important;border-radius:4px!important;font-family:inherit!important;font-size:12px!important;font-weight:800!important;line-height:1!important;flex:none}
+#app[data-company-page] .qoq.good{color:#08774f;background:#e4f6ec}
+#app[data-company-page] .qoq.bad{color:#b83d3d;background:#fceaea}
+#app[data-company-page] .qoq.flat{color:#647888;background:#eef2f5}
