@@ -13,7 +13,30 @@ async function main(){
   const snapshot=await response.json();
   const input=(company,key,period)=>page.locator('[data-ac="'+company+'"][data-ak="'+key+'"][data-ap="'+period+'"]');
   const normalize=v=>v==null?'':Number(String(v).replace(/\s|%/g,'').replace(',','.')).toFixed(1).replace('.',',');
-  await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.goto(new URL('?utm_source=chatgpt.com#metode',base).href,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>window.FBQuarterly?.period&&document.querySelector('#nav-methodology.active')&&document.querySelector('#metode'));
+  assert.equal(await page.locator('#app h1').textContent(),'Forutsetninger og kilder');
+  assert.equal(await page.locator('#app .top .tag').textContent(),
+    await page.evaluate(()=>FBActivePeriod.label+' · Kildekontrollerte utdrag'));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>window.FBQuarterly?.period&&document.querySelector('#nav-methodology.active')&&document.querySelector('#metode'));
+  await page.locator('#nav-summary').click();
+  await page.waitForFunction(()=>window.FBReportCalendar?.ready&&document.querySelector('[data-calendar-group="reported"]'));
+  assert.equal(await page.evaluate(()=>location.hash),'','Leaving methodology must clear its deep link');
+  const extended=await (await page.request.get(new URL('data/extended_insurer_financials.json',base).href)).json();
+  const latest=await page.evaluate(()=>FBQuarterly.available[0]);
+  const verifiedExtended=['KLP Skadeforsikring','Alm. Brand'].filter(n=>{
+    const data=extended.insurers[n];
+    return [data,...(data?.periods||[])].some(x=>x&&x.year===latest.year&&x.quarter===latest.quarter&&
+      x.status==='verified_official_pdf_reconciled'&&Number.isFinite(x.metrics?.insurance_revenue)&&Number.isFinite(x.metrics?.combined_ratio)&&
+      /^https:\/\//.test(x.source_url||'')&&/^[0-9a-f]{64}$/.test(x.source_sha256||''));
+  });
+  for(const n of verifiedExtended){
+    assert.equal(await page.locator('[data-calendar-group="pending"] .mon-cal-company strong').filter({hasText:n}).count(),0,n+' incorrectly pending');
+    assert.equal(await page.locator('[data-calendar-group="reported"] .mon-cal-company strong').filter({hasText:n}).count(),1,n+' missing in next-quarter calendar');
+  }
+  await page.evaluate(()=>{location.hash='metode'});
+  await page.waitForFunction(()=>document.querySelector('#nav-methodology.active')&&document.querySelector('#metode'));
   const entry=page.locator('#admin-entry');
   assert(await entry.isVisible(),'Administration entry is not visible on desktop');
   await entry.click();
@@ -71,6 +94,20 @@ async function main(){
   await mobile.locator('#admin-entry').click();
   await mobile.locator('#admin-overlay').waitFor({state:'visible'});
   assert.equal(await mobile.locator('#admin-values input').count(),42);
+  for(const width of [390,320]){
+    await mobile.setViewportSize({width,height:844});
+    const geometry=await mobile.evaluate(()=>{
+      const scroller=document.querySelector('.admin-scroll'),dialog=document.querySelector('.admin-dialog');
+      const left=dialog.getBoundingClientRect().left,right=dialog.getBoundingClientRect().right;
+      const fields=[...document.querySelectorAll('#admin-values input')];
+      return {overflow:scroller.scrollWidth-scroller.clientWidth,dialogOverflow:dialog.scrollWidth-dialog.clientWidth,
+        fields:fields.every(el=>{const r=el.getBoundingClientRect();return r.width>0&&r.height>=44&&r.left>=left&&r.right<=right;}),
+        labels:[...document.querySelectorAll('.admin-cell-label')].every(el=>getComputedStyle(el).display!=='none')};
+    });
+    assert(geometry.overflow<=1&&geometry.dialogOverflow<=1&&geometry.fields&&geometry.labels,JSON.stringify({width,...geometry}));
+  }
+  await mobile.locator('[data-ac="Fremtind"][data-ak="total"][data-ap="current"]').fill('20,1');
+  assert.equal(await mobile.locator('[data-ac="Fremtind"][data-ak="total"][data-ap="current"]').inputValue(),'20,1');
   await mobile.getByRole('button',{name:'Lukk ×',exact:true}).click();
   await mobile.locator('#admin-overlay').waitFor({state:'hidden'});
   await mobile.goto(new URL('?admin=1',base).href,{waitUntil:'domcontentloaded'});
