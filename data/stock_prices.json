@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T15:09:53.324684+00:00",
+  "updated_at": "2026-11-27T15:24:51.764965+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -7,7 +7,7 @@
       "currency": "NOK",
       "close": 285.2,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T14:54:09+00:00",
+      "observed_at": "2026-11-27T15:05:06+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 284.8,
@@ -1026,9 +1026,9 @@
       "symbol": "PROT.OL",
       "exchange": "Oslo Børs",
       "currency": "NOK",
-      "close": 482.6,
+      "close": 483.8,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T14:51:49+00:00",
+      "observed_at": "2026-11-27T15:07:43+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 481.8,
@@ -2036,7 +2036,7 @@
         },
         {
           "date": "2026-11-27",
-          "price": 482.6
+          "price": 483.8
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/PROT.OL",
@@ -2049,7 +2049,7 @@
       "currency": "NOK",
       "close": 200.6,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T14:53:34+00:00",
+      "observed_at": "2026-11-27T15:09:20+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 199.8,
@@ -3070,7 +3070,7 @@
       "currency": "DKK",
       "close": 168.4,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T15:09:05+00:00",
+      "observed_at": "2026-11-27T15:23:47+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 167.5,
@@ -4083,7 +4083,7 @@
       "currency": "EUR",
       "close": 10.165,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T15:09:17+00:00",
+      "observed_at": "2026-11-27T15:21:48+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.055,
@@ -5102,9 +5102,9 @@
       "symbol": "ALMB.CO",
       "exchange": "Nasdaq Copenhagen",
       "currency": "DKK",
-      "close": 17.81,
+      "close": 17.79,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T15:07:39+00:00",
+      "observed_at": "2026-11-27T15:18:30+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 17.68,
@@ -6104,7 +6104,7 @@
         },
         {
           "date": "2026-11-27",
-          "price": 17.81
+          "price": 17.79
         }
       ],
       "source_url": "https://finance.yahoo.com/quote/ALMB.CO",
