@@ -459,7 +459,113 @@
     if(!periodOf(label)||!view||title(view.model?.period)!==label||view.model.mode!==mode)return null;
     return {...view,locked:entry.locked===true};
   }
-  let comparison=null,fx=null,segments=null,context=null,archive=null,scope='group',market='all',mode='quarter',reportPeriod='latest',pending=null,failed=false;
+  // Both trend charts use the SAME five consecutive isolated quarters.
+  function timeline(p,count=5){
+    if(!p||!Number.isInteger(p.year)||!Number.isInteger(p.quarter)||p.quarter<1||p.quarter>4)return [];
+    const n=p.year*4+p.quarter-1;
+    return Array.from({length:count},(_,i)=>{const v=n-count+1+i;return 'Q'+(v%4+1)+' '+Math.floor(v/4);});
+  }
+  function profitabilityHistory(feed,context,archive,p){
+    const periods=timeline(p),observations=(feed?.observations||[]).filter(valid);
+    const historic=context?.profitability_history?.points||[];
+    const series=COMPANIES.map(company=>{
+      const points=periods.map(label=>{
+        const q=periodOf(label);
+        const rows=observations.filter(r=>r.company===company&&samePeriod(r,q)&&r.scope==='group'&&r.period_type==='quarter'&&r.unit==='percent');
+        const read=metric=>selectUnique(rows,metric);
+        const cr=read('combined_ratio'),loss=read('loss_ratio'),cost=read('expense_ratio');
+        let point=cr?{cr:cr.value,loss:loss?.value??null,cost:cost?.value??null,roe:read('return_on_equity')?.value??null,source_url:cr.source_url,source_sha256:cr.source_sha256,source_page:cr.source_page,method:cr.status}:null;
+        if(point&&!num(point.roe)){
+          const ytd=observations.filter(r=>r.company===company&&samePeriod(r,q)&&r.scope==='group'&&r.period_type==='ytd'&&r.unit==='percent');
+          const roe=selectUnique(ytd,'return_on_equity');
+          if(roe){point.roe=roe.value;point.roeBasis='HIÅ';}
+        }
+        if(EXTENDED.includes(company)){
+          const matches=historic.filter(r=>r.company===company&&r.period===label&&r.period_type==='quarter'&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&Number.isInteger(r.source_page)&&r.source_page>0&&num(r.cr)&&r.cr>=0);
+          point=matches.length===1?{...matches[0]}:null;
+        }
+        // Archive is authoritative for its own quarter; especially do not
+        // show an unreported issuer's latest point in an incomplete snapshot.
+        const snapshot=archive?.periods?.[label]?.views?.['group/all/quarter'];
+        if(snapshot){
+          const row=snapshot.model?.eligible?.find(r=>r.company===company);
+          if(!row)return null;
+          point={...point,cr:row.cr,loss:row.loss,cost:row.cost,source_url:point?.source_url||row.source};
+        }
+        return point&&num(point.cr)&&point.cr>=0?point:null;
+      });
+      return {company,points};
+    });
+    return {periods,series};
+  }
+  function reportQueues(label,reported,calendar,locked=false){
+    const p=periodOf(label);
+    if(!p)return {pending:[],next:[],nextPeriod:''};
+    const following=title({year:p.year+(p.quarter===4?1:0),quarter:p.quarter===4?1:p.quarter+1});
+    const done=new Set(reported);
+    const rows=COMPANIES.map(company=>{
+      const published=done.has(company),target=published?following:label;
+      const config=calendar?.[pretty(company)]||calendar?.[company]||{};
+      const events=(config.events||[]).filter(e=>e.period===target&&validDate(e.date));
+      const dates=[...new Set(events.map(e=>e.date))];
+      const date=dates.length===1?dates[0]:null;
+      const url=events.find(e=>e.date===date)?.source_url||config.calendar_url;
+      return {company,published,period:target,date,url:source(url)?url:null};
+    });
+    const sort=items=>items.sort((a,b)=>(a.date||'9999-99-99').localeCompare(b.date||'9999-99-99')||pretty(a.company).localeCompare(pretty(b.company),'nb'));
+    return {pending:locked?[]:sort(rows.filter(x=>!x.published)),next:sort(rows.filter(x=>x.published)),nextPeriod:following};
+  }
+  function validDate(s){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return false;
+    const d=new Date(s+'T00:00:00Z');return Number.isFinite(d.valueOf())&&d.toISOString().slice(0,10)===s;
+  }
+  function reportCalendarHtml(items,kind,label,locked=false){
+    if(!items.length)return '';
+    const upcoming=kind==='next',heading=upcoming?'Neste kvartal – publiseringsdatoer · '+label:'Avventer kvartalstall · '+label;
+    const cards=items.map(x=>{
+      const date=x.date?x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.'+x.date.slice(0,4):'Ingen dato oppgitt';
+      const content='<span class="mon-cal-company"><strong>'+safe(pretty(x.company))+'</strong><small>'+safe(x.period)+' · '+safe(date)+'</small></span>'+
+        (x.date?'<span class="mon-cal-countdown" data-report-date="'+safe(date)+'"'+(locked?' data-historical="true"':'')+'>Beregner …</span>':'');
+      const attrs=' class="mon-cal-row" data-company="'+safe(x.company)+'" data-target-period="'+safe(x.period)+'"';
+      return x.url?'<a'+attrs+' href="'+safe(x.url)+'" target="_blank" rel="noopener noreferrer">'+content+'</a>':'<div'+attrs+'>'+content+'</div>';
+    }).join('');
+    return '<section class="mon-calendar mo-report-calendar" id="mo-calendar-'+kind+'" data-report-period="'+safe(label)+'" aria-label="'+safe(heading)+'"><div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER</div><h2>'+safe(heading)+'</h2></div></div><div class="mon-cal-grid">'+cards+'</div></section>';
+  }
+  const LINE_COLORS=['#126f73','#3455a4','#b65f16','#8c4a92','#b63246','#457638','#137eb4','#6c6570','#996d14'];
+  const LINE_DASH=['','7 3','2 3','10 3 2 3','5 3','','8 4','3 3','10 5'];
+  function trendChart(history){
+    const {periods,series}=history;
+    if(periods.length!==5)return '<p class="mo-empty">Avventer verifisert kvartal.</p>';
+    const values=series.flatMap(s=>s.points.filter(Boolean).map(p=>p.cr));
+    if(!values.length)return '<p class="mo-empty">Historiske CR-tall er foreløpig ikke tilgjengelige.</p>';
+    const low=Math.min(60,Math.floor(Math.min(...values)/10)*10),high=Math.max(100,Math.ceil(Math.max(...values)/10)*10);
+    const step=high-low>70?20:10, w=620,h=250,left=49,right=18,top=12,bottom=37;
+    const x=i=>left+i*(w-left-right)/4,y=v=>top+(high-v)/(high-low)*(h-top-bottom);
+    const ticks=[];for(let i=low;i<=high;i+=step)ticks.push(i);
+    let svg='<svg class="mo-line-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Combined ratio for alle selskaper, fem kvartaler">';
+    svg+=ticks.map(v=>'<line x1="'+left+'" x2="'+(w-right)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===100?'#b8c4cb':'#e2e9ee')+'" stroke-dasharray="'+(v===100?'5 4':'')+'"/><text x="'+(left-7)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+' %</text>').join('');
+    svg+=periods.map((p,i)=>'<text x="'+x(i)+'" y="'+(h-10)+'" text-anchor="middle" class="mo-line-quarter" data-period="'+safe(p)+'">'+safe(p)+'</text>').join('');
+    svg+=series.map((s,j)=>{
+      const color=LINE_COLORS[j],dash=LINE_DASH[j];let path='',prev=false,marks='';
+      s.points.forEach((p,i)=>{if(!p){prev=false;return;}const cx=x(i),cy=y(p.cr);
+        path+=(prev?' L':' M')+cx.toFixed(2)+' '+cy.toFixed(2);prev=true;
+        marks+='<circle class="mo-line-point" data-company="'+safe(s.company)+'" data-period="'+safe(periods[i])+'" data-cr="'+p.cr+'" cx="'+cx+'" cy="'+cy+'" r="3.4" fill="'+color+'" stroke="white" stroke-width="1" tabindex="0" aria-label="'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'"><title>'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'</title></circle>';
+      });
+      return '<g class="mo-line-series" data-company="'+safe(s.company)+'"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>'+marks+'</g>';
+    }).join('')+'</svg>';
+    const legend=series.map((s,i)=>'<span class="mo-line-legend-item" data-company="'+safe(s.company)+'"><i style="background:'+LINE_COLORS[i]+'"></i>'+safe(pretty(s.company))+'</span>').join('');
+    const table='<details class="mo-history-values"><summary>Se kvartalstall og kilder</summary><div class="tablewrap"><table><thead><tr><th>Selskap</th>'+periods.map(p=>'<th>'+safe(p)+'</th>').join('')+'</tr></thead><tbody>'+series.map(s=>'<tr><th>'+safe(pretty(s.company))+'</th>'+s.points.map(p=>'<td>'+(p?(source(p.source_url)?'<a href="'+safe(p.source_url)+'" target="_blank" rel="noopener noreferrer" title="'+safe(p.method||'Verifisert rapport')+'">'+pct(p.cr)+'</a>':pct(p.cr)):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></details>';
+    return '<div class="section-head"><div><h2>Utvikling i CR · alle selskaper</h2><p class="hint">Konsern / rapportert total · isolerte kvartaler</p></div></div><div class="mo-line-scroll">'+svg+'</div><div class="mo-line-legend">'+legend+'</div>'+table;
+  }
+  function trendPanels(p){
+    const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
+    const s=history.series.find(s=>s.company===profitCompany);
+    const selected={},returns={};
+    s?.points.forEach((r,i)=>{if(!r)return;const label=history.periods[i];if(num(r.loss)&&num(r.cost))selected[label]=[r.loss,r.cost,r.cr];if(num(r.roe))returns[label]={value:r.roe,label:r.roeBasis==='HIÅ'?'Rapportert annualisert HIÅ':'Rapportert annualisert avkastning'};});
+    const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{quarters:history.periods,selected,returns,onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
+    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history)+'</section></div>';
+  }
+  let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',pending=null,failed=false;
   function currentView(){
     if(archive?.active_period){
       return archivedView(archive,reportPeriod,scope,market,mode)||{model:{period:null,mode,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0},comments:[],sources:[],locked:false};
@@ -508,15 +614,21 @@
     const filter=market==='all'?'Totalt':market==='pm'?'PM':'BM';
     const descriptor=contextual+' · '+filter+' · '+(mode==='ytd'?'HIÅ':'Kvartal');
     const count=m.selected.length;
+    const groupSnapshot=m.period&&(archive?.periods?.[latest]?.views?.['group/all/quarter']?.model||model(window.FBQuarterly?.verified,comparison,fx,'group','all',segments,'quarter',context));
+    const reported=groupSnapshot?.eligible?.map(r=>r.company)||[];
+    const queue=calendar&&latest?reportQueues(latest,reported,calendar,view.locked):null;
+    const topCal=queue?reportCalendarHtml(queue.pending,'pending',latest):'';
+    const nextCal=queue?reportCalendarHtml(queue.next,'next',queue.nextPeriod,view.locked):'';
+    const media=typeof mediaNews==='function'?mediaNews(latest):'';
     return '<div class="top mo-top"><div><div class="eyebrow">MARKEDSOVERSIKT</div><h1>Forsikringsbarometeret</h1><p class="sub">Lønnsomhet og vekst i forsikringsmarkedet</p></div>'+
-      '<div class="tag" id="mo-period">'+safe(latest||'Laster rapportperiode')+'</div></div>'+
+      '<div class="tag" id="mo-period">'+safe(latest||'Laster rapportperiode')+'</div></div>'+topCal+
       '<section id="market-overview" class="panel mo-panel" data-period="'+safe(latest)+'" data-scope="'+scope+'" data-market="'+market+'" data-mode="'+mode+'" data-locked="'+Boolean(view.locked)+'">'+
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2></div>'+
       (latest?'<span class="pill">'+(view.locked?'Låst · ':'')+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
       '</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer · '+safe(descriptor)+'</h2></div></div>'+
-      (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
+      (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>'+ (m.period?trendPanels(m.period):'')+media+nextCal;
   }
   function render(){
     if(typeof current!=='undefined'&&current==='home'&&typeof show==='function')show('home',true);
@@ -531,11 +643,12 @@
     if(kind==='reportPeriod')document.querySelector('#mo-report-period')?.focus({preventScroll:true});
     else document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
   }
+  function selectProfitability(name){if(COMPANIES.includes(name)){profitCompany=name;render();document.querySelector('#mo-profitability-panel select')?.focus({preventScroll:true});}}
   function refresh(){
     if(pending)return pending;
     pending=(async()=>{
     try{
-      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json','market_overview_archive.json'].map(async f=>{
+      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json','market_overview_archive.json','calendar.json'].map(async f=>{
         const r=await fetch('data/'+f+'?t='+Date.now(),{cache:'no-store'});
         if(!r.ok)throw Error('HTTP '+r.status);return r.json();
       }));
@@ -544,7 +657,8 @@
       if(results[2].status==='fulfilled')segments=results[2].value;
       if(results[3].status==='fulfilled')context=results[3].value;
       if(results[4].status==='fulfilled'&&results[4].value?.active_period)archive=results[4].value;
-      failed=results.some(r=>r.status==='rejected');
+      if(results[5].status==='fulfilled')calendar=results[5].value;
+      failed=results.slice(0,5).some(r=>r.status==='rejected');
     }finally{pending=null;render();}
     })();
     return pending;
@@ -560,5 +674,5 @@
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,refresh,start};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,reportQueues,trendChart};
 });

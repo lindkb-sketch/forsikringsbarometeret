@@ -757,9 +757,9 @@ main{padding:30px clamp(20px,3vw,46px) 60px}
  .stock-news-section .stock-news-icon{width:38px;height:38px;flex-basis:38px}
 }
 </style>
-<link rel="stylesheet" href="scripts/broker_commentary.css"><link rel="stylesheet" href="scripts/market_overview.css"></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><button id="nav-summary" onclick="show('summary')">▤ &nbsp; Oppsummering</button><div class="label">KONKURRENTER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
-const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');companies.forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
-const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c==='Fremtind'?'home':c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
+<link rel="stylesheet" href="scripts/broker_commentary.css"><link rel="stylesheet" href="scripts/market_overview.css"></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><button id="nav-summary" onclick="show('summary')">▤ &nbsp; Oppsummering</button><div class="label">SELSKAPER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
+const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');['Fremtind',...companies].forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
+const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
 function shell(title,subtitle,eyebrow='MARKEDSOVERSIKT'){return companyQuickNav()+`<div class="top"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="sub">${subtitle}</p></div><div class="tag">Q2 2026 · Kildekontrollerte utdrag</div></div>`}const peerData={
 'Gjensidige':{cr:'66,0 %',crPrev:'71,2 %',loss:'56,6 %',lossPrev:'62,1 %',cost:'9,4 %',costPrev:'9,1 %',growth:'11,4 %',finance:'786,4 MNOK',financePrev:'1 102,0 MNOK',financeScope:'Konsern – ikke Norge',scope:'Norge – Private + Commercial, inntektsvektet (beregnet)',url:'https://www.gjensidige.com/no/investorinformasjon/rapporter-og-presentasjoner'},
 'Tryg':{finance:'262 MDKK',financePrev:'110 MDKK',financeScope:'Tryg konsern – ikke Norge',cr:'77,3 %',crPrev:'82,1 %',loss:'65,6 %',lossPrev:'70,1 %',cost:'11,7 %',costPrev:'12,0 %',growth:null,scope:'Tryg Norge – IFRS 17 forsikringsinntekter (avventer kontroll)',url:'https://kommunikasjon.ntb.no/pressemelding/18987965/tryg-norge-med-solid-q2-resultat?publisherId=17849174'},
@@ -925,13 +925,13 @@ const profitabilityVerified=Object.fromEntries(['Fremtind','Gjensidige','Tryg','
 const profitabilityReturns=Object.fromEntries(['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'].map(name=>[name,{}]));
 
 function setProfitabilityCompany(name){profitabilityCompany=name;document.getElementById("profitability-panel").innerHTML=profitabilityChart()}
-function profitabilityChart(companyName=profitabilityCompany){
- const names=['Fremtind',...companies],selected=profitabilityVerified[companyName]||{},returns=profitabilityReturns[companyName]||{};
- const displayedQuarters=profitabilityQuarters.slice(-5); // five rolling slots, retain unpublished quarters as open
+function profitabilityChart(companyName=profitabilityCompany,options=null){
+ const names=['Fremtind',...companies],selected=options?.selected||profitabilityVerified[companyName]||{},returns=options?.returns||profitabilityReturns[companyName]||{};
+ const displayedQuarters=options?.quarters||profitabilityQuarters.slice(-5); // five rolling slots, retain unpublished quarters as open
  const fmt=n=>n.toFixed(1).replace('.',',')+' %';
- const valid=profitabilityQuarters.filter(q=>returns[q]);
+ const valid=displayedQuarters.filter(q=>returns[q]);
  const returnMetric=companyName==='Tryg'?'ROOF':companyName==='Fremtind'?'Justert EK-avkastning':'ROE';
- return `<div class="profit-head"><h2>Utvikling i lønnsomhet · ${companyName}</h2><select aria-label="Velg selskap for lønnsomhet" onchange="setProfitabilityCompany(this.value)">${names.map(n=>`<option value="${n}" ${n===companyName?'selected':''}>${n==='Sampo'?'Sampo (If)':n}</option>`).join('')}</select></div>
+ return `<div class="profit-head"><h2>Utvikling i lønnsomhet · ${companyName}</h2><select aria-label="Velg selskap for lønnsomhet" onchange="${options?.onChange||'setProfitabilityCompany(this.value)'}">${names.map(n=>`<option value="${n}" ${n===companyName?'selected':''}>${n==='Sampo'?'Sampo (If)':n}</option>`).join('')}</select></div>
  <div class="profit-legend"><span><i class="legend-loss"></i> Skadeprosent netto (%)</span><span><i class="legend-cost"></i> Kostnadsprosent (%)</span><span><i class="legend-roe"></i> ${returnMetric} annualisert (%)</span></div>
  <div class="profit-chart-frame"><div class="profit-plot">${displayedQuarters.map(q=>{const d=selected[q];if(!d)return `<div class="profit-column"><div class="profit-space"><span class="profit-missing">—</span></div><div class="profit-quarter">${q}</div><div class="profit-return-point">${returns[q]?'<span class="return-dot"></span><strong>'+fmt(returns[q].value)+'</strong>':'<span class="return-empty">—</span>'}</div></div>`;const [loss,cost,cr]=d;return `<div class="profit-column"><div class="profit-space"><div class="profit-total">CR ${fmt(cr)}</div><div class="profit-stack" title="${q}: skadeprosent netto ${loss} %, kostnadsprosent ${cost} %, rapportert CR ${cr} %"><div class="profit-cost" style="height:${cost}%"><span class="profit-segment-label">${fmt(cost)}</span></div><div class="profit-loss" style="height:${loss}%"><span class="profit-segment-label">${fmt(loss)}</span></div></div></div><div class="profit-quarter">${q}</div><div class="profit-return-point">${returns[q]?'<span class="return-dot"></span><strong>'+fmt(returns[q].value)+'</strong>':'<span class="return-empty">—</span>'}</div></div>`}).join('')}</div></div>
  <div class="profit-foot">${valid.length?`${returnMetric}: ${valid.length} av 5 kvartaler med dokumentert annualisert verdi. `:`${returnMetric}: Ingen dokumenterte annualiserte kvartalsverdier ennå. `}Gjensidige: hiå ved kvartalsslutt (Q4 = helår). Tryg: annualisert kvartalsavkastning. Fremtind: annualisert egenkapitalavkastning justert for Eika-transaksjonen (Q4 = helår). Avrunding kan gi mindre avvik mot CR.</div>`;
@@ -1492,8 +1492,8 @@ monSetQuarter=function(q){
 };
 const MON_EXEC_ORIG_PROFITABILITY=profitabilityChart;
 // Preserve explicit issuer selection in embedded company profitability charts.
-profitabilityChart=function(companyName=profitabilityCompany){
- return MON_EXEC_ORIG_PROFITABILITY(companyName);
+profitabilityChart=function(companyName=profitabilityCompany,options=null){
+ return MON_EXEC_ORIG_PROFITABILITY(companyName,options);
 };
 // Only hide a pending company when a complete new-quarter report record is present.
 // Normalize display names to model keys, notably Sampo/If -> Sampo.
@@ -1521,7 +1521,7 @@ home=function(){let html=MON_EXEC_ORIG_HOME();if(MON_QUARTER==='Q3')html+=monCal
   // The reporting calendar is decision-critical and belongs directly after the period selector.
   const cal=app.querySelector('.mon-calendar');
   const selector=app.querySelector('.mon-period');
-  if(cal&&selector)selector.insertAdjacentElement('afterend',cal);
+  if(current==='summary'&&cal&&selector)selector.insertAdjacentElement('afterend',cal);
   // Provide horizontal table scrolling only where necessary; never squeeze numeric columns.
   for(const table of app.querySelectorAll('table')){
    if(table.parentElement.classList.contains('exec-table-scroll'))continue;
@@ -1633,7 +1633,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
   const app=document.getElementById('app');if(!app)return;
   const cal=app.querySelector('.mon-calendar');
   const top=app.querySelector('.top');
-  if(cal&&top){
+  if(current==='summary'&&cal&&top){
    const briefing=app.querySelector('.quarter-comment,.mon-quarter-comment,.quarter-brief');
    if(briefing&&briefing.parentElement===app)briefing.insertAdjacentElement('afterend',cal);
    else top.insertAdjacentElement('afterend',cal);
@@ -1691,7 +1691,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
      el.removeAttribute('aria-hidden');el.dataset.state=days<0?'past':days===0?'today':days<5?'urgent':'future';
      const label=days>1?`${days} dager igjen`:days===1?'1 dag igjen':days===0?'Rapportdag':`${Math.abs(days)} ${Math.abs(days)===1?'dag':'dager'} siden`;
      if(el.textContent!==label)el.textContent=label;
-     el.title=days<0?'Rapportdatoen er passert. Tallene er ennå ikke innarbeidet.':`Planlagt rapportdato: ${raw}`;
+     el.title=days<0?(el.dataset.historical==='true'?'Historisk rapportdato.':'Rapportdatoen er passert. Tallene er ennå ikke innarbeidet.'):`Planlagt rapportdato: ${raw}`;
    });
  }
  // Re-render after quarterly navigation and updates to the app root.
@@ -1972,12 +1972,12 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const selectedNews=()=>unique((news?.items||[]).filter(r=>
    !mediaNoise.test(r.headline||'')));
 
- function newsGroups(){
+ function newsGroups(reportLabel=null){
   const all=selectedNews();
   // Market strategy is independent of quarterly reporting summaries.
   // Only explicitly strategic issuer evidence qualifies, never generic revenue,
   // profitability, claims or pricing commentary copied from the quarterly brief.
-  const selectedQuarter=selectedLabel();
+  const selectedQuarter=reportLabel||selectedLabel();
   // Strategy is a separate verified editorial artifact, never the quarterly brief.
   const official=(strategicEvidence?.periods?.[selectedQuarter]||[]).filter(r=>
     r?.basis==='rule_verified_issuer_narrative'&&r.summary&&/^https:\/\//.test(r.source_url||''));
@@ -1997,8 +1997,8 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
  const oldStocks=stockMarketSection;
  // Unified editorial surface: no separate strategy panel for any quarter.
  quarterChanges=function(){return '';};
- mediaNews=function(){
-  const groups=newsGroups();
+ mediaNews=function(reportLabel=null){
+  const groups=newsGroups(reportLabel);
   const strategic=groups.official.map(x=>
     '<article class="media-news-card"><div class="media-news-body">'+
     '<div class="media-news-meta">Markedsinnsikt · '+esc(x.period||selectedLabel())+

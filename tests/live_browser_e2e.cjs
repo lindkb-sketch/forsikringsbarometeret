@@ -84,6 +84,24 @@ async function main(){
     const f=await page.evaluate(({marketFx,marketComparison,marketSegments})=>Object.fromEntries(['pm','bm'].map(m=>[m,FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,'group',m,marketSegments).eligible.find(r=>r.company==='Fremtind')])),{marketFx,marketComparison,marketSegments});
     check('Fremtind published APM quarter CR and revenue (not IFRS note)',f.pm?.cr===71.6&&f.bm?.cr===80.8&&f.pm?.revenue===5341&&f.bm?.revenue===965&&f.pm?.growth===4.4&&f.bm?.growth===3.6&&f.pm?.loss===null&&f.bm?.cost===null,JSON.stringify(f));
   }
+  const marketSections=await page.evaluate(()=>{
+    const ids=['market-overview-comments','mo-trend-charts','media-news','mo-calendar-next'];
+    return {order:ids.every((id,i)=>document.getElementById(id)&&(!i||Boolean(document.getElementById(ids[i-1]).compareDocumentPosition(document.getElementById(id))&Node.DOCUMENT_POSITION_FOLLOWING))),
+      pending:document.querySelectorAll('#mo-calendar-pending .mon-cal-row').length,
+      next:document.querySelectorAll('#mo-calendar-next .mon-cal-row').length,
+      labels:[...document.querySelectorAll('#mo-cr-history .mo-line-quarter')].map(x=>x.dataset.period),
+      left:[...document.querySelectorAll('#mo-profitability-panel .profit-quarter')].map(x=>x.textContent),
+      companies:[...document.querySelectorAll('.mo-line-legend-item')].map(x=>x.dataset.company),
+      points:document.querySelectorAll('.mo-line-point').length};
+  });
+  check('Market supplementary panels in requested order',marketSections.order,JSON.stringify(marketSections));
+  check('Both market charts display the same five consecutive periods',marketSections.labels.length===5&&JSON.stringify(marketSections.labels)===JSON.stringify(marketSections.left)&&marketSections.labels.at(-1)===marketArchive.active_period,JSON.stringify(marketSections));
+  check('Market CR line chart covers all nine issuers',marketSections.companies.length===9&&new Set(marketSections.companies).size===9,JSON.stringify(marketSections));
+  check('Market report calendar partitions all nine issuers',marketSections.pending+marketSections.next===9,JSON.stringify(marketSections));
+  if(marketArchive.periods[marketArchive.active_period].views['group/all/quarter'].model.reported===9)check('No pending calendar when all nine have reported',await page.locator('#mo-calendar-pending').count()===0&&marketSections.next===9);
+  await page.locator('#mo-profitability-panel select').selectOption('Tryg');
+  check('Market profitability selector works without changing CR chart',await page.locator('#mo-profitability-panel h2').innerText()==='Utvikling i lønnsomhet · Tryg'&&await page.locator('.mo-line-legend-item').count()===9);
+  await page.locator('#mo-profitability-panel select').selectOption('Fremtind');
   await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
   report.screenshots.push('data/browser_market_overview.png');
   await page.locator('#nav-summary').click();
@@ -445,8 +463,9 @@ async function main(){
   }
   // Each company detail must show its own profitability graph and source-derived
   // prior-year revenue growth; do not accept the homepage's selected issuer.
-  for(const issuer of ['Gjensidige','Protector']){
-    await page.evaluate(name=>show(name,true),issuer);
+  for(const issuer of ['Fremtind','Gjensidige','Protector']){
+    await page.locator('[id="nav-'+issuer+'"]').click();
+    check(issuer+' own navigation tab active',await page.locator('[id="nav-'+issuer+'"].active').count()===1);
     const panel=page.locator('.company-profitability');
     const placement=await page.evaluate(()=>{
       const graph=document.querySelector('.company-profitability');

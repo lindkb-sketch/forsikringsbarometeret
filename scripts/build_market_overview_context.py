@@ -525,8 +525,11 @@ def main():
     feed=load('verified_financial_feed.json');comparison=load('nine_insurer_comparison.json')
     previous=load(TARGET.name) if TARGET.exists() else {}
     result=build(feed,comparison,previous)
+    extended=load('extended_insurer_financials.json')
     from market_commentary_documents import enrich
-    enrich(result,feed,comparison,load('extended_insurer_financials.json'),load('report_candidates.json'),previous)
+    enrich(result,feed,comparison,extended,load('report_candidates.json'),previous)
+    from market_profitability_history import build_history
+    result['profitability_history']=build_history(extended,result['alm_report_sources'],previous.get('profitability_history',{}))
     from publish_geographic_workbooks import atomic_write
     atomic_write(TARGET,result)
     print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)

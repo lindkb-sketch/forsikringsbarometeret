@@ -198,6 +198,7 @@
     // Rebind the existing company segment table to audited feed observations.
     // Keep the original HTML/CSS and segment labels; never reuse static Q2 values.
     const segmentSpecs={
+      Fremtind:[['Privatmarkedet','reported_segment','Private'],['Bedriftsmarkedet','reported_segment','Commercial']],
       Tryg:[['Norge total','norway',null]],
       Protector:[['Norge total','norway',null]],
       Storebrand:[['Norge total','norway',null]],
@@ -382,6 +383,14 @@
   function companyWithVerifiedKpis(c){
     const fragment=document.createElement('div');
     fragment.innerHTML=relabel(previousCompany(c));
+    if(c==='Fremtind'&&selection){
+      const heading=fragment.querySelector('.section-head');
+      if(heading){
+        const controls=document.createElement('div');controls.className='company-period-actions';
+        controls.innerHTML='<label>Periode <select aria-label="Rapporteringsperiode" onchange="setPeriod(this.value)"><option value="Q3"'+(!ytdMode()?' selected':'')+'>Kvartal</option><option value="H3"'+(ytdMode()?' selected':'')+'>HIÅ</option></select></label>';
+        heading.appendChild(controls);
+      }
+    }
     const cardNodes=fragment.querySelectorAll('.dynamic-kpis > .metric');
     const d=(ytdMode()?MON_YTD_Q3:MON_Q3)[c]||{};
     if(!d.growthPrev&&selection){
@@ -769,6 +778,7 @@
   // Recompute the window on issuer change as well as on quarter selection.
   const originalSetProfitabilityCompany=setProfitabilityCompany;
   setProfitabilityCompany=name=>{
+    if(current!=='summary'){if(COMPANY_NAMES.includes(name)||['Alm. Brand','KLP Skadeforsikring'].includes(name))show(name,true);return;}
     originalSetProfitabilityCompany(name);
     if(selection) {
       profitabilityQuarters.splice(0,profitabilityQuarters.length,...issuerProfitabilityTimeline(name));

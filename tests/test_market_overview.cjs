@@ -228,3 +228,35 @@ test('causal editorial selection retains contrasting drivers and avoids repeatin
  assert.ok(c[1].paragraphs[0].split(/\s+/).length<=125);
  assert.match(c[2].paragraphs[0],/176 mill.*inntektsføring/);
 });
+
+test('market profitability uses five contiguous quarters and all nine issuers without filling missing periods',()=>{
+ const {timeline,profitabilityHistory,trendChart}=require('../scripts/market_overview.js');
+ assert.deepEqual(timeline({year:2026,quarter:3}),['Q3 2025','Q4 2025','Q1 2026','Q2 2026','Q3 2026']);
+ assert.deepEqual(timeline({year:2026,quarter:4}),['Q4 2025','Q1 2026','Q2 2026','Q3 2026','Q4 2026']);
+ assert.deepEqual(timeline({year:2027,quarter:1}),['Q1 2026','Q2 2026','Q3 2026','Q4 2026','Q1 2027']);
+ const f={observations:[...rows('Fremtind',100,80,60,20,'NOKm','group',null,2026,1),...rows('Fremtind',100,75,55,20,'NOKm','group',null,2026,3)]};
+ const h=profitabilityHistory(f,{},null,{year:2026,quarter:3});
+ assert.equal(h.series.length,9);
+ assert.deepEqual(h.series[0].points.map(p=>p?.cr??null),[null,null,80,null,75]);
+ const html=trendChart(h);
+ assert.equal((html.match(/class="mo-line-point"/g)||[]).length,2);
+ assert.match(html,/d=" M[^"]+ M[^"]+"/);
+ assert.doesNotMatch(html,/data-period="Q2 2026" data-cr=/);
+ const next=profitabilityHistory(f,{},null,{year:2026,quarter:4});
+ assert.equal(next.periods[0],'Q4 2025');assert.equal(next.series[0].points.at(-1),null);
+});
+test('calendar moves only reported issuers, matches exact next quarter, and hides completed pending list',()=>{
+ const {reportQueues}=require('../scripts/market_overview.js');
+ const calendar={'Fremtind':{events:[{period:'Q4 2026',date:'2027-02-01'},{period:'Q1 2027',date:'2027-04-29'}]},'Tryg':{events:[{period:'Q4 2026',date:'2027-01-22'}]},'Sampo / If':{events:[{period:'Q1 2027',date:'2027-05-05'}]}};
+ const before=reportQueues('Q4 2026',['Tryg'],calendar);
+ assert.equal(before.pending.length,8);assert.equal(before.nextPeriod,'Q1 2027');
+ assert.equal(before.pending.find(r=>r.company==='Fremtind').date,'2027-02-01');
+ assert.equal(before.next.find(r=>r.company==='Tryg').date,null);
+ assert.equal(before.pending.find(r=>r.company==='Frende').date,null);
+ const after=reportQueues('Q4 2026',['Tryg','Fremtind','Frende'],calendar);
+ assert.equal(after.pending.length,6);assert.equal(after.next.length,3);
+ assert.equal(after.next.find(r=>r.company==='Fremtind').date,'2027-04-29');
+ assert.equal(after.next.find(r=>r.company==='Frende').date,null);
+ const all=reportQueues('Q4 2026',after.pending.map(r=>r.company).concat(after.next.map(r=>r.company)),calendar);
+ assert.equal(all.pending.length,0);assert.equal(all.next.length,9);
+});
