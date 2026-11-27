@@ -382,6 +382,16 @@ async function main(){
   check('Calendar separates reported and pending companies',calendarColumns.total===9 &&
     calendarColumns.pending+calendarColumns.reported===9,
     JSON.stringify(calendarColumns));
+  const calendarMembership=await page.evaluate(()=>{
+    const p=FBQuarterly.available[0],names=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand'];
+    const read=kind=>[...document.querySelectorAll('[data-calendar-group="'+kind+'"] .mon-cal-company strong')].map(el=>el.textContent==='Sampo / If'?'Sampo':el.textContent).sort();
+    return {actualPending:read('pending'),actualReported:read('reported'),
+      expectedPending:names.filter(n=>!FBQuarterly.isReportPublished(n,p)).sort(),
+      expectedReported:names.filter(n=>FBQuarterly.isReportPublished(n,p)).sort()};
+  });
+  check('Summary calendar agrees with verified group reports for all nine',
+    JSON.stringify(calendarMembership.actualPending)===JSON.stringify(calendarMembership.expectedPending)&&
+    JSON.stringify(calendarMembership.actualReported)===JSON.stringify(calendarMembership.expectedReported),JSON.stringify(calendarMembership));
   check('Every insurer has a report countdown or explicit unknown date',
     calendarColumns.total===9 && calendarColumns.dates.length===9 &&
     calendarColumns.dates.every(x=>x&&x.length>0),

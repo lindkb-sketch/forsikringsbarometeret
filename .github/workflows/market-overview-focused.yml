@@ -5,6 +5,8 @@ on:
     paths:
       - 'index.html'
       - 'data/market_shares.json'
+      - 'scripts/quarterly_runtime.js'
+      - 'tests/live_browser_e2e.cjs'
       - 'tests/test_no_hardcoded_financials.py'
       - 'tests/test_end_to_end.py'
       - 'scripts/*market*'

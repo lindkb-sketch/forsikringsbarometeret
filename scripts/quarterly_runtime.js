@@ -32,6 +32,14 @@
       /^https:\/\//.test(r.source_url||'')&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&
       Number.isFinite(r.metrics?.insurance_revenue)&&Number.isFinite(r.metrics?.combined_ratio))||null;
   }
+  // Calendar uses the same period-specific, source-verified admission as the financial cards.
+  function isReportPublished(name,p){
+    if(!p)return false;
+    if(EXTENDED_NAMES.includes(name))return Boolean(extendedRecord(name,p));
+    const found=new Set(rows().filter(r=>r.company===name&&r.year===p.year&&
+      r.quarter===p.quarter&&r.period_type==='quarter').map(r=>r.metric));
+    return found.has('combined_ratio')&&found.has('insurance_revenue');
+  }
   function extendedMetrics(name,p,type){
     const row=extendedRecord(name,p);if(!row)return {};
     if(type==='quarter')return row.metrics||{};
@@ -921,7 +929,7 @@
       document.getElementById('profitability-panel').innerHTML=profitabilityChart();
     }
   };
-  window.FBQuarterly={refresh,selectBasis(value){if(['Q3','H3'].includes(value)){period=value;populate();show(current,true);}},get period(){return selection&&{...selection};},
+  window.FBQuarterly={refresh,isReportPublished,selectBasis(value){if(['Q3','H3'].includes(value)){period=value;populate();show(current,true);}},get period(){return selection&&{...selection};},
     get available(){return periodList.map(p=>({...p}));},get verified(){return verified;},
     get selectedData(){return {quarter:MON_Q3,ytd:MON_YTD_Q3};},
     get quarterlyGraph(){return profitabilityQuarters.slice();}};

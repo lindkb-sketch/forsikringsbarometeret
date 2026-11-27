@@ -132,7 +132,29 @@
 .frende-skade-source{display:block;margin-top:5px;font-size:11px;line-height:1.3;font-weight:400}
 .frende-skade-source a{color:#14677c;text-decoration:underline;text-underline-offset:2px}
 .frende-skade-source a:hover,.frende-skade-source a:focus-visible{color:#0d4557}
-</style><style>#admin-overlay[hidden]{display:none!important}#admin-overlay{position:fixed;inset:0;background:#0d2435aa;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.admin-dialog{background:#fff;border-radius:16px;width:min(900px,100%);max-height:94vh;overflow:auto;padding:26px;box-shadow:0 24px 70px #102c4266;color:#18384a}.admin-head{display:flex;justify-content:space-between;gap:18px}.admin-head h2{font-size:25px;margin:5px 0}.admin-head p{font-size:13px;color:#607586}.admin-head button,.admin-actions button{cursor:pointer;border:1px solid #d6e1e8;border-radius:8px;background:white;padding:11px 15px}.admin-file{display:block;padding:18px;background:#f3f8fb;border:1px dashed #94b5c7;border-radius:10px;margin:18px 0;font-weight:700}.admin-file input{display:block;margin-top:12px;max-width:100%}#admin-status{font-size:13px;margin-bottom:12px}.admin-scroll{overflow:auto}.admin-table{width:100%;border-collapse:collapse}.admin-table th,.admin-table td{padding:8px;text-align:left;border-bottom:1px solid #e6eef2}.admin-table input{width:100%;min-width:70px;border:1px solid #d4e2ea;border-radius:6px;padding:9px}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.admin-actions .admin-primary{background:#116b79;color:#fff;border-color:#116b79}.admin-warning{font-size:12px;line-height:1.5;color:#6b7882;margin-top:18px}#admin-entry{background:#1a5967;color:white;border:1px solid #458a96;border-radius:8px;cursor:pointer} .admin-table{min-width:660px}.admin-table th{text-align:left}.admin-table input{min-width:64px}.admin-dialog{width:min(1050px,100%)}@media(max-width:760px){.admin-dialog{padding:16px}.admin-head{gap:8px}.admin-head button{align-self:flex-start;white-space:nowrap}}</style><style>
+</style><style>#admin-overlay[hidden]{display:none!important}#admin-overlay{position:fixed;inset:0;background:#0d2435aa;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.admin-dialog{background:#fff;border-radius:16px;width:min(900px,100%);max-height:94vh;overflow:auto;padding:26px;box-shadow:0 24px 70px #102c4266;color:#18384a}.admin-head{display:flex;justify-content:space-between;gap:18px}.admin-head h2{font-size:25px;margin:5px 0}.admin-head p{font-size:13px;color:#607586}.admin-head button,.admin-actions button{cursor:pointer;border:1px solid #d6e1e8;border-radius:8px;background:white;padding:11px 15px}.admin-file{display:block;padding:18px;background:#f3f8fb;border:1px dashed #94b5c7;border-radius:10px;margin:18px 0;font-weight:700}.admin-file input{display:block;margin-top:12px;max-width:100%}#admin-status{font-size:13px;margin-bottom:12px}.admin-scroll{overflow:auto}.admin-table{width:100%;border-collapse:collapse}.admin-table th,.admin-table td{padding:8px;text-align:left;border-bottom:1px solid #e6eef2}.admin-table input{width:100%;min-width:70px;border:1px solid #d4e2ea;border-radius:6px;padding:9px}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.admin-actions .admin-primary{background:#116b79;color:#fff;border-color:#116b79}.admin-warning{font-size:12px;line-height:1.5;color:#6b7882;margin-top:18px}#admin-entry{background:#1a5967;color:white;border:1px solid #458a96;border-radius:8px;cursor:pointer} .admin-table{min-width:660px}.admin-table th{text-align:left}.admin-table input{min-width:64px}.admin-dialog{width:min(1050px,100%)} .admin-cell-label{display:none}
+@media(max-width:760px){
+ .admin-dialog{padding:16px}
+ .admin-head{gap:8px;position:relative}
+ .admin-head>div{min-width:0}
+ .admin-head h2{overflow-wrap:anywhere}
+ .admin-head button{align-self:flex-start;white-space:nowrap;flex-shrink:0}
+ #admin-overlay .admin-scroll{overflow:visible}
+ #admin-overlay .admin-table{display:block;width:100%;min-width:0}
+ #admin-overlay .admin-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ #admin-overlay .admin-table tbody{display:block}
+ #admin-overlay .admin-table tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;padding:12px;margin:0 0 12px;border:1px solid #dce6eb;border-radius:12px;background:#fff}
+ #admin-overlay .admin-table th[scope="row"]{grid-column:1/-1;padding:0 0 9px;border-bottom:1px solid #dce6eb;font-size:14px}
+ #admin-overlay .admin-table td{min-width:0;padding:0;border:0}
+ #admin-overlay .admin-table td:nth-child(n+5){border-top:1px solid #e6eef2;padding-top:8px}
+ #admin-overlay .admin-cell-label{display:flex;flex-direction:column;gap:3px;margin-bottom:5px;font-size:12px;line-height:1.25}
+ #admin-overlay .admin-cell-label small{font-size:10px;color:#617587}
+ #admin-overlay .admin-cell-label strong{font-weight:700;color:#18384a}
+ #admin-overlay .admin-table input{min-width:0;max-width:100%;width:100%;box-sizing:border-box;padding:8px 6px;font-size:16px;min-height:44px}
+ #admin-overlay .admin-actions button{flex:1 1 100%;min-height:44px}
+}
+@media(max-width:360px){#admin-overlay .admin-head{flex-direction:column-reverse;gap:4px}#admin-overlay .admin-head button{align-self:flex-end}}
+</style><style>
 .kpi-seven{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:11px;margin:0 0 18px}
 .kpi-seven>.metric{box-sizing:border-box;min-width:0;min-height:185px;height:100%;padding:14px 11px;display:flex;flex-direction:column}
 .kpi-seven .name{font-size:11px;line-height:1.4;min-height:43px;font-weight:700}
@@ -760,7 +782,7 @@ main{padding:30px clamp(20px,3vw,46px) 60px}
 <link rel="stylesheet" href="scripts/broker_commentary.css"><link rel="stylesheet" href="scripts/market_overview.css"></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><button id="nav-summary" onclick="show('summary')">▤ &nbsp; Oppsummering</button><div class="label">SELSKAPER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="label">ADMINISTRASJON</div><button id="admin-entry" type="button" onclick="openMarketAdmin()">⚙ &nbsp; Oppdater markedsandeler</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
 const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');['Fremtind',...companies].forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
 const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
-function shell(title,subtitle,eyebrow='MARKEDSOVERSIKT'){return companyQuickNav()+`<div class="top"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="sub">${subtitle}</p></div><div class="tag">Q2 2026 · Kildekontrollerte utdrag</div></div>`}const peerData={};
+function shell(title,subtitle,eyebrow='MARKEDSOVERSIKT'){return companyQuickNav()+`<div class="top"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="sub">${subtitle}</p></div><div class="tag">${window.FBActivePeriod?.label||'Laster rapportperiode'} · Kildekontrollerte utdrag</div></div>`}const peerData={};
 function cell(v,prev){return v?`${v}<span class="table-prior">(${prev||'—'})</span>`:noData}
 // Finans Norge, bestandspremie landbasert norsk skadeforsikring, Q2 2026.
 // Owner-maintained market shares are separate from automatically verified financial data.
@@ -1023,7 +1045,9 @@ function methodology(){
  <div class="panel"><h2>Redaksjonelle kvartalskommentarer</h2><p>Kommentarene bygger på originalrapportene og kvartalspresentasjonene. Kursnytt, medieomtale og strategisk markedsinnsikt vises separat fra finansielle forklaringer.</p></div>
  <div class="panel"><h2>Kilder</h2><p>Se kildehenvisninger i selskapsfanene, kvartalstallene og de kildeverifiserte datafilene.</p><p><a href="data/verified_financial_feed.json">Finansfeed ↗</a> · <a href="data/market_overview_context.json">Markedsgrunnlag ↗</a> · <a href="data/market_shares.json">Markedsandeler ↗</a></p></div>`;
 }
-function show(page,preserveScroll=false){current=page;if(['Fremtind',...companies].includes(page))$('#app').dataset.companyPage=page;else delete $('#app').dataset.companyPage;document.querySelectorAll('aside button').forEach(b=>b.classList.remove('active'));let id=page==='home'?'nav-home':'nav-'+page;const active=document.getElementById(id);if(active)active.classList.add('active');$('#app').innerHTML=page!=='home'&&page!=='methodology'&&!window.FBActivePeriod?'<div class="panel"><p>Avventer verifiserte rapporttall …</p></div>':page==='home'?(window.FBMarketOverview?.html()||'<div class="panel">Laster markedsoversikt …</div>'):page==='summary'?home():page==='methodology'?methodology()+(window.FBMarketOverview?.methodology()||''):company(page);if(stockMarketConfig[page]&&stockCSV[page]?.length)drawStockYear(page,stockCSV[page],'Daglige observasjoner');if(!preserveScroll)window.scrollTo(0,0);window.FBBrokerCommentary?.render?.()}
+const methodHashes=new Set(['#metode','#norge','#kvalitet','#kilder']);
+function isMethodHash(){return methodHashes.has(location.hash);}
+function show(page,preserveScroll=false){if(page!=='methodology'&&!preserveScroll&&isMethodHash())history.replaceState(null,'',location.pathname+location.search);current=page;if(['Fremtind',...companies].includes(page))$('#app').dataset.companyPage=page;else delete $('#app').dataset.companyPage;document.querySelectorAll('aside button').forEach(b=>b.classList.remove('active'));let id=page==='home'?'nav-home':'nav-'+page;const active=document.getElementById(id);if(active)active.classList.add('active');$('#app').innerHTML=page!=='home'&&page!=='methodology'&&!window.FBActivePeriod?'<div class="panel"><p>Avventer verifiserte rapporttall …</p></div>':page==='home'?(window.FBMarketOverview?.html()||'<div class="panel">Laster markedsoversikt …</div>'):page==='summary'?home():page==='methodology'?methodology()+(window.FBMarketOverview?.methodology()||''):company(page);if(stockMarketConfig[page]&&stockCSV[page]?.length)drawStockYear(page,stockCSV[page],'Daglige observasjoner');if(!preserveScroll)window.scrollTo(0,0);window.FBBrokerCommentary?.render?.()}
 </script><div id="admin-overlay" hidden><div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title"><div class="admin-head"><div><div class="eyebrow">ADMINISTRASJON</div><h2 id="admin-title">Oppdater markedsandeler</h2><p>Registrer markedsandelene manuelt, eller last opp Finans Norges Excel-fil (Tab5). Fyll ut både valgt periode og samme periode året før. Tomme felt vises som —.</p></div><button type="button" onclick="closeMarketAdmin()">Lukk ×</button></div><label class="admin-file" style="display:block;margin-bottom:9px">Periode for markedsandel <select id="admin-market-period" aria-label="Periode for markedsandel"></select></label><label class="admin-file">Valgfritt: importer premiestatistikk (.xlsx)<input type="file" id="inline-excel" accept=".xlsx"></label><div id="admin-status" role="status">Velg periode og registrer markedsandelene.</div><div class="admin-scroll"><table class="admin-table"><thead><tr><th rowspan="2" scope="col">Selskap</th><th colspan="3" id="admin-current-label" scope="colgroup">Valgt periode</th><th colspan="3" id="admin-prior-label" scope="colgroup">Året før</th></tr><tr><th scope="col">Totalt</th><th scope="col">PM</th><th scope="col">BM</th><th scope="col">Totalt</th><th scope="col">PM</th><th scope="col">BM</th></tr></thead><tbody id="admin-values"></tbody></table></div><div class="admin-actions"><button onclick="applyMarketPreview()">Forhåndsvis på siden</button><button class="admin-primary" onclick="downloadMarketSite()">Last ned markedsandelsdata</button></div><p class="admin-warning">Forhåndsvisning gjelder bare denne nettleserfanen. For å oppdatere nettstedet for alle lesere må den nedlastede market_shares.json publiseres i data-mappen. Adminvisningen er ikke tilgangsbeskyttet av en server.</p></div></div><script id="inline-admin-script">
 /*!
 
@@ -1124,7 +1148,9 @@ function adminInputs(){
  document.getElementById('admin-prior-label').textContent=marketPriorPeriod(adminPeriod);
  document.getElementById('admin-values').innerHTML=adminNames.map(n=>'<tr><th scope="row">'+n+'</th>'+['current','prior'].map(p=>['total','pm','bm'].map(k=>{
  const value=existing?(p==='prior'?marketPrevious[n]?.[k]:k==='total'?marketShares[n]:marketSegments[n]?.[k]):null;
- return '<td><input type="text" inputmode="decimal" data-ac="'+n+'" data-ak="'+k+'" data-ap="'+p+'" aria-label="'+n+' '+k+' '+(p==='prior'?marketPriorPeriod(adminPeriod):adminPeriod)+'" value="'+adminPct(value)+'" placeholder="—"></td>';
+ const fieldPeriod=p==='prior'?marketPriorPeriod(adminPeriod):adminPeriod;
+ const fieldName=({total:'Totalt',pm:'PM',bm:'BM'})[k];
+ return '<td><span class="admin-cell-label" aria-hidden="true"><small>'+fieldPeriod+'</small><strong>'+fieldName+'</strong></span><input type="text" inputmode="decimal" data-ac="'+n+'" data-ak="'+k+'" data-ap="'+p+'" aria-label="'+n+' '+k+' '+(p==='prior'?marketPriorPeriod(adminPeriod):adminPeriod)+'" value="'+adminPct(value)+'" placeholder="—"></td>';
  }).join('')).join('')+'</tr>').join('');
 }
 function adminRead(){
@@ -1184,7 +1210,8 @@ adminInputs();marketInitialLoad=refreshMarketShares();setInterval(refreshMarketS
 if(new URLSearchParams(location.search).get('admin')==='1')openMarketAdmin();
 
 const stockObserver=new MutationObserver(()=>{for(const c of Object.keys(stockMarketConfig)){const el=document.getElementById('stock-plot-'+c);if(el&&!el.dataset.ready){el.dataset.ready='1';if(stockCSV[c]?.length)drawStockYear(c,stockCSV[c],'Daglige observasjoner');}}});
-window.addEventListener('DOMContentLoaded',()=>{stockObserver.observe(document.body,{childList:true,subtree:true});show('home');});
+window.addEventListener('DOMContentLoaded',()=>{stockObserver.observe(document.body,{childList:true,subtree:true});show(isMethodHash()?'methodology':'home');});
+window.addEventListener('hashchange',()=>{if(isMethodHash()&&current!=='methodology')show('methodology');});
 </script><script id="quarter-dynamic">
 const MON_Q3={}, MON_CAL=[];
 let MON_QUARTER='Q3';
@@ -1634,7 +1661,6 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
     // Navigating to a closed historical quarter must never show future report dates.
     const selected=window.FBQuarterly?.period;
     if(!selected||selected.year!==latest.year||selected.quarter!==latest.quarter)return '';
-    const observations=window.FBQuarterly?.verified?.observations||[];
     const current='Q'+latest.quarter+' '+latest.year;
     const periodIndex=value=>{
       const match=/^Q([1-4]) (\d{4})$/.exec(value||'');
@@ -1643,12 +1669,7 @@ aside button.active{background:#176e77;color:#fff;box-shadow:inset 3px 0 #8dd8d1
     const nextPeriod=period=>{const m=/^Q([1-4]) (\d{4})$/.exec(period);if(!m)return period;const q=Number(m[1]),y=Number(m[2]);return 'Q'+(q===4?1:q+1)+' '+(q===4?y+1:y);};
     const entries=Object.entries(live.companies||{}).map(([name,config])=>{
       const company=name==='Sampo / If'?'Sampo':name;
-      const published=(extendedInsurerFeed[company]?.status==='verified_issuer_announcement'&&
-        extendedInsurerFeed[company].year===latest.year&&
-        extendedInsurerFeed[company].quarter===latest.quarter)||['combined_ratio','insurance_revenue'].every(metric=>
-        observations.some(r=>r.company===company&&r.scope==='group'&&
-          r.period_type==='quarter'&&r.year===latest.year&&r.quarter===latest.quarter&&
-          r.metric===metric&&['reported','calculated'].includes(r.status)&&r.source_url));
+      const published=window.FBQuarterly.isReportPublished(company,latest);
       const event=config.next_event;
       // A future calendar announcement applies to whichever period it names.
       // Never display a Q3 date as a Q4 publication date.
