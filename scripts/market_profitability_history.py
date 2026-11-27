@@ -234,7 +234,7 @@ def historical_revenue(company,y,q,url,sha,pages):
                 except (ValueError,IndexError):continue
     elif company==KLP:
         from import_extended_pdfs import approved
-        from klp_q2q3_reconcile import columns
+        from klp_annual_q4 import row as historical_row
         if not approved(url,KLP):raise ValueError('Untrusted historical KLP report')
         end={1:'31.03.',2:'30.06.',3:'30.09.',4:'31.12.'}[q]
         for page,variants in pages:
@@ -248,7 +248,7 @@ def historical_revenue(company,y,q,url,sha,pages):
                 normal=rf'(?:NOTE\s+)?MILLIONER KRONER\s+{q}\.\s*kvartal\s+{y}\s+{q}\.\s*kvartal\s+{y-1}\s+{re.escape(end)}{y}\s+{re.escape(end)}{y-1}\s+31\.12\.{y-1}\b'
                 if not (re.search(split,h,re.I) or re.search(normal,h,re.I)):continue
                 try:
-                    rev=columns(t,'Forsikringsinntekter',expected=5)
+                    rev=historical_row(t,'Forsikringsinntekter',5)
                     candidates.append((page,tuple(float(rev[i]) for i in (0,1,2,3))))
                 except ValueError:continue
     else:raise ValueError('Unsupported historical company')
