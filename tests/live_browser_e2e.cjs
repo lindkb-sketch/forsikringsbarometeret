@@ -485,6 +485,8 @@ async function main(){
       if(marketArchive.active_period==='Q3 2026'){
         const core=['insurance_revenue_growth','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
         check(c+' '+type+' complete current and previous-year core comparisons',core.every(k=>result.rows.some(r=>r.metric===k&&Number.isFinite(r.now)&&Number.isFinite(r.prior))),JSON.stringify(result.rows));
+        if(['KLP Skadeforsikring','Alm. Brand'].includes(c))check(c+' '+type+' original prior-year solvency available',result.rows.some(r=>r.metric==='solvency_ratio'&&Number.isFinite(r.prior)),JSON.stringify(result.rows));
+        if(['Fremtind','Gjensidige'].includes(c)&&type==='H3')check(c+' comparable annualised HIÅ return present',result.rows.some(r=>r.metric==='return_on_equity'&&Number.isFinite(r.prior)),JSON.stringify(result.rows));
       }
     }
     await page.locator('.company-period-actions select').selectOption('Q3');

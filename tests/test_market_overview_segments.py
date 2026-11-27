@@ -296,4 +296,24 @@ class MarketSegmentTests(unittest.TestCase):
         point['metrics']['insurance_revenue']=3200
         self.assertFalse(apply_historical_growth(point,a))
 
+    def test_historical_solvency_uses_exact_period_and_not_comparative(self):
+        from market_profitability_history import historical_solvency
+        k='KLP Skadeforsikring AS\nNote 11 Nøkkeltall - akkumulert\n3. kvartal 2. kvartal 1. kvartal 4. kvartal 3. kvartal\nMILLIONER KRONER 2025 2025 2025 2024 2024\nSolvenskapitaldekning 261 % 242 % 246 % 256 % 238 %'
+        a='At 30 September 2025, Alm. Brand Group thus had an SCR ratio of 254%.'
+        self.assertEqual(historical_solvency('KLP Skadeforsikring',2025,3,[(18,[k])]),(18,261))
+        self.assertEqual(historical_solvency('Alm. Brand',2025,3,[(5,[a])]),(5,254))
+        for c,t in [('KLP Skadeforsikring',k),('Alm. Brand',a)]:
+            with self.assertRaises(ValueError):historical_solvency(c,2025,2,[(1,[t])])
+
+    def test_explicit_hiå_return_comparatives(self):
+        from company_comparison_history import return_comparatives
+        anchor=dict(company='Fremtind',year=2026,quarter=3,source_url='https://cdn.sanity.io/report.pdf',source_sha256=SHA,unit='NOKm')
+        t='Resultatutvikling og nøkkeltall\nMNOK Q3 2026 Q3 2025 30.09.2026 30.09.2025 31.12.2025\nAnnualisert egenkapitalavkastning justert for\ntransaksjonen med Eika Forsikring AS 40,2 % 41,4 % 41,7 % 34,5 % 40,5 %'
+        rows=return_comparatives([(3,t)],anchor,{'return_on_equity':40.2})
+        self.assertEqual([(r['year'],r['period_type'],r['value']) for r in rows],[(2026,'ytd',41.7),(2025,'ytd',34.5)])
+        g='Other alternative performance measures and key figures\nNOK millions Q3 2025 Q3 2024 YTD 2025 YTD 2024 FY 2024\nGjensidige Forsikring Group\nReturn on equity, annualised ¹ % 29.6 23.5 22.7\nGjensidige Forsikring ASA'
+        rows=return_comparatives([(56,g)],dict(anchor,company='Gjensidige',year=2025),{})
+        self.assertEqual([(r['year'],r['period_type'],r['value']) for r in rows],[(2025,'ytd',29.6),(2024,'ytd',23.5)])
+        with self.assertRaises(ValueError):return_comparatives([(56,g.replace('YTD 2025','Q2 2025'))],dict(anchor,company='Gjensidige',year=2025),{})
+
 if __name__=='__main__':unittest.main()

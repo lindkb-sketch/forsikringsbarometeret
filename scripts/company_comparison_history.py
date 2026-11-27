@@ -6,10 +6,48 @@ rows are used only in the company view and are never hardcoded estimates.
 import hashlib,re
 from concurrent.futures import ThreadPoolExecutor
 
-SCHEMA=1
+SCHEMA=2
 TARGETS=('Fremtind','Gjensidige','Tryg','Protector','Sampo')
 CORE=('insurance_revenue','insurance_service_result','combined_ratio','loss_ratio','expense_ratio')
 def key(r):return tuple(r.get(k) for k in ('company','year','quarter','period_type','scope','metric'))
+def return_comparatives(pages,a,quarter_values):
+    """Explicit period columns; never compare an isolated return with HIÅ."""
+    from import_group_ytd import obs,ytd_header,parse_values,check_quarter
+    company,y,q=a['company'],a['year'],a['quarter']
+    hits=[]
+    for page,t in pages:
+        lines=t.splitlines()
+        if company=='Fremtind':
+            if not re.search(r'Resultatutvikling og nøkkeltall',t,re.I):continue
+            for i,line in enumerate(lines):
+                if not re.search(r'annualisert\s+egenkapitalavkastning\s+justert\s+for',' '.join(lines[max(0,i-5):i+1]),re.I):continue
+                m=re.search(r'transaksjonen\s+med\s+Eika\s*Forsikring\s+AS\s+((?:-?\d+(?:,\d+)?\s*%\s*)+)',line,re.I)
+                if not m:continue
+                header=ytd_header(lines[:i],y,q)
+                if not header:continue
+                count,qcol,ycol,pcol=header
+                vals=parse_values(m[1],count,norwegian=True)
+                if vals is None:continue
+                check_quarter('return_on_equity',vals[qcol],quarter_values)
+                hits.append((page,vals[ycol],vals[pcol]))
+        elif company=='Gjensidige':
+            # The APM table has empty quarter cells on this ROE row.
+            # Require the group-specific table title, period header and
+            # precisely three annualised YTD/prior/FY values.
+            if not re.search(r'Other alternative performance measures and key figures',t,re.I):continue
+            group=re.split(r'(?im)^\s*Gjensidige Forsikring ASA\s*$',t,maxsplit=1)[0]
+            if not re.search(r'Gjensidige Forsikring Group',group,re.I):continue
+            compact=' '.join(group.split())
+            if not re.search(rf'Q{q}\s+{y}\s+Q{q}\s+{y-1}\s+(?:YTD|HIÅ)\s+{y}\s+(?:YTD|HIÅ)\s+{y-1}\s+(?:FY\s+)?{y-1}',compact,re.I):continue
+            for line in group.splitlines():
+                m=re.fullmatch(r'\s*Return on equity,\s*annualis(?:ed|z)(?:\s*[¹²³⁴⁵*]+)?\s*%\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*',line,re.I)
+                if m:hits.append((page,float(m[1]),float(m[2])))
+    if len({(a,b) for _,a,b in hits})!=1:raise ValueError('Explicit return comparison table not unique')
+    page,current,prior=hits[0]
+    if not all(-100<=x<=200 for x in (current,prior)):raise ValueError('Invalid annualised return')
+    definition='Annualisert egenkapitalavkastning justert for transaksjonen med Eika Forsikring AS; HIÅ' if company=='Fremtind' else 'ROE annualised; issuer explicitly reports year-to-date'
+    return [obs(a,'return_on_equity',y,current,page,definition),obs(a,'return_on_equity',y-1,prior,page,definition+' (explicit prior-year HIÅ comparative)')]
+
 def build(feed,previous):
     from ingest_official_pdf import download
     from build_market_overview_segments import read_pages
@@ -58,6 +96,8 @@ def build(feed,previous):
             elif c=='Protector':
                 tasks.extend([('core',lambda:protector(pages,a,quarter_values)),('return',lambda:returns(pages,a,quarter_values))])
             else:tasks.append(('return',lambda:returns(pages,a,quarter_values)))
+            if c in ('Fremtind','Gjensidige'):
+                tasks.append(('return_comparative',lambda:return_comparatives(pages,a,quarter_values)))
             if c in ('Tryg','Gjensidige','Protector','Sampo'):
                 def sol():
                     page,val=solvency(raw,c,y,q)

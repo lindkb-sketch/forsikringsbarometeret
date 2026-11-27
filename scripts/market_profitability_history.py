@@ -8,7 +8,7 @@ import hashlib, math, re
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 
-SCHEMA=4
+SCHEMA=5
 ALM='Alm. Brand'
 KLP='KLP Skadeforsikring'
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
@@ -263,6 +263,38 @@ def historical_revenue(company,y,q,url,sha,pages):
         quarter=dict(current=a,prior=b,growth=100*(a/b-1)),
         ytd=dict(current=c,prior=d,growth=100*(c/d-1)))
 
+def historical_solvency(company,y,q,pages):
+    """Read the quarter-end solvency independently of the income table."""
+    matches=[]
+    for page,variants in pages:
+        for t in variants:
+            if company==KLP:
+                if not re.search(r'KLP\s+Skadeforsikring\s+AS',t,re.I) or not re.search(r'Note\s+\d+\s*[-–]?\s*Nøkkeltall\s*[-–]\s*akkumulert',t,re.I):continue
+                compact=' '.join(t.split())
+                # The old note has quarter labels above the corresponding
+                # years; the first column must be the exact target period.
+                h=re.search(r'((?:[1-4]\.\s*kvartal\s+){3,8})MILLIONER KRONER\s+((?:20\d{2}\s+){2,7}20\d{2})\b',compact,re.I)
+                if h:
+                    labels=re.findall(r'([1-4])\.\s*kvartal',h[1],re.I);years=h[2].split()
+                    if len(labels)!=len(years) or (int(labels[0]),int(years[0]))!=(q,y):continue
+                    count=len(years)
+                else:
+                    h=re.search(rf'MILLIONER KRONER\s+{q}\.\s*kvartal\s+{y}\b',compact,re.I)
+                    if not h:continue
+                    count=None
+                from klp_annual_q4 import row
+                for n in ([count] if count else range(3,9)):
+                    try:matches.append((page,float(row(t,'Solvenskapitaldekning',n,percent=True)[0])))
+                    except ValueError:pass
+            elif company==ALM:
+                month={1:'March',2:'June',3:'September',4:'December'}[q];day={1:31,2:30,3:30,4:31}[q]
+                compact=' '.join(t.split())
+                for m in re.finditer(rf'At {day} {month} {y}, Alm\. Brand Group thus had an SCR ratio of (\d{{2,3}})\s*%',compact,re.I):
+                    matches.append((page,float(m[1])))
+    valid=[(p,v) for p,v in matches if 100<=v<=400]
+    if len({v for _,v in valid})!=1:raise ValueError('Historical quarter-end solvency missing or ambiguous')
+    return valid[0]
+
 def read_historical_revenue(raw,company,y,q,url,sha):
     import io,pdfplumber
     if not raw.startswith(b'%PDF-') or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError('Unverified comparison PDF')
@@ -271,7 +303,7 @@ def read_historical_revenue(raw,company,y,q,url,sha):
         if company==ALM:
             if not re.search(r'Alm\.?\s+Brand',cover,re.I) or not re.search(rf'\bQ\s*{q}\b',cover,re.I) or str(y) not in cover:raise ValueError('Wrong Alm report period')
         elif not re.search(r'KLP\s+Skadeforsikring',cover,re.I) or not re.search(rf'{q}\.\s*kvartal(?:sregnskap)?\s+{y}',cover,re.I):raise ValueError('Wrong KLP report period')
-        pages=[]
+        pages=[];solvency_pages=[]
         for i,p in enumerate(pdf.pages[:25],1):
             t=p.extract_text(layout=False) or ''
             if company==ALM and 'Insurance revenue' in t and re.search(r'Financial highlights and key ratios',t,re.I):
@@ -283,7 +315,18 @@ def read_historical_revenue(raw,company,y,q,url,sha):
                     variants.append('Financial highlights and key ratios\nAlm. Brand Group\n'+cropped if re.search(r'Alm\.?\s+Brand\s+Group',t,re.I) else cropped)
                 pages.append((i,variants))
             elif company==KLP and 'Forsikringsinntekter' in t and 'Resultatregnskap' in t:pages.append((i,[t]))
-        return historical_revenue(company,y,q,url,sha,pages)
+            if (company==ALM and 'SCR' in t) or (company==KLP and 'Solvenskapitaldekning' in t):
+                variants=[t,p.extract_text(layout=False,use_text_flow=True) or '']
+                if company==ALM:
+                    for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1)):
+                        variants.append(p.crop((p.width*x0,0,p.width*x1,p.height)).extract_text(layout=False) or '')
+                solvency_pages.append((i,variants))
+        result=historical_revenue(company,y,q,url,sha,pages)
+        try:
+            page,value=historical_solvency(company,y,q,solvency_pages)
+            result['solvency_evidence']=dict(value=value,source_page=page,source_url=url,source_sha256=sha,period=period(y,q))
+        except ValueError as exc:print('::warning::MARKET_HISTORICAL_SOLVENCY',company,period(y,q),str(exc),flush=True)
+        return result
 
 def apply_historical_growth(point,evidence):
     if not point or point.get('company')!=evidence.get('company') or point.get('period')!=evidence.get('period'):return False
@@ -295,6 +338,10 @@ def apply_historical_growth(point,evidence):
     for name,field in [('quarter','metrics'),('ytd','ytd_metrics')]:
         point[field]['insurance_revenue_growth']=evidence[name]['growth']
     point['growth_evidence']=evidence
+    sol=evidence.get('solvency_evidence',{})
+    if finite(sol.get('value')) and sol.get('period')==point['period'] and sol.get('source_sha256')==evidence.get('source_sha256') and sol.get('source_url')==evidence.get('source_url') and type(sol.get('source_page')) is int and sol['source_page']>0:
+        point['metrics']['solvency_ratio']=sol['value'];point['ytd_metrics']['solvency_ratio']=sol['value']
+        print('MARKET_HISTORICAL_SOLVENCY_VERIFIED',point['company'],point['period'],sol['value'],sol['source_page'],flush=True)
     return True
 
 def build_history(extended,registry,previous):

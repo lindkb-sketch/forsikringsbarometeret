@@ -443,7 +443,7 @@
     for(const [key,metric,caption] of [['cr','combined_ratio','Combined ratio'],['loss','loss_ratio','Skadeprosent'],['cost','expense_ratio','Kostnadsprosent']]){
       cards.push(companyFinancialCard(metric,caption,get(key),get(key+'Prev'),true,'',type,src,true));
     }
-    let returnType=type,roe=quote(c,type,p.year,p.quarter,'return_on_equity');
+    let returnType=c==='Gjensidige'?'ytd':type,roe=quote(c,returnType,p.year,p.quarter,'return_on_equity');
     if(!roe&&type==='quarter'){returnType='ytd';roe=quote(c,'ytd',p.year,p.quarter,'return_on_equity');}
     if(roe){
       const old=quote(c,returnType,p.year-1,p.quarter,'return_on_equity');
