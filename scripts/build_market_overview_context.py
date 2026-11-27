@@ -13,7 +13,7 @@ from fremtind_apm_market import parse_income,parse_cr,BASIS
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGET=ROOT/'data/market_overview_context.json'
-VERSION=7
+VERSION=8
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
 NUM=r'[-−]?\d[\d,]*(?:\.\d+)?'
 KEYS=('company','year','quarter','period_type','scope','segment','metric')
@@ -478,7 +478,7 @@ def fetch(a):
     return download(a)
 def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
-    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,5,6,VERSION) else {}
+    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,5,6,7,VERSION) else {}
     for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
         c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
         old=previous.get('status',{}).get(c,{})
@@ -499,7 +499,9 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
                 from market_commentary_documents import document_insights
                 ev=dict(document_type='quarterly_report',status='verified_document',format='pdf',
                         issuer_verified=True,period_verified=True,source_sha256=a['source_sha256'],url=a['source_url'])
-                generic=document_insights(c,y,q,ev,[t for _,t in pages])
+                from market_commentary_explanations import explain
+                page_texts=[t for _,t in pages]
+                generic=document_insights(c,y,q,ev,page_texts)+explain(c,y,q,ev,page_texts)
                 for r in generic:r['supplemental_document']=False
                 out['insights'].extend(generic)
             except Exception as exc:print('::warning::MARKET_REPORT_COMMENTARY_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)

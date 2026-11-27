@@ -263,6 +263,78 @@
       /^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&
       Array.isArray(x.views)&&x.views.includes(scope+'/'+market)&&typeof x.text==='string');
   }
+  // Prefer specific, sourced explanations to label-only keyword lists.
+  // Keep the numeric opening compact; never pad sparse early-quarter coverage.
+  const wordCount=s=>String(s||'').trim().split(/\s+/).filter(Boolean).length;
+  function explanatoryText(scoped,theme){
+    const items=scoped.filter(x=>x.theme===theme&&typeof x.topic==='string'&&num(x.priority)&&typeof x.evidence==='string'&&x.evidence.trim()&&x.text.trim());
+    const sorted=[...items].sort((a,b)=>b.priority-a.priority||a.company.localeCompare(b.company,'nb')||a.source_page-b.source_page);
+    return [...new Map(sorted.reverse().map(x=>[x.topic,x])).values()].reverse().sort((a,b)=>b.priority-a.priority);
+  }
+  function appendWithin(target,items,maxWords,maxItems=3){
+    let added=0;
+    for(const item of items){
+      const t=typeof item==='string'?item:item.text;
+      if(!t||target.includes(t)||added>=maxItems)continue;
+      if(wordCount(target.join(' '))+wordCount(t)>maxWords&&added>0)continue;
+      if(wordCount(target.join(' '))+wordCount(t)>maxWords+12)continue;
+      target.push(t);added++;
+    }
+    return added;
+  }
+  function richerComments(scoped,market,growth,cr,special){
+    const gs=explanatoryText(scoped,'growth_explanation'),ls=explanatoryText(scoped,'loss_explanation'),cs=explanatoryText(scoped,'cost_explanation'),es=explanatoryText(scoped,'event_explanation');
+    if(gs.length){
+      // The first sentence is the trend, subsequent sentences explain it.
+      // For an all-market view, give both PM growth and BM restraint room.
+      const original=growth.slice(),opening=original[0];
+      growth.splice(0,growth.length,opening);
+      const positive=gs.filter(x=>x.category!=='restraint'&&x.category!=='currency');
+      const restraint=gs.filter(x=>x.category==='restraint');
+      const first=market==='bm'?(restraint[0]||positive[0]):(positive[0]||restraint[0]);
+      const next=market==='all'?(restraint[0]||positive.find(x=>x.topic!==first?.topic)):market==='bm'?positive.find(x=>x.topic!==first?.topic):positive.find(x=>x.category!==first?.category);
+      const wanted=[first,next,...gs.filter(x=>x.category!==first?.category&&x.category!==next?.category)].filter(Boolean);
+      appendWithin(growth,wanted,91,4);
+      if(growth.length===1)appendWithin(growth,gs,91,2);
+      // A material tempo comparison helps explain the graph; omit tiny
+      // differences when space is better used for actual causes.
+      const trend=original.find(x=>/fra forrige kvartal|HIÅ-tempoet/.test(x));
+      if(trend&&/\b(?:[1-9]\d*),\d+ prosentpoeng/.test(trend))appendWithin(growth,[trend],96,1);
+      if(growth.length===1)appendWithin(growth,original.slice(1),91,2);
+    }
+    if(ls.length||cs.length){
+      const original=cr.slice();
+      // Keep the actual CR and separate loss/expense direction. The source
+      // explanations then explain each side, rather than listing labels.
+      const opening=original[0];
+      const component=original.find(x=>x.startsWith('Skadeprosenten'));
+      cr.splice(0,cr.length,opening);
+      if(component)cr.push(component.replace(/ Målt som medianendringer på samme utvalg\.| Basert på tilgjengelig sammenlignbar splitt\./,''));
+      if(ls[0])appendWithin(cr,[ls[0]],106,1);
+      if(cs[0])appendWithin(cr,[cs[0]],106,1);
+      const otherLoss=ls.find(x=>x.category!==ls[0]?.category);
+      if(otherLoss)appendWithin(cr,[otherLoss],108,1);
+      if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),106,1);
+      if(!cs.length&&component)appendWithin(cr,['Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget.'],108,1);
+    }
+    if(es.length){
+      special.splice(0,special.length);
+      const chosen=[];
+      // Do not repeat a fire's total and segment contribution in the same
+      // card, or a vague ruling sentence alongside its specific amount.
+      const family=x=>/^(named_fire|pm_fire)$/.test(x.topic)?'fire':/workers_comp/.test(x.topic)?'ruling':x.topic;
+      for(const e of es){
+        if(chosen.some(x=>family(x)===family(e)))continue;
+        chosen.push(e);
+      }
+      appendWithin(special,chosen,95,3);
+    }
+    // One flowing paragraph per section. Source notes still link to all
+    // relevant original pages, and locked prior snapshots remain untouched.
+    for(const arr of [growth,cr,special]){
+      if(arr.length>1)arr.splice(0,arr.length,arr.filter(Boolean).join(' '));
+    }
+  }
   function comments(m,editorial,scope,market,context=null,otherMode=null,priorView=null){
     const rows=m.eligible,period=title(m.period),mode=m.mode||'quarter';
     // Market commentary only uses period-specific reports and results decks.
@@ -345,6 +417,7 @@
     }
     if(!special.length&&(lowerClaims||higherClaims))special.push('Kvartalsrapporteringen viser '+(lowerClaims&&higherClaims?'ulik storskadeutvikling mellom aktørene':lowerClaims?'lavere storskadebelastning i deler av markedet':'høyere storskadebelastning i deler av markedet')+'.');
     if(!special.length)special.push('Ingen vesentlig særhendelse er dokumentert for valgt marked og periode.');
+    richerComments(scoped,market,growth,cr,special);
     return [{label:'Inntektsvekst',paragraphs:growth.map(safe)},{label:'CR – skade- og kostnadsprosent',paragraphs:cr.map(safe)},{label:'Enkelthendelser og særtrekk',paragraphs:special.map(safe)}];
   }
   const viewKey=(scope,market,mode)=>[scope,market,mode].join('/');

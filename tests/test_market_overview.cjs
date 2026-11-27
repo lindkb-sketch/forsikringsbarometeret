@@ -184,3 +184,24 @@ test('only verified quarter reports and result presentations enter all three mar
  assert.match(view,/Dokumentert hendelse i rapport/);
  assert.doesNotMatch(view,/FORBIDDEN|vekst i kundebestanden/);
 });
+
+test('causal commentary prioritises why, covers the expense ratio and selects material events without duplicating themes',()=>{
+ const m={period:{year:2026,quarter:3},mode:'quarter',eligible:[{company:'Fremtind',growth:8,cr:75,deltas:{combined_ratio:-4,loss_ratio:-3,expense_ratio:-1}},{company:'Gjensidige',growth:6,cr:74,deltas:{combined_ratio:-2,loss_ratio:-2,expense_ratio:0}}]};
+ const base={company:'Fremtind',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'quarter',views:['group/all'],source_type:'official_quarterly_report',source_sha256:'a'.repeat(64),source_page:9,source_url:'https://issuer.invalid/report.pdf',evidence:'exact original source fragment'};
+ const e=(theme,topic,priority,text,category='')=>({...base,theme,topic,priority,text,category});
+ const ctx={insights:[
+  e('growth_explanation','pm_volume',100,'Prisøkninger og høyere volum innen boligforsikring støtter inntektene.','volume'),
+  e('growth_explanation','bm_restraint',99,'I bedriftsmarkedet reduserer strengere risikoutvelgelse volumveksten.','restraint'),
+  e('loss_explanation','frequency',100,'Lavere skadefrekvens på bil reduserer skadeprosenten.','frequency'),
+  e('cost_explanation','reclassification',100,'Lavere kostnadsprosent skyldes omklassifisering av lånerenter, ikke bare effektivisering.'),
+  e('event_explanation','named_fire',100,'Brannen i Krokstadelva kostet 176 mill. kroner netto i kvartalet.'),
+  e('event_explanation','pm_fire',99,'Brannen i Krokstadelva kostet 175 mill. kroner i privatporteføljen.'),
+  {...e('event_explanation','bad',120,'FORBIDDEN'),source_document_period:'Q2 2026'}
+ ]};
+ const c=comments(m,{},'group','all',ctx);
+ assert.equal(c[0].paragraphs.length,1);
+ assert.match(c[0].paragraphs[0],/Prisøkninger.*volum.*risikoutvelgelse/);
+ assert.match(c[1].paragraphs[0],/skadefrekvens.*omklassifisering/);
+ assert.match(c[2].paragraphs[0],/176 mill/);
+ assert.doesNotMatch(JSON.stringify(c),/FORBIDDEN|175 mill|Rapporterte vekstdrivere omfatter/);
+});

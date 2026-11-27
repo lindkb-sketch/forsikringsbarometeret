@@ -239,4 +239,28 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(calls,[])
         self.assertEqual(fourth['insights'],third['insights'])
 
+
+    def test_causal_explanations_keep_period_scope_and_original_fragments(self):
+        from market_commentary_explanations import explain
+        doc=dict(document_type='quarterly_report',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/report.pdf')
+        text=('Styrets beretning\nResultatutvikling i kvartalet\nVeksten er hovedsakelig drevet av premiejusteringer.\n'
+              'økte premieinntekter og lavere skadefrekvenser på bil og næringsbygg.\n'
+              'omklassifisering av rentekostnader lån fra forsikringsrelaterte kostnader til andre kostnader, samt høyere inntekter.\n'
+              'Brannen i Testbyen utgjorde 185 millioner kroner av kvartalets netto storskader.')
+        rows=explain('Fremtind',2027,2,doc,[text])
+        self.assertTrue(any(r['theme']=='cost_explanation' and r['period_type']=='quarter' for r in rows))
+        self.assertTrue(any(r['theme']=='loss_explanation' and r['topic']=='motor_property_frequency' and r['period_type']=='quarter' for r in rows))
+        self.assertTrue(any(r['theme']=='event_explanation' and 'Testbyen' in r['text'] and '185 mill.' in r['text'] for r in rows))
+        self.assertTrue(all(r['source_document_period']=='Q2 2027' and r['source_page']==1 and r['evidence'] for r in rows))
+        self.assertFalse(any(r['period_type']=='ytd' and r['theme']=='growth_explanation' for r in rows))
+        self.assertEqual(explain('Fremtind',2027,2,dict(doc,document_type='press_release'),[text]),[])
+        self.assertFalse(any(r['theme']=='cost_explanation' for r in explain('Fremtind',2027,2,doc,[text.replace('omklassifisering av rentekostnader lån fra','andre forhold')])))
+        tryg=("Commercial\nKey figures - Commercial\nResults Q3 2026 Claims\n"
+              "Figures for Q1-Q3 2026 are impacted by the Supreme Court ruling on Danish workers' compensation insurance. "
+              "The impact is a one-off provision of DKK 1.2bn pre-tax.")
+        events=explain('Tryg',2026,3,doc,[tryg])
+        self.assertEqual([(r['topic'],r['period_type'],r['views']) for r in events],[('workers_comp_provision','ytd',['group/bm','group/all'])])
+        self.assertIn('1,2 mrd. DKK',events[0]['text'])
+        self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace('Results Q3 2026','Results Q2 2026')]),[])
+
 if __name__=='__main__':unittest.main()

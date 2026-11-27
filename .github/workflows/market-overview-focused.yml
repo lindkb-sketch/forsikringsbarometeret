@@ -23,7 +23,7 @@ jobs:
           node-version: '22'
       - run: |
           python -m pip install -r requirements-reports.txt
-          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py tests/test_market_overview_segments.py
+          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py tests/test_market_overview_segments.py
           python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
@@ -74,5 +74,20 @@ jobs:
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='ytd'));
           assert.ok(drivers.some(x=>x.driver==='portfolio_growth'&&x.company==='Tryg'));
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Alm. Brand'));
+          const explanations=c.insights.filter(x=>/_explanation$/.test(x.theme));
+          for(const theme of ['growth_explanation','loss_explanation','cost_explanation','event_explanation']){
+            assert.ok(explanations.some(x=>x.theme===theme),theme+' must contain substantive verified explanation');
+          }
+          for(const [key,view] of Object.entries(v)){
+            const text=view.comments.map(x=>x.paragraphs.join(' '));
+            assert.ok(text.every(x=>x.trim().length>0&&x.split(/\s+/).length<=125),key+' prose length');
+            console.log('MARKET_COMMENTARY_QUALITY',key,JSON.stringify(view.comments));
+          }
+          console.log('MARKET_CAUSAL_EVIDENCE',JSON.stringify(explanations.map(x=>[x.company,x.theme,x.topic,x.period_type,x.source_page,x.views])));
+          assert.ok(explanations.some(x=>x.company==='Fremtind'&&x.topic==='expense_reclassification'&&x.period_type==='quarter'));
+          assert.ok(explanations.some(x=>x.topic==='workers_comp_provision'&&x.period_type==='ytd'&&x.text.includes('1,2 mrd.')));
+          assert.ok(!explanations.some(x=>x.topic==='workers_comp_provision'&&x.period_type==='quarter'));
+          assert.ok(explanations.some(x=>x.topic==='bm_large_loss'&&x.views.includes('norway/bm')));
+          assert.ok(explanations.some(x=>x.topic==='pm_product_volumes'&&x.views.includes('norway/pm')));
           console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
           JS
