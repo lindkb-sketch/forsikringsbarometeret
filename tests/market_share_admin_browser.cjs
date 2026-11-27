@@ -42,7 +42,9 @@ async function main(){
   await entry.click();
   await page.locator('#admin-overlay').waitFor({state:'visible'});
   assert.equal(await page.locator('#admin-market-period').inputValue(),snapshot.period);
-  assert.equal(await page.locator('#admin-values input').count(),42);
+  assert.equal(await page.locator('#admin-values input').count(),48);
+  assert.equal(await input('KLP Skadeforsikring','total','current').count(),1);
+  assert.equal(await input('KLP Skadeforsikring','pm','prior').count(),1);
   assert.equal(await page.locator('#admin-prior-label').textContent(),snapshot.prior_period);
   for(const c of Object.keys(snapshot.segments)){
    for(const k of ['total','pm','bm']){
@@ -54,6 +56,8 @@ async function main(){
   await page.locator('#admin-market-period').selectOption(alternate);
   assert((await page.locator('#admin-values input').evaluateAll(els=>els.map(e=>e.value))).every(v=>v===''),'New period inherited stale values');
   await input('Fremtind','total','current').fill('19,2');
+  await input('KLP Skadeforsikring','total','current').fill('1,2');
+  await input('KLP Skadeforsikring','total','prior').fill('1,1');
   await input('Fremtind','total','prior').fill('18,1');
   await input('Fremtind','pm','current').fill('0');
   await input('Fremtind','bm','prior').fill('101');
@@ -69,6 +73,8 @@ async function main(){
   assert.equal(data.prior_period,alternate.replace(/\d{4}/,y=>String(Number(y)-1)));
   assert.equal(data.status,'published_manual_snapshot');
   assert.equal(data.shares.Fremtind,'19,2 %');
+  assert.equal(data.shares['KLP Skadeforsikring'],'1,2 %');
+  assert.equal(data.previous['KLP Skadeforsikring'].total,'1,1 %');
   assert.equal(data.previous.Fremtind.total,'18,1 %');
   assert.equal(data.segments.Fremtind.pm,'0,0 %');
   assert.equal(data.segments.Fremtind.bm,null);
@@ -93,7 +99,7 @@ async function main(){
   await mobile.locator('.exec-mobile-toggle').click();
   await mobile.locator('#admin-entry').click();
   await mobile.locator('#admin-overlay').waitFor({state:'visible'});
-  assert.equal(await mobile.locator('#admin-values input').count(),42);
+  assert.equal(await mobile.locator('#admin-values input').count(),48);
   for(const width of [390,320]){
     await mobile.setViewportSize({width,height:844});
     const geometry=await mobile.evaluate(()=>{

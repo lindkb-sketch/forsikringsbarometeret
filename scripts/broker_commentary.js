@@ -2,7 +2,7 @@
    The public feed contains reviewed summaries, never PDF bytes or filenames. */
 (()=>{
 'use strict';
-const NAMES=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
+const NAMES=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','Alm. Brand'];
 const QUARTER=/^Q[1-4] 20\d{2}$/;
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const PRIVATE_DB='forsikringsbarometeret-broker-v1';
@@ -16,12 +16,7 @@ const currentCompany=()=>{
  return typeof profitabilityCompany!=='undefined'&&NAMES.includes(profitabilityCompany)?profitabilityCompany:'Fremtind';
 };
 const currentQuarter=()=>{
- // On the dashboard, the explicit Q3/Q2 selector is authoritative.
- const selected=typeof period!=='undefined'?period:'';
- if(/^Q[1-4]$/.test(selected)){
-  const matching=feed.entries.filter(e=>e.company===currentCompany()&&e.quarter.startsWith(selected+' '));
-  if(matching.length)return matching.map(e=>e.quarter).sort((a,b)=>order(b)-order(a))[0];
- }
+ // A report quarter is a year plus a quarter, not the Q3/H3 display mode.
  const p=window.FBActivePeriod;
  if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
  if(QUARTER.test(p?.label||''))return p.label;

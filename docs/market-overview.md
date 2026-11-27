@@ -62,3 +62,8 @@ Legacy hardcoded quarterly cards, segment examples, static returns/solvency, new
 ### Readable CR trend viewport
 
 The five-quarter CR trend uses all verified data as its source. Its default chart window removes only entire company series with extreme points outside pooled quartile fences (2.5 times IQR, at least 12 percentage points), only when at least six companies and 15 observations are available, at least five and two thirds of companies remain, and the span decreases by at least 8 points and 20%. This is display-only; all excluded names and the extreme quarter/value are disclosed and all nine source rows are retained. The full-chart toggle restores every available series. Both views scale to the actual visible minimum and maximum, with padding and a minimum 10-point axis span. Missing quarters remain gaps. The Q3 2026 test fixture yields 70–105% with 5-point ticks, rather than a fixed 60–130% scale. Company colors remain stable across views.
+
+
+### Company-detail supplements
+
+Independent original report observations in `market_overview_context.json/company_segment_details` supply same-scope segment revenue, results and explicit return columns. They supplement company pages only; the top-five ranking continues to use its original market data. The company chart is locked to its issuer. Source-backed current-quarter commentary is regenerated from the active issuer report and never inherits prior-quarter prose. Existing reviewed editorial commentary remains preferred. KLP market shares are owner-managed using the same editor as other Norwegian insurers; blanks are never inferred. Alm. Brand is admitted to the existing private broker portal and approved public summary feed, without moving private reports.

@@ -483,6 +483,10 @@
         if(EXTENDED.includes(company)){
           const matches=historic.filter(r=>r.company===company&&r.period===label&&r.period_type==='quarter'&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&Number.isInteger(r.source_page)&&r.source_page>0&&num(r.cr)&&r.cr>=0);
           point=matches.length===1?{...matches[0]}:null;
+          if(point&&!num(point.roe)){
+            const roe=selectUnique(supplementaryCompanyRows(context).filter(r=>r.company===company&&r.scope==='group'&&r.period_type==='quarter'&&samePeriod(r,q)),'return_on_equity');
+            if(roe){point.roe=roe.value;point.roe_evidence=roe;}
+          }
         }
         // Archive is authoritative for its own quarter; especially do not
         // show an unreported issuer's latest point in an incomplete snapshot.
@@ -611,11 +615,23 @@
     const diff=a-b,direction=diff>0.00001?'up':diff< -0.00001?'down':'flat';
     return {direction,icon:direction==='up'?'▲':direction==='down'?'▼':'→',tone:direction==='flat'?'flat':(lowerIsBetter?direction==='down':direction==='up')?'good':'bad'};
   }
+  function supplementaryCompanyRows(contextValue=context){
+    return (contextValue?.company_segment_details?.observations||[]).filter(valid);
+  }
+  function companyDetailRows(feed,segmentData,comparisonData,contextValue){
+    const index=new Map(allRows(feed,segmentData,comparisonData,contextValue).map(r=>[key(r),r]));
+    for(const r of supplementaryCompanyRows(contextValue)){
+      if(!index.has(key(r)))index.set(key(r),r);
+    }
+    return [...index.values()];
+  }
   function companyHistoricalMetrics(name,p,type='quarter'){
     const found=(context?.profitability_history?.points||[]).filter(r=>r.company===name&&r.period===title(p)&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&Number.isInteger(r.source_page)&&r.source_page>0);
     if(found.length!==1)return {};
-    const r=found[0];
-    return type==='ytd'?{...(r.ytd_metrics||{})}:{...(r.metrics||{}),combined_ratio:r.cr,loss_ratio:r.loss,expense_ratio:r.cost,...(num(r.roe)?{return_on_equity:r.roe}:{})};
+    const r=found[0],out=type==='ytd'?{...(r.ytd_metrics||{})}:{...(r.metrics||{}),combined_ratio:r.cr,loss_ratio:r.loss,expense_ratio:r.cost,...(num(r.roe)?{return_on_equity:r.roe}:{})};
+    const roe=selectUnique(supplementaryCompanyRows().filter(x=>x.company===name&&x.scope==='group'&&samePeriod(x,p)&&x.period_type===type),'return_on_equity');
+    if(!num(out.return_on_equity)&&roe)out.return_on_equity=roe.value;
+    return out;
   }
   function companyExtraObservations(){
     return (context?.company_comparisons?.observations||[]).filter(valid).filter(r=>r.scope==='group');
@@ -632,7 +648,9 @@
   function sampoNordicSegments(feed,p,mode='quarter'){
     if(!p||!periodOf(title(p)))return [];
     const metrics=['insurance_revenue','insurance_service_result',...CORE];
-    const rows=(feed?.observations||[]).filter(r=>valid(r)&&r.company==='Sampo'&&r.scope==='reported_segment'&&['Private Nordic','Nordic Commercial'].includes(r.segment));
+    const index=new Map((feed?.observations||[]).filter(valid).map(r=>[key(r),r]));
+    for(const r of supplementaryCompanyRows())if(!index.has(key(r)))index.set(key(r),r);
+    const rows=[...index.values()].filter(r=>r.company==='Sampo'&&r.scope==='reported_segment'&&['Private Nordic','Nordic Commercial'].includes(r.segment));
     const sameSourceBasis=r=>/^Sampo interim statement; (Private Nordic|Nordic Commercial) reported financial table/.test(r.source_definition||'');
     function block(segment,y,q,type){
       const rr=rows.filter(r=>r.segment===segment&&r.year===y&&r.quarter===q&&r.period_type===type&&sameSourceBasis(r));
@@ -657,29 +675,65 @@
     return ['Private Nordic','Nordic Commercial'].map(segment=>{
       const current=aggregate(segment,p.year),prior=aggregate(segment,p.year-1),older=aggregate(segment,p.year-2);
       const m=current?.metrics,prev=prior?.metrics;
+      const revenue=(y)=>{const direct=selectUnique(rows.filter(r=>r.segment===segment&&r.year===y&&r.quarter===p.quarter&&r.period_type===mode&&sameSourceBasis(r)),'insurance_revenue');
+        if(direct?.value>0)return direct.value;
+        if(mode!=='ytd')return null;
+        const parts=Array.from({length:p.quarter},(_,i)=>selectUnique(rows.filter(r=>r.segment===segment&&r.year===y&&r.quarter===i+1&&r.period_type==='quarter'&&sameSourceBasis(r)),'insurance_revenue'));
+        return parts.every(r=>r?.value>0&&r.unit==='EURm')?parts.reduce((s,r)=>s+r.value,0):null;};
+      const a=revenue(p.year),b=revenue(p.year-1),c=revenue(p.year-2);
       return {segment,metrics:m||null,prior:prev||null,
-        growth:m&&prev?100*(m.insurance_revenue/prev.insurance_revenue-1):null,
-        growthPrev:prev&&older?100*(prev.insurance_revenue/older.metrics.insurance_revenue-1):null,
+        growth:a>0&&b>0?100*(a/b-1):null,
+        growthPrev:b>0&&c>0?100*(b/c-1):null,
         method:current?.method||null,sources:current?.sourceRows||[]};
     });
   }
-  function companySegmentRows(name,p,periodType='quarter'){
+  function companySegmentRows(name,p,periodType='quarter',scope='group',markets=['pm','bm']){
     if(!p||!COMPANIES.includes(name))return [];
-    const rows=allRows(window.FBQuarterly?.verified,segments,comparison,context).filter(r=>r.period_type===periodType);
-    return ['pm','bm'].map(m=>{
-      const snap=archive?.periods?.[title(p)]?.views?.[viewKey('group',m,periodType)];
-      const row=snap?snap.model.eligible.find(r=>r.company===name):rowFor(rows,name,p,'group',m);
+    const rows=companyDetailRows(window.FBQuarterly?.verified,segments,comparison,context).filter(r=>r.period_type===periodType);
+    return markets.map(m=>{
+      const live=rowFor(rows,name,p,scope,m);
+      const snap=archive?.periods?.[title(p)]?.views?.[viewKey(scope,m,periodType)];
+      const row=live||(snap?snap.model.eligible.find(r=>r.company===name):null);
       if(!row)return {market:m,row:null,prior:null};
       const priorPeriod={year:p.year-1,quarter:p.quarter};
-      const direct=rowFor(rows,name,priorPeriod,'group',m);
+      const direct=rowFor(rows,name,priorPeriod,scope,m);
       const prior=direct&&direct.revenueBasis===row.revenueBasis&&direct.currency===row.currency?{...direct}:{};
+      const g=groupsFor(rows,name,p,scope,m)[0],old=groupsFor(rows,name,priorPeriod,scope,m)[0],older=groupsFor(rows,name,{year:p.year-2,quarter:p.quarter},scope,m)[0];
+      const rev=selectUnique(old?.rows||[],'insurance_revenue'),base=selectUnique(older?.rows||[],'insurance_revenue'),growth=selectUnique(old?.rows||[],'insurance_revenue_growth');
+      if(!num(prior.growth)){
+        if(growth?.unit==='percent')prior.growth=growth.value;
+        else if(rev?.value>0&&base?.value>0&&currency(rev.unit)===currency(base.unit)&&basis(rev)===basis(base))prior.growth=100*(rev.value/base.value-1);
+      }
       for(const [metric,field] of [['combined_ratio','cr'],['loss_ratio','loss'],['expense_ratio','cost']]){
         if(!num(prior[field])&&num(row[field])&&num(row.deltas?.[metric]))prior[field]=row[field]-row.deltas[metric];
       }
-      const g=groupsFor(rows,name,p,'group',m)[0],old=groupsFor(rows,name,priorPeriod,'group',m)[0];
-      const result=g&&selectUnique(g.rows,'insurance_service_result'),priorResult=old&&selectUnique(old.rows,'insurance_service_result');
-      return {market:m,row,prior,result:result?.value??null,priorResult:priorResult&&result&&priorResult.unit===result.unit?priorResult.value:null,resultUnit:result?.unit||null};
+      const result=selectUnique(g?.rows||[],'insurance_service_result'),priorResult=selectUnique(old?.rows||[],'insurance_service_result');
+      return {market:m,row,prior,result:result?.value??null,priorResult:priorResult&&result&&currency(priorResult.unit)===currency(result.unit)?priorResult.value:null,resultUnit:result?.unit||null};
     });
+  }
+  function companyQuarterNarrative(name,period,feed=null,ctx=null){
+    const p=periodOf(period);if(!p||!COMPANIES.includes(name))return null;
+    const data=feed||(typeof window!=='undefined'?window.FBQuarterly?.verified:null),cx=ctx||context;
+    const rows=(data?.observations||[]).filter(valid).filter(r=>r.company===name&&r.scope==='group'&&r.period_type==='quarter');
+    const at=(y)=>rows.filter(r=>r.year===y&&r.quarter===p.quarter);
+    const current=at(p.year),previous=at(p.year-1);
+    const cr=selectUnique(current,'combined_ratio'),income=selectUnique(current,'insurance_revenue'),result=selectUnique(current,'insurance_service_result');
+    const oldCR=selectUnique(previous,'combined_ratio'),oldIncome=selectUnique(previous,'insurance_revenue'),oldResult=selectUnique(previous,'insurance_service_result');
+    const point=(y)=>(cx?.profitability_history?.points||[]).find(r=>r.company===name&&r.year===y&&r.quarter===p.quarter&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&r.source_page>0);
+    const hp=EXTENDED.includes(name)?point(p.year):null,op=EXTENDED.includes(name)?point(p.year-1):null;
+    if(!hp&&(!cr||!income))return null;
+    const nowCR=hp?.cr??cr?.value,prevCR=hp?op?.cr:oldCR?.value;
+    const nowIncome=hp?.metrics?.insurance_revenue??income?.value,prevIncome=hp?op?.metrics?.insurance_revenue:oldIncome&&income&&currency(oldIncome.unit)===currency(income.unit)&&basis(oldIncome)===basis(income)?oldIncome.value:null;
+    const nowResult=hp?.metrics?.insurance_service_result??result?.value,prevResult=hp?op?.metrics?.insurance_service_result:oldResult&&result&&currency(oldResult.unit)===currency(result.unit)?oldResult.value:null;
+    const unit=hp?(name==='Alm. Brand'?'MDKK':'MNOK'):({NOK:'MNOK',DKK:'MDKK',EUR:'MEUR',SEK:'MSEK'}[currency(result?.unit)]||'');
+    let sentences=[];
+    if(num(nowCR))sentences.push('Rapportert CR var '+pct(nowCR)+(num(prevCR)?' mot '+pct(prevCR)+' i samme kvartal året før':'')+'.');
+    if(num(nowIncome)&&num(prevIncome)&&prevIncome>0)sentences.push('Rapporterte inntekter '+(nowIncome>=prevIncome?'økte':'falt')+' med '+pct(Math.abs(100*(nowIncome/prevIncome-1)))+' sammenlignet med samme kvartal i fjor.');
+    if(num(nowResult)&&unit)sentences.push('Forsikringsresultatet var '+format(nowResult,1)+' '+unit+(num(prevResult)?' mot '+format(prevResult,1)+' '+unit+' året før':'')+'.');
+    const qualitative=(cx?.insights||[]).filter(x=>x.company===name&&x.period===period&&x.source_document_period===period&&x.period_type==='quarter'&&['growth_explanation','loss_explanation','cost_explanation','event_explanation','material_event','large_claims','regulation'].includes(x.theme)&&['official_quarterly_report','official_results_presentation'].includes(x.source_type)&&source(x.source_url)&&/^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.text==='string'&&x.text.length>30).sort((a,b)=>(b.priority||0)-(a.priority||0));
+    const selected=[];for(const x of qualitative){if(selected.some(y=>y.theme===x.theme||y.text===x.text))continue;selected.push(x);if(selected.length===2)break;}
+    const evidence=[hp||cr,...selected].filter(Boolean);
+    return {paragraphs:[sentences.join(' '),...selected.map(x=>x.text)].filter(Boolean),sources:[...new Map(evidence.filter(x=>source(x.source_url)).map(x=>[[x.source_url,x.source_page].join('|'),{url:x.source_url,page:x.source_page}])).values()]};
   }
   function trendPanels(p){
     const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
@@ -797,5 +851,5 @@
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,financialNumber,financialTrend,companyHistoricalMetrics,companyExtraObservations,reportQueues,trendChart,crTrendView,selectCrHistory};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,financialNumber,financialTrend,companyHistoricalMetrics,companyExtraObservations,reportQueues,trendChart,crTrendView,selectCrHistory,companyQuarterNarrative,companyDetailRows};
 });
