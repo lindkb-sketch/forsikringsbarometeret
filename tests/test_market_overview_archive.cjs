@@ -26,3 +26,29 @@ test('active quarter can update, rewind and skipped quarters fail, damaged histo
  assert.throws(()=>build(input(rows(2026,2,7000,70),'Q2 2026','c'),b),/rewind/);
  b.periods['Q3 2026'].views['group/all/quarter'].model.selected[0].cr=99;assert.throws(()=>validate(b),/content changed/);
 });
+
+test('new issuer and later presentation regenerate the active quarter, never the frozen quarter',()=>{
+ const old=build(input(rows(2026,3,6000,73),'Q3 2026','Tidligere hendelse'));
+ const oldViews=JSON.stringify(old.periods['Q3 2026'].views);
+ const firstInput=input([...rows(2026,3,6000,73),...rows(2026,4,6500,75)],'Q4 2026','Første rapport');
+ const first=build(firstInput,old);
+ const v1=archivedView(first,'latest','group','all','quarter');
+ assert.equal(v1.model.eligible.length,1);
+ assert.match(JSON.stringify(v1.comments),/Første rapport/);
+ const secondInput=JSON.parse(JSON.stringify(firstInput));
+ secondInput.feed.observations.push(...rows(2026,4,5000,79).map(r=>({...r,company:'Gjensidige'})));
+ secondInput.context.insights.push({company:'Gjensidige',period:'Q4 2026',source_document_period:'Q4 2026',period_type:'quarter',views:['group/all'],theme:'growth_driver',driver:'volume_up',text:'volume_up',evidence:'higher volumes',source_type:'official_quarterly_report',source_url:'https://issuer.invalid/gj-report.pdf',source_sha256:'b'.repeat(64),source_page:3});
+ const second=build(secondInput,first);
+ const v2=archivedView(second,'latest','group','all','quarter');
+ assert.equal(v2.model.eligible.length,2);
+ assert.match(JSON.stringify(v2.comments),/økt forsikringsvolum/);
+ const thirdInput=JSON.parse(JSON.stringify(secondInput));
+ thirdInput.context.insights.push({company:'Gjensidige',period:'Q4 2026',source_document_period:'Q4 2026',period_type:'quarter',views:['group/all'],theme:'profit_driver',driver:'underlying_loss_improved',text:'underlying_loss_improved',evidence:'underlying claims ratio improved',source_type:'official_results_presentation',source_url:'https://issuer.invalid/gj-deck.pdf',source_sha256:'c'.repeat(64),source_page:4});
+ const third=build(thirdInput,second);
+ const v3=archivedView(third,'latest','group','all','quarter');
+ assert.match(JSON.stringify(v3.comments),/bedre underliggende skadeprosent/);
+ assert.equal(JSON.stringify(third.periods['Q3 2026'].views),oldViews);
+ assert.equal(third.periods['Q3 2026'].locked,true);
+ assert.equal(v3.model.eligible.length,2);
+ validate(third);
+});

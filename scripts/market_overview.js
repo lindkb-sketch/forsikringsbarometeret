@@ -247,6 +247,8 @@
     customer_growth:'vekst i kundebestanden',
     policy_count_growth:'vekst i antall forsikringer',
     uk_lcp_growth:'vekst i rapportert britisk LCP-bestand',
+    retail_growth:'vekst i privatkundesegmentet',
+    gwp_lcy_higher:'valutaeffekt på bruttopremievekst',
     volume_pm_products:'volumvekst innen eiendom, person og reise',
     portfolio_growth:'porteføljevekst i utvalgte segmenter',
     retention_up:'bedret kundelojalitet',
@@ -296,13 +298,15 @@
           growth.push('Veksttakten i siste kvartal ligger '+pp(dif)+' '+(dif>0?'over':'under')+' HIÅ-tempoet målt på samme aktører (median).');
       }
     }else growth.push('Inntektsvekst er foreløpig ikke tilgjengelig.');
-    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
+    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','policy_count_growth','portfolio_growth','retail_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     const limitations=['volume_down','risk_selection','competition'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     if(positiveDrivers.length)growth.push('Rapporterte vekstdrivere omfatter '+joinNatural(positiveDrivers)+'.');
     if(drivers.has('retention_up'))growth.push('Bedret kundelojalitet er også rapportert i deler av porteføljen.');
     const ukLcp=driverRows.filter(x=>x.driver==='uk_lcp_growth'&&num(x.reported_change_pct)&&x.reported_change_pct>0);
     const lcpValues=[...new Set(ukLcp.map(x=>x.reported_change_pct))];
     if(lcpValues.length===1)growth.push('I britisk privatmarked rapporteres '+pct(lcpValues[0])+' årsvekst i LCP-bestanden (selskapets rapporterte bestandsmål).');
+    const commercialGwp=[...new Set(driverRows.filter(x=>x.driver==='gwp_lcy_higher'&&num(x.reported_change_pct)).map(x=>x.reported_change_pct))];
+    if(commercialGwp.length===1)growth.push('I en kommersielt orientert portefølje er bruttopremieveksten '+pct(commercialGwp[0])+' i lokal valuta, høyere enn i rapporteringsvaluta. Dette er ikke vekst i antall forsikringer.');
     if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
     if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].some(k=>drivers.has(k)))
       growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');

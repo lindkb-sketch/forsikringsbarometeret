@@ -61,7 +61,10 @@ jobs:
           const deckInsights=c.insights.filter(x=>x.source_type==='official_results_presentation');
           console.log('MARKET_COMMENTARY_DECKS',decks.map(([company,d])=>[company,d.documents.filter(x=>x.document_type==='results_presentation').length,d.insights.length]));
           console.log('MARKET_COMMENTARY_DECK_INSIGHTS',deckInsights.map(x=>[x.company,x.theme,x.driver,x.source_page,x.period_type]));
-          for(const company of ['Gjensidige','Tryg','Sampo','Alm. Brand']){
+          for(const company of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand']){
+            assert.equal(c.commentary_documents?.[company]?.report_verified,true,company+' current original report must be reviewed');
+          }
+          for(const company of ['Gjensidige','Tryg','Sampo','Alm. Brand','Protector','Storebrand']){
             assert.ok(deckInsights.some(x=>x.company===company&&['growth_driver','profit_driver','material_event','regulation'].includes(x.theme)),company+' results deck must actually contribute commentary evidence');
           }
           assert.ok(deckInsights.some(x=>x.theme==='growth_driver'),'Results presentations must contribute growth drivers');

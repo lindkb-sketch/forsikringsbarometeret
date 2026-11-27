@@ -198,4 +198,45 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(document_insights('Alm. Brand',2026,3,doc,[alm.replace('year-on-year','expected next year')]),[])
         self.assertEqual(document_insights('Gjensidige',2026,3,doc,[gj.replace('Quarterly update','Quarterly update Q2 2026')]),[])
 
+    def test_protector_and_storebrand_decks_use_the_correct_market_and_metric(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/deck.pdf')
+        protector='Volume update\nQ3: GWP growth at 29% | 41% in local currencies (LCY)'
+        r=document_insights('Protector',2026,3,doc,[protector])
+        self.assertEqual([(x['driver'],x['reported_change_pct'],x['views']) for x in r],[('gwp_lcy_higher',41.0,['group/all','group/bm'])])
+        self.assertEqual(document_insights('Protector',2026,3,doc,[protector.replace('Q3:','Q2:')]),[])
+        storebrand='Graph colors: template text\nInsurance\nPortfolio premiums Key takeaways\nStrong growth and result development within Retail. Satisfactory'
+        r=document_insights('Storebrand',2026,3,doc,[storebrand])
+        self.assertEqual([(x['driver'],x['views']) for x in r],[('retail_growth',['group/all','norway/all'])])
+        self.assertEqual(document_insights('Storebrand',2026,3,doc,[storebrand.replace('Insurance','Savings')]),[])
+
+    def test_commentary_updates_one_issuer_and_retries_a_late_presentation(self):
+        from unittest.mock import patch
+        from market_commentary_documents import enrich,SCHEMA
+        def compare(a,b):
+            return {'companies':[{'company':'Tryg','period':a,'source_url':'https://tryg.com/'+a.replace(' ','')+'.pdf','status':'verified_quarterly_feed'},
+                                  {'company':'Sampo','period':b,'source_url':'https://www.sampo.com/'+b.replace(' ','')+'.pdf','status':'verified_quarterly_feed'}]}
+        def run(comparison,previous,ready):
+            result={'status':{},'insights':[]}
+            with patch('market_commentary_documents.collect') as collect,patch('market_commentary_documents.commentary_signature',side_effect=lambda c,y,q,*args:f'{c}-{y}-{q}'):
+                def collect_one(c,y,q,feed,extended,candidates,anchor,existing):
+                    period=f'Q{q} {y}';verified=c=='Tryg' or ready
+                    return dict(period=period,anchor=anchor,report_verified=True,presentation_status='verified' if verified else 'not_verified',documents=[],errors=[],insights=[{'company':c,'period':period,'marker':'deck' if verified else 'report'}])
+                collect.side_effect=collect_one
+                enrich(result,{},comparison,{}, {},previous)
+                return result,[c.args[0] for c in collect.call_args_list]
+        first,calls=run(compare('Q4 2026','Q3 2026'),{},False)
+        self.assertEqual(set(calls),{'Tryg','Sampo'})
+        self.assertEqual(first['commentary_documents']['Tryg']['period'],'Q4 2026')
+        second,calls=run(compare('Q4 2026','Q4 2026'),first,False)
+        self.assertEqual(calls,['Sampo'])
+        self.assertEqual({r['period'] for r in second['insights']},{'Q4 2026'})
+        third,calls=run(compare('Q4 2026','Q4 2026'),second,True)
+        self.assertEqual(calls,['Sampo'])
+        self.assertEqual(third['commentary_documents']['Sampo']['presentation_status'],'verified')
+        self.assertTrue(all(r['marker']=='deck' for r in third['insights']))
+        fourth,calls=run(compare('Q4 2026','Q4 2026'),third,True)
+        self.assertEqual(calls,[])
+        self.assertEqual(fourth['insights'],third['insights'])
+
 if __name__=='__main__':unittest.main()

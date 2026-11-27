@@ -6,14 +6,15 @@ Archive pages and exchange notices may discover document attachments only.
 Unknown slide headings, periods, scopes and narrative layouts fail closed.
 Presentation observations never replace report financial observations.
 """
-import re
+import hashlib,json,re
+from html.parser import HTMLParser
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import unquote,urlsplit
 from audit_nine_issuer_documents import (INDEXES,KNOWN_PRESENTATIONS,REPORT_ONLY_ISSUERS,
     PRESENTATION,EXCLUDE,archive_links,issuer_detail_links,period_label,report_sources,
     trusted,fetch,verify_document,normalize,ISSUER_RELEASE_PAGES)
 
-SCHEMA=2
+SCHEMA=3
 GROUP_ONLY={'Sampo','Tryg','Gjensidige','Alm. Brand','Protector','Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 NORWAY_TOTAL={'Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 SPLIT={'Tryg','Gjensidige','Fremtind','Alm. Brand'}
@@ -143,6 +144,16 @@ def issuer_deck_insights(company,raw,y,q):
         # quarterly LCP movement. Keep LCP as the issuer's own definition;
         # do not equate it with customer count or IFRS revenue growth.
         add('growth_driver','uk_lcp_growth',['group/all'],r'\bLCP growth of \d+(?:[.,]\d+)?%\s+quarter-on-quarter and \d+(?:[.,]\d+)?%\s+year-on-year\b',r'and (\d+(?:[.,]\d+)?)%\s+year-on-year')
+    elif company=='Protector' and re.search(rf'^Volume update\s+Q{q}:\s*GWP growth\b',head,re.I):
+        hit=re.search(rf'\bQ{q}:\s*GWP growth at ([\d.,]+)%\s*\|\s*([\d.,]+)% in local currencies \(LCY\)',body,re.I)
+        if hit:
+            reported,local=(float(v.replace(',','.')) for v in hit.groups())
+            if local-reported>=2:
+                out.append(('growth_driver','gwp_lcy_higher',['group/all','group/bm'],hit.group(0),local))
+    elif company=='Storebrand' and re.search(r'\bInsurance\b',body[:1200],re.I) and re.search(r'\bPortfolio premiums\b',body,re.I) and re.search(r'\bKey takeaways\b',body,re.I):
+        # Insurance slide only: do not mix Savings or Group pension premiums
+        # with the Insurance segment. Retail growth is not a policy count.
+        add('growth_driver','retail_growth',['group/all','norway/all'],r'\bStrong growth and result development within Retail\b')
     elif company=='Alm. Brand' and re.search(r'^Personal lines\s+Improved performance driven by lower claims levels\b',head,re.I):
         if not re.search(r'\bClaims ratio improved by [\d.,]+ percentage points? year-on-year\b',body,re.I):return []
         add('growth_driver','price',['group/pm','group/all'],r'\bPremium growth of [\d.,]+%, driven by premium adjustments\b')
@@ -231,8 +242,47 @@ def discover_presentations(company,y,q):
             except Exception:continue
     return [d for d in found if d['document_type']=='results_presentation']
 
-def collect(company,y,q,feed,extended,candidates,report_anchor,existing_report=False):
+class ReportText(HTMLParser):
+    """Extract visible paragraph/headline text from verified original HTML."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True);self.parts=[];self.hidden=[]
+    def handle_starttag(self,tag,attrs):
+        if tag in ('script','style','nav'):self.hidden.append(tag)
+        if not self.hidden and tag in ('p','div','h1','h2','h3','h4','li','br','tr'):self.parts.append('\n')
+    def handle_endtag(self,tag):
+        if self.hidden and tag==self.hidden[-1]:self.hidden.pop()
+        if not self.hidden and tag in ('p','div','h1','h2','h3','h4','li','tr'):self.parts.append('\n')
+    def handle_data(self,data):
+        if not self.hidden:self.parts.append(data)
+    def text(self):return ''.join(self.parts)
+
+def html_report_insights(company,y,q,doc,raw):
+    # Frende's official publisher HTML is its original quarterly report.
+    # The existing verifier has already reconciled the same report section.
+    m=re.fullmatch(r'https://frende\.wrep\.it/q([1-4])-(20\d{2})-frende-holding-as/sec/([67])',doc.get('url',''))
+    if company!='Frende' or not m or (int(m[2]),int(m[1]))!=(y,q):return []
+    if doc.get('document_type')!='quarterly_report' or doc.get('status')!='verified_document' or doc.get('format')!='html' or not doc.get('issuer_verified') or not doc.get('period_verified'):return []
+    if hashlib.sha256(raw).hexdigest()!=doc.get('source_sha256'):return []
+    parser=ReportText();parser.feed(raw.decode('utf-8'))
+    # Never fabricate a page header or treat table cells as narrative.
+    # Require the same explicit period/scope rules as PDF report prose.
+    result=document_insights(company,y,q,{**doc,'format':'pdf'},[parser.text()])
+    for r in result:r['source_page']=int(m[3])
+    return result
+
+def commentary_signature(company,y,q,feed,extended,candidates):
+    # Include actual original-report fingerprints, not just a URL or quarter.
+    # A report revision or newly discovered presentation invalidates the cache.
+    sources=report_sources(feed,extended,company,y,q)
+    sources+=presentation_candidates(company,y,q,feed,extended,candidates)
+    records=sorted({(d['document_type'],d['url'],tuple(sorted(d.get('expected_sha256',[])))) for d in sources})
+    return hashlib.sha256(json.dumps(records,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
+
+def collect(company,y,q,feed,extended,candidates,report_anchor,existing_report=None):
     docs=[];insights=[];seen=set();errors=[]
+    if existing_report:
+        docs.append(existing_report)
+        seen.add(existing_report['url'])
     report_docs=report_sources(feed,extended,company,y,q)
     report_hashes={h for d in report_docs if d['document_type']=='quarterly_report' for h in d.get('expected_sha256',[])}
     def admit(options,kind):
@@ -242,12 +292,15 @@ def collect(company,y,q,feed,extended,candidates,report_anchor,existing_report=F
             seen.add(url)
             try:
                 ev,raw,texts=verify_document(company,option,y,q,feed)
-                if ev.get('format')!='pdf':continue
-                if kind=='quarterly_report' and not ev.get('expected_fingerprint_matches'):continue
+                fmt=ev.get('format')
+                if fmt!='pdf' and not (company=='Frende' and kind=='quarterly_report' and fmt=='html'):continue
+                if kind=='quarterly_report' and not (ev.get('expected_fingerprint_matches') or fmt=='html' and ev.get('semantic_matches')):continue
                 if kind=='results_presentation' and ev.get('source_sha256') in report_hashes:continue
                 if any(d['source_sha256']==ev['source_sha256'] for d in docs):continue
-                docs.append({k:ev[k] for k in ('url','document_type','source_sha256','status','source_pages_examined')})
-                extracted=document_insights(company,y,q,ev,texts)
+                extracted=html_report_insights(company,y,q,ev,raw) if fmt=='html' else document_insights(company,y,q,ev,texts)
+                docs.append({**{k:ev[k] for k in ('url','document_type','source_sha256','status','source_pages_examined')},
+                             'format':fmt,'analysis_status':'reviewed_with_evidence' if extracted else 'reviewed_no_unambiguous_driver',
+                             'insight_count':len(extracted)})
                 insights.extend(extracted)
                 print('MARKET_COMMENTARY_DOCUMENT',company,f'Q{q} {y}',kind,ev['url'],ev['source_sha256'],'insights',len(extracted),flush=True)
                 if kind=='results_presentation':
@@ -261,17 +314,22 @@ def collect(company,y,q,feed,extended,candidates,report_anchor,existing_report=F
             except Exception as exc:
                 errors.append(type(exc).__name__+': '+str(exc)[:150])
         return False
-    # Primary reports for the other companies (the existing segment
-    # context builder already verifies and reads its five primary reports).
-    if not existing_report:
-        options=[d for d in report_docs if d['document_type']=='quarterly_report' and d.get('format')=='pdf']
-        admit(options[:2],'quarterly_report')
+    # Read each issuer's current original report, including Frende's
+    # separately verified publisher sections. The segment builder supplies
+    # its already read primary PDF, avoiding a second download of that URL.
+    report_options=[d for d in report_docs if d['document_type']=='quarterly_report']
+    report_options.sort(key=lambda d:(d['url']!=report_anchor,d['url']))
+    admit(report_options[:5],'quarterly_report')
     options=presentation_candidates(company,y,q,feed,extended,candidates)
     got=admit(options[:5],'results_presentation')
-    if not got and company not in REPORT_ONLY_ISSUERS:
-        got=admit(discover_presentations(company,y,q)[:5],'results_presentation')
+    if not got:
+        discovered=discover_presentations(company,y,q)
+        options+=discovered
+        got=admit(discovered[:5],'results_presentation')
     state='verified' if got else 'report_only' if company in REPORT_ONLY_ISSUERS and not options else 'not_verified'
-    return dict(period=f'Q{q} {y}',anchor=report_anchor, presentation_status=state,documents=docs,insights=insights,errors=errors)
+    report_verified=any(d['document_type']=='quarterly_report' and d['status']=='verified_document' for d in docs)
+    return dict(period=f'Q{q} {y}',anchor=report_anchor,report_verified=report_verified,
+                presentation_status=state,documents=docs,insights=insights,errors=errors)
 
 def enrich(result,feed,comparison,extended,candidates,previous):
     old=previous.get('commentary_documents',{}) if previous.get('commentary_document_schema')==SCHEMA else {}
@@ -284,19 +342,29 @@ def enrich(result,feed,comparison,extended,candidates,previous):
         q,y=map(int,m.groups())
         anchor=item.get('source_url','');period=f'Q{q} {y}'
         saved=old.get(c,{})
-        # Never carry old quarter slides forward. Verified same-period
-        # documents are cached; unverified slides are retried automatically.
-        if saved.get('period')==period and saved.get('anchor')==anchor and saved.get('presentation_status')=='verified':
+        signature=commentary_signature(c,y,q,feed,extended,candidates)
+        # Independently cache each issuer's actual period/document set.
+        # Missing decks are retried even when financial observations are
+        # unchanged. A late deck or a revised report rebuilds that issuer.
+        if saved.get('period')==period and saved.get('anchor')==anchor and saved.get('input_signature')==signature and saved.get('report_verified') is True and saved.get('presentation_status')=='verified':
             result['commentary_documents'][c]=saved;continue
         state=result.get('status',{}).get(c,{})
-        existing=state.get('period')==period and state.get('status') in ('verified','partial')
-        tasks.append((c,y,q,anchor,existing))
+        existing=None
+        if state.get('period')==period and state.get('source_url')==anchor and state.get('document_verified') is True:
+            primary=[r for r in result['insights'] if r.get('company')==c and r.get('period')==period and r.get('source_sha256')==state.get('source_sha256')]
+            existing=dict(url=anchor,document_type='quarterly_report',source_sha256=state['source_sha256'],
+                          status='verified_document',format='pdf',source_pages_examined=state['source_pages_examined'],
+                          analysis_status='reviewed_with_evidence' if primary else 'reviewed_no_unambiguous_driver',insight_count=len(primary))
+        tasks.append((c,y,q,anchor,existing,signature))
     def run(task):
-        c,y,q,anchor,existing=task
-        try:return c,collect(c,y,q,feed,extended,candidates,anchor,existing)
-        except Exception as exc:return c,dict(period=f'Q{q} {y}',anchor=anchor,presentation_status='not_verified',documents=[],insights=[],errors=[type(exc).__name__+': '+str(exc)[:150]])
+        c,y,q,anchor,existing,signature=task
+        try:
+            entry=collect(c,y,q,feed,extended,candidates,anchor,existing)
+            entry['input_signature']=signature
+            return c,entry
+        except Exception as exc:return c,dict(period=f'Q{q} {y}',anchor=anchor,input_signature=signature,report_verified=bool(existing),presentation_status='not_verified',documents=[existing] if existing else [],insights=[],errors=[type(exc).__name__+': '+str(exc)[:150]])
     with ThreadPoolExecutor(max_workers=6) as pool:
         for c,entry in pool.map(run,tasks):result['commentary_documents'][c]=entry
     for c,entry in result['commentary_documents'].items():
         result['insights'].extend(entry.get('insights',[]))
-        print('MARKET_COMMENTARY_COVERAGE',c,entry['period'],entry['presentation_status'],len(entry['documents']),len(entry['insights']),entry['errors'][:2],flush=True)
+        print('MARKET_COMMENTARY_COVERAGE',c,entry['period'],'report_verified',entry['report_verified'],entry['presentation_status'],len(entry['documents']),len(entry['insights']),entry['errors'][:2],flush=True)
