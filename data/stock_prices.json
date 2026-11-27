@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T16:24:58.992111+00:00",
+  "updated_at": "2026-11-27T16:31:59.298075+00:00",
   "prices": {
     "Gjensidige": {
       "symbol": "GJF.OL",
@@ -4083,7 +4083,7 @@
       "currency": "EUR",
       "close": 10.16,
       "trading_date": "2026-11-27",
-      "observed_at": "2026-11-27T16:24:25+00:00",
+      "observed_at": "2026-11-27T16:29:52+00:00",
       "price_type": "delayed_daily_observation",
       "provisional": true,
       "previous_close": 10.055,
