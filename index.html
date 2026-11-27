@@ -132,7 +132,7 @@
 .frende-skade-source{display:block;margin-top:5px;font-size:11px;line-height:1.3;font-weight:400}
 .frende-skade-source a{color:#14677c;text-decoration:underline;text-underline-offset:2px}
 .frende-skade-source a:hover,.frende-skade-source a:focus-visible{color:#0d4557}
-</style><style>#admin-overlay[hidden]{display:none!important}#admin-overlay{position:fixed;inset:0;background:#0d2435aa;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.admin-dialog{background:#fff;border-radius:16px;width:min(900px,100%);max-height:94vh;overflow:auto;padding:26px;box-shadow:0 24px 70px #102c4266;color:#18384a}.admin-head{display:flex;justify-content:space-between;gap:18px}.admin-head h2{font-size:25px;margin:5px 0}.admin-head p{font-size:13px;color:#607586}.admin-head button,.admin-actions button{cursor:pointer;border:1px solid #d6e1e8;border-radius:8px;background:white;padding:11px 15px}.admin-file{display:block;padding:18px;background:#f3f8fb;border:1px dashed #94b5c7;border-radius:10px;margin:18px 0;font-weight:700}.admin-file input{display:block;margin-top:12px;max-width:100%}#admin-status{font-size:13px;margin-bottom:12px}.admin-scroll{overflow:auto}.admin-table{width:100%;border-collapse:collapse}.admin-table th,.admin-table td{padding:8px;text-align:left;border-bottom:1px solid #e6eef2}.admin-table input{width:100%;min-width:70px;border:1px solid #d4e2ea;border-radius:6px;padding:9px}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.admin-actions .admin-primary{background:#116b79;color:#fff;border-color:#116b79}.admin-warning{font-size:12px;line-height:1.5;color:#6b7882;margin-top:18px}#admin-entry{margin:15px 12px;width:calc(100% - 24px);padding:10px;background:#1a5967;color:white;border:1px solid #458a96;border-radius:8px;cursor:pointer}</style><style>
+</style><style>#admin-overlay[hidden]{display:none!important}#admin-overlay{position:fixed;inset:0;background:#0d2435aa;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.admin-dialog{background:#fff;border-radius:16px;width:min(900px,100%);max-height:94vh;overflow:auto;padding:26px;box-shadow:0 24px 70px #102c4266;color:#18384a}.admin-head{display:flex;justify-content:space-between;gap:18px}.admin-head h2{font-size:25px;margin:5px 0}.admin-head p{font-size:13px;color:#607586}.admin-head button,.admin-actions button{cursor:pointer;border:1px solid #d6e1e8;border-radius:8px;background:white;padding:11px 15px}.admin-file{display:block;padding:18px;background:#f3f8fb;border:1px dashed #94b5c7;border-radius:10px;margin:18px 0;font-weight:700}.admin-file input{display:block;margin-top:12px;max-width:100%}#admin-status{font-size:13px;margin-bottom:12px}.admin-scroll{overflow:auto}.admin-table{width:100%;border-collapse:collapse}.admin-table th,.admin-table td{padding:8px;text-align:left;border-bottom:1px solid #e6eef2}.admin-table input{width:100%;min-width:70px;border:1px solid #d4e2ea;border-radius:6px;padding:9px}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.admin-actions .admin-primary{background:#116b79;color:#fff;border-color:#116b79}.admin-warning{font-size:12px;line-height:1.5;color:#6b7882;margin-top:18px}#admin-entry{background:#1a5967;color:white;border:1px solid #458a96;border-radius:8px;cursor:pointer} .admin-table{min-width:660px}.admin-table th{text-align:left}.admin-table input{min-width:64px}.admin-dialog{width:min(1050px,100%)}@media(max-width:760px){.admin-dialog{padding:16px}.admin-head{gap:8px}.admin-head button{align-self:flex-start;white-space:nowrap}}</style><style>
 .kpi-seven{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:11px;margin:0 0 18px}
 .kpi-seven>.metric{box-sizing:border-box;min-width:0;min-height:185px;height:100%;padding:14px 11px;display:flex;flex-direction:column}
 .kpi-seven .name{font-size:11px;line-height:1.4;min-height:43px;font-weight:700}
@@ -757,13 +757,13 @@ main{padding:30px clamp(20px,3vw,46px) 60px}
  .stock-news-section .stock-news-icon{width:38px;height:38px;flex-basis:38px}
 }
 </style>
-<link rel="stylesheet" href="scripts/broker_commentary.css"><link rel="stylesheet" href="scripts/market_overview.css"></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><button id="nav-summary" onclick="show('summary')">▤ &nbsp; Oppsummering</button><div class="label">SELSKAPER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
+<link rel="stylesheet" href="scripts/broker_commentary.css"><link rel="stylesheet" href="scripts/market_overview.css"></head><body><aside><div class="brand">Forsikrings<span>barometeret</span></div><div class="label">OVERSIKT</div><button id="nav-home" onclick="show('home')" class="active">◫ &nbsp; Markedsoversikt</button><button id="nav-summary" onclick="show('summary')">▤ &nbsp; Oppsummering</button><div class="label">SELSKAPER</div><div id="nav-companies"></div><div class="label">DOKUMENTASJON</div><button id="nav-methodology" onclick="show('methodology')">▤ &nbsp; Forutsetninger og kilder</button><div class="label">ADMINISTRASJON</div><button id="admin-entry" type="button" onclick="openMarketAdmin()">⚙ &nbsp; Oppdater markedsandeler</button><div class="foot">FORSIKRINGSBAROMETERET · DATA OG INNSIKT</div></aside><main id="app"></main><script>
 const companies=['Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand'];let current='home';let period='Q3';let profitabilityCompany='Fremtind';const nav=document.getElementById('nav-companies');['Fremtind',...companies].forEach(c=>{let b=document.createElement('button');b.id='nav-'+c;b.textContent='↗  '+c;b.onclick=()=>show(c);nav.append(b)});const $=s=>document.querySelector(s);
 const noData='<span class="muted">—</span>';function metric(label,unit='%',note='Avventer verifiserte rapportdata'){let found=note.match(/^([0-9]+,[0-9]+) %/);return `<div class="metric"><div class="name">${label}</div><div class="value">${found?found[1]:'—'} <span style="font-size:13px;color:#a4b0ba">${unit}</span></div><div class="note">${note}</div></div>`}function companyQuickNav(){const names=['Fremtind',...companies];return `<nav class="company-quick-nav" aria-label="Velg forsikringsselskap"><strong>Velg selskap</strong><div class="company-quick-links">${names.map(c=>`<button type="button" class="company-quick-link ${current===c?'selected':''}" onclick="show('${c}')" aria-label="Vis ${c}">${c}</button>`).join('')}</div></nav>`;}
 function shell(title,subtitle,eyebrow='MARKEDSOVERSIKT'){return companyQuickNav()+`<div class="top"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p class="sub">${subtitle}</p></div><div class="tag">Q2 2026 · Kildekontrollerte utdrag</div></div>`}const peerData={};
 function cell(v,prev){return v?`${v}<span class="table-prior">(${prev||'—'})</span>`:noData}
 // Finans Norge, bestandspremie landbasert norsk skadeforsikring, Q2 2026.
-// Only individually verified shares are shown; remaining shares are intentionally blank.
+// Owner-maintained market shares are separate from automatically verified financial data.
 const marketShares={};
 const marketUpload={period:'',segments:{},previous:{},source:''};
 function shareCell(company){
@@ -1012,7 +1012,7 @@ function newInsurerPage(c){
 function company(c){if(c==='KLP Skadeforsikring'||c==='Alm. Brand')return newInsurerPage(c);const d=groupData[c], segments=segmentData[c];return `<button class="back" onclick="show('home')">← Tilbake til oversikten</button>${shell(c,'Forsikringsresultat øverst · norsk virksomhet og relevante segmenter nedenfor.','SELSKAPSANALYSE / '+c.toUpperCase())}<div class="section-head"><div><h2 style="margin:0;font-size:16px">${c} | Resultatoversikt</h2></div><span class="pill">Q2 2026</span></div>${quarterComment(c)}${kpiCards(c)}<div class="panel"><div class="section-head"><div><h2>${c==='Sampo'?'Nordiske forretningssegmenter':'<span class="norway-flag" role="img" aria-label="Norsk flagg">🇳🇴</span> <strong style="font-size:1.12em">NORGE</strong> · segmentoversikt'}</h2></div><span class="pill norway-pill">${c==='Sampo'?'NORDEN':'NORGE'}</span></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Forsikringsteknisk resultat</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>${segments.map(x=>`<tr class="${c==='Gjensidige'&&x.name==='Norge total'?'norway-total':''}"><td>${/\bNorge\b/i.test(x.name)?'<span class="norway-flag" role="img" aria-label="Norsk flagg">🇳🇴</span> ':''}${x.name}</td><td>${segmentCell(x,'growth')}</td><td>${segmentCell(x,'underwriting')}</td><td>${segmentCell(x,'cr')}</td><td>${segmentCell(x,'loss')}</td><td>${segmentCell(x,'cost')}</td></tr>`).join('')}</tbody></table></div></div><section class="panel broker-summary-panel" id="broker-commentary-panel" hidden></section>${stockMarketSection(c)}${companyMediaNews(c)}`}
 function methodology(){
  return shell('Forutsetninger og kilder','Definisjoner, sammenlignbarhet og dokumentasjon av rapporterte nøkkeltall.','DOKUMENTASJON')+
- `<div class="panel"><h2>Markedsandel i resultatsammenligningen</h2><p>Markedsandelene er separat periodisert premiestatistikk fra Finans Norge, Tab5. Den sist publiserte statistikken beholder sin egen periode; den endres ikke ved bytte av finanskvartal. Sammenligningen gjelder samme statistikkperiode året før. Oppdateringer gjøres med administrasjonsfunksjonen for Excel og publisering av data/market_shares.json.</p><p>Dataperiode: ${marketUpload.period||'Avventer statistikk'}. Manglende markedsandeler er ikke null.</p></div>
+ `<div class="panel"><h2>Markedsandel i resultatsammenligningen</h2><p>Markedsandelene er separat periodisert premiestatistikk fra Finans Norge, Tab5. Den sist publiserte statistikken beholder sin egen periode; den endres ikke ved bytte av finanskvartal. Sammenligningen gjelder samme statistikkperiode året før. Oppdateringer gjøres manuelt av eieren via «Oppdater markedsandeler» i menyen, eventuelt ved opplasting av Excel (Tab5). Bare data/market_shares.json publiseres; finansimporten endres ikke.</p><p>Dataperiode: ${marketUpload.period||'Avventer statistikk'}. Manglende markedsandeler er ikke null.</p></div>
  <div class="panel"><h2>Inntektsvekst · beregning og kvalitetskontroll</h2><p>Inntektsvekst er årets inntekt delt på sammenlignbar inntekt i samme periode året før, minus én, uttrykt i prosent. Fjorårets vekst sammenligner fjoråret med året før der igjen. Kvartal isolert og HIÅ behandles separat. Enheter, valuta, juridisk omfang og inntektsdefinisjoner må samsvare. Valutajustert vekst og organisk vekst merkes eksplisitt.</p><p>IFRS 17-forsikringsinntekter, premieinntekter, GWP og driftsinntekter blandes ikke.</p></div>
  <div class="panel"><h2>Piler, segmentresultat og kilder</h2><p>En grønn pil viser gunstig endring mot tilsvarende periode året før, og en rød pil ugunstig endring. For skadeprosent, kostnadsprosent og CR er lavere normalt bedre. Uendret markeres nøytralt. Ingen pil vises uten et sammenlignbart fjorårstall. Isolerte kvartaler brukes i lønnsomhetsgrafene, med historikken begrenset til fem rullerende kvartaler.</p></div>
  <div class="panel"><h2>Storebrand Forsikring AS · Norge totalt</h2><p>Storebrands konsernkort gjelder ASA sitt rapporterte Insurance-segment. Markedsoversiktens Norge-visning følger eiergodkjent avgrensning; selskapsfanens Norge-rad bruker Storebrand Forsikring AS sin egen rapport. Inntektsvekst fra premiebegrepet for egen regning må ikke omtales som hele konsernets IFRS 17-inntekt.</p></div>
@@ -1024,7 +1024,7 @@ function methodology(){
  <div class="panel"><h2>Kilder</h2><p>Se kildehenvisninger i selskapsfanene, kvartalstallene og de kildeverifiserte datafilene.</p><p><a href="data/verified_financial_feed.json">Finansfeed ↗</a> · <a href="data/market_overview_context.json">Markedsgrunnlag ↗</a> · <a href="data/market_shares.json">Markedsandeler ↗</a></p></div>`;
 }
 function show(page,preserveScroll=false){current=page;if(['Fremtind',...companies].includes(page))$('#app').dataset.companyPage=page;else delete $('#app').dataset.companyPage;document.querySelectorAll('aside button').forEach(b=>b.classList.remove('active'));let id=page==='home'?'nav-home':'nav-'+page;const active=document.getElementById(id);if(active)active.classList.add('active');$('#app').innerHTML=page!=='home'&&page!=='methodology'&&!window.FBActivePeriod?'<div class="panel"><p>Avventer verifiserte rapporttall …</p></div>':page==='home'?(window.FBMarketOverview?.html()||'<div class="panel">Laster markedsoversikt …</div>'):page==='summary'?home():page==='methodology'?methodology()+(window.FBMarketOverview?.methodology()||''):company(page);if(stockMarketConfig[page]&&stockCSV[page]?.length)drawStockYear(page,stockCSV[page],'Daglige observasjoner');if(!preserveScroll)window.scrollTo(0,0);window.FBBrokerCommentary?.render?.()}
-</script><div id="admin-overlay" hidden><div class="admin-dialog"><div class="admin-head"><div><div class="eyebrow">ADMINISTRASJON</div><h2>Oppdater markedsandeler</h2><p>Last opp Finans Norges Excel-fil. Tab5 leses automatisk. Publiser den nedlastede datafilen for å oppdatere nettsiden.</p></div><button onclick="document.getElementById('admin-overlay').hidden=true">Lukk ×</button></div><label class="admin-file" style="display:block;margin-bottom:9px">Periode for markedsandel <select id="admin-market-period" aria-label="Periode for markedsandel"></select></label><label class="admin-file">Velg premiestatistikk (.xlsx)<input type="file" id="inline-excel" accept=".xlsx"></label><div id="admin-status">Venter på Excel-fil.</div><div class="admin-scroll"><table class="admin-table"><thead><tr><th>Selskap</th><th>Totalt</th><th>PM</th><th>BM</th></tr></thead><tbody id="admin-values"></tbody></table></div><div class="admin-actions"><button onclick="applyMarketPreview()">Forhåndsvis på siden</button><button class="admin-primary" onclick="downloadMarketSite()">Last ned markedsandelsdata</button></div><p class="admin-warning">Forhåndsvisning gjelder bare denne nettleserfanen. For å oppdatere nettstedet for alle lesere må den nedlastede market_shares.json publiseres i data-mappen. Adminvisningen er ikke tilgangsbeskyttet av en server.</p></div></div><script id="inline-admin-script">
+</script><div id="admin-overlay" hidden><div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title"><div class="admin-head"><div><div class="eyebrow">ADMINISTRASJON</div><h2 id="admin-title">Oppdater markedsandeler</h2><p>Registrer markedsandelene manuelt, eller last opp Finans Norges Excel-fil (Tab5). Fyll ut både valgt periode og samme periode året før. Tomme felt vises som —.</p></div><button type="button" onclick="closeMarketAdmin()">Lukk ×</button></div><label class="admin-file" style="display:block;margin-bottom:9px">Periode for markedsandel <select id="admin-market-period" aria-label="Periode for markedsandel"></select></label><label class="admin-file">Valgfritt: importer premiestatistikk (.xlsx)<input type="file" id="inline-excel" accept=".xlsx"></label><div id="admin-status" role="status">Velg periode og registrer markedsandelene.</div><div class="admin-scroll"><table class="admin-table"><thead><tr><th rowspan="2" scope="col">Selskap</th><th colspan="3" id="admin-current-label" scope="colgroup">Valgt periode</th><th colspan="3" id="admin-prior-label" scope="colgroup">Året før</th></tr><tr><th scope="col">Totalt</th><th scope="col">PM</th><th scope="col">BM</th><th scope="col">Totalt</th><th scope="col">PM</th><th scope="col">BM</th></tr></thead><tbody id="admin-values"></tbody></table></div><div class="admin-actions"><button onclick="applyMarketPreview()">Forhåndsvis på siden</button><button class="admin-primary" onclick="downloadMarketSite()">Last ned markedsandelsdata</button></div><p class="admin-warning">Forhåndsvisning gjelder bare denne nettleserfanen. For å oppdatere nettstedet for alle lesere må den nedlastede market_shares.json publiseres i data-mappen. Adminvisningen er ikke tilgangsbeskyttet av en server.</p></div></div><script id="inline-admin-script">
 /*!
 
 
@@ -1081,7 +1081,7 @@ async function readWorkbook(buffer){
 
 const adminNames=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
 const adminAliases={Fremtind:['fremtind'],Gjensidige:['gjensidige'],Tryg:['tryg'],Sampo:['if skadeforsikring','if skade','if forsikring'],Frende:['frende forsikring','frende'],Protector:['protector'],Storebrand:['storebrand']};
-let adminPrevious={},adminPeriod='',adminWorkbook=null,marketPreview=false;
+let adminPeriod='',adminWorkbook=null,marketPreview=false,marketInitialLoad=null;
 function marketPeriodOptions(selected=''){
  const select=document.getElementById('admin-market-period');
  const now=new Date(),n=now.getUTCFullYear()*4+Math.floor(now.getUTCMonth()/3);
@@ -1091,7 +1091,7 @@ function marketPeriodOptions(selected=''){
  select.value=selected||options[12];adminPeriod=select.value;
 }
 marketPeriodOptions();
-document.getElementById('admin-market-period').addEventListener('change',e=>adminPeriod=e.target.value);
+document.getElementById('admin-market-period').addEventListener('change',e=>{adminPeriod=e.target.value;adminWorkbook=null;document.getElementById('inline-excel').value='';adminInputs();document.getElementById('admin-status').textContent=adminPeriod===marketUpload.period?'Viser sist registrerte tall for perioden.':'Ny periode: registrer tall for begge år, eller importer Excel.';});
 function admitMarketShares(data){
  if(data?.schema_version!==1||!/^Q[1-4] 20\d{2}$/.test(data.period||'')||data.prior_period!==data.period.replace(/\d{4}/,v=>String(Number(v)-1))||!['published_manual_snapshot','tab5_import'].includes(data.status)||typeof data.source!=='string')throw Error('Ugyldig markedsandelsperiode eller kilde');
  const pct=v=>v===null||v===undefined||v===''?null:adminPct(v);
@@ -1100,51 +1100,88 @@ function admitMarketShares(data){
  for(const k of Object.keys(marketSegments))delete marketSegments[k];Object.assign(marketSegments,clean(data.segments,['pm','bm']));
  for(const k of Object.keys(marketPrevious))delete marketPrevious[k];Object.assign(marketPrevious,clean(data.previous,['total','pm','bm']));
  marketUpload.period=data.period;marketUpload.source=data.source;marketUpload.status=data.status;
- adminPrevious=JSON.parse(JSON.stringify(marketPrevious));marketPeriodOptions(data.period);
+ marketPeriodOptions(data.period);
 }
 async function refreshMarketShares(){
- if(marketPreview)return;
+ if(marketPreview||!document.getElementById('admin-overlay').hidden)return;
  try{
   const r=await fetch('data/market_shares.json?t='+Date.now(),{cache:'no-store'});
   if(!r.ok)throw Error('HTTP '+r.status);
-  admitMarketShares(await r.json());if(!document.getElementById('admin-overlay').hidden)adminInputs();
+  const data=await r.json();
+  if(marketPreview||!document.getElementById('admin-overlay').hidden)return;
+  admitMarketShares(data);
   if(typeof show==='function')show(current,true);
  }catch(e){console.warn('Markedsandeler utilgjengelige: '+e.message)}
 }
 
-function adminPct(v){if(v===null||v===undefined||v==='-'||v==='')return '';let n=Number(String(v).replace(/\s|%/g,'').replace(',','.'));return Number.isFinite(n)&&n>=0&&n<=100?n.toFixed(1).replace('.',','):''}
+function adminPct(v){if(v===null||v===undefined)return '';const raw=String(v).trim().replace(/\s*%$/,'').trim();if(!/^\d+(?:[.,]\d+)?$/.test(raw))return '';const n=Number(raw.replace(',','.'));return Number.isFinite(n)&&n>=0&&n<=100?n.toFixed(1).replace('.',','):''}
 function excelPct(v){if(v===null||v===undefined||v==='-'||v==='')return '';let n=Number(String(v).replace(/\s|%/g,'').replace(',','.'));if(!Number.isFinite(n)||n<0)return '';if(n>0&&n<1)n*=100;return n<=100?n.toFixed(1).replace('.',','):''}
-
-
-function adminInputs(){document.getElementById('admin-values').innerHTML=adminNames.map(n=>'<tr><th>'+n+'</th>'+['total','pm','bm'].map(k=>'<td><input data-ac="'+n+'" data-ak="'+k+'" value="'+(adminPct(k==='total'?marketShares[n]:marketUpload.segments[n]?.[k])||'')+'" placeholder="—"></td>').join('')+'</tr>').join('')}
-function adminRead(){const shares={},segments={};for(const n of adminNames){const vals={};for(const k of ['total','pm','bm']){const el=document.querySelector('[data-ac="'+n+'"][data-ak="'+k+'"]');const val=adminPct(el.value);if(el.value.trim()&&!val)throw Error('Ugyldig prosent for '+n+' '+k);vals[k]=val?val+' %':null}if(vals.total)shares[n]=vals.total;segments[n]={pm:vals.pm,bm:vals.bm}}return {shares,segments}}
+function marketPriorPeriod(label){return label.replace(/\d{4}/,v=>String(Number(v)-1))}
+function adminInput(n,k,p){return document.querySelector('[data-ac="'+n+'"][data-ak="'+k+'"][data-ap="'+p+'"]')}
+function adminInputs(){
+ const existing=adminPeriod===marketUpload.period;
+ document.getElementById('admin-current-label').textContent=adminPeriod;
+ document.getElementById('admin-prior-label').textContent=marketPriorPeriod(adminPeriod);
+ document.getElementById('admin-values').innerHTML=adminNames.map(n=>'<tr><th scope="row">'+n+'</th>'+['current','prior'].map(p=>['total','pm','bm'].map(k=>{
+ const value=existing?(p==='prior'?marketPrevious[n]?.[k]:k==='total'?marketShares[n]:marketSegments[n]?.[k]):null;
+ return '<td><input type="text" inputmode="decimal" data-ac="'+n+'" data-ak="'+k+'" data-ap="'+p+'" aria-label="'+n+' '+k+' '+(p==='prior'?marketPriorPeriod(adminPeriod):adminPeriod)+'" value="'+adminPct(value)+'" placeholder="—"></td>';
+ }).join('')).join('')+'</tr>').join('');
+}
+function adminRead(){
+ const shares={},segments={},previous={};
+ for(const n of adminNames){
+  const vals={},prior={};
+  for(const p of ['current','prior'])for(const k of ['total','pm','bm']){
+   const el=adminInput(n,k,p);const raw=el.value.trim();const val=adminPct(raw);
+   if(raw&&!val&&raw!=='—'&&raw!=='-')throw Error('Ugyldig prosent for '+n+' '+k+' ('+(p==='prior'?marketPriorPeriod(adminPeriod):adminPeriod)+')');
+   (p==='prior'?prior:vals)[k]=val?val+' %':null;
+  }
+  if(vals.total!==null)shares[n]=vals.total;
+  segments[n]={pm:vals.pm,bm:vals.bm};previous[n]=prior;
+ }
+ return {shares,segments,previous};
+}
 function marketDataForExport(){
  if(!/^Q[1-4] 20\d{2}$/.test(adminPeriod))throw Error('Velg riktig rapportperiode');
- if(!adminWorkbook)throw Error('Last opp original Tab5 Excel-fil før publisering');
- const d=adminRead();
- return {schema_version:1,status:'tab5_import',period:adminPeriod,prior_period:adminPeriod.replace(/\d{4}/,v=>String(Number(v)-1)),source:'Finans Norge – Tab5 premiestatistikk',source_filename:adminWorkbook.filename,source_sha256:adminWorkbook.sha256,source_sheet:'Tab5',shares:d.shares,segments:d.segments,previous:adminPrevious};
+ const d=adminRead(), base={schema_version:1,period:adminPeriod,prior_period:marketPriorPeriod(adminPeriod),shares:d.shares,segments:d.segments,previous:d.previous};
+ if(!Object.keys(d.shares).length&&!Object.values(d.segments).some(v=>v.pm!==null||v.bm!==null))throw Error('Registrer minst én markedsandel for valgt periode');
+ if(adminWorkbook)return {...base,status:'tab5_import',source:'Finans Norge – Tab5 premiestatistikk',source_filename:adminWorkbook.filename,source_sha256:adminWorkbook.sha256,source_sheet:'Tab5'};
+ return {...base,status:'published_manual_snapshot',source:'Finans Norge – premiestatistikk',source_note:'Manuelt registrert av eieren; ikke automatisk verifisert mot original Excel-fil.'};
 }
-function applyMarketPreview(){try{const data=marketDataForExport();admitMarketShares(data);marketPreview=true;document.getElementById('admin-status').textContent='Forhåndsvisningen er oppdatert. Last ned datafilen for publisering.';show(current);document.getElementById('admin-overlay').hidden=true}catch(e){document.getElementById('admin-status').textContent=e.message}}
+function applyMarketPreview(){try{const data=marketDataForExport();admitMarketShares(data);marketPreview=true;document.getElementById('admin-status').textContent='Forhåndsvisningen er oppdatert. Last ned datafilen for publisering.';show(current);closeMarketAdmin()}catch(e){document.getElementById('admin-status').textContent=e.message}}
 function downloadMarketSite(){try{const data=marketDataForExport();const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='market_shares.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);document.getElementById('admin-status').textContent='market_shares.json er lastet ned. Publiser filen i data-mappen.'}catch(e){document.getElementById('admin-status').textContent=e.message}}
 document.getElementById('inline-excel').addEventListener('change',async e=>{try{
  const file=e.target.files[0];if(!file)return;
- adminWorkbook=null;const bytes=await file.arrayBuffer();const book=await readWorkbook(bytes);const sheet=book.SheetNames.find(n=>n.trim().toLowerCase()==='tab5');if(!sheet)throw Error('Fant ikke Tab5 i Excel-filen.');
- const rows=book.Sheets[sheet];for(const input of document.querySelectorAll('#admin-values input'))input.value='';const config={total:[6,5],pm:[14,13],bm:[22,21]};let count=0;adminPrevious={};
+ adminWorkbook=null;const requestedPeriod=adminPeriod;const bytes=await file.arrayBuffer();const book=await readWorkbook(bytes);const sheet=book.SheetNames.find(n=>n.trim().toLowerCase()==='tab5');if(!sheet)throw Error('Fant ikke Tab5 i Excel-filen.');
+ const rows=book.Sheets[sheet],config={total:[6,5],pm:[14,13],bm:[22,21]},imported=[];let count=0;
  for(const n of adminNames){
   const row=rows.find(r=>Array.isArray(r)&&r.some(cell=>typeof cell==='string'&&adminAliases[n].some(a=>cell.trim().toLowerCase()===a)));
-  if(!row)continue;adminPrevious[n]={};
+  if(!row)continue;
   for(const [k,cols] of Object.entries(config)){
    const val=excelPct(row[cols[0]]),prev=excelPct(row[cols[1]]);
-   const el=document.querySelector('[data-ac="'+n+'"][data-ak="'+k+'"]');
-   if(val){el.value=val;count++}
-   if(prev)adminPrevious[n][k]=prev+' %';
+   imported.push([n,k,val,prev]);if(val)count++;
   }
  }
- if(!count)throw Error('Ingen markedsandeler funnet');const digest=await crypto.subtle.digest('SHA-256',bytes);adminWorkbook={filename:file.name,sha256:Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')};
+ if(!count)throw Error('Ingen markedsandeler funnet');const digest=await crypto.subtle.digest('SHA-256',bytes);
+ if(requestedPeriod!==adminPeriod||document.getElementById('admin-overlay').hidden)throw Error('Åpne administrasjonen og velg periode før du importerer på nytt');
+ for(const input of document.querySelectorAll('#admin-values input'))input.value='';
+ for(const [n,k,val,prev] of imported){adminInput(n,k,'current').value=val;adminInput(n,k,'prior').value=prev}
+ adminWorkbook={filename:file.name,sha256:Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')};
  document.getElementById('admin-status').textContent='Tab5 lest: '+count+' av 21 markedsandeler funnet. Manglende felt blir tomme. Kontroller periode og verdier før publisering.';
 }catch(err){document.getElementById('admin-status').textContent='Kunne ikke lese Excel: '+err.message}});
 
-adminInputs();refreshMarketShares();setInterval(refreshMarketShares,300000);if(new URLSearchParams(location.search).get('admin')==='1'){const b=document.createElement('button');b.id='admin-entry';b.textContent='⚙ Oppdater markedsandeler';b.onclick=()=>{adminInputs();document.getElementById('admin-overlay').hidden=false};document.querySelector('aside').appendChild(b)}
+document.getElementById('admin-values').addEventListener('input',()=>{adminWorkbook=null;});
+async function openMarketAdmin(){
+ await marketInitialLoad;
+ if(!document.getElementById('admin-overlay').hidden)return;
+ adminWorkbook=null;document.getElementById('inline-excel').value='';marketPeriodOptions(marketUpload.period);adminInputs();
+ document.getElementById('admin-status').textContent='Registrer eller rediger tallene manuelt. Excel-import er valgfritt.';
+ document.getElementById('admin-overlay').hidden=false;document.getElementById('admin-market-period').focus();
+}
+function closeMarketAdmin(){document.getElementById('admin-overlay').hidden=true;document.getElementById('admin-entry').focus()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('admin-overlay').hidden)closeMarketAdmin()});
+adminInputs();marketInitialLoad=refreshMarketShares();setInterval(refreshMarketShares,300000);
+if(new URLSearchParams(location.search).get('admin')==='1')openMarketAdmin();
 
 const stockObserver=new MutationObserver(()=>{for(const c of Object.keys(stockMarketConfig)){const el=document.getElementById('stock-plot-'+c);if(el&&!el.dataset.ready){el.dataset.ready='1';if(stockCSV[c]?.length)drawStockYear(c,stockCSV[c],'Daglige observasjoner');}}});
 window.addEventListener('DOMContentLoaded',()=>{stockObserver.observe(document.body,{childList:true,subtree:true});show('home');});

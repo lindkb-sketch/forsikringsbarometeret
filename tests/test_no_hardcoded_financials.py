@@ -50,4 +50,34 @@ for(const c of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Sto
 '''
         p=subprocess.run(['node','-e',test],capture_output=True,text=True)
         self.assertEqual(p.returncode,0,p.stderr)
+    def test_manual_market_share_entry_without_workbook(self):
+        self.assertIn('id="admin-entry" type="button" onclick="openMarketAdmin()"',HTML)
+        self.assertIn('get(\'admin\')===\'1\')openMarketAdmin()',HTML)
+        self.assertIn('data-ap="',HTML)
+        start=HTML.index('function adminPct(v)')
+        end=HTML.index('function applyMarketPreview()',start)
+        js=HTML[start:end]+'''
+const assert=require('node:assert/strict');
+const adminNames=['Fremtind','Gjensidige'];
+let adminPeriod='Q3 2026',adminWorkbook=null;
+const marketUpload={period:'Q2 2026'},marketShares={Fremtind:'18,2 %'},marketSegments={},marketPrevious={};
+const values=new Map(),elements={};
+const document={querySelector:s=>({value:values.get(s)||''}),getElementById:id=>elements[id]??(elements[id]={})};
+function put(n,k,p,v){values.set('[data-ac="'+n+'"][data-ak="'+k+'"][data-ap="'+p+'"]',v)}
+adminInputs();
+assert(!elements['admin-values'].innerHTML.includes('18,2'));
+assert.equal(elements['admin-prior-label'].textContent,'Q3 2025');
+put('Fremtind','total','current','19,2');put('Fremtind','total','prior','18,1');put('Fremtind','pm','current','0');
+const d=marketDataForExport();
+assert.equal(d.status,'published_manual_snapshot');assert.equal(d.shares.Fremtind,'19,2 %');
+assert.equal(d.previous.Fremtind.total,'18,1 %');assert.equal(d.segments.Fremtind.pm,'0,0 %');
+assert.equal(d.segments.Fremtind.bm,null);assert.equal(d.prior_period,'Q3 2025');
+assert(!('source_sha256' in d));
+adminWorkbook={filename:'Tab5.xlsx',sha256:'a'.repeat(64)};
+assert.equal(marketDataForExport().status,'tab5_import');
+put('Fremtind','bm','prior','101');assert.throws(marketDataForExport,/Ugyldig prosent/);
+'''
+        p=subprocess.run(['node','-e',js],capture_output=True,text=True)
+        self.assertEqual(p.returncode,0,p.stderr)
+
 if __name__=='__main__':unittest.main()
