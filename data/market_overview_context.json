@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 7,
   "observations": [
     {
       "company": "Tryg",
@@ -6118,6 +6118,120 @@
     {
       "company": "Tryg",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 9,
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "underlying claims ratio improved",
+      "text": "underlying_loss_improved",
+      "supplemental_document": false
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 9,
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "retention_up",
+      "evidence": "retention rates improved",
+      "text": "retention_up",
+      "supplemental_document": false
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 10,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "underlying claims ratio improved",
+      "text": "underlying_loss_improved",
+      "supplemental_document": false
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 10,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "regulation",
+      "driver": "workers_compensation_ruling",
+      "evidence": "a) Figures for Q1-Q3 2026 are impacted by the Supreme Court ruling on Danish workers' compensation insurance from 28 April 2026. The impact is a one-off provision of DKK 1.2bn pre-tax and DKK 888m post-tax. Excluding the one-off, the adjusted insurance",
+      "text": "Rapporteringen viser en resultateffekt knyttet til dansk høyesterettsdom om yrkesskadeforsikring.",
+      "supplemental_document": false
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "text": "portfolio_growth",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 9,
+      "driver": "portfolio_growth",
+      "evidence": "growth was positively impacted by portfolio to note that minor fluctuations within a quarter | Run-off, net of reinsurance (%) -3.1 -2.2 -2.8 -2.1 -2.1 | growth in selected segments and further are considered normal. The current expense"
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "text": "retention_up",
+      "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+      "source_page": 9,
+      "driver": "retention_up",
+      "evidence": "retention rates improved slightly"
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/bm",
@@ -6132,6 +6246,125 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 14,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "underlying frequency loss ratio improved",
+      "text": "underlying_loss_improved",
+      "supplemental_document": false
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 14,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "volume_down",
+      "evidence": "Volumes decreased",
+      "text": "volume_down",
+      "supplemental_document": false
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 14,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "risk_selection",
+      "evidence": "prioritisation of profitability over growth",
+      "text": "risk_selection",
+      "supplemental_document": false
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "ytd",
+      "views": [
+        "group/bm",
+        "group/all",
+        "norway/bm",
+        "norway/all"
+      ],
+      "theme": "growth_driver",
+      "text": "price",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "driver": "price",
+      "evidence": "driven by price increases for all products"
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "ytd",
+      "views": [
+        "group/bm",
+        "group/all",
+        "norway/bm",
+        "norway/all"
+      ],
+      "theme": "growth_driver",
+      "text": "volume_down",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "driver": "volume_down",
+      "evidence": "decreased due to consistent prioritisation of"
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "ytd",
+      "views": [
+        "group/bm",
+        "group/all",
+        "norway/bm",
+        "norway/all"
+      ],
+      "theme": "growth_driver",
+      "text": "risk_selection",
+      "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+      "source_page": 15,
+      "driver": "risk_selection",
+      "evidence": "prioritisation of frequency loss ratio improved by 4.4 percentage points, Reinsurance premiums -188.5 -184.6 -560.5 -509.6 -665.8 profitability over growth"
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/pm",
@@ -6146,6 +6379,8 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "norway/pm",
@@ -6160,6 +6395,8 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/bm",
@@ -6174,6 +6411,8 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/bm",
@@ -6188,6 +6427,8 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "norway/bm",
@@ -6202,6 +6443,8 @@
     {
       "company": "Gjensidige",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "norway/bm",
@@ -6216,6 +6459,84 @@
     {
       "company": "Fremtind",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "norway/all",
+        "group/pm",
+        "norway/pm",
+        "group/bm",
+        "norway/bm"
+      ],
+      "theme": "growth_driver",
+      "text": "price",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9,
+      "driver": "price",
+      "evidence": "Veksten er hovedsakelig drevet av premiejusteringer"
+    },
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "ytd",
+      "views": [
+        "group/all",
+        "norway/all",
+        "group/pm",
+        "norway/pm",
+        "group/bm",
+        "norway/bm"
+      ],
+      "theme": "growth_driver",
+      "text": "price",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9,
+      "driver": "price",
+      "evidence": "Veksten er hovedsakelig drevet av premiejusteringer"
+    },
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "norway/all"
+      ],
+      "theme": "material_event",
+      "text": "Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9
+    },
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "ytd",
+      "views": [
+        "group/all",
+        "norway/all"
+      ],
+      "theme": "material_event",
+      "text": "I siste kvartal: Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet.",
+      "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+      "source_page": 9
+    },
+    {
+      "company": "Fremtind",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/pm",
@@ -6232,6 +6553,8 @@
     {
       "company": "Fremtind",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/pm",
@@ -6248,6 +6571,8 @@
     {
       "company": "Fremtind",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/bm",
@@ -6264,6 +6589,8 @@
     {
       "company": "Fremtind",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/bm",
@@ -6280,6 +6607,44 @@
     {
       "company": "Alm. Brand",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "text": "price",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "driver": "price",
+      "evidence": "price adjustments to miti- gate claims inflation"
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "text": "customer_inflow",
+      "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+      "source_page": 8,
+      "driver": "customer_inflow",
+      "evidence": "customer inflow through bank partnerships"
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/pm",
@@ -6294,6 +6659,8 @@
     {
       "company": "Alm. Brand",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/pm",
@@ -6308,6 +6675,8 @@
     {
       "company": "Alm. Brand",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "quarter",
       "views": [
         "group/bm",
@@ -6322,6 +6691,8 @@
     {
       "company": "Alm. Brand",
       "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_quarterly_report",
       "period_type": "ytd",
       "views": [
         "group/bm",
@@ -6332,6 +6703,216 @@
       "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
       "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
       "source_page": 9
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+      "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+      "source_page": 6,
+      "period_type": "quarter",
+      "views": [
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "price",
+      "evidence": "Pricing measures continued to support growth",
+      "text": "price",
+      "supplemental_document": true
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+      "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+      "source_page": 6,
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "group/pm",
+        "norway/all",
+        "norway/pm"
+      ],
+      "theme": "growth_driver",
+      "driver": "volume_up",
+      "evidence": "Higher volumes in Private Norway and Sweden",
+      "text": "volume_up",
+      "supplemental_document": true
+    },
+    {
+      "company": "Gjensidige",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+      "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+      "source_page": 6,
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "group/bm"
+      ],
+      "theme": "growth_driver",
+      "driver": "volume_down",
+      "evidence": "Lower volumes in Commercial",
+      "text": "volume_down",
+      "supplemental_document": true
+    },
+    {
+      "company": "Tryg",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://tryg.com/system/files/2026-10/Q3%202026%20-%20Investor%20presentation_0.pdf",
+      "source_sha256": "0d0572c7a11f79ff0d5608f3bf85e5e73964e35fd672e2567445c2e140538d48",
+      "source_page": 4,
+      "period_type": "quarter",
+      "views": [
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "underlying claims ratio improved",
+      "text": "underlying_loss_improved",
+      "supplemental_document": true
+    },
+    {
+      "company": "Sampo",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/investor-presentation_q3_2026.pdf",
+      "source_sha256": "76bead950c005e7bbc00797ff35ddf3bcd27fdbb6de42146f811cd1d31a717ef",
+      "source_page": 21,
+      "period_type": "quarter",
+      "views": [
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "uk_lcp_growth",
+      "evidence": "LCP growth of 3% quarter-on-quarter and 13% year-on-year",
+      "text": "uk_lcp_growth",
+      "supplemental_document": true,
+      "reported_change_pct": 13.0
+    },
+    {
+      "company": "Protector",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://storage.mfn.se/f89952a8-2012-427c-b813-b95e05e43810/investor-presentation-q3-2026-prot.pdf",
+      "source_sha256": "81ad4f9d74cf653abfb428a561b2280491f65c0f65b0fd728eddbe017d584e59",
+      "source_page": 4,
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "group/bm"
+      ],
+      "theme": "growth_driver",
+      "driver": "gwp_lcy_higher",
+      "evidence": "Q3: GWP growth at 29% | 41% in local currencies (LCY)",
+      "text": "gwp_lcy_higher",
+      "supplemental_document": true,
+      "reported_change_pct": 41.0
+    },
+    {
+      "company": "Storebrand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/58467f77-669f-410a-8db9-8eef55355bcf:5192063bdc3e9c6efb14affbb5c041ddb90ec848/2026-q3-analyst-presentation-storebrand-asa.pdf",
+      "source_sha256": "e1031f517fdb0b45f61c7562db07044fb329311810e5f059d55c5069b4223fd8",
+      "source_page": 18,
+      "period_type": "quarter",
+      "views": [
+        "group/all",
+        "norway/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "retail_growth",
+      "evidence": "Strong growth and result development within Retail",
+      "text": "retail_growth",
+      "supplemental_document": true
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+      "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+      "source_page": 8,
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "growth_driver",
+      "driver": "price",
+      "evidence": "Premium growth of 4.7%, driven by premium adjustments",
+      "text": "price",
+      "supplemental_document": true
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+      "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+      "source_page": 8,
+      "period_type": "quarter",
+      "views": [
+        "group/pm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "Underlying claims ratio improved by 0.8 percentage points",
+      "text": "underlying_loss_improved",
+      "supplemental_document": true
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+      "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+      "source_page": 9,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "underlying_loss_improved",
+      "evidence": "Underlying claims ratio improved by 0.5 percentage points",
+      "text": "underlying_loss_improved",
+      "supplemental_document": true
+    },
+    {
+      "company": "Alm. Brand",
+      "period": "Q3 2026",
+      "source_document_period": "Q3 2026",
+      "source_type": "official_results_presentation",
+      "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+      "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+      "source_page": 9,
+      "period_type": "quarter",
+      "views": [
+        "group/bm",
+        "group/all"
+      ],
+      "theme": "profit_driver",
+      "driver": "runoff_gains",
+      "evidence": "Improved claims ratio especially driven by lower major claims and run-off gains",
+      "text": "runoff_gains",
+      "supplemental_document": true
     }
   ],
   "status": {
@@ -6340,6 +6921,8 @@
       "source_url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
       "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
       "status": "verified",
+      "document_verified": true,
+      "source_pages_examined": 41,
       "scopes": [
         [
           "norway",
@@ -6361,6 +6944,8 @@
       "source_url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
       "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
       "status": "verified",
+      "document_verified": true,
+      "source_pages_examined": 64,
       "scopes": [
         [
           "norway",
@@ -6390,6 +6975,8 @@
       "source_url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
       "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
       "status": "verified",
+      "document_verified": true,
+      "source_pages_examined": 44,
       "scopes": [
         [
           "reported_segment",
@@ -6407,6 +6994,8 @@
       "source_url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
       "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
       "status": "verified",
+      "document_verified": true,
+      "source_pages_examined": 26,
       "scopes": [
         [
           "reported_segment",
@@ -6424,6 +7013,8 @@
       "source_url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
       "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
       "status": "verified",
+      "document_verified": true,
+      "source_pages_examined": 18,
       "scopes": [
         [
           "norway",
@@ -6445,6 +7036,484 @@
     "Q2 2026": {
       "source_url": "https://attachment.news.eu.nasdaq.com/a0593252bfc0d0f3ddce26fe6f42f412c",
       "source_sha256": "b5ed0b653f15dd9a66cb4acb20d410e821911c7ead8b46d31fbb73e082b3e39a"
+    }
+  },
+  "commentary_document_schema": 3,
+  "commentary_documents": {
+    "Gjensidige": {
+      "period": "Q3 2026",
+      "anchor": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+          "status": "verified_document",
+          "format": "pdf",
+          "source_pages_examined": 64,
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 12
+        },
+        {
+          "url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+          "status": "verified_document",
+          "source_pages_examined": 48,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 3
+        }
+      ],
+      "insights": [
+        {
+          "company": "Gjensidige",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+          "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+          "source_page": 6,
+          "period_type": "quarter",
+          "views": [
+            "group/all"
+          ],
+          "theme": "growth_driver",
+          "driver": "price",
+          "evidence": "Pricing measures continued to support growth",
+          "text": "price",
+          "supplemental_document": true
+        },
+        {
+          "company": "Gjensidige",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+          "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+          "source_page": 6,
+          "period_type": "quarter",
+          "views": [
+            "group/all",
+            "group/pm",
+            "norway/all",
+            "norway/pm"
+          ],
+          "theme": "growth_driver",
+          "driver": "volume_up",
+          "evidence": "Higher volumes in Private Norway and Sweden",
+          "text": "volume_up",
+          "supplemental_document": true
+        },
+        {
+          "company": "Gjensidige",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://mb.cision.com/Public/1122/4414216/8e67f3f3d265f88a.pdf",
+          "source_sha256": "13a9a984d806db379e5f084f752b9f117235ae1854ca63b153a8efe6ca2ab740",
+          "source_page": 6,
+          "period_type": "quarter",
+          "views": [
+            "group/all",
+            "group/bm"
+          ],
+          "theme": "growth_driver",
+          "driver": "volume_down",
+          "evidence": "Lower volumes in Commercial",
+          "text": "volume_down",
+          "supplemental_document": true
+        }
+      ],
+      "errors": [],
+      "input_signature": "1e11222ff60660bdff46c1afb3269f548a011c8224aa5b27ebc08038fc9b8360"
+    },
+    "Tryg": {
+      "period": "Q3 2026",
+      "anchor": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+          "status": "verified_document",
+          "format": "pdf",
+          "source_pages_examined": 41,
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 7
+        },
+        {
+          "url": "https://tryg.com/system/files/2026-10/Q3%202026%20-%20Investor%20presentation_0.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "0d0572c7a11f79ff0d5608f3bf85e5e73964e35fd672e2567445c2e140538d48",
+          "status": "verified_document",
+          "source_pages_examined": 50,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 1
+        }
+      ],
+      "insights": [
+        {
+          "company": "Tryg",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://tryg.com/system/files/2026-10/Q3%202026%20-%20Investor%20presentation_0.pdf",
+          "source_sha256": "0d0572c7a11f79ff0d5608f3bf85e5e73964e35fd672e2567445c2e140538d48",
+          "source_page": 4,
+          "period_type": "quarter",
+          "views": [
+            "group/all"
+          ],
+          "theme": "profit_driver",
+          "driver": "underlying_loss_improved",
+          "evidence": "underlying claims ratio improved",
+          "text": "underlying_loss_improved",
+          "supplemental_document": true
+        }
+      ],
+      "errors": [],
+      "input_signature": "02089e7eb445ab905e0e8cfb388cb83288c5fc29f0bfd30f5fac9e5240c20c44"
+    },
+    "Sampo": {
+      "period": "Q3 2026",
+      "anchor": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/interim-statement_q3_2026.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "12a8af49be6f85b09e4ab193d9ef09466122008b93d3e67881ff995386714861",
+          "status": "verified_document",
+          "source_pages_examined": 41,
+          "format": "pdf",
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        },
+        {
+          "url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/investor-presentation_q3_2026.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "76bead950c005e7bbc00797ff35ddf3bcd27fdbb6de42146f811cd1d31a717ef",
+          "status": "verified_document",
+          "source_pages_examined": 65,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 1
+        }
+      ],
+      "insights": [
+        {
+          "company": "Sampo",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://www.sampo.com/globalassets/investors/quarterly-reporting/2026/q3/investor-presentation_q3_2026.pdf",
+          "source_sha256": "76bead950c005e7bbc00797ff35ddf3bcd27fdbb6de42146f811cd1d31a717ef",
+          "source_page": 21,
+          "period_type": "quarter",
+          "views": [
+            "group/all"
+          ],
+          "theme": "growth_driver",
+          "driver": "uk_lcp_growth",
+          "evidence": "LCP growth of 3% quarter-on-quarter and 13% year-on-year",
+          "text": "uk_lcp_growth",
+          "supplemental_document": true,
+          "reported_change_pct": 13.0
+        }
+      ],
+      "errors": [],
+      "input_signature": "62a4a3e1c5d3272ad94879d089440c0e88d36a179b0b6a73198745933c395984"
+    },
+    "Protector": {
+      "period": "Q3 2026",
+      "anchor": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://storage.mfn.se/7937a5b0-adf2-4dda-a1fb-1861db8e9d47/interim-report-q3-2026-prot.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
+          "status": "verified_document",
+          "format": "pdf",
+          "source_pages_examined": 18,
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        },
+        {
+          "url": "https://storage.mfn.se/f89952a8-2012-427c-b813-b95e05e43810/investor-presentation-q3-2026-prot.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "81ad4f9d74cf653abfb428a561b2280491f65c0f65b0fd728eddbe017d584e59",
+          "status": "verified_document",
+          "source_pages_examined": 15,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 1
+        }
+      ],
+      "insights": [
+        {
+          "company": "Protector",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://storage.mfn.se/f89952a8-2012-427c-b813-b95e05e43810/investor-presentation-q3-2026-prot.pdf",
+          "source_sha256": "81ad4f9d74cf653abfb428a561b2280491f65c0f65b0fd728eddbe017d584e59",
+          "source_page": 4,
+          "period_type": "quarter",
+          "views": [
+            "group/all",
+            "group/bm"
+          ],
+          "theme": "growth_driver",
+          "driver": "gwp_lcy_higher",
+          "evidence": "Q3: GWP growth at 29% | 41% in local currencies (LCY)",
+          "text": "gwp_lcy_higher",
+          "supplemental_document": true,
+          "reported_change_pct": 41.0
+        }
+      ],
+      "errors": [],
+      "input_signature": "089057af72dd64be9689577a7743b6461c83e20aba8a8753a7adb54fe5ab7f30"
+    },
+    "Storebrand": {
+      "period": "Q3 2026",
+      "anchor": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/9c2f25dd-292b-4a7d-b5d4-a7076b893ea2:f67589352de19c1f9b3970552d60fc01981d3635/2026-q3-interim-report-storebrand-asa.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "b0a234998aa4aaefbde93934e20ea3559914f8efc7a15ce82bb14ed0f8abd2bf",
+          "status": "verified_document",
+          "source_pages_examined": 45,
+          "format": "pdf",
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        },
+        {
+          "url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/58467f77-669f-410a-8db9-8eef55355bcf:5192063bdc3e9c6efb14affbb5c041ddb90ec848/2026-q3-analyst-presentation-storebrand-asa.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "e1031f517fdb0b45f61c7562db07044fb329311810e5f059d55c5069b4223fd8",
+          "status": "verified_document",
+          "source_pages_examined": 32,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 1
+        }
+      ],
+      "insights": [
+        {
+          "company": "Storebrand",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://www.storebrand.com/welcome/investor-relations/quarterly-reporting/storebrand-asa/2026/_/attachment/inline/58467f77-669f-410a-8db9-8eef55355bcf:5192063bdc3e9c6efb14affbb5c041ddb90ec848/2026-q3-analyst-presentation-storebrand-asa.pdf",
+          "source_sha256": "e1031f517fdb0b45f61c7562db07044fb329311810e5f059d55c5069b4223fd8",
+          "source_page": 18,
+          "period_type": "quarter",
+          "views": [
+            "group/all",
+            "norway/all"
+          ],
+          "theme": "growth_driver",
+          "driver": "retail_growth",
+          "evidence": "Strong growth and result development within Retail",
+          "text": "retail_growth",
+          "supplemental_document": true
+        }
+      ],
+      "errors": [],
+      "input_signature": "1b7f7a44f9807e5611db219a2a8b285378d0cc11fbbfe77dafe25f700f7773d7"
+    },
+    "Alm. Brand": {
+      "period": "Q3 2026",
+      "anchor": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+      "report_verified": true,
+      "presentation_status": "verified",
+      "documents": [
+        {
+          "url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+          "document_type": "quarterly_report",
+          "source_sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+          "status": "verified_document",
+          "format": "pdf",
+          "source_pages_examined": 26,
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 6
+        },
+        {
+          "url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+          "document_type": "results_presentation",
+          "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+          "status": "verified_document",
+          "source_pages_examined": 23,
+          "format": "pdf",
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 4
+        }
+      ],
+      "insights": [
+        {
+          "company": "Alm. Brand",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+          "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+          "source_page": 8,
+          "period_type": "quarter",
+          "views": [
+            "group/pm",
+            "group/all"
+          ],
+          "theme": "growth_driver",
+          "driver": "price",
+          "evidence": "Premium growth of 4.7%, driven by premium adjustments",
+          "text": "price",
+          "supplemental_document": true
+        },
+        {
+          "company": "Alm. Brand",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+          "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+          "source_page": 8,
+          "period_type": "quarter",
+          "views": [
+            "group/pm",
+            "group/all"
+          ],
+          "theme": "profit_driver",
+          "driver": "underlying_loss_improved",
+          "evidence": "Underlying claims ratio improved by 0.8 percentage points",
+          "text": "underlying_loss_improved",
+          "supplemental_document": true
+        },
+        {
+          "company": "Alm. Brand",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+          "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+          "source_page": 9,
+          "period_type": "quarter",
+          "views": [
+            "group/bm",
+            "group/all"
+          ],
+          "theme": "profit_driver",
+          "driver": "underlying_loss_improved",
+          "evidence": "Underlying claims ratio improved by 0.5 percentage points",
+          "text": "underlying_loss_improved",
+          "supplemental_document": true
+        },
+        {
+          "company": "Alm. Brand",
+          "period": "Q3 2026",
+          "source_document_period": "Q3 2026",
+          "source_type": "official_results_presentation",
+          "source_url": "https://s29.q4cdn.com/228553818/files/content_files/Investor-presentation-Q3-2026.pdf",
+          "source_sha256": "349967043cdfe5e49fde6e68cbc1f6ee5ff1142e74f1d1f303832b6e0db6bce2",
+          "source_page": 9,
+          "period_type": "quarter",
+          "views": [
+            "group/bm",
+            "group/all"
+          ],
+          "theme": "profit_driver",
+          "driver": "runoff_gains",
+          "evidence": "Improved claims ratio especially driven by lower major claims and run-off gains",
+          "text": "runoff_gains",
+          "supplemental_document": true
+        }
+      ],
+      "errors": [],
+      "input_signature": "fbfcad3ab88e97f968c7078ff7b92fb643a914e1e0252a2218db472eea60f104"
+    },
+    "Fremtind": {
+      "period": "Q3 2026",
+      "anchor": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+      "report_verified": true,
+      "presentation_status": "report_only",
+      "documents": [
+        {
+          "url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
+          "status": "verified_document",
+          "format": "pdf",
+          "source_pages_examined": 44,
+          "analysis_status": "reviewed_with_evidence",
+          "insight_count": 8
+        }
+      ],
+      "insights": [],
+      "errors": [],
+      "input_signature": "af77140d754c5b2500edd2cb8b2c29e11b6115d32868a9e6d71967438c6b35fc"
+    },
+    "Frende": {
+      "period": "Q3 2026",
+      "anchor": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+      "report_verified": true,
+      "presentation_status": "report_only",
+      "documents": [
+        {
+          "url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
+          "document_type": "quarterly_report",
+          "source_sha256": "72954261dd1246c4e9d1f6911971ab591a44928175a87587ce996195e50186db",
+          "status": "verified_document",
+          "source_pages_examined": 1,
+          "format": "html",
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        },
+        {
+          "url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
+          "document_type": "quarterly_report",
+          "source_sha256": "f5635997ce99bda6228f64354e59c8bbf644cc7156a6769c2fb7e3ff527eac40",
+          "status": "verified_document",
+          "source_pages_examined": 1,
+          "format": "html",
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        }
+      ],
+      "insights": [],
+      "errors": [],
+      "input_signature": "ab8addb2a43adfe6e4f2250aa1922955ce883cba83163722b525647241e03a27"
+    },
+    "KLP Skadeforsikring": {
+      "period": "Q3 2026",
+      "anchor": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+      "report_verified": true,
+      "presentation_status": "report_only",
+      "documents": [
+        {
+          "url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf",
+          "document_type": "quarterly_report",
+          "source_sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
+          "status": "verified_document",
+          "source_pages_examined": 21,
+          "format": "pdf",
+          "analysis_status": "reviewed_no_unambiguous_driver",
+          "insight_count": 0
+        }
+      ],
+      "insights": [],
+      "errors": [],
+      "input_signature": "bea86deab01e6e599062bb8937e1ae978ed6fa9fc9ec40f4805ee7f972cab077"
     }
   }
 }
