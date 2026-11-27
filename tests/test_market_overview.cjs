@@ -184,3 +184,111 @@ test('only verified quarter reports and result presentations enter all three mar
  assert.match(view,/Dokumentert hendelse i rapport/);
  assert.doesNotMatch(view,/FORBIDDEN|vekst i kundebestanden/);
 });
+
+test('causal commentary prioritises why, covers the expense ratio and selects material events without duplicating themes',()=>{
+ const m={period:{year:2026,quarter:3},mode:'quarter',eligible:[{company:'Fremtind',growth:8,cr:75,deltas:{combined_ratio:-4,loss_ratio:-3,expense_ratio:-1}},{company:'Gjensidige',growth:6,cr:74,deltas:{combined_ratio:-2,loss_ratio:-2,expense_ratio:0}}]};
+ const base={company:'Fremtind',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'quarter',views:['group/all'],source_type:'official_quarterly_report',source_sha256:'a'.repeat(64),source_page:9,source_url:'https://issuer.invalid/report.pdf',evidence:'exact original source fragment'};
+ const e=(theme,topic,priority,text,category='')=>({...base,theme,topic,priority,text,category});
+ const ctx={insights:[
+  e('growth_explanation','pm_volume',100,'Prisøkninger og høyere volum innen boligforsikring støtter inntektene.','volume'),
+  e('growth_explanation','bm_restraint',99,'I bedriftsmarkedet reduserer strengere risikoutvelgelse volumveksten.','restraint'),
+  e('loss_explanation','frequency',100,'Lavere skadefrekvens på bil reduserer skadeprosenten.','frequency'),
+  e('cost_explanation','reclassification',100,'Lavere kostnadsprosent skyldes omklassifisering av lånerenter, ikke bare effektivisering.'),
+  e('event_explanation','named_fire',100,'Brannen i Krokstadelva kostet 176 mill. kroner netto i kvartalet.'),
+  e('event_explanation','pm_fire',99,'Brannen i Krokstadelva kostet 175 mill. kroner i privatporteføljen.'),
+  {...e('event_explanation','bad',120,'FORBIDDEN'),source_document_period:'Q2 2026'}
+ ]};
+ const c=comments(m,{},'group','all',ctx);
+ assert.equal(c[0].paragraphs.length,1);
+ assert.match(c[0].paragraphs[0],/Prisøkninger.*volum.*risikoutvelgelse/);
+ assert.match(c[1].paragraphs[0],/skadefrekvens.*omklassifisering/);
+ assert.match(c[2].paragraphs[0],/176 mill/);
+ assert.doesNotMatch(JSON.stringify(c),/FORBIDDEN|175 mill|Rapporterte vekstdrivere omfatter/);
+});
+
+test('causal editorial selection retains contrasting drivers and avoids repeating the same large-loss story',()=>{
+ const m={period:{year:2026,quarter:3},mode:'ytd',eligible:[{company:'Tryg',growth:3,cr:89,deltas:{combined_ratio:14,loss_ratio:14,expense_ratio:0}},{company:'Fremtind',growth:5,cr:81,deltas:{combined_ratio:-1,loss_ratio:-1,expense_ratio:0}}]};
+ const b={company:'Tryg',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'ytd',views:['group/all'],source_type:'official_quarterly_report',source_sha256:'a'.repeat(64),source_page:6,source_url:'https://issuer.invalid/report.pdf',evidence:'source fragment'};
+ const e=(theme,topic,priority,text,category='')=>({...b,theme,topic,priority,text,category});
+ const ctx={insights:[
+ e('growth_explanation','pm_product_volumes',104,'Privatveksten støttes av pris og volum innen eiendom.','volume'),
+ e('growth_explanation','premium_adjustment',86,'GJENTATT PRIS','price'),
+ e('growth_explanation','bm_selectivity',105,'Strengere risikoutvelgelse bremser veksten i bedrift.','restraint'),
+ e('loss_explanation','workers_comp_adjusted',115,'Dansk avsetning forklarer rapportert svekkelse.','adverse'),
+ e('loss_explanation','motor_frequency',102,'Lavere skadefrekvens gir motvirkende effekt.','frequency'),
+ e('loss_explanation','weather',94,'Lavere værskader gir en midlertidig gevinst.','weather'),
+ e('cost_explanation','control',99,'Kostnadskontrollen er stram.'),
+ e('event_explanation','named_fire',105,'Brannen belastet netto storskader med 176 mill. kroner.'),
+ e('event_explanation','bm_large_loss',107,'GJENTATT STORSKADE'),
+ e('event_explanation','revenue_recognition_base',98,'En endring i inntektsføring påvirker sammenligningen.')
+ ]};
+ const c=comments(m,{},'group','all',ctx),s=JSON.stringify(c);
+ assert.doesNotMatch(s,/GJENTATT/);
+ assert.match(c[1].paragraphs[0],/Dansk avsetning.*Lavere skadefrekvens.*Kostnadskontrollen.*Lavere værskader/);
+ assert.ok(c[1].paragraphs[0].split(/\s+/).length<=125);
+ assert.match(c[2].paragraphs[0],/176 mill.*inntektsføring/);
+});
+
+test('market profitability uses five contiguous quarters and all nine issuers without filling missing periods',()=>{
+ const {timeline,profitabilityHistory,trendChart}=require('../scripts/market_overview.js');
+ assert.deepEqual(timeline({year:2026,quarter:3}),['Q3 2025','Q4 2025','Q1 2026','Q2 2026','Q3 2026']);
+ assert.deepEqual(timeline({year:2026,quarter:4}),['Q4 2025','Q1 2026','Q2 2026','Q3 2026','Q4 2026']);
+ assert.deepEqual(timeline({year:2027,quarter:1}),['Q1 2026','Q2 2026','Q3 2026','Q4 2026','Q1 2027']);
+ const f={observations:[...rows('Fremtind',100,80,60,20,'NOKm','group',null,2026,1),...rows('Fremtind',100,75,55,20,'NOKm','group',null,2026,3)]};
+ const h=profitabilityHistory(f,{},null,{year:2026,quarter:3});
+ assert.equal(h.series.length,9);
+ assert.deepEqual(h.series[0].points.map(p=>p?.cr??null),[null,null,80,null,75]);
+ const html=trendChart(h);
+ assert.equal((html.match(/class="mo-line-point"/g)||[]).length,2);
+ assert.match(html,/d=" M[^"]+ M[^"]+"/);
+ assert.doesNotMatch(html,/data-period="Q2 2026" data-cr=/);
+ const next=profitabilityHistory(f,{},null,{year:2026,quarter:4});
+ assert.equal(next.periods[0],'Q4 2025');assert.equal(next.series[0].points.at(-1),null);
+});
+test('calendar moves only reported issuers, matches exact next quarter, and hides completed pending list',()=>{
+ const {reportQueues}=require('../scripts/market_overview.js');
+ const calendar={'Fremtind':{events:[{period:'Q4 2026',date:'2027-02-01'},{period:'Q1 2027',date:'2027-04-29'}]},'Tryg':{events:[{period:'Q4 2026',date:'2027-01-22'}]},'Sampo / If':{events:[{period:'Q1 2027',date:'2027-05-05'}]}};
+ const before=reportQueues('Q4 2026',['Tryg'],calendar);
+ assert.equal(before.pending.length,8);assert.equal(before.nextPeriod,'Q1 2027');
+ assert.equal(before.pending.find(r=>r.company==='Fremtind').date,'2027-02-01');
+ assert.equal(before.next.find(r=>r.company==='Tryg').date,null);
+ assert.equal(before.pending.find(r=>r.company==='Frende').date,null);
+ const after=reportQueues('Q4 2026',['Tryg','Fremtind','Frende'],calendar);
+ assert.equal(after.pending.length,6);assert.equal(after.next.length,3);
+ assert.equal(after.next.find(r=>r.company==='Fremtind').date,'2027-04-29');
+ assert.equal(after.next.find(r=>r.company==='Frende').date,null);
+ const all=reportQueues('Q4 2026',after.pending.map(r=>r.company).concat(after.next.map(r=>r.company)),calendar);
+ assert.equal(all.pending.length,0);assert.equal(all.next.length,9);
+});
+
+test('Sampo company detail has exact Nordic segment scope, quarter and complete income-weighted HIÅ',()=>{
+ const {sampoNordicSegments}=require('../scripts/market_overview.js');
+ const data=[];
+ for(const y of [2025,2026])for(let q=1;q<=3;q++)for(const [seg,base] of [['Private Nordic',100],['Nordic Commercial',50]]){
+   const revenue=base+(y===2026?10*q:0),cr=80+q,loss=60+q;
+   data.push(...rows('Sampo',revenue,cr,loss,20,'EURm','reported_segment',seg,y,q).concat({...rows('Sampo',revenue,cr,loss,20,'EURm','reported_segment',seg,y,q)[0],metric:'insurance_service_result',value:revenue*.2}).map(x=>({...x,source_definition:'Sampo interim statement; '+seg+' reported financial table'})));
+ }
+ data.push(...rows('Sampo',9999,1,1,0,'EURm','group',null,2026,3));
+ const h=sampoNordicSegments({observations:data},{year:2026,quarter:3},'ytd');
+ assert.deepEqual(h.map(x=>x.segment),['Private Nordic','Nordic Commercial']);
+ assert.equal(h[0].metrics.insurance_revenue,360);
+ assert.equal(h[0].metrics.insurance_service_result,72);
+ assert.ok(Math.abs(h[0].metrics.combined_ratio-(110*81+120*82+130*83)/360)<1e-10);
+ assert.equal(h[0].method,'calculated_ytd');
+ const q=sampoNordicSegments({observations:data},{year:2026,quarter:3});
+ assert.equal(q[0].metrics.insurance_revenue,130);assert.equal(q[1].metrics.combined_ratio,83);
+ const missing=sampoNordicSegments({observations:data.filter(x=>!(x.segment==='Private Nordic'&&x.year===2026&&x.quarter===2))},{year:2026,quarter:3},'ytd');
+ assert.equal(missing[0].metrics,null);assert.ok(missing[1].metrics);
+});
+
+test('uniform financial arrows are based on the same-year comparison, never missing values',()=>{
+ const {financialNumber,financialTrend}=require('../scripts/market_overview.js');
+ assert.equal(financialNumber('1\u00a0234,5 MNOK'),1234.5);
+ assert.equal(financialNumber('−3,2 %'),-3.2);
+ assert.equal(financialNumber('Q3 2025: —'),null);
+ assert.equal(financialTrend('—',0),null);
+ assert.deepEqual(financialTrend(73,76.7,true),{direction:'down',icon:'▼',tone:'good'});
+ assert.deepEqual(financialTrend(85,80,true),{direction:'up',icon:'▲',tone:'bad'});
+ assert.deepEqual(financialTrend(4.2,3),{direction:'up',icon:'▲',tone:'good'});
+ assert.equal(financialTrend(7,7).tone,'flat');
+});

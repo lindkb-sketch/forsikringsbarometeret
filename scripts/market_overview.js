@@ -263,6 +263,104 @@
       /^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&
       Array.isArray(x.views)&&x.views.includes(scope+'/'+market)&&typeof x.text==='string');
   }
+  // Prefer specific, sourced explanations to label-only keyword lists.
+  // Keep the numeric opening compact; never pad sparse early-quarter coverage.
+  const wordCount=s=>String(s||'').trim().split(/\s+/).filter(Boolean).length;
+  function explanatoryText(scoped,theme){
+    const items=scoped.filter(x=>x.theme===theme&&typeof x.topic==='string'&&num(x.priority)&&typeof x.evidence==='string'&&x.evidence.trim()&&x.text.trim());
+    const sorted=[...items].sort((a,b)=>b.priority-a.priority||a.company.localeCompare(b.company,'nb')||a.source_page-b.source_page);
+    return [...new Map(sorted.reverse().map(x=>[x.topic,x])).values()].reverse().sort((a,b)=>b.priority-a.priority);
+  }
+  function appendWithin(target,items,maxWords,maxItems=3){
+    let added=0;
+    for(const item of items){
+      const t=typeof item==='string'?item:item.text;
+      if(!t||target.includes(t)||added>=maxItems)continue;
+      if(wordCount(target.join(' '))+wordCount(t)>maxWords&&added>0)continue;
+      if(wordCount(target.join(' '))+wordCount(t)>maxWords+12)continue;
+      target.push(t);added++;
+    }
+    return added;
+  }
+  function richerComments(scoped,market,growth,cr,special){
+    const gs=explanatoryText(scoped,'growth_explanation'),ls=explanatoryText(scoped,'loss_explanation'),cs=explanatoryText(scoped,'cost_explanation'),es=explanatoryText(scoped,'event_explanation');
+    if(gs.length){
+      const original=growth.slice(),opening=original[0];
+      growth.splice(0,growth.length,opening);
+      const positive=gs.filter(x=>!['restraint','currency'].includes(x.category));
+      const restraint=gs.filter(x=>x.category==='restraint');
+      const priceVolume=positive.find(x=>['pm_product_volumes','pm_price_volume'].includes(x.topic));
+      const first=market==='bm'?(restraint[0]||positive[0]):(priceVolume||positive[0]||restraint[0]);
+      const used=new Set();
+      const offer=x=>{
+        if(!x||used.has(x.topic))return;
+        if(appendWithin(growth,[x],95,1))used.add(x.topic);
+      };
+      offer(first);
+      if(market==='all')offer(restraint[0]);
+      // Prioritise a distinct causal mechanism rather than another sentence
+      // repeating price or lower volumes. A named counterexample adds value.
+      if(market!=='bm')offer(gs.find(x=>x.category==='distribution'));
+      if(market==='bm'){
+        offer(restraint.find(x=>x.topic==='bm_churn_renewals'||x.topic==='bm_soft_market'));
+        offer(positive.find(x=>x.category==='price'));
+      }else{
+        if(!priceVolume)offer(positive.find(x=>x.category==='price'));
+        if(market==='all')offer(gs.find(x=>x.topic==='uk_volume'));
+      }
+      if(market!=='pm')offer(gs.find(x=>x.category==='currency'));
+      if(market==='pm')offer(gs.find(x=>x.topic==='pm_inflation_moderation'&&!used.has(x.topic)));
+      if(growth.length===1)appendWithin(growth,gs,95,2);
+      const trend=original.find(x=>/fra forrige kvartal|HIÅ-tempoet/.test(x));
+      if(trend&&/\b(?:[1-9]\d*),\d+ prosentpoeng/.test(trend))appendWithin(growth,[trend],98,1);
+      if(growth.length===1)appendWithin(growth,original.slice(1),95,2);
+    }
+    if(ls.length||cs.length){
+      const original=cr.slice(),opening=original[0];
+      const component=original.find(x=>x.startsWith('Skadeprosenten'));
+      cr.splice(0,cr.length,opening);
+      if(component){
+        const split=component.includes('Basert på tilgjengelig sammenlignbar splitt.');
+        const text=component.replace(/ Målt som medianendringer på samme utvalg\.| Basert på tilgjengelig sammenlignbar splitt\./,'');
+        cr.push(split?'Der sammenlignbar splitt er rapportert, '+text.charAt(0).toLowerCase()+text.slice(1):text);
+      }
+      const adverse=ls.find(x=>x.category==='adverse');
+      const structural=ls.find(x=>['frequency','pricing'].includes(x.category));
+      const temporary=ls.find(x=>['weather','temporary'].includes(x.category));
+      // Explain deterioration first, then the countervailing improvement.
+      // Otherwise cover both the recurring and the temporary claims drivers.
+      if(adverse)appendWithin(cr,[adverse],111,1);
+      if(structural)appendWithin(cr,[structural],111,1);
+      else if(ls[0]&&ls[0]!==adverse)appendWithin(cr,[ls[0]],111,1);
+      if(cs[0])appendWithin(cr,[cs[0]],111,1);
+      // The word budget, not the number of sentences, controls whether a
+      // distinct temporary driver fits. This matters especially when the
+      // adverse, structural and cost drivers all need to be explained.
+      if(temporary&&!cr.includes(temporary.text))appendWithin(cr,[temporary],113,1);
+      if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),110,1);
+      if(!cs.length&&component){
+        const stable=component.includes('kostnadsprosenten er omtrent uendret');
+        appendWithin(cr,[stable?'Kostnadsandelen er stabil i tilgjengelig splitt; rapportene gir ikke grunnlag for å tilskrive CR-endringen kostnadsbesparelser.':'Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget.'],116,1);
+      }
+    }
+    if(es.length){
+      special.splice(0,special.length);
+      const chosen=[];
+      // Distinguish the fire total from the broader quarterly large-loss
+      // burden. In total views prefer the fire plus a genuinely distinct event.
+      const rank=x=>x.priority+(market==='all'&&x.topic==='named_fire'?12:0)-(market==='all'&&/^(bm_large_loss|pm_fire)$/.test(x.topic)?22:0)+(x.topic==='workers_comp_provision'?8:0);
+      const eventOrder=[...es].sort((a,b)=>rank(b)-rank(a));
+      const family=x=>/^(named_fire|pm_fire|bm_large_loss)$/.test(x.topic)?'large_loss':/workers_comp/.test(x.topic)?'ruling':x.topic;
+      for(const e of eventOrder){
+        if(chosen.some(x=>family(x)===family(e)))continue;
+        chosen.push(e);
+      }
+      appendWithin(special,chosen,99,3);
+    }
+    for(const arr of [growth,cr,special]){
+      if(arr.length>1)arr.splice(0,arr.length,arr.filter(Boolean).join(' '));
+    }
+  }
   function comments(m,editorial,scope,market,context=null,otherMode=null,priorView=null){
     const rows=m.eligible,period=title(m.period),mode=m.mode||'quarter';
     // Market commentary only uses period-specific reports and results decks.
@@ -345,6 +443,7 @@
     }
     if(!special.length&&(lowerClaims||higherClaims))special.push('Kvartalsrapporteringen viser '+(lowerClaims&&higherClaims?'ulik storskadeutvikling mellom aktørene':lowerClaims?'lavere storskadebelastning i deler av markedet':'høyere storskadebelastning i deler av markedet')+'.');
     if(!special.length)special.push('Ingen vesentlig særhendelse er dokumentert for valgt marked og periode.');
+    richerComments(scoped,market,growth,cr,special);
     return [{label:'Inntektsvekst',paragraphs:growth.map(safe)},{label:'CR – skade- og kostnadsprosent',paragraphs:cr.map(safe)},{label:'Enkelthendelser og særtrekk',paragraphs:special.map(safe)}];
   }
   const viewKey=(scope,market,mode)=>[scope,market,mode].join('/');
@@ -360,7 +459,192 @@
     if(!periodOf(label)||!view||title(view.model?.period)!==label||view.model.mode!==mode)return null;
     return {...view,locked:entry.locked===true};
   }
-  let comparison=null,fx=null,segments=null,context=null,archive=null,scope='group',market='all',mode='quarter',reportPeriod='latest',pending=null,failed=false;
+  // Both trend charts use the SAME five consecutive isolated quarters.
+  function timeline(p,count=5){
+    if(!p||!Number.isInteger(p.year)||!Number.isInteger(p.quarter)||p.quarter<1||p.quarter>4)return [];
+    const n=p.year*4+p.quarter-1;
+    return Array.from({length:count},(_,i)=>{const v=n-count+1+i;return 'Q'+(v%4+1)+' '+Math.floor(v/4);});
+  }
+  function profitabilityHistory(feed,context,archive,p){
+    const periods=timeline(p),observations=(feed?.observations||[]).filter(valid);
+    const historic=context?.profitability_history?.points||[];
+    const series=COMPANIES.map(company=>{
+      const points=periods.map(label=>{
+        const q=periodOf(label);
+        const rows=observations.filter(r=>r.company===company&&samePeriod(r,q)&&r.scope==='group'&&r.period_type==='quarter'&&r.unit==='percent');
+        const read=metric=>selectUnique(rows,metric);
+        const cr=read('combined_ratio'),loss=read('loss_ratio'),cost=read('expense_ratio');
+        let point=cr?{cr:cr.value,loss:loss?.value??null,cost:cost?.value??null,roe:read('return_on_equity')?.value??null,source_url:cr.source_url,source_sha256:cr.source_sha256,source_page:cr.source_page,method:cr.status}:null;
+        if(point&&!num(point.roe)){
+          const ytd=observations.filter(r=>r.company===company&&samePeriod(r,q)&&r.scope==='group'&&r.period_type==='ytd'&&r.unit==='percent');
+          const roe=selectUnique(ytd,'return_on_equity');
+          if(roe){point.roe=roe.value;point.roeBasis='HIÅ';}
+        }
+        if(EXTENDED.includes(company)){
+          const matches=historic.filter(r=>r.company===company&&r.period===label&&r.period_type==='quarter'&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&Number.isInteger(r.source_page)&&r.source_page>0&&num(r.cr)&&r.cr>=0);
+          point=matches.length===1?{...matches[0]}:null;
+        }
+        // Archive is authoritative for its own quarter; especially do not
+        // show an unreported issuer's latest point in an incomplete snapshot.
+        const snapshot=archive?.periods?.[label]?.views?.['group/all/quarter'];
+        if(snapshot){
+          const row=snapshot.model?.eligible?.find(r=>r.company===company);
+          if(!row)return null;
+          point={...point,cr:row.cr,loss:row.loss,cost:row.cost,source_url:point?.source_url||row.source};
+        }
+        return point&&num(point.cr)&&point.cr>=0?point:null;
+      });
+      return {company,points};
+    });
+    return {periods,series};
+  }
+  function reportQueues(label,reported,calendar,locked=false){
+    const p=periodOf(label);
+    if(!p)return {pending:[],next:[],nextPeriod:''};
+    const following=title({year:p.year+(p.quarter===4?1:0),quarter:p.quarter===4?1:p.quarter+1});
+    const done=new Set(reported);
+    const rows=COMPANIES.map(company=>{
+      const published=done.has(company),target=published?following:label;
+      const config=calendar?.[pretty(company)]||calendar?.[company]||{};
+      const events=(config.events||[]).filter(e=>e.period===target&&validDate(e.date));
+      const dates=[...new Set(events.map(e=>e.date))];
+      const date=dates.length===1?dates[0]:null;
+      const url=events.find(e=>e.date===date)?.source_url||config.calendar_url;
+      return {company,published,period:target,date,url:source(url)?url:null};
+    });
+    const sort=items=>items.sort((a,b)=>(a.date||'9999-99-99').localeCompare(b.date||'9999-99-99')||pretty(a.company).localeCompare(pretty(b.company),'nb'));
+    return {pending:locked?[]:sort(rows.filter(x=>!x.published)),next:sort(rows.filter(x=>x.published)),nextPeriod:following};
+  }
+  function validDate(s){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return false;
+    const d=new Date(s+'T00:00:00Z');return Number.isFinite(d.valueOf())&&d.toISOString().slice(0,10)===s;
+  }
+  function reportCalendarHtml(items,kind,label,locked=false){
+    if(!items.length)return '';
+    const upcoming=kind==='next',heading=upcoming?'Neste kvartal – publiseringsdatoer · '+label:'Avventer kvartalstall · '+label;
+    const cards=items.map(x=>{
+      const date=x.date?x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.'+x.date.slice(0,4):'Ingen dato oppgitt';
+      const content='<span class="mon-cal-company"><strong>'+safe(pretty(x.company))+'</strong><small>'+safe(x.period)+' · '+safe(date)+'</small></span>'+
+        (x.date?'<span class="mon-cal-countdown" data-report-date="'+safe(date)+'"'+(locked?' data-historical="true"':'')+'>Beregner …</span>':'');
+      const attrs=' class="mon-cal-row" data-company="'+safe(x.company)+'" data-target-period="'+safe(x.period)+'"';
+      return x.url?'<a'+attrs+' href="'+safe(x.url)+'" target="_blank" rel="noopener noreferrer">'+content+'</a>':'<div'+attrs+'>'+content+'</div>';
+    }).join('');
+    return '<section class="mon-calendar mo-report-calendar" id="mo-calendar-'+kind+'" data-report-period="'+safe(label)+'" aria-label="'+safe(heading)+'"><div class="mon-calendar-top"><div><div class="eyebrow">FINANSIELL KALENDER</div><h2>'+safe(heading)+'</h2></div></div><div class="mon-cal-grid">'+cards+'</div></section>';
+  }
+  const LINE_COLORS=['#126f73','#3455a4','#b65f16','#8c4a92','#b63246','#457638','#137eb4','#6c6570','#996d14'];
+  const LINE_DASH=['','7 3','2 3','10 3 2 3','5 3','','8 4','3 3','10 5'];
+  function trendChart(history){
+    const {periods,series}=history;
+    if(periods.length!==5)return '<p class="mo-empty">Avventer verifisert kvartal.</p>';
+    const values=series.flatMap(s=>s.points.filter(Boolean).map(p=>p.cr));
+    if(!values.length)return '<p class="mo-empty">Historiske CR-tall er foreløpig ikke tilgjengelige.</p>';
+    const low=Math.min(60,Math.floor(Math.min(...values)/10)*10),high=Math.max(100,Math.ceil(Math.max(...values)/10)*10);
+    const step=high-low>70?20:10, w=620,h=250,left=49,right=18,top=12,bottom=37;
+    const x=i=>left+i*(w-left-right)/4,y=v=>top+(high-v)/(high-low)*(h-top-bottom);
+    const ticks=[];for(let i=low;i<=high;i+=step)ticks.push(i);
+    let svg='<svg class="mo-line-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Combined ratio for alle selskaper, fem kvartaler">';
+    svg+=ticks.map(v=>'<line x1="'+left+'" x2="'+(w-right)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===100?'#b8c4cb':'#e2e9ee')+'" stroke-dasharray="'+(v===100?'5 4':'')+'"/><text x="'+(left-7)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+' %</text>').join('');
+    svg+=periods.map((p,i)=>'<text x="'+x(i)+'" y="'+(h-10)+'" text-anchor="middle" class="mo-line-quarter" data-period="'+safe(p)+'">'+safe(p)+'</text>').join('');
+    svg+=series.map((s,j)=>{
+      const color=LINE_COLORS[j],dash=LINE_DASH[j];let path='',prev=false,marks='';
+      s.points.forEach((p,i)=>{if(!p){prev=false;return;}const cx=x(i),cy=y(p.cr);
+        path+=(prev?' L':' M')+cx.toFixed(2)+' '+cy.toFixed(2);prev=true;
+        marks+='<circle class="mo-line-point" data-company="'+safe(s.company)+'" data-period="'+safe(periods[i])+'" data-cr="'+p.cr+'" cx="'+cx+'" cy="'+cy+'" r="3.4" fill="'+color+'" stroke="white" stroke-width="1" tabindex="0" aria-label="'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'"><title>'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'</title></circle>';
+      });
+      return '<g class="mo-line-series" data-company="'+safe(s.company)+'"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>'+marks+'</g>';
+    }).join('')+'</svg>';
+    const legend=series.map((s,i)=>'<span class="mo-line-legend-item" data-company="'+safe(s.company)+'"><i style="background:'+LINE_COLORS[i]+'"></i>'+safe(pretty(s.company))+'</span>').join('');
+    const table='<details class="mo-history-values"><summary>Se kvartalstall og kilder</summary><div class="tablewrap"><table><thead><tr><th>Selskap</th>'+periods.map(p=>'<th>'+safe(p)+'</th>').join('')+'</tr></thead><tbody>'+series.map(s=>'<tr><th>'+safe(pretty(s.company))+'</th>'+s.points.map(p=>'<td>'+(p?(source(p.source_url)?'<a href="'+safe(p.source_url)+'" target="_blank" rel="noopener noreferrer" title="'+safe(p.method||'Verifisert rapport')+'">'+pct(p.cr)+'</a>':pct(p.cr)):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></details>';
+    return '<div class="section-head"><div><h2>Utvikling i CR · alle selskaper</h2><p class="hint">Konsern / rapportert total · isolerte kvartaler</p></div></div><div class="mo-line-scroll">'+svg+'</div><div class="mo-line-legend">'+legend+'</div>'+table;
+  }
+  function financialNumber(value){
+    if(num(value))return value;
+    if(typeof value!=='string')return null;
+    const m=value.trim().replace(/[\s\u00a0\u202f]/g,'').replace(/−/g,'-').replace(',','.').match(/^([+-]?\d+(?:\.\d+)?)(?:%|MNOK|NOKm|MDKK|DKKm|MEUR|EURm|MSEK|SEKm)?$/i);
+    return m&&Number.isFinite(Number(m[1]))?Number(m[1]):null;
+  }
+  function financialTrend(now,prior,lowerIsBetter=false){
+    const a=financialNumber(now),b=financialNumber(prior);
+    if(a===null||b===null)return null;
+    const diff=a-b,direction=diff>0.00001?'up':diff< -0.00001?'down':'flat';
+    return {direction,icon:direction==='up'?'▲':direction==='down'?'▼':'→',tone:direction==='flat'?'flat':(lowerIsBetter?direction==='down':direction==='up')?'good':'bad'};
+  }
+  function companyHistoricalMetrics(name,p,type='quarter'){
+    const found=(context?.profitability_history?.points||[]).filter(r=>r.company===name&&r.period===title(p)&&r.status==='verified'&&source(r.source_url)&&/^[0-9a-f]{64}$/.test(r.source_sha256||'')&&Number.isInteger(r.source_page)&&r.source_page>0);
+    if(found.length!==1)return {};
+    const r=found[0];
+    return type==='ytd'?{...(r.ytd_metrics||{})}:{...(r.metrics||{}),combined_ratio:r.cr,loss_ratio:r.loss,expense_ratio:r.cost,...(num(r.roe)?{return_on_equity:r.roe}:{})};
+  }
+  function companyExtraObservations(){
+    return (context?.company_comparisons?.observations||[]).filter(valid).filter(r=>r.scope==='group');
+  }
+  function profitabilityOptions(name,p,history=null){
+    history=history||profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
+    const s=history.series.find(s=>s.company===name),selected={},returns={};
+    s?.points.forEach((r,i)=>{if(!r)return;const label=history.periods[i];if(num(r.loss)&&num(r.cost))selected[label]=[r.loss,r.cost,r.cr];if(num(r.roe))returns[label]={value:r.roe,label:r.roeBasis==='HIÅ'?'Rapportert annualisert HIÅ':'Rapportert annualisert avkastning'};});
+    return {quarters:history.periods,selected,returns};
+  }
+  // Company-detail segments are independent of the market ranking's
+  // Norway/PM/BM population. Sampo's named Nordic segments must not be
+  // relabelled as Norwegian or treated as the full Group's PM/BM.
+  function sampoNordicSegments(feed,p,mode='quarter'){
+    if(!p||!periodOf(title(p)))return [];
+    const metrics=['insurance_revenue','insurance_service_result',...CORE];
+    const rows=(feed?.observations||[]).filter(r=>valid(r)&&r.company==='Sampo'&&r.scope==='reported_segment'&&['Private Nordic','Nordic Commercial'].includes(r.segment));
+    const sameSourceBasis=r=>/^Sampo interim statement; (Private Nordic|Nordic Commercial) reported financial table/.test(r.source_definition||'');
+    function block(segment,y,q,type){
+      const rr=rows.filter(r=>r.segment===segment&&r.year===y&&r.quarter===q&&r.period_type===type&&sameSourceBasis(r));
+      const by=Object.fromEntries(metrics.map(k=>[k,selectUnique(rr,k)]));
+      if(metrics.some(k=>!by[k]))return null;
+      if(['insurance_revenue','insurance_service_result'].some(k=>by[k].unit!=='EURm')||CORE.some(k=>by[k].unit!=='percent'))return null;
+      const m=Object.fromEntries(metrics.map(k=>[k,by[k].value]));
+      if(m.insurance_revenue<=0||Math.min(m.combined_ratio,m.loss_ratio,m.expense_ratio)<0||Math.abs(m.combined_ratio-m.loss_ratio-m.expense_ratio)>.25)return null;
+      const sourceRows=metrics.map(k=>by[k]);
+      return {metrics:m,sourceRows,method:type==='ytd'?'reported_ytd':'reported_quarter'};
+    }
+    function aggregate(segment,y){
+      const direct=block(segment,y,p.quarter,mode);
+      if(direct||mode!=='ytd')return direct;
+      const parts=Array.from({length:p.quarter},(_,i)=>block(segment,y,i+1,'quarter'));
+      if(parts.some(x=>!x))return null;
+      const total=parts.reduce((a,b)=>a+b.metrics.insurance_revenue,0);
+      const m={insurance_revenue:total,insurance_service_result:parts.reduce((a,b)=>a+b.metrics.insurance_service_result,0)};
+      for(const key of CORE)m[key]=parts.reduce((a,b)=>a+b.metrics[key]*b.metrics.insurance_revenue,0)/total;
+      return {metrics:m,sourceRows:parts.flatMap(b=>b.sourceRows),method:p.quarter===1?'reported_quarter':'calculated_ytd'};
+    }
+    return ['Private Nordic','Nordic Commercial'].map(segment=>{
+      const current=aggregate(segment,p.year),prior=aggregate(segment,p.year-1),older=aggregate(segment,p.year-2);
+      const m=current?.metrics,prev=prior?.metrics;
+      return {segment,metrics:m||null,prior:prev||null,
+        growth:m&&prev?100*(m.insurance_revenue/prev.insurance_revenue-1):null,
+        growthPrev:prev&&older?100*(prev.insurance_revenue/older.metrics.insurance_revenue-1):null,
+        method:current?.method||null,sources:current?.sourceRows||[]};
+    });
+  }
+  function companySegmentRows(name,p,periodType='quarter'){
+    if(!p||!COMPANIES.includes(name))return [];
+    const rows=allRows(window.FBQuarterly?.verified,segments,comparison,context).filter(r=>r.period_type===periodType);
+    return ['pm','bm'].map(m=>{
+      const snap=archive?.periods?.[title(p)]?.views?.[viewKey('group',m,periodType)];
+      const row=snap?snap.model.eligible.find(r=>r.company===name):rowFor(rows,name,p,'group',m);
+      if(!row)return {market:m,row:null,prior:null};
+      const priorPeriod={year:p.year-1,quarter:p.quarter};
+      const direct=rowFor(rows,name,priorPeriod,'group',m);
+      const prior=direct&&direct.revenueBasis===row.revenueBasis&&direct.currency===row.currency?{...direct}:{};
+      for(const [metric,field] of [['combined_ratio','cr'],['loss_ratio','loss'],['expense_ratio','cost']]){
+        if(!num(prior[field])&&num(row[field])&&num(row.deltas?.[metric]))prior[field]=row[field]-row.deltas[metric];
+      }
+      const g=groupsFor(rows,name,p,'group',m)[0],old=groupsFor(rows,name,priorPeriod,'group',m)[0];
+      const result=g&&selectUnique(g.rows,'insurance_service_result'),priorResult=old&&selectUnique(old.rows,'insurance_service_result');
+      return {market:m,row,prior,result:result?.value??null,priorResult:priorResult&&result&&priorResult.unit===result.unit?priorResult.value:null,resultUnit:result?.unit||null};
+    });
+  }
+  function trendPanels(p){
+    const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
+    const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{...profitabilityOptions(profitCompany,p,history),onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
+    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history)+'</section></div>';
+  }
+  let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',pending=null,failed=false;
   function currentView(){
     if(archive?.active_period){
       return archivedView(archive,reportPeriod,scope,market,mode)||{model:{period:null,mode,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0},comments:[],sources:[],locked:false};
@@ -409,18 +693,24 @@
     const filter=market==='all'?'Totalt':market==='pm'?'PM':'BM';
     const descriptor=contextual+' · '+filter+' · '+(mode==='ytd'?'HIÅ':'Kvartal');
     const count=m.selected.length;
+    const groupSnapshot=m.period&&(archive?.periods?.[latest]?.views?.['group/all/quarter']?.model||model(window.FBQuarterly?.verified,comparison,fx,'group','all',segments,'quarter',context));
+    const reported=groupSnapshot?.eligible?.map(r=>r.company)||[];
+    const queue=calendar&&latest?reportQueues(latest,reported,calendar,view.locked):null;
+    const topCal=queue?reportCalendarHtml(queue.pending,'pending',latest):'';
+    const nextCal=queue?reportCalendarHtml(queue.next,'next',queue.nextPeriod,view.locked):'';
+    const media=typeof mediaNews==='function'?mediaNews(latest):'';
     return '<div class="top mo-top"><div><div class="eyebrow">MARKEDSOVERSIKT</div><h1>Forsikringsbarometeret</h1><p class="sub">Lønnsomhet og vekst i forsikringsmarkedet</p></div>'+
-      '<div class="tag" id="mo-period">'+safe(latest||'Laster rapportperiode')+'</div></div>'+
+      '<div class="tag" id="mo-period">'+safe(latest||'Laster rapportperiode')+'</div></div>'+topCal+
       '<section id="market-overview" class="panel mo-panel" data-period="'+safe(latest)+'" data-scope="'+scope+'" data-market="'+market+'" data-mode="'+mode+'" data-locked="'+Boolean(view.locked)+'">'+
       controls()+'<div class="section-head mo-heading"><div><h2>'+ (count<5&&count>0?count+' største selskaper':'Topp 5 selskaper')+' · '+safe(descriptor)+'</h2></div>'+
       (latest?'<span class="pill">'+(view.locked?'Låst · ':'')+m.reported+' / 9 rapportert</span>':'')+'</div>'+
       (!m.period?'<p class="mo-empty">'+(failed?'Datagrunnlaget er midlertidig utilgjengelig.':'Henter siste verifiserte kvartal …')+'</p>':graph(m))+
       '</section>'+
       '<section id="market-overview-comments" class="panel mo-panel mo-comments"><div class="section-head"><div><h2>Kommentarer · '+safe(descriptor)+'</h2></div></div>'+
-      (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>';
+      (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>'+ (m.period?trendPanels(m.period):'')+media+nextCal;
   }
   function render(){
-    if(typeof current!=='undefined'&&current==='home'&&typeof show==='function')show('home',true);
+    if(typeof current!=='undefined'&&typeof show==='function'&&(current==='home'||COMPANIES.includes(current)))show(current,true);
   }
   function select(kind,value){
     if(kind==='scope'&&['group','norway'].includes(value))scope=value;
@@ -432,11 +722,12 @@
     if(kind==='reportPeriod')document.querySelector('#mo-report-period')?.focus({preventScroll:true});
     else document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
   }
+  function selectProfitability(name){if(COMPANIES.includes(name)){profitCompany=name;render();document.querySelector('#mo-profitability-panel select')?.focus({preventScroll:true});}}
   function refresh(){
     if(pending)return pending;
     pending=(async()=>{
     try{
-      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json','market_overview_archive.json'].map(async f=>{
+      const results=await Promise.allSettled(['nine_insurer_comparison.json','market_overview_fx.json','market_overview_segments.json','market_overview_context.json','market_overview_archive.json','calendar.json'].map(async f=>{
         const r=await fetch('data/'+f+'?t='+Date.now(),{cache:'no-store'});
         if(!r.ok)throw Error('HTTP '+r.status);return r.json();
       }));
@@ -445,7 +736,8 @@
       if(results[2].status==='fulfilled')segments=results[2].value;
       if(results[3].status==='fulfilled')context=results[3].value;
       if(results[4].status==='fulfilled'&&results[4].value?.active_period)archive=results[4].value;
-      failed=results.some(r=>r.status==='rejected');
+      if(results[5].status==='fulfilled')calendar=results[5].value;
+      failed=results.slice(0,5).some(r=>r.status==='rejected');
     }finally{pending=null;render();}
     })();
     return pending;
@@ -461,5 +753,5 @@
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,refresh,start};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,financialNumber,financialTrend,companyHistoricalMetrics,companyExtraObservations,reportQueues,trendChart};
 });

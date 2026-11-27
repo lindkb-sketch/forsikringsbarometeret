@@ -84,6 +84,24 @@ async function main(){
     const f=await page.evaluate(({marketFx,marketComparison,marketSegments})=>Object.fromEntries(['pm','bm'].map(m=>[m,FBMarketOverview.model(FBQuarterly.verified,marketComparison,marketFx,'group',m,marketSegments).eligible.find(r=>r.company==='Fremtind')])),{marketFx,marketComparison,marketSegments});
     check('Fremtind published APM quarter CR and revenue (not IFRS note)',f.pm?.cr===71.6&&f.bm?.cr===80.8&&f.pm?.revenue===5341&&f.bm?.revenue===965&&f.pm?.growth===4.4&&f.bm?.growth===3.6&&f.pm?.loss===null&&f.bm?.cost===null,JSON.stringify(f));
   }
+  const marketSections=await page.evaluate(()=>{
+    const ids=['market-overview-comments','mo-trend-charts','media-news','mo-calendar-next'];
+    return {order:ids.every((id,i)=>document.getElementById(id)&&(!i||Boolean(document.getElementById(ids[i-1]).compareDocumentPosition(document.getElementById(id))&Node.DOCUMENT_POSITION_FOLLOWING))),
+      pending:document.querySelectorAll('#mo-calendar-pending .mon-cal-row').length,
+      next:document.querySelectorAll('#mo-calendar-next .mon-cal-row').length,
+      labels:[...document.querySelectorAll('#mo-cr-history .mo-line-quarter')].map(x=>x.dataset.period),
+      left:[...document.querySelectorAll('#mo-profitability-panel .profit-quarter')].map(x=>x.textContent),
+      companies:[...document.querySelectorAll('.mo-line-legend-item')].map(x=>x.dataset.company),
+      points:document.querySelectorAll('.mo-line-point').length};
+  });
+  check('Market supplementary panels in requested order',marketSections.order,JSON.stringify(marketSections));
+  check('Both market charts display the same five consecutive periods',marketSections.labels.length===5&&JSON.stringify(marketSections.labels)===JSON.stringify(marketSections.left)&&marketSections.labels.at(-1)===marketArchive.active_period,JSON.stringify(marketSections));
+  check('Market CR line chart covers all nine issuers',marketSections.companies.length===9&&new Set(marketSections.companies).size===9,JSON.stringify(marketSections));
+  check('Market report calendar partitions all nine issuers',marketSections.pending+marketSections.next===9,JSON.stringify(marketSections));
+  if(marketArchive.periods[marketArchive.active_period].views['group/all/quarter'].model.reported===9)check('No pending calendar when all nine have reported',await page.locator('#mo-calendar-pending').count()===0&&marketSections.next===9);
+  await page.locator('#mo-profitability-panel select').selectOption('Tryg');
+  check('Market profitability selector works without changing CR chart',await page.locator('#mo-profitability-panel h2').innerText()==='Utvikling i lønnsomhet · Tryg'&&await page.locator('.mo-line-legend-item').count()===9);
+  await page.locator('#mo-profitability-panel select').selectOption('Fremtind');
   await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
   report.screenshots.push('data/browser_market_overview.png');
   await page.locator('#nav-summary').click();
@@ -137,6 +155,10 @@ async function main(){
   for(const name of ['KLP Skadeforsikring','Alm. Brand']){
     await page.locator('[id="nav-'+name+'"]').click();
     check(name+' company page renders', (await page.locator('#app').innerText()).includes(name));
+    check(name+' uses standard company KPIs and profitability chart',await page.locator('.dynamic-kpis').count()===1&&await page.locator('.company-profitability .profit-quarter').count()===5);
+    await page.locator('.company-period-actions select').selectOption('H3');
+    check(name+' HIÅ selection stays on company tab',await page.locator('[id="nav-'+name+'"].active').count()===1&&await page.locator('.dynamic-kpis [data-financial-period="ytd"]').count()>0);
+    await page.locator('.company-period-actions select').selectOption('Q3');
     check(name+' primary-source link exists', await page.locator('#app a[href^="https://"]').count()>0);
     await page.locator('#nav-summary').click();
   }
@@ -418,6 +440,57 @@ async function main(){
         rendered.includes('Ingen kildeverifisert')||rendered.includes('avventer'),rendered.slice(0,200));
     }
   }
+  // Listing eligibility is based on the configured equity, not on debt
+  // notices or the presence/absence of a stock quote.
+  for(const name of ['Fremtind','Frende','KLP Skadeforsikring']){
+    await page.evaluate(c=>{window.FBNewsWeb.notices[c]=[{source:'NewsWeb',url:'https://newsweb.oslobors.no/message/123456',title:'Test debt notice',published_at:new Date().toISOString()}];show(c,true);},name);
+    check(name+' has no irrelevant stock or exchange section',await page.locator('.stock-section,.company-exchange-notices').count()===0&&await page.locator('.company-media-news').count()===1);
+    await page.evaluate(c=>{delete window.FBNewsWeb.notices[c]},name);
+  }
+  await page.evaluate(()=>show('Sampo',true));
+  await page.locator('.company-period-actions select').selectOption('Q3');
+  const sam=await page.evaluate(()=>{
+    const chart=document.querySelector('.company-profitability'),segments=document.querySelector('.company-segments');
+    return {placement:chart?.nextElementSibling===segments,labels:[...document.querySelectorAll('.company-segments tbody tr')].map(r=>r.dataset.segment),values:[...document.querySelectorAll('.company-segments tbody tr')].map(r=>[...r.cells].slice(1).map(c=>c.innerText))};
+  });
+  check('Sampo Nordic segments directly below profitability chart',sam.placement&&JSON.stringify(sam.labels)===JSON.stringify(['Private Nordic','Nordic Commercial']),JSON.stringify(sam));
+  if(marketArchive.active_period==='Q3 2026')check('Sampo official isolated quarter segment ratios',sam.values[0]?.[2]?.includes('79,5')&&sam.values[1]?.[2]?.includes('82,1'),JSON.stringify(sam));
+  await page.locator('.company-period-actions select').selectOption('H3');
+  check('Sampo HIÅ uses complete source-based Nordic segment figures',await page.locator('.company-segments tr[data-financial-source="calculated_ytd"],.company-segments tr[data-financial-source="reported_ytd"]').count()===2);
+  await page.locator('.company-period-actions select').selectOption('Q3');
+  // Inspect actual computed styles, comparison values and direction on all
+  // nine issuer pages in both modes, not merely the shared CSS declaration.
+  let standardStyle=null;
+  for(const c of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand']){
+    await page.evaluate(name=>show(name,true),c);
+    for(const type of ['Q3','H3']){
+      await page.locator('.company-period-actions select').selectOption(type);
+      const result=await page.evaluate(()=>{
+        const cards=[...document.querySelectorAll('.company-financial-card:not(.market-card)')];
+        const cr=cards.find(n=>n.dataset.financialMetric==='combined_ratio');
+        const style=n=>{const s=getComputedStyle(n);return [s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight];};
+        const numeric=s=>FBMarketOverview.financialNumber(s.replace(/^\(|\)$/g,''));
+        const rows=cards.map(n=>{
+          const now=numeric(n.querySelector('.financial-current')?.textContent||''),prior=numeric(n.querySelector('.prior')?.textContent||'');
+          const metric=n.dataset.financialMetric,expected=FBMarketOverview.financialTrend(now,prior,['combined_ratio','loss_ratio','expense_ratio'].includes(metric));
+          const arrow=n.querySelector('.qoq');
+          return {metric,now,prior,correct:expected?arrow?.textContent===expected.icon&&arrow.classList.contains(expected.tone):!arrow};
+        });
+        return {rows,style:cr?['.name','.financial-current','.prior'].map(s=>style(cr.querySelector(s))):null};
+      });
+      if(!standardStyle&&result.style)standardStyle=JSON.stringify(result.style);
+      check(c+' '+type+' shared KPI typography',!!result.style&&JSON.stringify(result.style)===standardStyle,JSON.stringify(result.style));
+      check(c+' '+type+' consistent same-period trend arrows',result.rows.length>=5&&result.rows.every(r=>r.correct),JSON.stringify(result.rows));
+      console.log('COMPANY_COMPARISON_COVERAGE',c,type,JSON.stringify(result.rows.map(r=>[r.metric,r.now,r.prior])));
+      if(marketArchive.active_period==='Q3 2026'){
+        const core=['insurance_revenue_growth','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
+        check(c+' '+type+' complete current and previous-year core comparisons',core.every(k=>result.rows.some(r=>r.metric===k&&Number.isFinite(r.now)&&Number.isFinite(r.prior))),JSON.stringify(result.rows));
+        if(['KLP Skadeforsikring','Alm. Brand'].includes(c))check(c+' '+type+' original prior-year solvency available',result.rows.some(r=>r.metric==='solvency_ratio'&&Number.isFinite(r.prior)),JSON.stringify(result.rows));
+        if(['Fremtind','Gjensidige'].includes(c)&&type==='H3')check(c+' comparable annualised HIÅ return present',result.rows.some(r=>r.metric==='return_on_equity'&&Number.isFinite(r.prior)),JSON.stringify(result.rows));
+      }
+    }
+    await page.locator('.company-period-actions select').selectOption('Q3');
+  }
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
   check('Company commentary has no duplicated quarter prefix',
@@ -445,8 +518,15 @@ async function main(){
   }
   // Each company detail must show its own profitability graph and source-derived
   // prior-year revenue growth; do not accept the homepage's selected issuer.
-  for(const issuer of ['Gjensidige','Protector']){
-    await page.evaluate(name=>show(name,true),issuer);
+  for(const issuer of ['Fremtind','Gjensidige','Protector']){
+    await page.locator('[id="nav-'+issuer+'"]').click();
+    check(issuer+' own navigation tab active',await page.locator('[id="nav-'+issuer+'"].active').count()===1);
+    if(issuer==='Fremtind'){
+      await page.locator('.company-period-actions select').selectOption('H3');
+      check('Fremtind HIÅ selector retains own page',await page.locator('#nav-Fremtind.active').count()===1&&await page.locator('.dynamic-kpis [data-financial-period="ytd"]').count()>0);
+      await page.locator('.company-period-actions select').selectOption('Q3');
+      if(marketArchive.active_period==='Q3 2026')check('Fremtind PM/BM verified segment CR',await page.locator('tr[data-financial-source="verified-fremtind-apm"]').count()===2&&(await page.locator('tr[data-financial-source="verified-fremtind-apm"]').allTextContents()).join(' ').includes('71,6'));
+    }
     const panel=page.locator('.company-profitability');
     const placement=await page.evaluate(()=>{
       const graph=document.querySelector('.company-profitability');

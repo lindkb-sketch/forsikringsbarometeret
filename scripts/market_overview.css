@@ -58,3 +58,38 @@
 .mo-name{min-height:76px;gap:5px;justify-content:flex-start}.mo-medal,.mo-medal-placeholder{display:block;flex:none;height:26px;line-height:26px}.mo-medal{font-size:23px;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}.mo-medal-placeholder{width:26px}@media(max-width:600px){.mo-name{min-height:76px}.mo-medal{font-size:21px}}
 
 .mo-report-filter select{height:40px;padding:0 28px 0 12px;border:1px solid #dbe5eb;border-radius:8px;background:#f3f7f9;color:#173447;font:inherit;font-size:13px;font-weight:650;cursor:pointer}.mo-report-filter select:focus-visible{outline:2px solid #087f82;outline-offset:2px}
+
+/* Market overview: reuse the summary's profitability panel and calendar. */
+.mo-trend-duo{margin:16px 0 0;align-items:stretch}
+.mo-trend-duo>.panel{min-width:0;overflow:hidden}
+.mo-line-scroll{overflow-x:auto;margin-top:12px}
+.mo-line-svg{display:block;width:100%;min-width:430px;height:auto;color:#617589}
+.mo-line-svg text{font:11px system-ui,sans-serif;fill:#637989}
+.mo-line-point:focus{outline:none;stroke:#142f40;stroke-width:2.5}
+.mo-line-legend{display:flex;flex-wrap:wrap;gap:9px 15px;padding:6px 0 12px;font-size:11px;color:#435c6c}
+.mo-line-legend-item{display:flex;gap:6px;align-items:center}
+.mo-line-legend-item i{display:block;width:15px;height:3px;border-radius:2px}
+.mo-history-values{font-size:12px;color:#566d7e;margin-top:9px}
+.mo-history-values summary{cursor:pointer;color:#126f73}
+.mo-history-values .tablewrap{margin-top:10px;overflow-x:auto}
+.mo-history-values td,.mo-history-values th{font-size:11px;white-space:nowrap}
+.mo-report-calendar .mon-cal-grid{grid-template-columns:repeat(auto-fit,minmax(225px,1fr))}
+#mo-calendar-next{margin-top:24px}
+@media(max-width:900px){.mo-trend-duo{grid-template-columns:1fr!important}}
+@media(max-width:600px){.mo-line-svg{min-width:430px}.mo-report-calendar .mon-cal-grid{grid-template-columns:1fr}}
+
+.company-period-actions{display:flex;align-items:center;gap:8px;font-size:12px;color:#587082}.company-period-actions select{padding:7px 10px;border:1px solid #dbe5eb;border-radius:7px;background:#fff;color:#173447;font:inherit}
+
+/* All company tabs share one type scale and comparison vocabulary. */
+#app[data-company-page] .company-financial-card,
+#app[data-company-page] .company-segments table{font-family:inherit!important;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-financial-card .value{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:6px!important;white-space:normal!important;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-financial-card .financial-current{font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;letter-spacing:inherit!important}
+#app[data-company-page] .company-financial-card .name{font-size:11px!important;font-weight:700!important}
+#app[data-company-page] .company-financial-card .prior{font-size:11px!important;font-weight:500!important;color:#687d8f!important}
+#app[data-company-page] .company-segments td .financial-current{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+#app[data-company-page] .company-segments .table-prior{display:block;font-size:11px!important;font-weight:500;color:#687d8f;margin:4px 0 0}
+#app[data-company-page] .company-financial-card .qoq,#app[data-company-page] .company-segments .qoq{display:inline-flex!important;align-items:center;justify-content:center;width:18px!important;min-width:18px!important;height:18px!important;min-height:18px!important;padding:0!important;margin:0!important;border-radius:4px!important;font-family:inherit!important;font-size:12px!important;font-weight:800!important;line-height:1!important;flex:none}
+#app[data-company-page] .qoq.good{color:#08774f;background:#e4f6ec}
+#app[data-company-page] .qoq.bad{color:#b83d3d;background:#fceaea}
+#app[data-company-page] .qoq.flat{color:#647888;background:#eef2f5}

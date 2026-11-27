@@ -1,0 +1,456 @@
+"""Isolated-quarter profitability history for the two supplemental insurers.
+
+Keep each verified original report and the exact period columns used.
+For KLP and Alm. Brand the previous year's full-year and HIÅ amounts may
+supply Q4; ratios are NEVER subtracted. No estimates or static chart values.
+"""
+import hashlib, math, re
+from decimal import Decimal
+from concurrent.futures import ThreadPoolExecutor
+
+SCHEMA=5
+ALM='Alm. Brand'
+KLP='KLP Skadeforsikring'
+RATIOS=('combined_ratio','loss_ratio','expense_ratio')
+
+def finite(x):
+    return type(x) in (float,int) and math.isfinite(x)
+def period(y,q):return f'Q{q} {y}'
+def source_ok(url,sha):
+    return isinstance(url,str) and url.startswith('https://') and bool(re.fullmatch(r'[0-9a-f]{64}',sha or ''))
+def checked_point(company,y,q,metrics,url,sha,page,method,source_period,roe=None,ytd_metrics=None):
+    if not source_ok(url,sha) or type(page) is not int or page<=0 or q not in (1,2,3,4):raise ValueError('Invalid historical report provenance')
+    if not all(finite(metrics.get(k)) and metrics[k]>=0 for k in RATIOS) or abs(metrics['combined_ratio']-metrics['loss_ratio']-metrics['expense_ratio'])>.25:
+        raise ValueError('Invalid historical profitability ratios')
+    return dict(company=company,period=period(y,q),year=y,quarter=q,period_type='quarter',scope='company' if company==KLP else 'group',
+        cr=metrics['combined_ratio'],loss=metrics['loss_ratio'],cost=metrics['expense_ratio'],
+        metrics={k:v for k,v in metrics.items() if finite(v)},ytd_metrics={k:v for k,v in (ytd_metrics or {}).items() if finite(v)},
+        roe=roe if finite(roe) else None,source_url=url,source_sha256=sha,source_page=page,
+        source_document_period=source_period,method=method,status='verified')
+
+def amounts_ratios(revenue,claims,cost,reinsurance,service,tolerance):
+    # claims/cost/reinsurance are positive signed expense components, with
+    # reinsurance allowed to be a net income (negative expense).
+    if min(revenue,claims,cost)<=0 or abs(revenue-claims-cost-reinsurance-service)>tolerance:
+        raise ValueError('Quarter income/expense reconciliation failed')
+    return dict(combined_ratio=float((claims+cost+reinsurance)/revenue*100),
+        loss_ratio=float((claims+reinsurance)/revenue*100),expense_ratio=float(cost/revenue*100))
+
+def alm_isolated_layout(left,full,y,q):
+    from rolling_alm_brand_reports import column_layout
+    # H1, half-year and 6M are explicit cumulative Q1-Q2 labels, not
+    # isolated Q2 labels. Normalise only these exact period headers.
+    def normalize_header(text):
+        text=text.replace('–','-').replace('—','-')
+        text=re.sub(r'\bQ1\s*-\s*Q([1-4])\b',r'Q1-Q\1',text,flags=re.I)
+        if q==2:
+            text=re.sub(r'\b(?:H1|HY1|HY|6M|First half|Half.year)\b','Q1-Q2',text,flags=re.I)
+        if q==3:
+            text=re.sub(r'\b9M\b','Q1-Q3',text,flags=re.I)
+        return text
+    for text in (left,full):
+        try:return column_layout(normalize_header(text),y,q)
+        except ValueError:pass
+    # For Q2, only the first two isolated-quarter columns are needed.
+    # A distinct current/prior header and a complete, reconciled numeric
+    # table are sufficient even when the publisher renames its H1 heading.
+    if q==2:
+        for text in (left,full):
+            normalized=normalize_header(text)
+            header=re.split(r'(?im)^\s*(?:INCOME\s+)?Insurance revenue\s+(?=-?\d)',normalized,maxsplit=1)[0]
+            lines=header.splitlines()
+            matches=set()
+            for a,b in zip(lines,lines[1:]):
+                year_line=re.search(r'\bDKKm\s+((?:20\d{2}(?:\s+|$))+)',b,re.I)
+                if not year_line:continue
+                years=[int(x) for x in year_line.group(1).split()]
+                labels=re.findall(r'\bQ1-Q[1-4]\b|\bQ[1-4]\b|\bFY\b',a,re.I)
+                if [x.upper() for x in labels[:2]]==['Q2','Q2'] and years[:2]==[y,y-1] and len(labels)==len(years) and len(years) in (2,3,4,5):
+                    matches.add(len(years))
+            for line in lines:
+                h=re.search(rf'(?:^|\bDKKm\s+)Q2\s+{y}\s+Q2\s+{y-1}(?:\s|$)',line.strip(),re.I)
+                if not h:continue
+                years=re.findall(r'\b20\d{2}\b',line[h.start():])
+                if len(years) in (2,3,4,5):matches.add(len(years))
+            if len(matches)==1:
+                return (next(iter(matches)),None,None)
+            if matches:raise ValueError('Ambiguous Alm Q2 isolated-quarter header')
+    print('MARKET_ALM_HISTORY_HEADER',period(y,q),repr(left.splitlines()[:18]),repr(full.splitlines()[:18]),flush=True)
+    raise ValueError('Explicit Alm historical isolated-quarter column header not verified')
+
+def alm_points(raw,url,sha,y,q):
+    from rolling_alm_brand_reports import read_report,column_layout,row,LABELS
+    from alm_brand_live_pdf import trusted_pdf_link
+    if not trusted_pdf_link(url):raise ValueError('Untrusted Alm report')
+    texts,regions=read_report(raw)
+    cover=' '.join(texts[:2])
+    if not re.search(r'Alm[.\s]+Brand',cover,re.I) or not re.search(rf'\bQ\s*{q}\b',cover,re.I) or str(y) not in cover:raise ValueError('Wrong Alm report cover')
+    eligible=[(i,t) for i,t in enumerate(texts) if all(x in t for x in ('Gross expense ratio','Net reinsurance ratio','Insurance service result','Insurance revenue',f'Q{q} {y}')) and re.search(r'Financial highlights and key ratios',t,re.I)]
+    if len(eligible)!=1:raise ValueError('Unique Alm group financial highlights missing')
+    i,t=eligible[0];left=regions.get(i,{}).get('left') or t
+    count,yi,pi=alm_isolated_layout(left,t,y,q)
+    def read_ratio(k,label):
+        try:return row(left,label,count)
+        except ValueError:
+            if k=='loss_ratio':return row(left,'Claims experience',count)
+            raise
+    rows={k:read_ratio(k,label) for k,label in LABELS.items()}
+    for idx in (0,1):
+        if abs(rows['gross_claims_ratio'][idx]+rows['reinsurance_ratio'][idx]-rows['loss_ratio'][idx])>Decimal('.15'):
+            raise ValueError('Alm net claims ratio does not reconcile')
+    def amounts(idx):
+        return (rows['insurance_revenue'][idx],abs(rows['claims_expenses'][idx]),abs(rows['operating_expenses'][idx]),-rows['reinsurance'][idx],rows['insurance_service_result'][idx])
+    def verified(idx):
+        actual={k:float(rows[k][idx]) for k in RATIOS}
+        try:
+            m=amounts_ratios(*amounts(idx),Decimal('1.5'))
+            if any(abs(m[k]-actual[k])>.20 for k in RATIOS):raise ValueError('Alm historical ratio mismatch')
+        except ValueError as exc:
+            # Older highlights sometimes include a rounding/presentation
+            # discrepancy. Admit the explicitly reported quarter only when
+            # the independently reconciled original Personal and Commercial
+            # segment tables reproduce the Group ratios and total revenue.
+            if idx not in (0,1):
+                raise
+            try:
+                from build_market_overview_context import verify_alm_market_quarter
+                sr=verify_alm_market_quarter(list(enumerate(texts,1)),y,q,url,sha)
+                parts=[]
+                for segment in ('Private','Commercial'):
+                    v={r['metric']:r['value'] for r in sr if r['year']==y-idx and r['segment']==segment}
+                    if set(v)!={'insurance_revenue',*RATIOS}:raise ValueError('Incomplete Alm segment concordance')
+                    parts.append(v)
+                total=sum(v['insurance_revenue'] for v in parts)
+                if abs(total-float(rows['insurance_revenue'][idx]))>3 or any(abs(sum(v[k]*v['insurance_revenue'] for v in parts)/total-actual[k])>.25 for k in RATIOS):
+                    raise ValueError('Group/segment ratios do not reconcile')
+                print('MARKET_ALM_HISTORY_SEGMENT_CONCORDANCE',period(y-idx,q),actual,flush=True)
+            except Exception as mismatch:
+                print('MARKET_ALM_HISTORY_DIAGNOSTIC',period(y,q),'column',idx,'values',[(k,str(v[idx])) for k,v in rows.items()],str(exc),str(mismatch),flush=True)
+                raise ValueError('Alm quarter highlights failed independent segment reconciliation') from mismatch
+        return {**actual,'insurance_revenue':float(rows['insurance_revenue'][idx]),'insurance_service_result':float(rows['insurance_service_result'][idx])}
+    def cumulative(idx):
+        if idx is None:return {}
+        try:return verified(idx)
+        except ValueError:return {}
+    current,prior=verified(0),verified(1)
+    cytd,pytd=cumulative(yi),cumulative(pi)
+    current['insurance_revenue_growth']=100*(current['insurance_revenue']/prior['insurance_revenue']-1)
+    if cytd.get('insurance_revenue',0)>0 and pytd.get('insurance_revenue',0)>0:cytd['insurance_revenue_growth']=100*(cytd['insurance_revenue']/pytd['insurance_revenue']-1)
+    # ROE is explicitly period-labelled on the adjacent financial ratios
+    # table; do not use a trailing-twelve-month return as isolated-quarter ROE.
+    right=regions.get(i,{}).get('right') or t
+    try:
+        from rolling_alm_brand_reports import numeric_values
+        rcount,ry,rp=alm_isolated_layout(right,t,y,q)
+        roe=re.search(r'Return on equity after tax\s*\n\s*([-\d,.\s]+?)(?:\n|$)',right,re.I)
+        if roe:
+            rv=numeric_values(roe.group(1),rcount)
+            current['return_on_equity']=float(rv[0]);prior['return_on_equity']=float(rv[1])
+            if ry is not None:cytd['return_on_equity']=float(rv[ry])
+            if rp is not None:pytd['return_on_equity']=float(rv[rp])
+    except (ValueError,IndexError):pass
+    # Solvency is a quarter-end snapshot, never taken from a prior full-year column.
+    try:
+        from rolling_alm_brand_reports import verify_report
+        full=verify_report(texts,url,raw,y,q,regions=regions)
+        current['solvency_ratio']=full['metrics']['solvency_ratio'];cytd['solvency_ratio']=current['solvency_ratio']
+    except (ValueError,KeyError,IndexError):
+        month={1:'March',2:'June',3:'September',4:'December'}[q]
+        day={1:31,2:30,3:30,4:31}[q]
+        for page,text in enumerate(texts,1):
+            compact=' '.join(text.split())
+            hit=re.search(rf'At {day} {month} {y}, Alm\. Brand Group thus had an SCR ratio of (\d{{2,3}})%',compact,re.I)
+            if hit and 100<=int(hit[1])<=400:
+                current['solvency_ratio']=float(hit[1]);cytd['solvency_ratio']=current['solvency_ratio']
+                break
+    out=[checked_point(ALM,y,q,current,url,sha,i+1,'reported',period(y,q),current.get('return_on_equity'),cytd),
+         checked_point(ALM,y-1,q,prior,url,sha,i+1,'reported_comparative',period(y,q),prior.get('return_on_equity'),pytd)]
+    # A Q3 table's fifth column is explicitly the prior full year. The
+    # validated header must contain FY, not merely a fifth number.
+    if q==3 and count==5 and re.search(r'\bFY\b',left,re.I):
+        verified(pi);verified(4)
+        a,b=amounts(4),amounts(pi)
+        m=amounts_ratios(*(x-z for x,z in zip(a,b)),Decimal('3'))
+        out.append(checked_point(ALM,y-1,4,m,url,sha,i+1,'calculated_fy_minus_ytd',period(y,q)))
+    return out
+
+def klp_points(raw,url,sha,y,q):
+    from import_extended_pdfs import pages
+    from rolling_klp_reports import verify_report
+    from klp_q2q3_reconcile import AMOUNTS,columns
+    texts=pages(raw)
+    result=verify_report(texts,y,q,url,sha,historical=True)
+    page=result['source_documents'][0]['source_pages'][0]
+    def amounts(a):return tuple(Decimal(str(a[k]))*sign for k,sign in [('insurance_revenue',1),('gross_claims_cost',-1),('operating_expenses',-1),('reinsurance_result',-1),('insurance_service_result',1)])
+    def at(a):return {**amounts_ratios(*amounts(a),Decimal('.25')),'insurance_revenue':float(a['insurance_revenue']),'insurance_service_result':float(a['insurance_service_result'])}
+    current=at(result['reported_quarter_amounts']);current.update(result['ratios'])
+    prior=at(result['reported_prior_year_quarter_amounts'])
+    current['insurance_revenue_growth']=100*(current['insurance_revenue']/prior['insurance_revenue']-1)
+    management=result.get('reported_management_metrics',{})
+    if finite(management.get('solvency_ratio')):current['solvency_ratio']=management['solvency_ratio']
+    def cumulative(a):
+        try:return at(a)
+        except (KeyError,ValueError):return {}
+    cytd,pytd=cumulative(result['reported_ytd_amounts']),cumulative(result['reported_prior_year_ytd_amounts'])
+    if cytd.get('insurance_revenue',0)>0 and pytd.get('insurance_revenue',0)>0:cytd['insurance_revenue_growth']=100*(cytd['insurance_revenue']/pytd['insurance_revenue']-1)
+    if 'solvency_ratio' in current:cytd['solvency_ratio']=current['solvency_ratio']
+    out=[checked_point(KLP,y,q,current,url,sha,page,'calculated_from_quarter_amounts',period(y,q),ytd_metrics=cytd),
+         checked_point(KLP,y-1,q,prior,url,sha,page,'calculated_comparative',period(y,q),ytd_metrics=pytd)]
+    if q==3:
+        t=texts[page-1]
+        header=re.search(r'(?:NOTE\s+)?MILLIONER KRONER\s+([^\n]+)',t)
+        expected=f'3. kvartal {y} 3. kvartal {y-1} 30.09.{y} 30.09.{y-1} 31.12.{y-1}'
+        if header and ' '.join(header[1].split())==expected:
+            fy={k:columns(t,label,expected=5)[4] for k,label in AMOUNTS.items()}
+            prior=result['reported_prior_year_ytd_amounts']
+            at(fy);at(prior)
+            m=amounts_ratios(*(a-b for a,b in zip(amounts(fy),amounts(prior))),Decimal('.5'))
+            out.append(checked_point(KLP,y-1,4,m,url,sha,page,'calculated_fy_minus_ytd',period(y,q)))
+    return out
+
+def historical_revenue(company,y,q,url,sha,pages):
+    """Read explicit quarter and cumulative revenue columns independently.
+
+    Older published layouts need not pass the newer full ratio-table
+    parser. A revenue observation is not evidence of any other KPI.
+    The returned comparison is additionally checked against the
+    independently admitted next-year comparative before publication.
+    """
+    if not source_ok(url,sha):raise ValueError('Missing comparison provenance')
+    candidates=[]
+    if company==ALM:
+        from alm_brand_live_pdf import trusted_pdf_link
+        from rolling_alm_brand_reports import row
+        if not trusted_pdf_link(url):raise ValueError('Untrusted historical Alm report')
+        for page,variants in pages:
+            for t in variants:
+                if not re.search(r'Alm\.?\s+Brand\s+Group',t,re.I) or not re.search(r'Financial highlights and key ratios',t,re.I):continue
+                try:
+                    count,yi,pi=alm_isolated_layout(t,t,y,q)
+                    if yi is None or pi is None:continue
+                    rev=row(t,'Insurance revenue',count)
+                    vals=tuple(float(rev[i]) for i in (0,1,yi,pi))
+                    candidates.append((page,vals))
+                except (ValueError,IndexError):continue
+    elif company==KLP:
+        from import_extended_pdfs import approved
+        from klp_annual_q4 import row as historical_row
+        if not approved(url,KLP):raise ValueError('Untrusted historical KLP report')
+        end={1:'31.03.',2:'30.06.',3:'30.09.',4:'31.12.'}[q]
+        for page,variants in pages:
+            for t in variants:
+                if not re.search(r'KLP\s+Skadeforsikring\s+AS',t,re.I) or not re.search(r'(?m)^\s*Resultatregnskap(?:\s+KLP Skadeforsikring AS)?\s*$',t,re.I):continue
+                before=re.split(r'(?m)^\s*(?:\d+\s+)?Forsikringsinntekter\s+',t,maxsplit=1)[0]
+                h=' '.join(before.split()).replace('–','-').replace('−','-')
+                # The 2025 report prints both quarter labels above the
+                # year row and the three exact cumulative date ranges.
+                split=rf'{q}\.\s*kvartal\s+{q}\.\s*kvartal\s+01\.01\.{y}\s+01\.01\.{y-1}\s+01\.01\.{y-1}\s+(?:NOTE\s+)?MILLIONER KRONER\s+{y}\s+{y-1}\s+-{re.escape(end)}{y}\s+-{re.escape(end)}{y-1}\s+-31\.12\.{y-1}\b'
+                normal=rf'(?:NOTE\s+)?MILLIONER KRONER\s+{q}\.\s*kvartal\s+{y}\s+{q}\.\s*kvartal\s+{y-1}\s+{re.escape(end)}{y}\s+{re.escape(end)}{y-1}\s+31\.12\.{y-1}\b'
+                if not (re.search(split,h,re.I) or re.search(normal,h,re.I)):continue
+                try:
+                    rev=historical_row(t,'Forsikringsinntekter',5)
+                    candidates.append((page,tuple(float(rev[i]) for i in (0,1,2,3))))
+                except ValueError:continue
+    else:raise ValueError('Unsupported historical company')
+    distinct={v for _,v in candidates}
+    if len(distinct)!=1:raise ValueError('Historical revenue columns missing or ambiguous: '+repr([(p,v) for p,v in candidates]))
+    page,values=candidates[0]
+    if not all(finite(v) and v>0 for v in values):raise ValueError('Nonpositive historical revenue')
+    a,b,c,d=values
+    if c<a or d<b:raise ValueError('Cumulative revenue below quarter')
+    return dict(company=company,period=period(y,q),prior_period=period(y-1,q),
+        source_url=url,source_sha256=sha,source_page=page,status='verified',
+        quarter=dict(current=a,prior=b,growth=100*(a/b-1)),
+        ytd=dict(current=c,prior=d,growth=100*(c/d-1)))
+
+def historical_solvency(company,y,q,pages):
+    """Read the quarter-end solvency independently of the income table."""
+    matches=[]
+    for page,variants in pages:
+        for t in variants:
+            if company==KLP:
+                if not re.search(r'KLP\s+Skadeforsikring\s+AS',t,re.I) or not re.search(r'Note\s+\d+\s*[-–]?\s*Nøkkeltall\s*[-–]\s*akkumulert',t,re.I):continue
+                compact=' '.join(t.split())
+                # The old note has quarter labels above the corresponding
+                # years; the first column must be the exact target period.
+                h=re.search(r'((?:[1-4]\.\s*kvartal\s+){3,8})MILLIONER KRONER\s+((?:20\d{2}\s+){2,7}20\d{2})\b',compact,re.I)
+                if h:
+                    labels=re.findall(r'([1-4])\.\s*kvartal',h[1],re.I);years=h[2].split()
+                    if len(labels)!=len(years) or (int(labels[0]),int(years[0]))!=(q,y):continue
+                    count=len(years)
+                else:
+                    h=re.search(rf'MILLIONER KRONER\s+{q}\.\s*kvartal\s+{y}\b',compact,re.I)
+                    if not h:continue
+                    count=None
+                from klp_annual_q4 import row
+                for n in ([count] if count else range(3,9)):
+                    try:matches.append((page,float(row(t,'Solvenskapitaldekning',n,percent=True)[0])))
+                    except ValueError:pass
+            elif company==ALM:
+                month={1:'March',2:'June',3:'September',4:'December'}[q];day={1:31,2:30,3:30,4:31}[q]
+                compact=' '.join(t.split())
+                for m in re.finditer(rf'At {day} {month} {y}, Alm\. Brand Group thus had an SCR ratio of (\d{{2,3}})\s*%',compact,re.I):
+                    matches.append((page,float(m[1])))
+    valid=[(p,v) for p,v in matches if 100<=v<=400]
+    if len({v for _,v in valid})!=1:raise ValueError('Historical quarter-end solvency missing or ambiguous')
+    return valid[0]
+
+def read_historical_revenue(raw,company,y,q,url,sha):
+    import io,pdfplumber
+    if not raw.startswith(b'%PDF-') or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError('Unverified comparison PDF')
+    with pdfplumber.open(io.BytesIO(raw)) as pdf:
+        cover=' '.join((p.extract_text() or '') for p in pdf.pages[:2])
+        if company==ALM:
+            if not re.search(r'Alm\.?\s+Brand',cover,re.I) or not re.search(rf'\bQ\s*{q}\b',cover,re.I) or str(y) not in cover:raise ValueError('Wrong Alm report period')
+        elif not re.search(r'KLP\s+Skadeforsikring',cover,re.I) or not re.search(rf'{q}\.\s*kvartal(?:sregnskap)?\s+{y}',cover,re.I):raise ValueError('Wrong KLP report period')
+        pages=[];solvency_pages=[]
+        for i,p in enumerate(pdf.pages[:25],1):
+            t=p.extract_text(layout=False) or ''
+            if company==ALM and 'Insurance revenue' in t and re.search(r'Financial highlights and key ratios',t,re.I):
+                variants=[t]
+                for x in (.47,.48,.49,.50,.51,.52):
+                    cropped=p.crop((0,0,p.width*x,p.height)).extract_text(layout=False) or ''
+                    # The title may extend across the crop boundary. The
+                    # full page establishes the group/table identity.
+                    variants.append('Financial highlights and key ratios\nAlm. Brand Group\n'+cropped if re.search(r'Alm\.?\s+Brand\s+Group',t,re.I) else cropped)
+                pages.append((i,variants))
+            elif company==KLP and 'Forsikringsinntekter' in t and 'Resultatregnskap' in t:pages.append((i,[t]))
+            if (company==ALM and 'SCR' in t) or (company==KLP and 'Solvenskapitaldekning' in t):
+                variants=[t,p.extract_text(layout=False,use_text_flow=True) or '']
+                if company==ALM:
+                    for x0,x1 in ((0,.52),(.48,1),(0,.35),(.32,.68),(.65,1)):
+                        variants.append(p.crop((p.width*x0,0,p.width*x1,p.height)).extract_text(layout=False) or '')
+                solvency_pages.append((i,variants))
+        result=historical_revenue(company,y,q,url,sha,pages)
+        try:
+            page,value=historical_solvency(company,y,q,solvency_pages)
+            result['solvency_evidence']=dict(value=value,source_page=page,source_url=url,source_sha256=sha,period=period(y,q))
+        except ValueError as exc:print('::warning::MARKET_HISTORICAL_SOLVENCY',company,period(y,q),str(exc),flush=True)
+        return result
+
+def apply_historical_growth(point,evidence):
+    if not point or point.get('company')!=evidence.get('company') or point.get('period')!=evidence.get('period'):return False
+    tolerance=.11 if point['company']==KLP else 1.01
+    for name,field in [('quarter','metrics'),('ytd','ytd_metrics')]:
+        observed=point.get(field,{}).get('insurance_revenue')
+        e=evidence.get(name,{})
+        if not finite(observed) or abs(observed-e.get('current',-1))>tolerance:return False
+    for name,field in [('quarter','metrics'),('ytd','ytd_metrics')]:
+        point[field]['insurance_revenue_growth']=evidence[name]['growth']
+    point['growth_evidence']=evidence
+    sol=evidence.get('solvency_evidence',{})
+    if finite(sol.get('value')) and sol.get('period')==point['period'] and sol.get('source_sha256')==evidence.get('source_sha256') and sol.get('source_url')==evidence.get('source_url') and type(sol.get('source_page')) is int and sol['source_page']>0:
+        point['metrics']['solvency_ratio']=sol['value'];point['ytd_metrics']['solvency_ratio']=sol['value']
+        print('MARKET_HISTORICAL_SOLVENCY_VERIFIED',point['company'],point['period'],sol['value'],sol['source_page'],flush=True)
+    return True
+
+def build_history(extended,registry,previous):
+    old=previous.get('documents',{}) if previous.get('schema_version')==SCHEMA else {}
+    docs=dict(old);records=[];sources={}
+    for company in (ALM,KLP):
+        issuer=extended.get('insurers',{}).get(company,{})
+        for item in [*issuer.get('periods',[]),issuer]:
+            y,q=item.get('year'),item.get('quarter')
+            url,sha=item.get('source_url'),item.get('source_sha256')
+            if item.get('status')!='verified_official_pdf_reconciled' or not source_ok(url,sha) or type(y) is not int or q not in (1,2,3,4):continue
+            page=item.get('source_pages',{}).get('combined_ratio') if company==ALM else next(iter(item.get('source_pages',{}).get('quarter',[])),None)
+            try:
+                row=checked_point(company,y,q,item['metrics'],url,sha,page,'reported' if company==ALM else 'calculated_from_quarter_amounts',period(y,q),item['metrics'].get('return_on_equity'),item.get('ytd_metrics'))
+                records.append(row)
+            except (ValueError,KeyError,TypeError):pass
+            if item.get('source_type')=='official_quarterly_report':sources[sha]=(company,y,q,url)
+    for label,src in registry.items():
+        m=re.fullmatch(r'Q([1-4]) (20\d{2})',label)
+        if m and source_ok(src.get('source_url'),src.get('source_sha256')):
+            sources[src['source_sha256']]=(ALM,int(m[2]),int(m[1]),src['source_url'])
+    # Discover the previous year's original report independently of a
+    # current-year comparative. It is needed for prior-year growth (y-1
+    # versus y-2), solvency and returns. Reuse verified original PDFs.
+    for company in (ALM,KLP):
+        item=extended.get('insurers',{}).get(company,{})
+        y,q=item.get('year'),item.get('quarter')
+        if not isinstance(y,int) or q not in (1,2,3,4):continue
+        target=(y-1,q)
+        if any((c,sy,sq)==(company,*target) for c,sy,sq,_ in sources.values()):continue
+        saved=[(sha,d) for sha,d in old.items() if d.get('company')==company and d.get('source_document_period')==period(*target)]
+        for sha,d in saved:
+            if source_ok(d.get('source_url'),sha):sources[sha]=(company,*target,d['source_url'])
+        if saved:continue
+        try:
+            if company==ALM:
+                from alm_brand_report_discovery import discover
+                from alm_brand_live_pdf import download_report
+                bootstrap={(2025,3):'https://attachment.news.eu.nasdaq.com/a952a2752b5b371fe77e815f5af75ada6'}
+                try:urls=[r['url'] for r in discover(*target) if r.get('document_type')=='quarterly_report']
+                except Exception:
+                    if target not in bootstrap:raise
+                    urls=[]
+                if target in bootstrap:urls=[bootstrap[target],*urls]
+                fetch=download_report
+            else:
+                from rolling_klp_reports import fetch_archive
+                from klp_q2_q3_discovery import discover
+                from import_extended_pdfs import download
+                urls=discover(fetch_archive(),target[0],periods=(target[1],)).get(target[1],[])
+                if target==(2025,3):
+                    urls=['https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5ba3161b-43de-432d-8d64-725933aeb985%3A6ca5329017a74d7c16342beb87cd5fc1a6da74cb/Q3_2025-KLPSkadeforsikring.pdf',*urls]
+                fetch=lambda url:download(url,KLP)
+            verified={}
+            for url in list(dict.fromkeys(urls))[:5]:
+                try:
+                    raw=fetch(url);sha=hashlib.sha256(raw).hexdigest()
+                    # Preserve independently verified revenue even if an
+                    # unrelated old cost/ratio row has a changed layout.
+                    pts=[];growth=None
+                    try:
+                        pts=(alm_points if company==ALM else klp_points)(raw,url,sha,*target)
+                    except Exception as exc:print('::warning::MARKET_HISTORICAL_FULL_TABLE',company,period(*target),str(exc)[:180],flush=True)
+                    try:growth=read_historical_revenue(raw,company,*target,url,sha)
+                    except Exception as exc:print('::warning::MARKET_HISTORICAL_REVENUE',company,period(*target),str(exc)[:220],flush=True)
+                    if not growth and not any(x.get('period')==period(*target) for x in pts):continue
+                    verified[sha]=dict(company=company,source_url=url,source_document_period=period(*target),points=pts,growth_comparison=growth)
+                except Exception as exc:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),str(exc)[:160],flush=True)
+            if len(verified)==1:docs.update(verified)
+            else:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),'unique source not verified',len(verified),flush=True)
+        except Exception as exc:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),str(exc)[:180],flush=True)
+    def read(task):
+        sha,(company,y,q,url)=task
+        saved=old.get(sha)
+        if saved and saved.get('company')==company and saved.get('source_url')==url and saved.get('source_document_period')==period(y,q) and (saved.get('points') or saved.get('growth_comparison')):
+            return sha,saved
+        try:
+            if company==ALM:
+                from alm_brand_live_pdf import download_report
+                raw=download_report(url)
+            else:
+                from import_extended_pdfs import download
+                raw=download(url,KLP)
+            if hashlib.sha256(raw).hexdigest()!=sha:raise ValueError('Historical PDF fingerprint changed')
+            points=(alm_points if company==ALM else klp_points)(raw,url,sha,y,q)
+            print('MARKET_PROFITABILITY_DOCUMENT',company,period(y,q),[(x['period'],x['cr'],x['method']) for x in points],flush=True)
+            return sha,dict(company=company,source_url=url,source_document_period=period(y,q),points=points)
+        except Exception as exc:
+            print('::warning::MARKET_PROFITABILITY_HISTORY',company,period(y,q),type(exc).__name__,str(exc)[:220],flush=True)
+            return sha,None
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        for sha,entry in pool.map(read,sources.items()):
+            if entry:docs[sha]=entry
+    # Prefer a directly verified current report over its subsequent
+    # comparative; prefer reported comparatives over a residual calculation.
+    points={}
+    rank={'reported':4,'calculated_from_quarter_amounts':4,'reported_comparative':3,'calculated_comparative':3,'calculated_fy_minus_ytd':2}
+    for r in [*records,*[p for d in docs.values() for p in d['points']]]:
+        k=(r['company'],r['period'])
+        if k not in points or rank[r['method']]>rank[points[k]['method']]:points[k]=r
+        elif points[k]['source_sha256']==r['source_sha256']:
+            old_point=points[k]
+            points[k]={**old_point,'metrics':{**r.get('metrics',{}),**old_point.get('metrics',{})},
+                       'ytd_metrics':{**r.get('ytd_metrics',{}),**old_point.get('ytd_metrics',{})}}
+    for entry in docs.values():
+        ev=entry.get('growth_comparison')
+        if not ev:continue
+        point=points.get((ev['company'],ev['period']))
+        if apply_historical_growth(point,ev):
+            print('MARKET_PRIOR_YEAR_GROWTH_VERIFIED',ev['company'],ev['period'],ev['quarter']['growth'],ev['ytd']['growth'],ev['source_url'],ev['source_sha256'],ev['source_page'],flush=True)
+        else:print('::warning::MARKET_PRIOR_YEAR_GROWTH_CONFLICT',ev['company'],ev['period'],flush=True)
+    return dict(schema_version=SCHEMA,documents=docs,points=sorted(points.values(),key=lambda r:(r['company'],r['year'],r['quarter'])))

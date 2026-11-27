@@ -239,4 +239,81 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(calls,[])
         self.assertEqual(fourth['insights'],third['insights'])
 
+
+    def test_causal_explanations_keep_period_scope_and_original_fragments(self):
+        from market_commentary_explanations import explain
+        doc=dict(document_type='quarterly_report',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/report.pdf')
+        text=('Styrets beretning\nResultatutvikling i kvartalet\nVeksten er hovedsakelig drevet av premiejusteringer.\n'
+              'økte premieinntekter og lavere skadefrekvenser på bil og næringsbygg.\n'
+              'omklassifisering av rentekostnader lån fra forsikringsrelaterte kostnader til andre kostnader, samt høyere inntekter.\n'
+              'Brannen i Testbyen utgjorde 185 millioner kroner av kvartalets netto storskader.')
+        rows=explain('Fremtind',2027,2,doc,[text])
+        self.assertTrue(any(r['theme']=='cost_explanation' and r['period_type']=='quarter' for r in rows))
+        self.assertTrue(any(r['theme']=='loss_explanation' and r['topic']=='motor_property_frequency' and r['period_type']=='quarter' for r in rows))
+        self.assertTrue(any(r['theme']=='event_explanation' and 'Testbyen' in r['text'] and '185 mill.' in r['text'] for r in rows))
+        self.assertTrue(all(r['source_document_period']=='Q2 2027' and r['source_page']==1 and r['evidence'] for r in rows))
+        self.assertFalse(any(r['period_type']=='ytd' and r['theme']=='growth_explanation' for r in rows))
+        self.assertEqual(explain('Fremtind',2027,2,dict(doc,document_type='press_release'),[text]),[])
+        self.assertFalse(any(r['theme']=='cost_explanation' for r in explain('Fremtind',2027,2,doc,[text.replace('omklassifisering av rentekostnader lån fra','andre forhold')])))
+        tryg=("Commercial\nKey figures - Commercial\nResults Q3 2026 Claims\n"
+              "Figures for Q1-Q3 2026 are impacted by the Supreme Court ruling on Danish workers' compensation insurance. "
+              "The impact is a one-off provision of DKK 1.2bn pre-tax.")
+        events=explain('Tryg',2026,3,doc,[tryg])
+        self.assertEqual([(r['topic'],r['period_type'],r['views']) for r in events],[('workers_comp_provision','ytd',['group/bm','group/all'])])
+        self.assertIn('1,2 mrd. DKK',events[0]['text'])
+        self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace("workers' compensation","workers’ compensation")])[0]['text'],events[0]['text'])
+        self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace('Results Q3 2026','Results Q2 2026')]),[])
+
+    def test_alm_history_accepts_explicit_half_year_header_only(self):
+        from market_profitability_history import alm_isolated_layout
+        text='Q2 Q2 H1 H1 FY\nDKKm 2026 2025 2026 2025 2025\nINCOME Insurance revenue 3000 2900 5900 5700 11700'
+        self.assertEqual(alm_isolated_layout(text,text,2026,2),(5,2,3))
+        inline='DKKm Q2 2026 Q2 2025 Half year 2026 Half year 2025\nINCOME Insurance revenue 3000 2900 5900 5700'
+        self.assertEqual(alm_isolated_layout(inline,inline,2026,2),(4,2,3))
+        with self.assertRaises(ValueError):
+            alm_isolated_layout(text.replace('Q2 Q2','Q1 Q1'),text.replace('Q2 Q2','Q1 Q1'),2026,2)
+
+    def test_alm_2025_nine_month_header(self):
+        from market_profitability_history import alm_isolated_layout
+        text='Q3 Q3 9M 9M FY\nDKKm 2025 2024 2025 2024 2024\nINCOME Insurance revenue 3006 2796 8814 8238 11083'
+        self.assertEqual(alm_isolated_layout(text,text,2025,3),(5,2,3))
+        with self.assertRaises(ValueError):
+            alm_isolated_layout(text.replace('Q3 Q3','Q2 Q2'),text.replace('Q3 Q3','Q2 Q2'),2025,3)
+
+    def test_independent_original_historical_revenue(self):
+        from market_profitability_history import historical_revenue,apply_historical_growth
+        klp='KLP Skadeforsikring AS\nResultatregnskap\nKLP Skadeforsikring AS\n3. kvartal 3. kvartal 01.01.2025 01.01.2024 01.01.2024\nNOTE MILLIONER KRONER 2025 2024 -30.09.2025 -30.09.2024 -31.12.2024\n3 Forsikringsinntekter 783,7 687,9 2316,1 2052,8 2758,4'
+        alm='Financial highlights and key ratios\nAlm. Brand Group\nQ3 Q3 9M 9M FY\nDKKm 2025 2024 2025 2024 2024\nINCOME Insurance revenue 3,006 2,796 8,814 8,238 11,083'
+        a=historical_revenue('Alm. Brand',2025,3,'https://attachment.news.eu.nasdaq.com/a952a2752b5b371fe77e815f5af75ada6',SHA,[(3,[alm])])
+        k=historical_revenue('KLP Skadeforsikring',2025,3,'https://www.klp.no/report.pdf',SHA,[(6,[klp])])
+        self.assertAlmostEqual(a['quarter']['growth'],(3006/2796-1)*100)
+        self.assertAlmostEqual(k['ytd']['growth'],(2316.1/2052.8-1)*100)
+        with self.assertRaises(ValueError):
+            historical_revenue('KLP Skadeforsikring',2025,3,'https://www.klp.no/report.pdf',SHA,[(6,[klp.replace('01.01.2024','01.01.2023')])])
+        point=dict(company='Alm. Brand',period='Q3 2025',metrics={'insurance_revenue':3006},ytd_metrics={'insurance_revenue':8814})
+        self.assertTrue(apply_historical_growth(point,a))
+        self.assertEqual(point['growth_evidence']['source_page'],3)
+        point['metrics']['insurance_revenue']=3200
+        self.assertFalse(apply_historical_growth(point,a))
+
+    def test_historical_solvency_uses_exact_period_and_not_comparative(self):
+        from market_profitability_history import historical_solvency
+        k='KLP Skadeforsikring AS\nNote 11 Nøkkeltall - akkumulert\n3. kvartal 2. kvartal 1. kvartal 4. kvartal 3. kvartal\nMILLIONER KRONER 2025 2025 2025 2024 2024\nSolvenskapitaldekning 261 % 242 % 246 % 256 % 238 %'
+        a='At 30 September 2025, Alm. Brand Group thus had an SCR ratio of 254%.'
+        self.assertEqual(historical_solvency('KLP Skadeforsikring',2025,3,[(18,[k])]),(18,261))
+        self.assertEqual(historical_solvency('Alm. Brand',2025,3,[(5,[a])]),(5,254))
+        for c,t in [('KLP Skadeforsikring',k),('Alm. Brand',a)]:
+            with self.assertRaises(ValueError):historical_solvency(c,2025,2,[(1,[t])])
+
+    def test_explicit_hiå_return_comparatives(self):
+        from company_comparison_history import return_comparatives
+        anchor=dict(company='Fremtind',year=2026,quarter=3,source_url='https://cdn.sanity.io/report.pdf',source_sha256=SHA,unit='NOKm')
+        t='Resultatutvikling og nøkkeltall\nMNOK Q3 2026 Q3 2025 30.09.2026 30.09.2025 31.12.2025\nAnnualisert egenkapitalavkastning justert for\ntransaksjonen med Eika Forsikring AS 40,2 % 41,4 % 41,7 % 34,5 % 40,5 %'
+        rows=return_comparatives([(3,t)],anchor,{'return_on_equity':40.2})
+        self.assertEqual([(r['year'],r['period_type'],r['value']) for r in rows],[(2026,'ytd',41.7),(2025,'ytd',34.5)])
+        g='Other alternative performance measures and key figures\nNOK millions Q3 2025 Q3 2024 YTD 2025 YTD 2024 FY 2024\nGjensidige Forsikring Group\nReturn on equity, annualised ¹ % 29.6 23.5 22.7\nGjensidige Forsikring ASA'
+        rows=return_comparatives([(56,g)],dict(anchor,company='Gjensidige',year=2025),{})
+        self.assertEqual([(r['year'],r['period_type'],r['value']) for r in rows],[(2025,'ytd',29.6),(2024,'ytd',23.5)])
+        with self.assertRaises(ValueError):return_comparatives([(56,g.replace('YTD 2025','Q2 2025'))],dict(anchor,company='Gjensidige',year=2025),{})
+
 if __name__=='__main__':unittest.main()

@@ -14,6 +14,9 @@ class PeriodSelectionTests(unittest.TestCase):
         js="""
 const METRICS=['combined_ratio','loss_ratio','expense_ratio','insurance_revenue','insurance_service_result'];
 let observations=[];
+const EXTENDED_NAMES=['KLP Skadeforsikring','Alm. Brand'];
+let extendedInsurerFeed={};
+const extendedRecord=(name,p)=>[extendedInsurerFeed[name],...(extendedInsurerFeed[name]?.periods||[])].find(r=>r?.year===p.year&&r?.quarter===p.quarter&&r.status==='verified_official_pdf_reconciled'&&Number.isFinite(r.metrics?.insurance_revenue)&&Number.isFinite(r.metrics?.combined_ratio));
 const rows=()=>observations;
 function calcPeriods(){""" + function + """
 const period=(year,quarter,company,metric)=>({year,quarter,company,metric,period_type:'quarter'});
@@ -36,6 +39,10 @@ observations.push(period(2027,1,'Protector','combined_ratio'));
 actual=calcPeriods();
 if(actual[0].year!==2027||actual[0].quarter!==1)
   throw Error('2027 rollover failed: '+JSON.stringify(actual));
+extendedInsurerFeed['KLP Skadeforsikring']={year:2027,quarter:2,status:'unverified',metrics:{insurance_revenue:100,combined_ratio:80}};
+if(calcPeriods()[0].quarter!==1)throw Error('Unverified extended issuer opened future quarter');
+extendedInsurerFeed['KLP Skadeforsikring'].status='verified_official_pdf_reconciled';
+if(calcPeriods()[0].quarter!==2)throw Error('Verified extended issuer cannot open new quarter');
 """
         result=subprocess.run(['node','-e',js],text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stderr)

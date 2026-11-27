@@ -14,7 +14,7 @@ from audit_nine_issuer_documents import (INDEXES,KNOWN_PRESENTATIONS,REPORT_ONLY
     PRESENTATION,EXCLUDE,archive_links,issuer_detail_links,period_label,report_sources,
     trusted,fetch,verify_document,normalize,ISSUER_RELEASE_PAGES)
 
-SCHEMA=3
+SCHEMA=4
 GROUP_ONLY={'Sampo','Tryg','Gjensidige','Alm. Brand','Protector','Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 NORWAY_TOTAL={'Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 SPLIT={'Tryg','Gjensidige','Fremtind','Alm. Brand'}
@@ -202,7 +202,8 @@ def document_insights(company,y,q,doc,texts):
             # an explicit actual accounting impact on the same statement.
             if re.search(r'\b(?:Danish )?Supreme Court ruling\b',chunk,re.I) and re.search(r'workers.{0,5}compensation',chunk,re.I) and re.search(r'\b(?:provision|charge|impact|affected)\b',chunk,re.I):
                 if company in ('Tryg','Alm. Brand'):
-                    add(page,views,mode,'regulation','workers_compensation_ruling',chunk,'Rapporteringen viser en resultateffekt knyttet til dansk høyesterettsdom om yrkesskadeforsikring.')
+                    event_mode='ytd' if re.search(r'Figures for Q1-Q[2-4]|one-off provision',chunk,re.I) else mode
+                    add(page,views,event_mode,'regulation','workers_compensation_ruling',chunk,'Rapporteringen viser en resultateffekt knyttet til dansk høyesterettsdom om yrkesskadeforsikring.')
     return list({(r['source_sha256'],r['source_page'],r['period_type'],tuple(r['views']),r['theme'],r['driver']):r for r in out}.values())
 
 def presentation_candidates(company,y,q,feed,extended,candidates):
@@ -298,6 +299,9 @@ def collect(company,y,q,feed,extended,candidates,report_anchor,existing_report=N
                 if kind=='results_presentation' and ev.get('source_sha256') in report_hashes:continue
                 if any(d['source_sha256']==ev['source_sha256'] for d in docs):continue
                 extracted=html_report_insights(company,y,q,ev,raw) if fmt=='html' else document_insights(company,y,q,ev,texts)
+                if fmt=='pdf':
+                    from market_commentary_explanations import explain
+                    extracted.extend(explain(company,y,q,ev,texts))
                 docs.append({**{k:ev[k] for k in ('url','document_type','source_sha256','status','source_pages_examined')},
                              'format':fmt,'analysis_status':'reviewed_with_evidence' if extracted else 'reviewed_no_unambiguous_driver',
                              'insight_count':len(extracted)})

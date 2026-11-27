@@ -39,19 +39,19 @@ class DashboardRuntimeTests(unittest.TestCase):
                 'issuerProfitabilityTimeline(profitabilityCompany)','year-1,quarter','MON_SELECT=()=>',
                 'isSameBasis','setInterval(refresh,300000)'):
    self.assertIn(token,js)
-  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
+  self.assertIn('const displayedQuarters=options?.quarters||profitabilityQuarters.slice(-5)',html)
 
- def test_five_rolling_profitability_quarters_for_seven_issuers(self):
+ def test_five_rolling_profitability_quarters_for_all_issuers(self):
   runtime=RUNTIME.read_text()
   html=HTML.read_text()
   self.assertIn('function quarterTimeline({year,quarter},count=5)',runtime)
   self.assertIn('quarterTimeline(selection,5)',runtime)
   self.assertIn('profitabilityVerified[name]={};profitabilityReturns[name]={}',runtime)
   self.assertIn('if([loss,cost,cr].every(Number.isFinite))profitabilityVerified[name][l]=[loss,cost,cr]',runtime)
-  self.assertIn('const displayedQuarters=profitabilityQuarters.slice(-5)',html)
+  self.assertIn('const displayedQuarters=options?.quarters||profitabilityQuarters.slice(-5)',html)
   self.assertIn('av 5 kvartaler med dokumentert annualisert verdi',html)
   # Every issuer's selected Q3 window is Q3 2025 through Q3 2026.
-  for name in ('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'):
+  for name in ('Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','Alm. Brand','KLP Skadeforsikring'):
    self.assertIn(name,html)
   script="""
 function quarterTimeline({year,quarter},count=5){

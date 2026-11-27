@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'index.html'
+      - 'data/market_shares.json'
+      - 'tests/test_no_hardcoded_financials.py'
+      - 'tests/test_end_to_end.py'
       - 'scripts/*market*'
       - 'tests/*market*'
       - '.github/workflows/market-overview-focused.yml'
@@ -23,12 +27,22 @@ jobs:
           node-version: '22'
       - run: |
           python -m pip install -r requirements-reports.txt
-          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py tests/test_market_overview_segments.py
+          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py scripts/market_profitability_history.py scripts/company_comparison_history.py tests/test_market_overview_segments.py
           python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
           node --check scripts/market_overview.js
           node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
+      - name: Verify owner market-share entry and finance feed wiring
+        run: |
+          python -m unittest discover -s tests -p 'test_no_hardcoded_financials.py' -v
+          python -m unittest discover -s tests -p 'test_end_to_end.py' -v
+          npm install --no-save playwright
+          python -m http.server 8766 --bind 127.0.0.1 >/tmp/market-admin-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 2
+          BAROMETER_URL=http://127.0.0.1:8766/ node tests/market_share_admin_browser.cjs
       - name: Reconcile official live market-segment PDFs
         run: |
           python scripts/build_market_overview_segments.py
@@ -48,6 +62,14 @@ jobs:
           const assert=require('node:assert/strict');
           const a=require('./data/market_overview_archive.json');
           const v=a.periods[a.active_period].views;
+          const history=require('./scripts/market_overview.js').profitabilityHistory(require('./data/verified_financial_feed.json'),require('./data/market_overview_context.json'),a,v['group/all/quarter'].model.period);
+          assert.equal(history.periods.length,5);
+          assert.equal(history.series.length,9);
+          const sam=require('./scripts/market_overview.js').sampoNordicSegments(require('./data/verified_financial_feed.json'),v['group/all/quarter'].model.period,'ytd');
+          console.log('SAMPO_NORDIC_SEGMENTS',JSON.stringify(sam.map(r=>[r.segment,r.method,r.metrics])));
+          if(a.active_period==='Q3 2026')assert.ok(sam.length===2&&sam.every(r=>r.metrics&&r.sources.length),'Both Sampo Nordic segments must have source-backed HIÅ figures');
+          console.log('MARKET_HISTORY_COVERAGE',JSON.stringify(history.series.map(s=>[s.company,s.points.map(p=>p?.cr??null)])));
+          if(a.active_period==='Q3 2026')assert.ok(history.series.every(s=>s.points.every(Boolean)),'Q3 baseline must include five verified quarterly CR values for all nine insurers');
           assert.equal(Object.keys(v).length,12);
           for(const [key,view] of Object.entries(v)){
             assert.deepEqual(view.comments.map(c=>c.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
@@ -55,6 +77,33 @@ jobs:
             assert.doesNotMatch(text,/\b\d+\s*(?:av|\/)\s*\d+\s+selskaper|\bhøyest vekst|\bCR varierer fra .* hos/i,key);
           }
           const c=require('./data/market_overview_context.json');
+          console.log('COMPANY_COMPARISON_HISTORICAL',JSON.stringify(c.company_comparisons?.observations?.map(r=>[r.company,r.year,r.quarter,r.period_type,r.metric,r.value])));
+          console.log('EXTENDED_COMPARISON_COVERAGE',JSON.stringify(c.profitability_history?.points?.filter(r=>r.quarter===3).map(r=>[r.company,r.period,r.metrics,r.ytd_metrics])));
+          if(a.active_period==='Q3 2026'){
+            const feed=require('./data/verified_financial_feed.json').observations;
+            const extra=c.company_comparisons?.observations||[];
+            const by=(company,year,type)=>[...feed,...extra].find(r=>r.company===company&&r.scope==='group'&&r.year===year&&r.quarter===3&&r.period_type===type&&r.metric==='insurance_revenue'&&['reported','calculated'].includes(r.status)&&r.source_sha256&&r.source_page);
+            const gaps=[];
+            for(const company of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'])for(const type of ['quarter','ytd']){
+              const now=by(company,2025,type),before=by(company,2024,type);
+              if(!(now&&before&&before.value>0&&now.unit===before.unit))gaps.push(company+' '+type);
+            }
+            for(const company of ['KLP Skadeforsikring','Alm. Brand'])for(const type of ['quarter','ytd']){
+              const previous=c.profitability_history?.points?.find(r=>r.company===company&&r.period==='Q3 2025');
+              const older=c.profitability_history?.points?.find(r=>r.company===company&&r.period==='Q3 2024');
+              const m=type==='quarter'?previous?.metrics:previous?.ytd_metrics;
+              const old=type==='quarter'?older?.metrics:older?.ytd_metrics;
+              if(!(Number.isFinite(m?.insurance_revenue_growth)||(m?.insurance_revenue>0&&old?.insurance_revenue>0)))gaps.push(company+' '+type);
+              const ev=previous?.growth_evidence;
+              if(ev){
+                const v=ev[type];
+                assert.ok(ev.period==='Q3 2025'&&ev.prior_period==='Q3 2024'&&ev.source_page>0&&/^[0-9a-f]{64}$/.test(ev.source_sha256)&&v.current>0&&v.prior>0);
+                assert.ok(Math.abs(m.insurance_revenue_growth-100*(v.current/v.prior-1))<1e-9);
+              }
+            }
+            console.log('COMPANY_PRIOR_YEAR_GROWTH_GAPS',JSON.stringify(gaps));
+            assert.deepEqual(gaps,[],'Previous-year revenue growth must be source-backed in both reporting modes for all nine insurers');
+          }
           assert.ok(c.insights.every(x=>['official_quarterly_report','official_results_presentation'].includes(x.source_type)&&x.source_document_period===x.period&&/^[0-9a-f]{64}$/.test(x.source_sha256)&&x.source_page>0));
           const decks=Object.entries(c.commentary_documents||{}).filter(([,d])=>d.presentation_status==='verified');
           assert.ok(decks.length>0,'At least one original quarterly results deck must be verified');
@@ -74,5 +123,25 @@ jobs:
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='ytd'));
           assert.ok(drivers.some(x=>x.driver==='portfolio_growth'&&x.company==='Tryg'));
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Alm. Brand'));
+          const explanations=c.insights.filter(x=>/_explanation$/.test(x.theme));
+          for(const theme of ['growth_explanation','loss_explanation','cost_explanation','event_explanation']){
+            assert.ok(explanations.some(x=>x.theme===theme),theme+' must contain substantive verified explanation');
+          }
+          for(const [key,view] of Object.entries(v)){
+            const text=view.comments.map(x=>x.paragraphs.join(' '));
+            assert.ok(text.every(x=>x.trim().length>0&&x.split(/\s+/).length<=125),key+' prose length');
+            console.log('MARKET_COMMENTARY_QUALITY',key,JSON.stringify(view.comments));
+          }
+          console.log('MARKET_CAUSAL_EVIDENCE',JSON.stringify(explanations.map(x=>[x.company,x.theme,x.topic,x.period_type,x.source_page,x.views])));
+          assert.ok(explanations.some(x=>x.company==='Fremtind'&&x.topic==='expense_reclassification'&&x.period_type==='quarter'));
+          assert.ok(explanations.some(x=>x.topic==='workers_comp_provision'&&x.period_type==='ytd'&&x.text.includes('1,2 mrd.')));
+          assert.ok(!explanations.some(x=>x.topic==='workers_comp_provision'&&x.period_type==='quarter'));
+          assert.ok(explanations.some(x=>x.topic==='bm_large_loss'&&x.views.includes('norway/bm')));
+          assert.ok(explanations.some(x=>x.topic==='pm_product_volumes'&&x.views.includes('norway/pm')));
+          assert.ok(explanations.some(x=>x.topic==='workers_comp_adjusted'&&x.period_type==='ytd'));
+          assert.match(v['group/bm/ytd'].comments[1].paragraphs.join(' '),/yrkesskadeavsetning/);
+          assert.match(v['group/all/quarter'].comments[1].paragraphs.join(' '),/værskad|avvikling|reserver/);
+          assert.match(v['norway/pm/ytd'].comments[2].paragraphs.join(' '),/13,9 %/);
+          assert.doesNotMatch(v['group/all/quarter'].comments[0].paragraphs.join(' '),/Premiejusteringer er en sentral driver i den rapporterte porteføljen/);
           console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
           JS
