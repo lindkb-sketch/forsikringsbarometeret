@@ -533,29 +533,71 @@
   }
   const LINE_COLORS=['#126f73','#3455a4','#b65f16','#8c4a92','#b63246','#457638','#137eb4','#6c6570','#996d14'];
   const LINE_DASH=['','7 3','2 3','10 3 2 3','5 3','','8 4','3 3','10 5'];
-  function trendChart(history){
+  const crValues=series=>series.flatMap(s=>s.points.filter(p=>p&&num(p.cr)&&p.cr>=0).map(p=>p.cr));
+  const crRange=values=>values.length?Math.max(...values)-Math.min(...values):0;
+  function crQuantile(sorted,q){
+    const i=(sorted.length-1)*q,lo=Math.floor(i),hi=Math.ceil(i);
+    return sorted[lo]+(sorted[hi]-sorted[lo])*(i-lo);
+  }
+  function crAxis(values){
+    if(!values.length)return null;
+    const min=Math.min(...values),max=Math.max(...values),pad=Math.max(0.75,(max-min)*.04);
+    // A minimum ten-percentage-point window avoids exaggerating tiny differences.
+    const middle=(min+max)/2,half=Math.max(5,(max-min)/2+pad);
+    const from=Math.max(0,middle-half),to=middle+half;
+    const steps=[1,2,2.5,5,10,20,25,50,100,200,250,500,1000];
+    const step=steps.find(v=>(to-from)/v<=7)||Math.pow(10,Math.ceil(Math.log10((to-from)/7)));
+    const low=Math.floor(from/step)*step,high=Math.max(low+step,Math.ceil(to/step)*step);
+    return {low,high,step};
+  }
+  function crTrendView(history,showAll=false){
+    const available=history.series.filter(s=>crValues([s]).length);
+    const values=crValues(available),sorted=values.slice().sort((a,b)=>a-b);
+    let excluded=[];
+    // Visual selection only: robust pooled quartiles, enough peers, whole series.
+    // Never omit an individual observation or change a source value.
+    if(available.length>=6&&sorted.length>=15){
+      const q1=crQuantile(sorted,.25),q3=crQuantile(sorted,.75);
+      const fence=Math.max(12,2.5*(q3-q1)),low=q1-fence,high=q3+fence;
+      const candidates=available.flatMap(s=>{
+        const points=s.points.map((p,i)=>p&&num(p.cr)&&p.cr>=0?{cr:p.cr,period:history.periods[i],distance:Math.max(low-p.cr,p.cr-high)}:null).filter(p=>p&&p.distance>0);
+        points.sort((a,b)=>b.distance-a.distance);
+        return points.length?[{company:s.company,cr:points[0].cr,period:points[0].period}]:[];
+      });
+      const kept=available.filter(s=>!candidates.some(c=>c.company===s.company));
+      const range=crRange(values),remaining=crRange(crValues(kept));
+      if(candidates.length&&kept.length>=Math.max(5,Math.ceil(available.length*2/3))&&range-remaining>=Math.max(8,range*.2))excluded=candidates;
+    }
+    const visible=showAll?available:available.filter(s=>!excluded.some(e=>e.company===s.company));
+    return {visible,excluded,available,axis:crAxis(crValues(visible)),showAll:Boolean(showAll)};
+  }
+  function trendChart(history,showAll=false){
     const {periods,series}=history;
     if(periods.length!==5)return '<p class="mo-empty">Avventer verifisert kvartal.</p>';
-    const values=series.flatMap(s=>s.points.filter(Boolean).map(p=>p.cr));
-    if(!values.length)return '<p class="mo-empty">Historiske CR-tall er foreløpig ikke tilgjengelige.</p>';
-    const low=Math.min(60,Math.floor(Math.min(...values)/10)*10),high=Math.max(100,Math.ceil(Math.max(...values)/10)*10);
-    const step=high-low>70?20:10, w=620,h=250,left=49,right=18,top=12,bottom=37;
+    const view=crTrendView(history,showAll);
+    if(!view.axis)return '<p class="mo-empty">Historiske CR-tall er foreløpig ikke tilgjengelige.</p>';
+    const {low,high,step}=view.axis,w=620,h=330,left=55,right=34,top=18,bottom=38;
     const x=i=>left+i*(w-left-right)/4,y=v=>top+(high-v)/(high-low)*(h-top-bottom);
     const ticks=[];for(let i=low;i<=high;i+=step)ticks.push(i);
-    let svg='<svg class="mo-line-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Combined ratio for alle selskaper, fem kvartaler">';
-    svg+=ticks.map(v=>'<line x1="'+left+'" x2="'+(w-right)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===100?'#b8c4cb':'#e2e9ee')+'" stroke-dasharray="'+(v===100?'5 4':'')+'"/><text x="'+(left-7)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+' %</text>').join('');
+    const title='Utvikling i CR · '+(view.visible.length===series.length?'alle selskaper':view.visible.length+' selskaper');
+    const style=s=>{const i=Math.max(0,COMPANIES.indexOf(s.company));return {color:LINE_COLORS[i],dash:LINE_DASH[i]};};
+    let svg='<svg class="mo-line-svg" viewBox="0 0 '+w+' '+h+'" role="img" data-cr-low="'+low+'" data-cr-high="'+high+'" data-cr-step="'+step+'" data-cr-mode="'+(showAll?'all':'focus')+'" aria-label="'+safe(title+' · '+low+'–'+high+' % · fem kvartaler')+'">';
+    svg+=ticks.map(v=>'<line x1="'+left+'" x2="'+(w-right)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="'+(v===100?'#aabcc6':'#e2e9ee')+'" stroke-dasharray="'+(v===100?'5 4':'')+'"/><text x="'+(left-9)+'" y="'+(y(v)+4)+'" text-anchor="end">'+format(v,Number.isInteger(v)?0:1)+' %</text>').join('');
+    if(low<100&&high>100&&!ticks.includes(100))svg+='<line x1="'+left+'" x2="'+(w-right)+'" y1="'+y(100)+'" y2="'+y(100)+'" stroke="#aabcc6" stroke-dasharray="5 4"/>';
     svg+=periods.map((p,i)=>'<text x="'+x(i)+'" y="'+(h-10)+'" text-anchor="middle" class="mo-line-quarter" data-period="'+safe(p)+'">'+safe(p)+'</text>').join('');
-    svg+=series.map((s,j)=>{
-      const color=LINE_COLORS[j],dash=LINE_DASH[j];let path='',prev=false,marks='';
-      s.points.forEach((p,i)=>{if(!p){prev=false;return;}const cx=x(i),cy=y(p.cr);
+    svg+=view.visible.map(s=>{
+      const {color,dash}=style(s);let path='',prev=false,marks='';
+      s.points.forEach((p,i)=>{if(!p||!num(p.cr)||p.cr<0){prev=false;return;}const cx=x(i),cy=y(p.cr);
         path+=(prev?' L':' M')+cx.toFixed(2)+' '+cy.toFixed(2);prev=true;
-        marks+='<circle class="mo-line-point" data-company="'+safe(s.company)+'" data-period="'+safe(periods[i])+'" data-cr="'+p.cr+'" cx="'+cx+'" cy="'+cy+'" r="3.4" fill="'+color+'" stroke="white" stroke-width="1" tabindex="0" aria-label="'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'"><title>'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'</title></circle>';
+        marks+='<circle class="mo-line-point" data-company="'+safe(s.company)+'" data-period="'+safe(periods[i])+'" data-cr="'+p.cr+'" cx="'+cx+'" cy="'+cy+'" r="3.5" fill="'+color+'" stroke="white" stroke-width="1.1" tabindex="0" aria-label="'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'"><title>'+safe(pretty(s.company)+' · '+periods[i]+' · CR '+pct(p.cr))+'</title></circle>';
       });
-      return '<g class="mo-line-series" data-company="'+safe(s.company)+'"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>'+marks+'</g>';
+      return '<g class="mo-line-series" data-company="'+safe(s.company)+'"><path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>'+marks+'</g>';
     }).join('')+'</svg>';
-    const legend=series.map((s,i)=>'<span class="mo-line-legend-item" data-company="'+safe(s.company)+'"><i style="background:'+LINE_COLORS[i]+'"></i>'+safe(pretty(s.company))+'</span>').join('');
-    const table='<details class="mo-history-values"><summary>Se kvartalstall og kilder</summary><div class="tablewrap"><table><thead><tr><th>Selskap</th>'+periods.map(p=>'<th>'+safe(p)+'</th>').join('')+'</tr></thead><tbody>'+series.map(s=>'<tr><th>'+safe(pretty(s.company))+'</th>'+s.points.map(p=>'<td>'+(p?(source(p.source_url)?'<a href="'+safe(p.source_url)+'" target="_blank" rel="noopener noreferrer" title="'+safe(p.method||'Verifisert rapport')+'">'+pct(p.cr)+'</a>':pct(p.cr)):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></details>';
-    return '<div class="section-head"><div><h2>Utvikling i CR · alle selskaper</h2><p class="hint">Konsern / rapportert total · isolerte kvartaler</p></div></div><div class="mo-line-scroll">'+svg+'</div><div class="mo-line-legend">'+legend+'</div>'+table;
+    const legend=view.visible.map(s=>{const {color,dash}=style(s);return '<span class="mo-line-legend-item" data-company="'+safe(s.company)+'"><svg viewBox="0 0 24 8" width="24" height="8" aria-hidden="true"><line x1="1" x2="23" y1="4" y2="4" stroke="'+color+'" stroke-width="2.6" stroke-linecap="round"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/></svg>'+safe(pretty(s.company))+'</span>';}).join('');
+    const toggle=view.excluded.length?'<button type="button" class="mo-cr-toggle" data-mo-cr-toggle aria-pressed="'+Boolean(showAll)+'" onclick="FBMarketOverview.selectCrHistory('+(!showAll)+')">'+(showAll?'Tilpass utsnitt':'Vis alle '+view.available.length)+'</button>':'';
+    const note=view.excluded.length?'<p class="mo-cr-note" role="status">'+(showAll?'Alle tilgjengelige selskaper vises.':'Skjult i utsnittet på grunn av stort utslag: '+view.excluded.map(e=>safe(pretty(e.company)+' · '+e.period+' '+pct(e.cr))).join('; ')+'. Alle tall er beholdt nedenfor.')+'</p>':'';
+    const table='<details class="mo-history-values"><summary>Se kvartalstall og kilder · alle selskaper</summary><div class="tablewrap"><table><thead><tr><th>Selskap</th>'+periods.map(p=>'<th>'+safe(p)+'</th>').join('')+'</tr></thead><tbody>'+series.map(s=>'<tr data-company="'+safe(s.company)+'"><th>'+safe(pretty(s.company))+'</th>'+s.points.map(p=>'<td>'+(p?(source(p.source_url)?'<a href="'+safe(p.source_url)+'" target="_blank" rel="noopener noreferrer" title="'+safe(p.method||'Verifisert rapport')+'">'+pct(p.cr)+'</a>':pct(p.cr)):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></details>';
+    return '<div class="section-head mo-cr-head"><div><h2>'+safe(title)+'</h2><p class="hint">Konsern / rapportert total · isolerte kvartaler</p></div>'+toggle+'</div>'+note+'<div class="mo-line-scroll">'+svg+'</div><div class="mo-line-legend">'+legend+'</div>'+table;
   }
   function financialNumber(value){
     if(num(value))return value;
@@ -642,9 +684,9 @@
   function trendPanels(p){
     const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
     const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{...profitabilityOptions(profitCompany,p,history),onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
-    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history)+'</section></div>';
+    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history,crShowAll)+'</section></div>';
   }
-  let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',pending=null,failed=false;
+  let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',crShowAll=false,pending=null,failed=false;
   function currentView(){
     if(archive?.active_period){
       return archivedView(archive,reportPeriod,scope,market,mode)||{model:{period:null,mode,eligible:[],selected:[],missing:COMPANIES.slice(),fxMissing:[],reported:0},comments:[],sources:[],locked:false};
@@ -722,6 +764,7 @@
     if(kind==='reportPeriod')document.querySelector('#mo-report-period')?.focus({preventScroll:true});
     else document.querySelector('[data-mo-'+kind+'="'+value+'"]')?.focus({preventScroll:true});
   }
+  function selectCrHistory(showAll){crShowAll=Boolean(showAll);render();document.querySelector('#mo-cr-history [data-mo-cr-toggle]')?.focus({preventScroll:true});}
   function selectProfitability(name){if(COMPANIES.includes(name)){profitCompany=name;render();document.querySelector('#mo-profitability-panel select')?.focus({preventScroll:true});}}
   function refresh(){
     if(pending)return pending;
@@ -749,9 +792,10 @@
       '<p>De fem største selskapene velges etter rapporterte inntekter omregnet til NOK. Selskapene sorteres deretter etter stigende CR. Kvartal viser isolert kvartal; HIÅ viser fra årets start til rapporteringskvartalets slutt. Inntektsveksten beregnes mot samme periode året før i rapportert valuta. Valutakursene er gjennomsnittlige dagskurser for den valgte perioden fra <a href="https://www.norges-bank.no/tema/Statistikk/Valutakurser/" target="_blank" rel="noopener noreferrer">Norges Bank</a>.</p>'+
       '<p>Frende Holding, KLP Skadeforsikring AS og Storebrand ASA (Insurance) inngår i Gruppe totalt og Norge totalt med samme tallgrunnlag etter avgrensningen av markedsoversikten, men ikke PM eller BM. KLP gjelder skadeforsikringsselskapet, ikke hele KLP-konsernet. Frendes inntektsmål er samlede driftsinntekter, ikke et rent IFRS 17-premiemål. Storebrand gjelder Insurance-segmentet i ASA med rapportert Insurance premiums f.o.a. (APM). Protector bruker rapportert total for den geografien i BM, som omfatter offentlig sektor og affinity. Fremtind bruker de samme PM/BM-segmentene for Gruppe og Norge. Kun Fremtind PM/BM kan vises med CR uten separat skade-/kostnadssplitt. Fremtinds isolerte kvartalsinntekter kommer fra differansen mellom kumulative APM-tabeller, mens CR og vekst hentes fra rapporterte APM-tall.</p>'+
       '<p>HIÅ bruker rapporterte kumulative beløp og prosenter når de finnes. Der bare komplette kvartalstall finnes, beregnes inntekt som sum og CR-komponenter som inntektsvektet gjennomsnitt. Avrunding og ulike APM-/IFRS-definisjoner kan gi mindre avvik. Ingen eldre perioder eller konserntall brukes for et urelatert segment. Selskaper uten komplett grunnlag utelates. Kommentarene oppsummerer sammenlignbare nøkkeltall i valgt marked; hendelser brukes bare når rapportens periode og virksomhet støtter avgrensningen.</p>'+
+      '<p>CR-historikken viser fem isolerte kvartaler. Y-aksen tilpasses de viste verdiene, med minst ti prosentpoeng i spenn. Ved tydelige uteliggere kan hele selskapsserier skjules i standardutsnittet: kvartilgrensen er 2,5 ganger interkvartilbredden (minst 12 prosentpoeng), og utelatelsen må redusere spennet vesentlig. Minst fem og minst to tredeler av tilgjengelige selskaper beholdes. Skjulte selskaper er navngitt, «Vis alle» gjenoppretter hele grafen, og samtlige tall og kilder beholdes i tabellen. Dette endrer ikke rangeringen, finansverdiene eller øvrige visninger.</p>'+
       '<p>Det aktive rapportkvartalet oppdateres når nye verifiserte rapporter kommer. Når neste kvartal åpnes, fryses forrige publiserte kvartals rangeringer, tall, valutagrunnlag og kommentarer. Velg et låst kvartal for å se det opprinnelige bildet.</p>'+
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,financialNumber,financialTrend,companyHistoricalMetrics,companyExtraObservations,reportQueues,trendChart};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,financialNumber,financialTrend,companyHistoricalMetrics,companyExtraObservations,reportQueues,trendChart,crTrendView,selectCrHistory};
 });
