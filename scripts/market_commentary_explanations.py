@@ -59,7 +59,7 @@ def explain(company,y,q,doc,texts):
                 for mode in ('quarter','ytd'):
                     if mode=='ytd' and ('Resultatutvikling hittil i år' not in t or len(re.findall(price,t,re.I))<2):continue
                     add('growth_explanation','premium_adjustment',views+both('pm')+both('bm'),mode,86,[price],
-                        'Premiejusteringer er en sentral driver i både privat- og bedriftsporteføljen.','price')
+                        'Premiejusteringer er en sentral driver i den rapporterte porteføljen.','price')
                 freq=r'lavere skadefrekvenser på bil og'
                 for mode in ('quarter','ytd'):
                     if mode=='ytd' and ('Resultatutvikling hittil i år' not in t or not has(r'lavere skadefrekvenser.{0,120}på bil og næringsbygg')):continue
@@ -78,7 +78,7 @@ def explain(company,y,q,doc,texts):
                         lambda m:('I siste kvartal: ' if mode=='ytd' else '')+'Brannen i '+m[0][1]+' belastet netto storskader med '+amount(m[0][2])+' mill. kroner, samtidig som færre løpende skader bidro positivt i porteføljen.')
                 add('event_explanation','weather_offset',views,'quarter',75,
                     [r'I kvartalet utgjorde netto værskader ([\d ]+) millioner',r'det er en reduksjon på ([\d ]+) millioner kroner fra tilsvarende kvartal'],
-                    lambda m:'I samme portefølje var netto værskader bare '+amount(m[0][1])+' mill. kroner, '+amount(m[1][1])+' mill. lavere enn i fjor. Det dempet den samlede skadebelastningen.')
+                    lambda m:'I samme portefølje var netto værskader '+amount(m[0][1])+' mill. kroner, '+amount(m[1][1])+' mill. lavere enn i fjor. Det dempet den samlede skadebelastningen.')
                 add('event_explanation','large_loss_ytd',views,'ytd',85,
                     [r'storskader på totalt ([\d ]+) millioner kroner, det er en økning på ([\d ]+) millioner',r'Økningen skyldes flere brannskader'],
                     lambda m:'Netto storskader hittil i år var '+amount(m[0][1])+' mill. kroner, opp '+amount(m[0][2])+' mill., som følge av flere brannskader.')
@@ -86,7 +86,7 @@ def explain(company,y,q,doc,texts):
                 for mode in ('quarter','ytd'):
                     pm=r'Forbedringen i combined ratio for Privatmarkedet skyldes lavere' if mode=='quarter' else r'Forbedringen i combined ratio for Privatmarkedet hittil i år skyldes lavere'
                     add('loss_explanation','motor_frequency',both('pm'),mode,102,[pm,r'skadefrekvens innen bilforsikring'],
-                        'Lavere skadefrekvens på bil og høyere premier gir bedre lønnsomhet i privatporteføljen.','frequency')
+                        'Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen.','frequency')
                     bm=r'Combined ratio for Bedriftsmarkedet er i kvartalet isolert preget av lavere' if mode=='quarter' else r'ratio for Bedriftsmarkedet er hittil i år preget av lavere skadefrekvens'
                     add('loss_explanation','commercial_frequency',both('bm'),mode,98,[bm,r'næringsbygg- og bilforsikring'],
                         'Lavere skadefrekvens på næringsbygg og bil trekker i riktig retning i bedriftsporteføljen.','frequency')
@@ -114,10 +114,22 @@ def explain(company,y,q,doc,texts):
                 if mode=='quarter':
                     add('growth_explanation','pm_product_volumes',both('pm'),mode,104,
                         [r'price increases and higher volumes',r'for property, accident and health and travel insurance',r'Volumes in motor insurance were stable'],
-                        'I privatmarkedet kommer veksten fra både prisøkninger og høyere volum innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt.','volume')
+                        'Rapporteringen viser at privatveksten støttes av prisøkninger og økte volumer innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt.','volume')
                     add('event_explanation','revenue_recognition_base',both('pm'),mode,98,
                         [r'home seller insurance resulted in a non-recurring',r'positive effect of NOK ([\d.,]+) million on insurance',r'increased by ([\d.,]+) per cent, or ([\d.,]+) per cent adjusted for'],
                         lambda m:'En engangsinntekt på '+fmt(m,1)+' mill. kroner fra boligselgerforsikring i sammenligningskvartalet demper rapportert vekst. I den norske privatporteføljen er veksten '+fmt(m,2,2)+' % justert for effekten, mot '+fmt(m,2)+' % rapportert.')
+                if mode=='ytd':
+                    add('event_explanation','revenue_recognition_base',group('pm'),mode,100,
+                        [r'Insurance revenue increased by ([\d.,]+) per cent, or ([\d.,]+)',r'per cent adjusted for the non-recurring effect in the',r'third quarter of '+str(y-1)],
+                        lambda m:'Fjorårets engangseffekt fra inntektsføring demper sammenlignbar vekst også hittil i år: i det nordiske privatsegmentet var veksten '+fmt(m,0,2)+' % justert, mot '+fmt(m)+' % rapportert.')
+                    add('event_explanation','revenue_recognition_base',norway('pm'),mode,100,
+                        [r'In Norway, insurance revenue',r'increased by ([\d.,]+) per cent, or ([\d.,]+) per cent adjusted for',r"last year's non-recurring effect"],
+                        lambda m:'Fjorårets engangseffekt fra inntektsføring demper veksten hittil i år. I norsk privatforsikring var veksten '+fmt(m,1,2)+' % justert, mot '+fmt(m,1)+' % rapportert.')
+                    add('loss_explanation','private_runoff_ytd',group('pm'),mode,93,[r'Higher run-off gains also contributed positively',r'The loss ratio improved'],
+                        'Avviklingsgevinster fra tidligere skadeår har også bidratt til lavere skadeprosent hittil i år.','temporary')
+                    add('loss_explanation','private_weather_ytd',both('pm'),mode,94,
+                        [r'by [\d.,]+ percentage points, mainly driven by motor',r'insurance, reflecting pricing measures and favourable',r'weather conditions during the first two quarters'],
+                        'I norsk privatforsikring har gunstig vær i første halvår, sammen med prisgrep innen bil, styrket skadelønnsomheten hittil i år.','weather')
                 add('loss_explanation','motor_pricing',both('pm'),mode,96,
                     [r'underlying frequency loss ratio improved',r'pricing measures in motor insurance|insurance, reflecting pricing measures and favourable'],
                     'Prisgrep innen bilforsikring gir høyere underliggende skadelønnsomhet; bedringen skyldes dermed ikke bare gunstige enkeltskader.','pricing')
@@ -130,14 +142,20 @@ def explain(company,y,q,doc,texts):
             else:
                 add('growth_explanation','bm_selectivity',both('bm'),mode,105,
                     [r'price increases for all products',r'prioriti[sz]ation of profitability over growth|profitability over growth and the termination of',r'agreements with fire mutuals'],
-                    'I bedriftsmarkedet motvirkes prisøkningene av lavere volum, mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler. Lønnsomhet prioriteres fremfor volum.','restraint')
+                    'Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene.','restraint')
                 add('loss_explanation','commercial_pricing_selection',both('bm'),mode,101,
                     [r'underlying frequency loss ratio improved',r'better risk selection',r'effective pricing measures|pricing measures'],
-                    'Prisjusteringer og bedre risikoutvelgelse gir høyere skadelønnsomhet i blant annet bil-, eiendoms- og sjøforsikring.','pricing')
+                    'Prisjusteringer og bedre risikoutvelgelse styrker lønnsomheten innen blant annet bil-, eiendoms- og sjøforsikring.','pricing')
                 add('loss_explanation','mid_sized_claims',group('bm'),mode,87,
                     [r'A lower frequency of mid-sized',r'claims contributed positively'],
                     'Færre mellomstore skader bidrar også til bedre underliggende skadeprosent.','frequency')
                 if mode=='ytd':
+                    add('loss_explanation','commercial_ytd_runoff',group('bm'),mode,90,
+                        [r'ratio and lower large losses. Lower run-off gains',r'contributed negatively'],
+                        'Lavere storskader bedrer skaderesultatet hittil i år, men lavere avviklingsgevinster trekker i motsatt retning.','temporary')
+                    add('loss_explanation','commercial_ytd_weather',both('bm'),mode,92,
+                        [r'pricing measures, better risk selection and favourable',r'weather conditions in the first two quarters'],
+                        'Gunstige værforhold tidligere i året har forsterket effekten av prisjusteringer og risikoutvelgelse i norsk bedriftsforsikring.','weather')
                     add('event_explanation','fire_mutual_exit',both('bm'),mode,89,[r'termination of agreements with fire mutuals',r'customer retention rate declined slightly'],
                         'Avsluttede brannkasseavtaler påvirker volum og kundelojalitet i bedriftsporteføljen, men reflekterer en bevisst prioritering av lønnsom vekst.')
         elif company=='Tryg':
@@ -170,6 +188,10 @@ def explain(company,y,q,doc,texts):
                         [rf'Figures for Q1-Q{q} {y} are impacted by the Supreme Court ruling on Danish workers.{{0,5}} compensation insurance',r'one-off provision of DKK ([\d.,]+)bn pre-tax'],
                         lambda m:'Dansk høyesterettsdom om yrkesskadeforsikring har medført en engangsavsetning på '+fmt(m,1)+' mrd. DKK før skatt. Denne belaster HIÅ-resultatet i bedriftsmarkedet og må skilles fra løpende skadedrift.')
             if has(rf'Interim report Q1-Q{q} {y}') and has(r'Weather claims for the quarter amounted to'):
+                add('loss_explanation','workers_comp_adjusted',group('bm'),'ytd',115,
+                    [r'one-off',r'provision on Danish workers.{0,6} compensation',r'booked in Q[1-4] '+str(y),r'was ([\d.,]+)% \(([\d.,]+)%\), or ([\d.,]+)% when',r'adjusting for the one-off provision on Danish'],
+                    lambda m:'Dansk yrkesskadeavsetning er en viktig forklaring på svekket rapportert CR. Hos Tryg var konsernets skadeprosent '+fmt(m,3)+' % hittil i år, men '+fmt(m,3,3)+' % uten engangsposten, mot '+fmt(m,3,2)+' % året før.','adverse')
+
                 add('loss_explanation','group_weather',group('all'),'quarter',94,
                     [r'DKK ([\d,]+)m \(DKK ([\d,]+)m\), below both',r'benign weather patterns'],
                     lambda m:'Gunstige værforhold reduserte værskadene i en nordisk portefølje fra '+amount(m[0][2])+' til '+amount(m[0][1])+' mill. DKK, og bidro til lavere skadeprosent.' if float(m[0][1].replace(',',''))<float(m[0][2].replace(',','')) else '','weather')
@@ -196,7 +218,7 @@ def explain(company,y,q,doc,texts):
             if has(r'\bPERSONAL LINES\b') and has(r'Personal Lines reported an improved insurance service'):
                 add('growth_explanation','bank_distribution',group('pm'),'quarter',96,
                     [r'customer inflow.{0,100}through bank partnerships',r'price adjustments to miti-?\s*gate claims inflation'],
-                    'Kundetilgang gjennom bankpartnerskap gir salgsbidrag i privatmarkedet, i tillegg til prisjusteringer for å kompensere for skadeinflasjon.','distribution')
+                    'Bankpartnerskap bidrar til kundetilgang og videre vekst i privatporteføljen.','distribution')
                 add('loss_explanation','weather_major_claims',group('pm'),'quarter',90,
                     [r'improved underlying claims ratio as well as a',r'lower level of weather-related and major claims'],
                     'Bedre underliggende skadeprosent kombineres med færre vær- og storskader i privatporteføljen.','temporary')

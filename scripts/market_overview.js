@@ -285,55 +285,75 @@
   function richerComments(scoped,market,growth,cr,special){
     const gs=explanatoryText(scoped,'growth_explanation'),ls=explanatoryText(scoped,'loss_explanation'),cs=explanatoryText(scoped,'cost_explanation'),es=explanatoryText(scoped,'event_explanation');
     if(gs.length){
-      // The first sentence is the trend, subsequent sentences explain it.
-      // For an all-market view, give both PM growth and BM restraint room.
       const original=growth.slice(),opening=original[0];
       growth.splice(0,growth.length,opening);
-      const positive=gs.filter(x=>x.category!=='restraint'&&x.category!=='currency');
+      const positive=gs.filter(x=>!['restraint','currency'].includes(x.category));
       const restraint=gs.filter(x=>x.category==='restraint');
-      const first=market==='bm'?(restraint[0]||positive[0]):(positive[0]||restraint[0]);
-      const next=market==='all'?(restraint[0]||positive.find(x=>x.topic!==first?.topic)):market==='bm'?positive.find(x=>x.topic!==first?.topic):positive.find(x=>x.category!==first?.category);
-      const wanted=[first,next,...gs.filter(x=>x.category!==first?.category&&x.category!==next?.category)].filter(Boolean);
-      appendWithin(growth,wanted,91,4);
-      if(growth.length===1)appendWithin(growth,gs,91,2);
-      // A material tempo comparison helps explain the graph; omit tiny
-      // differences when space is better used for actual causes.
+      const priceVolume=positive.find(x=>['pm_product_volumes','pm_price_volume'].includes(x.topic));
+      const first=market==='bm'?(restraint[0]||positive[0]):(priceVolume||positive[0]||restraint[0]);
+      const used=new Set();
+      const offer=x=>{
+        if(!x||used.has(x.topic))return;
+        if(appendWithin(growth,[x],95,1))used.add(x.topic);
+      };
+      offer(first);
+      if(market==='all')offer(restraint[0]);
+      // Prioritise a distinct causal mechanism rather than another sentence
+      // repeating price or lower volumes. A named counterexample adds value.
+      if(market!=='bm')offer(gs.find(x=>x.category==='distribution'));
+      if(market==='bm'){
+        offer(restraint.find(x=>x.topic==='bm_churn_renewals'||x.topic==='bm_soft_market'));
+        offer(positive.find(x=>x.category==='price'));
+      }else{
+        if(!priceVolume)offer(positive.find(x=>x.category==='price'));
+        if(market==='all')offer(gs.find(x=>x.topic==='uk_volume'));
+      }
+      if(market!=='pm')offer(gs.find(x=>x.category==='currency'));
+      if(market==='pm')offer(gs.find(x=>x.topic==='pm_inflation_moderation'&&!used.has(x.topic)));
+      if(growth.length===1)appendWithin(growth,gs,95,2);
       const trend=original.find(x=>/fra forrige kvartal|HIÅ-tempoet/.test(x));
-      if(trend&&/\b(?:[1-9]\d*),\d+ prosentpoeng/.test(trend))appendWithin(growth,[trend],96,1);
-      if(growth.length===1)appendWithin(growth,original.slice(1),91,2);
+      if(trend&&/\b(?:[1-9]\d*),\d+ prosentpoeng/.test(trend))appendWithin(growth,[trend],98,1);
+      if(growth.length===1)appendWithin(growth,original.slice(1),95,2);
     }
     if(ls.length||cs.length){
-      const original=cr.slice();
-      // Keep the actual CR and separate loss/expense direction. The source
-      // explanations then explain each side, rather than listing labels.
-      const opening=original[0];
+      const original=cr.slice(),opening=original[0];
       const component=original.find(x=>x.startsWith('Skadeprosenten'));
       cr.splice(0,cr.length,opening);
-      if(component)cr.push(component.replace(/ Målt som medianendringer på samme utvalg\.| Basert på tilgjengelig sammenlignbar splitt\./,''));
-      if(ls[0])appendWithin(cr,[ls[0]],106,1);
-      if(cs[0])appendWithin(cr,[cs[0]],106,1);
-      const otherLoss=ls.find(x=>x.category!==ls[0]?.category);
-      if(otherLoss)appendWithin(cr,[otherLoss],108,1);
-      if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),106,1);
-      if(!cs.length&&component)appendWithin(cr,['Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget.'],108,1);
+      if(component){
+        const split=component.includes('Basert på tilgjengelig sammenlignbar splitt.');
+        const text=component.replace(/ Målt som medianendringer på samme utvalg\.| Basert på tilgjengelig sammenlignbar splitt\./,'');
+        cr.push(split?'Der sammenlignbar splitt er rapportert, '+text.charAt(0).toLowerCase()+text.slice(1):text);
+      }
+      const adverse=ls.find(x=>x.category==='adverse');
+      const structural=ls.find(x=>['frequency','pricing'].includes(x.category));
+      const temporary=ls.find(x=>['weather','temporary'].includes(x.category));
+      // Explain deterioration first, then the countervailing improvement.
+      // Otherwise cover both the recurring and the temporary claims drivers.
+      if(adverse)appendWithin(cr,[adverse],111,1);
+      if(structural)appendWithin(cr,[structural],111,1);
+      else if(ls[0]&&ls[0]!==adverse)appendWithin(cr,[ls[0]],111,1);
+      if(cs[0])appendWithin(cr,[cs[0]],111,1);
+      if(temporary&&temporary!==ls[0]&&cr.length<5)appendWithin(cr,[temporary],116,1);
+      if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),110,1);
+      if(!cs.length&&component){
+        const stable=component.includes('kostnadsprosenten er omtrent uendret');
+        appendWithin(cr,[stable?'Kostnadsandelen er stabil i tilgjengelig splitt; rapportene gir ikke grunnlag for å tilskrive CR-endringen kostnadsbesparelser.':'Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget.'],116,1);
+      }
     }
     if(es.length){
       special.splice(0,special.length);
       const chosen=[];
-      // Prefer the total impact rather than one segment's fire amount in
-      // the total view; keep the explicit segment impact in PM/BM.
-      const eventOrder=market==='all'?[...es].sort((a,b)=>(b.priority+(b.topic==='named_fire'?12:0)-(b.topic==='bm_large_loss'||b.topic==='pm_fire'?12:0))-(a.priority+(a.topic==='named_fire'?12:0)-(a.topic==='bm_large_loss'||a.topic==='pm_fire'?12:0))):es;
-      // Do not repeat a fire's total and segment contribution in the same
-      // card, or a vague ruling sentence alongside its specific amount.
-      const family=x=>/^(named_fire|pm_fire)$/.test(x.topic)?'fire':/workers_comp/.test(x.topic)?'ruling':x.topic;
+      // Distinguish the fire total from the broader quarterly large-loss
+      // burden. In total views prefer the fire plus a genuinely distinct event.
+      const rank=x=>x.priority+(market==='all'&&x.topic==='named_fire'?12:0)-(market==='all'&&/^(bm_large_loss|pm_fire)$/.test(x.topic)?22:0)+(x.topic==='workers_comp_provision'?8:0);
+      const eventOrder=[...es].sort((a,b)=>rank(b)-rank(a));
+      const family=x=>/^(named_fire|pm_fire|bm_large_loss)$/.test(x.topic)?'large_loss':/workers_comp/.test(x.topic)?'ruling':x.topic;
       for(const e of eventOrder){
         if(chosen.some(x=>family(x)===family(e)))continue;
         chosen.push(e);
       }
-      appendWithin(special,chosen,95,3);
+      appendWithin(special,chosen,99,3);
     }
-    // One flowing paragraph per section. Source notes still link to all
-    // relevant original pages, and locked prior snapshots remain untouched.
     for(const arr of [growth,cr,special]){
       if(arr.length>1)arr.splice(0,arr.length,arr.filter(Boolean).join(' '));
     }

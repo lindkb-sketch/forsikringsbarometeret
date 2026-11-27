@@ -205,3 +205,25 @@ test('causal commentary prioritises why, covers the expense ratio and selects ma
  assert.match(c[2].paragraphs[0],/176 mill/);
  assert.doesNotMatch(JSON.stringify(c),/FORBIDDEN|175 mill|Rapporterte vekstdrivere omfatter/);
 });
+
+test('causal editorial selection retains contrasting drivers and avoids repeating the same large-loss story',()=>{
+ const m={period:{year:2026,quarter:3},mode:'ytd',eligible:[{company:'Tryg',growth:3,cr:89,deltas:{combined_ratio:14,loss_ratio:14,expense_ratio:0}},{company:'Fremtind',growth:5,cr:81,deltas:{combined_ratio:-1,loss_ratio:-1,expense_ratio:0}}]};
+ const b={company:'Tryg',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'ytd',views:['group/all'],source_type:'official_quarterly_report',source_sha256:'a'.repeat(64),source_page:6,source_url:'https://issuer.invalid/report.pdf',evidence:'source fragment'};
+ const e=(theme,topic,priority,text,category='')=>({...b,theme,topic,priority,text,category});
+ const ctx={insights:[
+ e('growth_explanation','pm_product_volumes',104,'Privatveksten støttes av pris og volum innen eiendom.','volume'),
+ e('growth_explanation','premium_adjustment',86,'GJENTATT PRIS','price'),
+ e('growth_explanation','bm_selectivity',105,'Strengere risikoutvelgelse bremser veksten i bedrift.','restraint'),
+ e('loss_explanation','workers_comp_adjusted',115,'Dansk avsetning forklarer rapportert svekkelse.','adverse'),
+ e('loss_explanation','motor_frequency',102,'Lavere skadefrekvens gir motvirkende effekt.','frequency'),
+ e('loss_explanation','weather',94,'Lavere værskader gir en midlertidig gevinst.','weather'),
+ e('cost_explanation','control',99,'Kostnadskontrollen er stram.'),
+ e('event_explanation','named_fire',105,'Brannen belastet netto storskader med 176 mill. kroner.'),
+ e('event_explanation','bm_large_loss',107,'GJENTATT STORSKADE'),
+ e('event_explanation','revenue_recognition_base',98,'En endring i inntektsføring påvirker sammenligningen.')
+ ]};
+ const c=comments(m,{},'group','all',ctx),s=JSON.stringify(c);
+ assert.doesNotMatch(s,/GJENTATT/);
+ assert.match(c[1].paragraphs[0],/Dansk avsetning.*Lavere skadefrekvens.*Kostnadskontrollen.*Lavere værskader/);
+ assert.match(c[2].paragraphs[0],/176 mill.*inntektsføring/);
+});

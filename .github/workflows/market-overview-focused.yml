@@ -89,5 +89,10 @@ jobs:
           assert.ok(!explanations.some(x=>x.topic==='workers_comp_provision'&&x.period_type==='quarter'));
           assert.ok(explanations.some(x=>x.topic==='bm_large_loss'&&x.views.includes('norway/bm')));
           assert.ok(explanations.some(x=>x.topic==='pm_product_volumes'&&x.views.includes('norway/pm')));
+          assert.ok(explanations.some(x=>x.topic==='workers_comp_adjusted'&&x.period_type==='ytd'));
+          assert.match(v['group/bm/ytd'].comments[1].paragraphs.join(' '),/yrkesskadeavsetning/);
+          assert.match(v['group/all/quarter'].comments[1].paragraphs.join(' '),/værskad|avvikling|reserver/);
+          assert.match(v['norway/pm/ytd'].comments[2].paragraphs.join(' '),/13,9 %/);
+          assert.doesNotMatch(v['group/all/quarter'].comments[0].paragraphs.join(' '),/Premiejusteringer er en sentral driver i den rapporterte porteføljen/);
           console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
           JS
