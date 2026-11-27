@@ -521,30 +521,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +8,7 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 0,3 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer, økt forsikringsvolum, kundetilgang gjennom distribusjonssamarbeid, porteføljevekst i utvalgte segmenter og vekst i privatkundesegmentet.",
-                "Bedret kundelojalitet er også rapportert i deler av porteføljen.",
-                "I britisk privatmarked rapporteres 13,0 % årsvekst i LCP-bestanden (selskapets rapporterte bestandsmål).",
-                "I en kommersielt orientert portefølje er bruttopremieveksten 41,0 % i lokal valuta, høyere enn i rapporteringsvaluta. Dette er ikke vekst i antall forsikringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +8,7 % mot samme periode i fjor. Rapporteringen viser at privatveksten støttes av prisøkninger og økte volumer innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene. Bankpartnerskap bidrar til kundetilgang og videre vekst i privatporteføljen. Britisk privatforsikring viser et konkret volumbidrag: den rapporterte LCP-bestanden har økt 13 % på ett år. Valuta påvirker også vekstbildet: i en kommersiell portefølje økte bruttopremiene 29 % i rapporteringsvaluta, mot 41 % i lokal valuta."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 1,8 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 1,7 prosentpoeng lavere, mens kostnadsprosenten er omtrent uendret. Målt som medianendringer på samme utvalg.",
-                "Rapporterte lønnsomhetsdrivere omfatter bedre underliggende skadeprosent og avviklingsgevinster.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 1,8 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 1,7 prosentpoeng lavere, mens kostnadsprosenten er omtrent uendret. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I en norsk portefølje skyldes lavere kostnadsprosent både økte inntekter og at lånerenter er flyttet ut av forsikringskostnadene; det er ikke bare en effektiviseringsgevinst. Færre eiendomsrelaterte storskader og frigjøring av reserver innen yrkesskade og eiendom forklarer mye av CR-bedringen i en dansk bedriftsportefølje."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Rapporteringen viser en resultateffekt knyttet til dansk høyesterettsdom om yrkesskadeforsikring.",
-                "Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet."
+                "Brannen i Krokstadelva belastet netto storskader med 176 mill. kroner, samtidig som færre løpende skader bidro positivt i porteføljen. Dansk yrkesskadedom belaster fortsatt underliggende skadeprosent i en bedriftsportefølje med rundt 0,9 prosentpoeng i kvartalet, etter at den store engangseffekten ble innregnet tidligere i år. Nye bilforsikringspartnerskap med Mercedes-Benz i Sverige og XPENG i Norge skal styrke salgsveksten fremover. Resultatvirkningen er ikke tallfestet i kvartalet."
               ]
             }
           ],
@@ -702,10 +691,24 @@
               "source_type": "official_quarterly_report"
             },
             {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "page": 6,
+              "source_type": "official_quarterly_report"
+            },
+            {
               "name": "Gjensidige",
               "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
               "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
               "page": 14,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 10,
               "source_type": "official_quarterly_report"
             },
             {
@@ -762,6 +765,13 @@
               "url": "https://tryg.com/system/files/2026-10/Q3%202026%20-%20Investor%20presentation_0.pdf",
               "sha256": "0d0572c7a11f79ff0d5608f3bf85e5e73964e35fd672e2567445c2e140538d48",
               "page": 4,
+              "source_type": "official_results_presentation"
+            },
+            {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Q3%202026%20-%20Investor%20presentation_0.pdf",
+              "sha256": "0d0572c7a11f79ff0d5608f3bf85e5e73964e35fd672e2567445c2e140538d48",
+              "page": 25,
               "source_type": "official_results_presentation"
             },
             {
@@ -1348,26 +1358,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +8,1 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 0,3 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +8,1 % mot samme periode i fjor. Privatveksten støttes både av prisøkninger og økte forsikringsvolumer, samtidig som kundebestanden vokser. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 4,4 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 4,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 4,4 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 4,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Dansk yrkesskadeavsetning er en viktig forklaring på svekket rapportert CR. Hos Tryg var konsernets skadeprosent 69,9 % hittil i år, men 66,1 % uten engangsposten, mot 66,6 % året før. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. Lavere personalkostnader og høyere premieinntekter har bidratt til lavere kostnadsprosent hittil i år, sammen med omklassifisering av lånerenter. I norsk privatforsikring har gunstig vær i første halvår, sammen med prisgrep innen bil, styrket skadelønnsomheten hittil i år."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Tryg opplyser at HIÅ-resultatet i bedriftsmarkedet er påvirket av en engangsavsetning etter dansk høyesterettsdom om yrkesskadeforsikring.",
-                "I siste kvartal: Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet."
+                "Dansk høyesterettsdom om yrkesskadeforsikring har medført en engangsavsetning på 1,2 mrd. DKK før skatt. Denne belaster HIÅ-resultatet i bedriftsmarkedet og må skilles fra løpende skadedrift. I siste kvartal: Brannen i Krokstadelva belastet netto storskader med 176 mill. kroner, samtidig som færre løpende skader bidro positivt i porteføljen. Fjorårets engangseffekt fra inntektsføring demper sammenlignbar vekst også hittil i år: i det nordiske privatsegmentet var veksten 11,4 % justert, mot 10 % rapportert."
               ]
             }
           ],
@@ -1518,6 +1521,27 @@
               "source_type": "official_quarterly_report"
             },
             {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "page": 6,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "page": 9,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 11,
+              "source_type": "official_quarterly_report"
+            },
+            {
               "name": "Gjensidige",
               "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
               "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
@@ -1536,6 +1560,13 @@
               "url": "https://cdn.sanity.io/files/rppnrdtw/production/059194f99b1c2494b6958f02ec1ae4ae40657aeb.pdf",
               "sha256": "eb0e4c92ea088abc11d78c7dd73ad64d7fdda355ede94eb66cde1d0958014d52",
               "page": 10,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Alm. Brand",
+              "url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+              "sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+              "page": 4,
               "source_type": "official_quarterly_report"
             },
             {
@@ -1845,26 +1876,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +4,5 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 1,4 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer, økt forsikringsvolum, kundetilgang gjennom distribusjonssamarbeid og porteføljevekst i utvalgte segmenter.",
-                "Bedret kundelojalitet er også rapportert i deler av porteføljen.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +4,5 % mot samme periode i fjor. Rapporteringen viser at privatveksten støttes av prisøkninger og økte volumer innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt. Bankpartnerskap bidrar til kundetilgang og videre vekst i privatporteføljen. Porteføljevekst og prisgrep for å møte skadeinflasjon støtter privatinntektene, men effekten av prisgrepene avtar når inflasjonspresset dempes. Veksttakten i siste kvartal ligger 1,4 prosentpoeng under HIÅ-tempoet målt på samme aktører (median)."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 5,8 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Rapporterte lønnsomhetsdrivere omfatter bedre underliggende skadeprosent.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 5,8 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I privatsegmentet bedrer veksten kostnadsdekningen, mens effektivisering og stram kostnadsstyring holder igjen kostnadsveksten. Gunstige værforhold bidro også til lavere skader; i en nordisk privatportefølje falt værskadeandelen fra 2,3 til 0,8 % av inntektene."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Kvartalsrapporteringen viser lavere storskadebelastning i deler av markedet."
+                "Brannen i Krokstadelva utgjorde 175 mill. kroner i privatporteføljen. Netto storskader på 230 mill. belastet skadeprosenten med 4,3 prosentpoeng. En engangsinntekt på 168,3 mill. kroner fra boligselgerforsikring i sammenligningskvartalet demper rapportert vekst. I den norske privatporteføljen er veksten 9,4 % justert for effekten, mot 4,8 % rapportert."
               ]
             }
           ],
@@ -1949,6 +1973,13 @@
             {
               "name": "Alm. Brand",
               "url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 10,
+              "source_type": "official_quarterly_report"
             },
             {
               "name": "Gjensidige",
@@ -2267,23 +2298,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +6,3 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 1,4 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +6,3 % mot samme periode i fjor. Privatveksten støttes både av prisøkninger og økte forsikringsvolumer, samtidig som kundebestanden vokser. Veksttakten i siste kvartal ligger 1,4 prosentpoeng under HIÅ-tempoet målt på samme aktører (median)."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 4,8 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 4,2 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 4,8 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 4,2 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I privatsegmentet bedrer veksten kostnadsdekningen, mens effektivisering og stram kostnadsstyring holder igjen kostnadsveksten. I norsk privatforsikring har gunstig vær i første halvår, sammen med prisgrep innen bil, styrket skadelønnsomheten hittil i år."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Kvartalsrapporteringen viser lavere storskadebelastning i deler av markedet."
+                "I siste kvartal: Brannen i Krokstadelva utgjorde 175 mill. kroner i privatporteføljen. Netto storskader på 230 mill. belastet skadeprosenten med 4,3 prosentpoeng. Fjorårets engangseffekt fra inntektsføring demper sammenlignbar vekst også hittil i år: i det nordiske privatsegmentet var veksten 11,4 % justert, mot 10 % rapportert."
               ]
             }
           ],
@@ -2315,10 +2342,11 @@
               "source_type": "official_quarterly_report"
             },
             {
+              "name": "Gjensidige",
               "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
               "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
               "page": 11,
-              "name": "Gjensidige"
+              "source_type": "official_quarterly_report"
             },
             {
               "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
@@ -2346,10 +2374,11 @@
               "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf"
             },
             {
+              "name": "Tryg",
               "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
               "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
               "page": 9,
-              "name": "Tryg"
+              "source_type": "official_quarterly_report"
             },
             {
               "name": "Alm. Brand",
@@ -2728,27 +2757,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Vekstbildet er sammensatt. Medianveksten blant aktørene er +1,0 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 0,6 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer.",
-                "I en kommersielt orientert portefølje er bruttopremieveksten 41,0 % i lokal valuta, høyere enn i rapporteringsvaluta. Dette er ikke vekst i antall forsikringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Vekstbildet er sammensatt. Medianveksten blant aktørene er +1,0 % mot samme periode i fjor. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene. Svakere fornyelser ved årsskiftet og tap av store bedriftskunder bremser veksten, mens SMB-porteføljen utvikler seg bedre enn storkundesegmentet. Premiejusteringer er en sentral driver i den rapporterte porteføljen. Valuta påvirker også vekstbildet: i en kommersiell portefølje økte bruttopremiene 29 % i rapporteringsvaluta, mot 41 % i lokal valuta."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 0,4 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng høyere. Målt som medianendringer på samme utvalg.",
-                "Rapporterte lønnsomhetsdrivere omfatter bedre underliggende skadeprosent og avviklingsgevinster.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 0,4 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng høyere. Prisjusteringer og bedre risikoutvelgelse styrker lønnsomheten innen blant annet bil-, eiendoms- og sjøforsikring. Kostnadsprosenten steg noe i en nordisk bedriftsportefølje; mer effektive salgskanaler og lavere distribusjonskostnader er tiltak for å bedre denne fremover. Færre eiendomsrelaterte storskader og frigjøring av reserver innen yrkesskade og eiendom forklarer mye av CR-bedringen i en dansk bedriftsportefølje."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Rapporteringen viser en resultateffekt knyttet til dansk høyesterettsdom om yrkesskadeforsikring."
+                "Dansk yrkesskadedom belaster fortsatt underliggende skadeprosent i en bedriftsportefølje med rundt 0,9 prosentpoeng i kvartalet, etter at den store engangseffekten ble innregnet tidligere i år. Netto storskader på 176 mill. kroner belastet CR i en bedriftsportefølje med 18,3 prosentpoeng. Det forklarer hvorfor bedre løpende skadefrekvens ikke nødvendigvis gir lavere rapportert CR."
               ]
             }
           ],
@@ -3255,25 +3276,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +2,7 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 0,6 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +2,7 % mot samme periode i fjor. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene. Svakere fornyelser ved årsskiftet og tap av store bedriftskunder bremser veksten, mens SMB-porteføljen utvikler seg bedre enn storkundesegmentet. Premiejusteringer er en sentral driver i den rapporterte porteføljen."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er svekket mot samme periode i fjor, med 4,7 prosentpoeng høyere CR målt som medianendring.",
-                "Skadeprosenten er 11,0 prosentpoeng høyere, mens kostnadsprosenten er omtrent uendret. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er svekket mot samme periode i fjor, med 4,7 prosentpoeng høyere CR målt som medianendring. Skadeprosenten er 11,0 prosentpoeng høyere, mens kostnadsprosenten er omtrent uendret. Dansk yrkesskadeavsetning er en viktig forklaring på svekket rapportert CR. Hos Tryg var konsernets skadeprosent 69,9 % hittil i år, men 66,1 % uten engangsposten, mot 66,6 % året før. Prisjusteringer og bedre risikoutvelgelse styrker lønnsomheten innen blant annet bil-, eiendoms- og sjøforsikring. Gunstige værforhold tidligere i året har forsterket effekten av prisjusteringer og risikoutvelgelse i norsk bedriftsforsikring. Kostnadsandelen er stabil i tilgjengelig splitt; rapportene gir ikke grunnlag for å tilskrive CR-endringen kostnadsbesparelser."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Tryg opplyser at HIÅ-resultatet i bedriftsmarkedet er påvirket av en engangsavsetning etter dansk høyesterettsdom om yrkesskadeforsikring."
+                "Dansk høyesterettsdom om yrkesskadeforsikring har medført en engangsavsetning på 1,2 mrd. DKK før skatt. Denne belaster HIÅ-resultatet i bedriftsmarkedet og må skilles fra løpende skadedrift. I siste kvartal: Netto storskader på 176 mill. kroner belastet CR i en bedriftsportefølje med 18,3 prosentpoeng. Det forklarer hvorfor bedre løpende skadefrekvens ikke nødvendigvis gir lavere rapportert CR. Avsluttede brannkasseavtaler påvirker volum og kundelojalitet i bedriftsporteføljen, men reflekterer en bevisst prioritering av lønnsom vekst."
               ]
             }
           ],
@@ -3380,6 +3395,20 @@
               "sha256": "d8d09259e2d66dd3972dd1e5f886b5a32f6407a86bb297f4d3c3787b8bb0d5f4",
               "page": 8,
               "name": "Alm. Brand"
+            },
+            {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "page": 6,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Alm. Brand",
+              "url": "https://attachment.news.eu.nasdaq.com/ab696c52809fdbebae74678c86c8f5a78",
+              "sha256": "de2a89fa7d5e32d827f34d487831b8aff065f2867817ad011b688f2f6d66cd3d",
+              "page": 4,
+              "source_type": "official_quarterly_report"
             }
           ]
         },
@@ -3769,23 +3798,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +17,0 % mot samme periode i fjor.",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer, økt forsikringsvolum og vekst i privatkundesegmentet.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +17,0 % mot samme periode i fjor. Rapporteringen viser at privatveksten støttes av prisøkninger og økte volumer innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 5,4 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 5,4 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 5,0 prosentpoeng lavere, mens kostnadsprosenten er 0,1 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I en norsk portefølje skyldes lavere kostnadsprosent både økte inntekter og at lånerenter er flyttet ut av forsikringskostnadene; det er ikke bare en effektiviseringsgevinst."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet."
+                "Brannen i Krokstadelva belastet netto storskader med 176 mill. kroner, samtidig som færre løpende skader bidro positivt i porteføljen. Nytt bilforsikringssamarbeid med XPENG i Norge er lansert for å understøtte videre salg. Resultatvirkningen er ikke tallfestet i kvartalet. En engangsinntekt på 168,3 mill. kroner fra boligselgerforsikring i sammenligningskvartalet demper rapportert vekst. I den norske privatporteføljen er veksten 9,4 % justert for effekten, mot 4,8 % rapportert."
               ]
             }
           ],
@@ -3915,6 +3940,27 @@
             {
               "name": "KLP Skadeforsikring",
               "url": "https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5cb8c82f-0a98-4979-923f-8218bf7d595e:e02c7725c404a37ed7b7924daefa3e1cfe83f37d/Kvartalsrapport%20KLP%20Skadeforsikring%20AS%203.kvartal%202026.pdf"
+            },
+            {
+              "name": "Tryg",
+              "url": "https://tryg.com/system/files/2026-10/Interim%20report%20Q1-Q3%202026%20-TRYG%20A_S.pdf",
+              "sha256": "88c5afccbbbecb43096acfd3d6a872b2e56975be3d270ba22178b44115edcb05",
+              "page": 6,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 10,
+              "source_type": "official_quarterly_report"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 14,
+              "source_type": "official_quarterly_report"
             },
             {
               "name": "Fremtind",
@@ -4390,24 +4436,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +14,3 % mot samme periode i fjor.",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +14,3 % mot samme periode i fjor. Privatveksten støttes både av prisøkninger og økte forsikringsvolumer, samtidig som kundebestanden vokser. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 4,6 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 4,4 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 4,6 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 4,4 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. Lavere personalkostnader og høyere premieinntekter har bidratt til lavere kostnadsprosent hittil i år, sammen med omklassifisering av lånerenter. I norsk privatforsikring har gunstig vær i første halvår, sammen med prisgrep innen bil, styrket skadelønnsomheten hittil i år."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "I siste kvartal: Brannen i Krokstadelva ga rapporterte storskader på 176 mill. kroner i kvartalet."
+                "I siste kvartal: Brannen i Krokstadelva belastet netto storskader med 176 mill. kroner, samtidig som færre løpende skader bidro positivt i porteføljen. Fjorårets engangseffekt fra inntektsføring demper veksten hittil i år. I norsk privatforsikring var veksten 13,9 % justert, mot 12,1 % rapportert. Avsluttede brannkasseavtaler påvirker volum og kundelojalitet i bedriftsporteføljen, men reflekterer en bevisst prioritering av lønnsom vekst."
               ]
             }
           ],
@@ -4536,6 +4577,13 @@
               "sha256": "257b20ed0cc52d60b42d5344ba671b76bbec3e9a4631104f22abcfd9443efe04",
               "page": 20,
               "name": "KLP Skadeforsikring"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 11,
+              "source_type": "official_quarterly_report"
             },
             {
               "name": "Gjensidige",
@@ -4735,24 +4783,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Medianveksten blant aktørene er +4,6 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 4,5 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer og økt forsikringsvolum.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Medianveksten blant aktørene er +4,6 % mot samme periode i fjor. Rapporteringen viser at privatveksten støttes av prisøkninger og økte volumer innen eiendom, person- og reiseforsikring, mens bilvolumet er mer stabilt. Veksttakten i siste kvartal ligger 4,5 prosentpoeng under HIÅ-tempoet målt på samme aktører (median)."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 7,0 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 6,6 prosentpoeng lavere, mens kostnadsprosenten er 0,5 prosentpoeng lavere. Basert på tilgjengelig sammenlignbar splitt.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 7,0 prosentpoeng lavere CR målt som medianendring. Der sammenlignbar splitt er rapportert, skadeprosenten er 6,6 prosentpoeng lavere, mens kostnadsprosenten er 0,5 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I den samlede privatsegmentrapporten forklares kostnadsbedringen med bedre kostnadsdekning fra inntektsvekst og kostnadsdisiplin; bidragene er ikke separat tallfestet for Norge."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Kvartalsrapporteringen viser lavere storskadebelastning i deler av markedet."
+                "Brannen i Krokstadelva utgjorde 175 mill. kroner i privatporteføljen. Netto storskader på 230 mill. belastet skadeprosenten med 4,3 prosentpoeng. En engangsinntekt på 168,3 mill. kroner fra boligselgerforsikring i sammenligningskvartalet demper rapportert vekst. I den norske privatporteføljen er veksten 9,4 % justert for effekten, mot 4,8 % rapportert."
               ]
             }
           ],
@@ -4797,6 +4840,13 @@
             {
               "name": "Gjensidige",
               "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 10,
+              "source_type": "official_quarterly_report"
             },
             {
               "name": "Gjensidige",
@@ -4972,22 +5022,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Medianveksten blant aktørene er +9,1 % mot samme periode i fjor.",
-                "Veksttakten i siste kvartal ligger 4,5 prosentpoeng under HIÅ-tempoet målt på samme aktører (median).",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer."
+                "Medianveksten blant aktørene er +9,1 % mot samme periode i fjor. Privatveksten støttes både av prisøkninger og økte forsikringsvolumer, samtidig som kundebestanden vokser. Veksttakten i siste kvartal ligger 4,5 prosentpoeng under HIÅ-tempoet målt på samme aktører (median)."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 4,8 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 3,2 prosentpoeng lavere, mens kostnadsprosenten er 0,4 prosentpoeng lavere. Basert på tilgjengelig sammenlignbar splitt."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 4,8 prosentpoeng lavere CR målt som medianendring. Der sammenlignbar splitt er rapportert, skadeprosenten er 3,2 prosentpoeng lavere, mens kostnadsprosenten er 0,4 prosentpoeng lavere. Lavere skadefrekvens på bil og høyere premier bedrer privatlønnsomheten, ifølge den norske rapporteringen. I den samlede privatsegmentrapporten forklares kostnadsbedringen med bedre kostnadsdekning fra inntektsvekst og kostnadsdisiplin; bidragene er ikke separat tallfestet for Norge. I norsk privatforsikring har gunstig vær i første halvår, sammen med prisgrep innen bil, styrket skadelønnsomheten hittil i år."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Ingen vesentlig særhendelse er dokumentert for valgt marked og periode."
+                "I siste kvartal: Brannen i Krokstadelva utgjorde 175 mill. kroner i privatporteføljen. Netto storskader på 230 mill. belastet skadeprosenten med 4,3 prosentpoeng. Fjorårets engangseffekt fra inntektsføring demper veksten hittil i år. I norsk privatforsikring var veksten 13,9 % justert, mot 12,1 % rapportert."
               ]
             }
           ],
@@ -5031,6 +5078,13 @@
             {
               "name": "Gjensidige",
               "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 11,
+              "source_type": "official_quarterly_report"
             }
           ]
         },
@@ -5287,22 +5341,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +3,6 % mot samme periode i fjor.",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +3,6 % mot samme periode i fjor. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene. Premiejusteringer er en sentral driver i den rapporterte porteføljen."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 7,6 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 14,3 prosentpoeng lavere, mens kostnadsprosenten er omtrent uendret. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 7,6 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 14,3 prosentpoeng lavere, mens kostnadsprosenten er omtrent uendret. Prisjusteringer og bedre risikoutvelgelse styrker lønnsomheten innen blant annet bil-, eiendoms- og sjøforsikring. Kostnadsandelen er stabil i tilgjengelig splitt; rapportene gir ikke grunnlag for å tilskrive CR-endringen kostnadsbesparelser."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Kvartalsrapporteringen viser lavere storskadebelastning i deler av markedet."
+                "Netto storskader på 176 mill. kroner belastet CR i en bedriftsportefølje med 18,3 prosentpoeng. Det forklarer hvorfor bedre løpende skadefrekvens ikke nødvendigvis gir lavere rapportert CR."
               ]
             }
           ],
@@ -5375,6 +5426,13 @@
               "sha256": "9a200b6a6a1a5694b21969e827a20c2aff35619f94d213628890f95135c962b9",
               "page": 5,
               "name": "Protector"
+            },
+            {
+              "name": "Gjensidige",
+              "url": "https://mb.cision.com/Public/1122/4414193/a28c42927cfe66ac.pdf",
+              "sha256": "8612aaffddee61e38da71c4e22e504629d70092edc2f6f35afccff5d7d46a12b",
+              "page": 14,
+              "source_type": "official_quarterly_report"
             }
           ]
         },
@@ -5601,24 +5659,19 @@
             {
               "label": "Inntektsvekst",
               "paragraphs": [
-                "Veksten er bredt fundert. Medianveksten blant aktørene er +5,1 % mot samme periode i fjor.",
-                "Rapporterte vekstdrivere omfatter premie- og prisjusteringer.",
-                "Samtidig beskriver rapporteringen lavere volum i deler av porteføljen og selektiv risikoutvelgelse og prioritering av lønnsom vekst.",
-                "Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene."
+                "Veksten er bredt fundert. Medianveksten blant aktørene er +5,1 % mot samme periode i fjor. Bedriftsveksten dempes av mer selektiv risikoutvelgelse og avsluttede brannkasseavtaler, som motvirker prisøkningene. Premiejusteringer er en sentral driver i den rapporterte porteføljen."
               ]
             },
             {
               "label": "CR – skade- og kostnadsprosent",
               "paragraphs": [
-                "Lønnsomheten er styrket mot samme periode i fjor, med 5,7 prosentpoeng lavere CR målt som medianendring.",
-                "Skadeprosenten er 8,1 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Målt som medianendringer på samme utvalg.",
-                "Lavere storskadebelastning er rapportert i deler av markedet."
+                "Lønnsomheten er styrket mot samme periode i fjor, med 5,7 prosentpoeng lavere CR målt som medianendring. Skadeprosenten er 8,1 prosentpoeng lavere, mens kostnadsprosenten er 0,3 prosentpoeng lavere. Prisjusteringer og bedre risikoutvelgelse styrker lønnsomheten innen blant annet bil-, eiendoms- og sjøforsikring. Gunstige værforhold tidligere i året har forsterket effekten av prisjusteringer og risikoutvelgelse i norsk bedriftsforsikring. Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget."
               ]
             },
             {
               "label": "Enkelthendelser og særtrekk",
               "paragraphs": [
-                "Kvartalsrapporteringen viser lavere storskadebelastning i deler av markedet."
+                "I siste kvartal: Netto storskader på 176 mill. kroner belastet CR i en bedriftsportefølje med 18,3 prosentpoeng. Det forklarer hvorfor bedre løpende skadefrekvens ikke nødvendigvis gir lavere rapportert CR. Avsluttede brannkasseavtaler påvirker volum og kundelojalitet i bedriftsporteføljen, men reflekterer en bevisst prioritering av lønnsom vekst."
               ]
             }
           ],
@@ -5702,7 +5755,7 @@
           ]
         }
       },
-      "digest": "9595d47e2de1b9cbb17806ed3b4a89d9a08cf5943b9ce128430fbd8c493740b0"
+      "digest": "e40c82b4b5cf016e8fce685a740a88a2294ef768106ad90a9b235fc930bcf824"
     }
   }
 }
