@@ -31,7 +31,9 @@ function build(inputs,previous={schema_version:1,active_period:null,periods:{}},
  const views={};
  for(const k of keys){
   const [scope,market,mode]=k.split('/');
-  const view=makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode);
+  const previousPeriod=Object.keys(previous.periods).find(p=>serial(p)===serial(period)-1);
+  const priorView=mode==='quarter'&&previousPeriod?previous.periods[previousPeriod].views[k]:null;
+  const view=makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode,priorView);
   if(label(view.model.period)!==period)throw Error('Mixed snapshot quarters '+k);
   views[k]=clone(view);
  }

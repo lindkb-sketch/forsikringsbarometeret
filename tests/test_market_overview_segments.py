@@ -122,4 +122,121 @@ class MarketSegmentTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'fingerprint changed'):
                 alm_ytd(anchor(3),future_pages(3),registry)
 
+
+    def test_market_growth_drivers_are_scoped_and_period_specific(self):
+        from build_market_overview_context import growth_drivers
+        a=dict(company='Fremtind',year=2026,quarter=3,source_url='https://issuer.invalid/report.pdf',source_sha256=SHA)
+        q='Styrets beretning\nResultatutvikling i kvartalet\nprivatmarkedet har en økning og bedriftsmarkedet har en økning. Veksten er hovedsakelig drevet av premiejusteringer.'
+        y=q.replace('Resultatutvikling i kvartalet','Resultatutvikling hittil i år')
+        out=growth_drivers(a,[(9,q+'\n'+y)])
+        self.assertEqual({r['period_type'] for r in out},{'quarter','ytd'})
+        self.assertTrue(all(r['driver']=='price' and 'norway/pm' in r['views'] and r['source_page']==9 for r in out))
+        self.assertEqual({r['period_type'] for r in growth_drivers(a,[(9,q)])},{'quarter'})
+        self.assertEqual(growth_drivers(a,[(9,q.replace('Veksten er hovedsakelig drevet av premiejusteringer.','Ingen forklaring.'))]),[])
+        a['company']='Tryg'
+        out=growth_drivers(a,[(9,'Key figures - Private\nResults Q3 2026\nGrowth was positively impacted by portfolio growth in selected segments. Retention rates improved slightly.')])
+        self.assertEqual({r['driver'] for r in out},{'portfolio_growth','retention_up'})
+        self.assertTrue(all(r['period_type']=='quarter' and 'norway/pm' not in r['views'] for r in out))
+        # Reproduce the original Q3 report's interleaved columns/ratio row.
+        raw=('Key figures - Private\nResults Q3 2026 Claims\n'
+             'growth was positively impacted by portfolio to note that minor fluctuations within a quarter\n'
+             'Run-off, net of reinsurance (%) -3.1 -2.2 -2.8 -2.1 -2.1\n'
+             'growth in selected segments and further are considered normal. The current expense\n'
+             'geographies, retention rates improved slightly development of 0.6% (0.2%). The expense ratio')
+        result=growth_drivers(a,[(9,raw)])
+        self.assertEqual({r['driver'] for r in result},{'portfolio_growth','retention_up'})
+        self.assertTrue(all(r['views']==['group/pm','group/all'] and r['period_type']=='quarter' for r in result))
+        self.assertIn('Run-off',next(r['evidence'] for r in result if r['driver']=='portfolio_growth'))
+        self.assertNotIn('portfolio_growth',{r['driver'] for r in growth_drivers(a,[(9,raw.replace('growth in selected segments','claims in selected segments'))])})
+        self.assertEqual(growth_drivers(a,[(9,raw.replace('Results Q3 2026','Results Q2 2026'))]),[])
+
+    def test_commentary_original_deck_scope_period_and_source_gate(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://tryg.com/deck.pdf')
+        text=('Private\nQ3 2026\nRevenue growth driven by price increases and higher volumes\n'
+              'The underlying claims ratio improved\nLower weather claims\n'
+              'Expected growth driven by volume growth\n')
+        result=document_insights('Tryg',2026,3,doc,[text])
+        self.assertEqual({r['driver'] for r in result},{'price','volume_up','underlying_loss_improved','weather_lower'})
+        self.assertTrue(all(r['source_type']=='official_results_presentation' and r['source_document_period']=='Q3 2026' and r['source_page']==1 and r['period_type']=='quarter' and r['views']==['group/pm','group/all'] for r in result))
+        for bad in [dict(doc,status='unverified'),dict(doc,document_type='press_release'),dict(doc,period_verified=False),dict(doc,source_sha256='bad')]:
+            self.assertEqual(document_insights('Tryg',2026,3,bad,[text]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q2 2026')]),[])
+        self.assertEqual(document_insights('Storebrand',2026,3,doc,[text.replace('Private','Group')]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q3 2026 Q1-Q3 2026')]),[])
+        cumulative=document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q1-Q3 2026')])
+        self.assertEqual({r['driver'] for r in cumulative},{'price','volume_up','underlying_loss_improved','weather_lower'})
+        self.assertEqual({r['period_type'] for r in cumulative},{'ytd'})
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Private\n','Private\nCommercial\n')]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Private\n','')]),[])
+        counts='Private\nQ3 2026\nNumber of active policies increased by 5%\nNumber of customers increased by 2%'
+        self.assertEqual({r['driver'] for r in document_insights('Tryg',2026,3,doc,[counts])},{'policy_count_growth','customer_growth'})
+
+
+    def test_observed_deck_layouts_contribute_scoped_current_evidence(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/deck.pdf')
+        gj=('Quarterly update\nInsurance revenue increased by 3.7 per cent in local currency\n'
+            'Pricing measures continued to support growth\nHigher volumes in Private Norway and Sweden\nLower volumes in Commercial, reflecting')
+        result=document_insights('Gjensidige',2026,3,doc,[gj])
+        self.assertEqual({r['driver'] for r in result},{'price','volume_up','volume_down'})
+        self.assertEqual(next(r['views'] for r in result if r['driver']=='price'),['group/all'])
+        self.assertIn('norway/pm',next(r['views'] for r in result if r['driver']=='volume_up'))
+        self.assertNotIn('norway/bm',next(r['views'] for r in result if r['driver']=='volume_down'))
+        sam=('Palette\nPrivate UK: Capturing growth with disciplined underwriting\n'
+             'LCP growth of 3% quarter-on-quarter and 13% year-on-year')
+        result=document_insights('Sampo',2026,3,doc,[sam])
+        self.assertEqual([(r['driver'],r['reported_change_pct'],r['views']) for r in result],[('uk_lcp_growth',13.0,['group/all'])])
+        self.assertEqual(document_insights('Sampo',2026,3,doc,[sam.replace('quarter-on-quarter','over three years')]),[])
+        alm=('Personal lines\nImproved performance driven by lower claims levels\nCombined ratio\n'
+             'Claims ratio improved by 5 percentage points year-on-year\n'
+             'Underlying claims ratio improved by 0.8 percentage points\n'
+             'Premium growth of 4.7%, driven by premium adjustments and growth with')
+        result=document_insights('Alm. Brand',2026,3,doc,[alm])
+        self.assertEqual({r['driver'] for r in result},{'price','underlying_loss_improved'})
+        self.assertTrue(all(r['views']==['group/pm','group/all'] and r['period_type']=='quarter' for r in result))
+        self.assertEqual(document_insights('Alm. Brand',2026,3,doc,[alm.replace('year-on-year','expected next year')]),[])
+        self.assertEqual(document_insights('Gjensidige',2026,3,doc,[gj.replace('Quarterly update','Quarterly update Q2 2026')]),[])
+
+    def test_protector_and_storebrand_decks_use_the_correct_market_and_metric(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/deck.pdf')
+        protector='Volume update\nQ3: GWP growth at 29% | 41% in local currencies (LCY)'
+        r=document_insights('Protector',2026,3,doc,[protector])
+        self.assertEqual([(x['driver'],x['reported_change_pct'],x['views']) for x in r],[('gwp_lcy_higher',41.0,['group/all','group/bm'])])
+        self.assertEqual(document_insights('Protector',2026,3,doc,[protector.replace('Q3:','Q2:')]),[])
+        storebrand='Graph colors: template text\nInsurance\nPortfolio premiums Key takeaways\nStrong growth and result development within Retail. Satisfactory'
+        r=document_insights('Storebrand',2026,3,doc,[storebrand])
+        self.assertEqual([(x['driver'],x['views']) for x in r],[('retail_growth',['group/all','norway/all'])])
+        self.assertEqual(document_insights('Storebrand',2026,3,doc,[storebrand.replace('Insurance','Savings')]),[])
+
+    def test_commentary_updates_one_issuer_and_retries_a_late_presentation(self):
+        from unittest.mock import patch
+        from market_commentary_documents import enrich,SCHEMA
+        def compare(a,b):
+            return {'companies':[{'company':'Tryg','period':a,'source_url':'https://tryg.com/'+a.replace(' ','')+'.pdf','status':'verified_quarterly_feed'},
+                                  {'company':'Sampo','period':b,'source_url':'https://www.sampo.com/'+b.replace(' ','')+'.pdf','status':'verified_quarterly_feed'}]}
+        def run(comparison,previous,ready):
+            result={'status':{},'insights':[]}
+            with patch('market_commentary_documents.collect') as collect,patch('market_commentary_documents.commentary_signature',side_effect=lambda c,y,q,*args:f'{c}-{y}-{q}'):
+                def collect_one(c,y,q,feed,extended,candidates,anchor,existing):
+                    period=f'Q{q} {y}';verified=c=='Tryg' or ready
+                    return dict(period=period,anchor=anchor,report_verified=True,presentation_status='verified' if verified else 'not_verified',documents=[],errors=[],insights=[{'company':c,'period':period,'marker':'deck' if verified else 'report'}])
+                collect.side_effect=collect_one
+                enrich(result,{},comparison,{}, {},previous)
+                return result,[c.args[0] for c in collect.call_args_list]
+        first,calls=run(compare('Q4 2026','Q3 2026'),{},False)
+        self.assertEqual(set(calls),{'Tryg','Sampo'})
+        self.assertEqual(first['commentary_documents']['Tryg']['period'],'Q4 2026')
+        second,calls=run(compare('Q4 2026','Q4 2026'),first,False)
+        self.assertEqual(calls,['Sampo'])
+        self.assertEqual({r['period'] for r in second['insights']},{'Q4 2026'})
+        third,calls=run(compare('Q4 2026','Q4 2026'),second,True)
+        self.assertEqual(calls,['Sampo'])
+        self.assertEqual(third['commentary_documents']['Sampo']['presentation_status'],'verified')
+        self.assertTrue(all(r['marker']=='deck' for r in third['insights']))
+        fourth,calls=run(compare('Q4 2026','Q4 2026'),third,True)
+        self.assertEqual(calls,[])
+        self.assertEqual(fourth['insights'],third['insights'])
+
 if __name__=='__main__':unittest.main()

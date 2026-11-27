@@ -13,7 +13,7 @@ from fremtind_apm_market import parse_income,parse_cr,BASIS
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGET=ROOT/'data/market_overview_context.json'
-VERSION=4
+VERSION=7
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
 NUM=r'[-−]?\d[\d,]*(?:\.\d+)?'
 KEYS=('company','year','quarter','period_type','scope','segment','metric')
@@ -304,7 +304,111 @@ def alm_ytd(a,pages,report_sources=None):
     return result
 
 def insight(a,page,views,theme,text,mode='quarter'):
-    return dict(company=a['company'],period=f"Q{a['quarter']} {a['year']}",period_type=mode,views=views,theme=theme,text=text,**source(a,page))
+    period=f"Q{a['quarter']} {a['year']}"
+    return dict(company=a['company'],period=period,source_document_period=period,source_type='official_quarterly_report',period_type=mode,views=views,theme=theme,text=text,**source(a,page))
+
+def growth_drivers(a,pages):
+    """Positive evidence only, tied to verified original-report pages and scope.
+    An unfamiliar disclosure layout yields no driver, never a guessed cause.
+    """
+    company=a['company'];q=a['quarter'];out=[]
+    alm_sections={}
+    gj_sections={}
+    if company=='Alm. Brand':
+        try:alm_sections={r['source_page']:r['segment'] for r in parse_alm(pages,a['year'],q,a['source_url'],a['source_sha256'])}
+        except ValueError:return []
+    if company=='Gjensidige':gj_sections={p:seg for seg,p,_,_,_ in gj_blocks(a,pages)}
+    def add(page,views,mode,driver,evidence):
+        modes=('quarter','ytd') if q==1 else (mode,)
+        for period_type in modes:
+            theme='profit_driver' if driver in ('lower_claim_frequency','underlying_loss_improved') else 'growth_driver'
+            row=insight(a,page,views,theme,driver,period_type)
+            row.update(driver=driver,evidence=evidence)
+            if not any((r['driver'],r['period_type'],r['views'])==(driver,period_type,views) for r in out):
+                out.append(row)
+    def match(text,pattern):
+        m=re.search(pattern,text,re.I)
+        return m.group(0) if m else None
+    for page,raw in pages:
+        text=norm(raw.replace('\u00ad',''))
+        if company=='Fremtind':
+            if not ('Styrets beretning' in text and 'privatmarkedet har en' in text.lower() and 'bedriftsmarkedet har en' in text.lower()):continue
+            hits=re.findall(r'Veksten er hovedsakelig drevet av premiejusteringer',text,re.I)
+            quarter='Resultatutvikling i kvartalet' in text
+            cumulative='Resultatutvikling hittil i år' in text
+            views=['group/all','norway/all','group/pm','norway/pm','group/bm','norway/bm']
+            if hits and quarter and not cumulative:add(page,views,'quarter','price',hits[0])
+            elif hits and cumulative and not quarter:add(page,views,'ytd','price',hits[0])
+            elif len(hits)==2 and quarter and cumulative:
+                for mode in ('quarter','ytd'):add(page,views,mode,'price',hits[0])
+            losses=re.findall(r'lavere skadefrekvenser på bil og næringsbygg',text,re.I)
+            totals=['group/all','norway/all']
+            if losses and quarter and not cumulative:add(page,totals,'quarter','lower_claim_frequency',losses[0])
+            elif losses and cumulative and not quarter:add(page,totals,'ytd','lower_claim_frequency',losses[0])
+            elif len(losses)==2 and quarter and cumulative:
+                for mode in ('quarter','ytd'):add(page,totals,mode,'lower_claim_frequency',losses[0])
+        elif company=='Alm. Brand':
+            # Validate the section and exact isolated-quarter table before
+            # interpreting its management review. No Group-to-Norway inference.
+            seg=alm_sections.get(page)
+            if seg=='Private':
+                views=['group/pm','group/all']
+                for driver,pattern in [('price',r'price adjustments to miti-?\s*gate claims inflation'),('customer_inflow',r'customer inflow through bank partnerships')]:
+                    evidence=match(text,pattern)
+                    if evidence:add(page,views,'quarter',driver,evidence)
+            elif seg=='Commercial':
+                views=['group/bm','group/all']
+                for driver,pattern in [('competition',r'(?:continued|increasingly) soft market for workers.{0,3} compensation'),('risk_selection',r'continued focus on reducing volatility for large commercial clients')]:
+                    evidence=match(text,pattern)
+                    if evidence:add(page,views,'quarter',driver,evidence)
+        elif company=='Tryg':
+            if not re.search(r'\bKey figures\s*[-–]\s*Private\b',text,re.I):continue
+            # These disclosures are in the Q-results narrative, not the
+            # adjacent Q1-Qn claims table. Never call a Nordic number Norway.
+            if not re.search(rf'\bResults Q{q} {a["year"]}\b',text,re.I):continue
+            views=['group/pm','group/all']
+            # PDF text extraction interleaves the review with a neighbouring
+            # expense column and ratio table. Require both exact narrative
+            # fragments close together, not a generic mention of a portfolio.
+            evidence=match(text,r'growth was positively impacted by portfolio growth in selected segments')
+            if not evidence:
+                lines=[norm(l) for l in raw.splitlines()]
+                for i,line in enumerate(lines):
+                    if not re.search(r'\bgrowth was positively impacted by portfolio\b',line,re.I):continue
+                    for j in range(i+1,min(i+4,len(lines))):
+                        if re.match(r'^growth in selected segments\b',lines[j],re.I):
+                            evidence=' | '.join(lines[i:j+1])
+                            break
+                    if evidence:break
+            if evidence:add(page,views,'quarter','portfolio_growth',evidence)
+            for driver,pattern in [('retention_up',r'retention rates improved slightly'),('underlying_loss_improved',rf'underlying claims ratio improved.{0,100}in Q{q} {a["year"]}')]:
+                evidence=match(text,pattern)
+                if evidence:add(page,views,'quarter',driver,evidence)
+        elif company=='Gjensidige':
+            # Require a verified segment chapter and a separately identified
+            # quarter/YTD narrative. Norwegian submarket wording is required
+            # before including Norwegian views; no Denmark-to-Norway inference.
+            headers=[norm(l) for l in raw.splitlines()]
+            named=next((seg for seg in ('Private','Commercial') if any(re.fullmatch('General Insurance '+seg,l,re.I) for l in headers)),None)
+            if named and 'Development during the quarter' in text:seg,mode=named,'quarter'
+            elif gj_sections.get(page) in ('Private','Commercial') and 'Year-to-date development' in text:seg,mode=gj_sections[page],'ytd'
+            else:continue
+            if not re.search(r'\bIn Norway,(?:(?!In Denmark).){0,140}?insurance revenue increased\b',text,re.I):continue
+            market='pm' if seg=='Private' else 'bm'
+            views=['group/'+market,'group/all','norway/'+market,'norway/all']
+            if seg=='Private':
+                rules=[('price',r'(?:primarily )?driven by price increases and higher volumes'),
+                       ('volume_up',r'price increases and higher volumes for (?:the main product lines|property)'),
+                       ('volume_pm_products',r'higher volumes for property,.{0,100}accident and health and travel insurance'),
+                       ('customer_growth',r'number of customers increased')]
+            else:
+                rules=[('price',r'driven by price increases for all products'),
+                       ('volume_down',r'decreased due to consistent prioritisation of'),
+                       ('risk_selection',r'prioritisation of.{0,180}profitability over growth')]
+            for driver,pattern in rules:
+                evidence=match(text,pattern)
+                if evidence:add(page,views,mode,driver,evidence)
+    return out
 
 def narratives(a,pages):
     out=[];c=a['company']
@@ -325,6 +429,14 @@ def narratives(a,pages):
     elif c=='Fremtind':
         for page,t in pages:
             text=norm(t)
+            # An actual report, not a press release, is the source of the
+            # named event. Only emit it when the report states the impact.
+            fire=re.search(r'Brannen i Krokstadelva utgjorde ([\d ]+) millioner kroner av',text,re.I)
+            if fire and 'Resultatutvikling i kvartalet' in text:
+                amount=int(fire[1].replace(' ',''))
+                if amount>=100:
+                    msg=f'Brannen i Krokstadelva ga rapporterte storskader på {amount} mill. kroner i kvartalet.'
+                    out.extend([insight(a,page,['group/all','norway/all'],'material_event',msg),insight(a,page,['group/all','norway/all'],'material_event','I siste kvartal: '+msg,'ytd')])
             if not re.search(r'Segment Privatmarkedet og Bedriftsmarkedet|Segmentresultater',text,re.I):continue
             for market,label in [('pm','Privatmarkedet'),('bm','Bedriftsmarkedet')]:
                 hit=re.search(r'\b'+label+r'\s+utgjorde\s+([\d ]+)\s+millioner kroner i kvartalet',text,re.I)
@@ -366,19 +478,31 @@ def fetch(a):
     return download(a)
 def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
-    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version')==VERSION else {}
+    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,5,6,VERSION) else {}
     for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
         c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
         old=previous.get('status',{}).get(c,{})
         if previous.get('schema_version')==VERSION and old.get('period')==period and old.get('source_sha256')==a['source_sha256'] and old.get('source_url')==a['source_url'] and old.get('status')=='verified':
             out['observations'].extend(r for r in previous.get('observations',[]) if r.get('company')==c)
-            out['insights'].extend(r for r in previous.get('insights',[]) if r.get('company')==c and r.get('period')==period)
+            out['insights'].extend(r for r in previous.get('insights',[]) if r.get('company')==c and r.get('period')==period and r.get('source_type')=='official_quarterly_report' and r.get('supplemental_document') is not True)
             out['status'][c]=old;continue
         state={'period':period,'source_url':a['source_url'],'source_sha256':a['source_sha256'],'status':'not_verified'}
         try:
             raw=fetcher(a)
             if hashlib.sha256(raw).hexdigest()!=a['source_sha256']:raise ValueError('Original report fingerprint changed')
             pages=reader(raw)
+            if not pages:raise ValueError('Empty verified source document')
+            state.update(document_verified=True,source_pages_examined=len(pages))
+            try:
+                # Review the whole original report in addition to the
+                # issuer-specific market parsers; retain exact document pages.
+                from market_commentary_documents import document_insights
+                ev=dict(document_type='quarterly_report',status='verified_document',format='pdf',
+                        issuer_verified=True,period_verified=True,source_sha256=a['source_sha256'],url=a['source_url'])
+                generic=document_insights(c,y,q,ev,[t for _,t in pages])
+                for r in generic:r['supplemental_document']=False
+                out['insights'].extend(generic)
+            except Exception as exc:print('::warning::MARKET_REPORT_COMMENTARY_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
             try:
                 batch=alm_ytd(a,pages,out['alm_report_sources']) if c=='Alm. Brand' else {'Fremtind':fremtind_ytd,'Gjensidige':gj_ytd,'Tryg':tryg_ytd,'Protector':protector_ytd}[c](a,pages)
                 out['observations'].extend(batch)
@@ -387,6 +511,8 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
                 state.update(status='verified' if len(scopes)==expected else 'partial',scopes=scopes,observations=len(batch))
                 print('MARKET_CONTEXT_YTD',c,period,scopes,flush=True)
             except Exception as exc:print('::warning::MARKET_CONTEXT_YTD_ERROR',c,type(exc).__name__,str(exc)[:260],flush=True)
+            try:out['insights'].extend(growth_drivers(a,pages))
+            except Exception as exc:print('::warning::MARKET_GROWTH_DRIVER_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
             try:out['insights'].extend(narratives(a,pages))
             except Exception as exc:print('::warning::MARKET_CONTEXT_NARRATIVE_ERROR',c,type(exc).__name__,str(exc)[:160],flush=True)
         except Exception as exc:print('::warning::MARKET_CONTEXT_SOURCE_ERROR',c,type(exc).__name__,str(exc)[:220],flush=True)
@@ -394,7 +520,11 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     return out
 def main():
     load=lambda n:json.loads((ROOT/'data'/n).read_text(encoding='utf-8'))
-    result=build(load('verified_financial_feed.json'),load('nine_insurer_comparison.json'),load(TARGET.name) if TARGET.exists() else {})
+    feed=load('verified_financial_feed.json');comparison=load('nine_insurer_comparison.json')
+    previous=load(TARGET.name) if TARGET.exists() else {}
+    result=build(feed,comparison,previous)
+    from market_commentary_documents import enrich
+    enrich(result,feed,comparison,load('extended_insurer_financials.json'),load('report_candidates.json'),previous)
     from publish_geographic_workbooks import atomic_write
     atomic_write(TARGET,result)
     print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)
