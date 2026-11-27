@@ -1,6 +1,6 @@
 {
   "source": "NewsWeb",
-  "updated_at": "2026-11-26T12:39:17.338740+00:00",
+  "updated_at": "2026-11-27T12:53:16.153279+00:00",
   "notices": {
     "Fremtind": [
       {
@@ -58,10 +58,10 @@
     "Protector": [
       {
         "source": "NewsWeb",
-        "id": "687290",
-        "title": "Rentefastsettelse",
-        "url": "https://newsweb.oslobors.no/message/687290",
-        "published_at": "2026-11-24T12:51:38.575000+00:00",
+        "id": "687637",
+        "title": "Protector Forsikring ASA: Exercise of call option on ISIN NO0011170045 (PROT06)",
+        "url": "https://newsweb.oslobors.no/message/687637",
+        "published_at": "2026-11-27T12:25:02.526000+00:00",
         "issuer_id": 8322,
         "issuer_sign": "PROT",
         "issuer_name": "Protector Forsikring ASA",
