@@ -25,9 +25,9 @@ def fetch_archive():
             raise ValueError('Unexpected KLP archive redirect')
         return response.read(4_000_000).decode('utf-8','replace')
 
-def verify_report(texts,year,quarter,url,digest):
+def verify_report(texts,year,quarter,url,digest,*,historical=False):
     """Strict isolated and cumulative column mapping for future issuer PDFs."""
-    if quarter not in (1,2,3,4) or type(year) is not int or year<2026:
+    if quarter not in (1,2,3,4) or type(year) is not int or year<(2024 if historical else 2026):
         raise ValueError('Invalid target period')
     if not approved(url,'KLP Skadeforsikring'):
         raise ValueError('Unexpected KLP source')

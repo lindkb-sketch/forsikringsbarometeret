@@ -423,7 +423,19 @@
   }
   function companyStandardCards(c,d){
     const p=selection,type=ytdMode()?'ytd':'quarter',src='verified-quarterly-feed';
-    const get=k=>d.revenue?d[k]:null;
+    const currentRevenue=quote(c,type,p.year,p.quarter,'insurance_revenue');
+    const prevRevenue=quote(c,type,p.year-1,p.quarter,'insurance_revenue');
+    const olderRevenue=quote(c,type,p.year-2,p.quarter,'insurance_revenue');
+    const rate=(a,b)=>a&&b&&b.value>0&&isSameBasis(a,b)?100*(a.value/b.value-1):null;
+    const data={...d};
+    if(!data.growth)data.growth=rate(currentRevenue,prevRevenue);
+    if(!data.growthPrev)data.growthPrev=rate(prevRevenue,olderRevenue);
+    for(const [metric,k] of Object.entries(KEYS)){
+      const now=quote(c,type,p.year,p.quarter,metric),old=quote(c,type,p.year-1,p.quarter,metric);
+      if(data[k]==null&&now)data[k]=now.value;
+      if(data[k+'Prev']==null&&old&&(!now||isSameBasis(now,old)))data[k+'Prev']=old.value;
+    }
+    const get=k=>currentRevenue?data[k]:null;
     const cards=[
       companyFinancialCard('insurance_revenue_growth',c==='Frende'?'Inntektsvekst (IFRS 4)':'Inntektsvekst',get('growth'),get('growthPrev'),true,'',type,src),
       companyFinancialCard('insurance_service_result',c==='Storebrand'?'Forsikringsresultat · Cash equivalent earnings':c==='Frende'?'Forsikringsdriftsresultat':'Forsikringsresultat',get('result'),get('resultPrev'),false,d.resultUnit,type,src)

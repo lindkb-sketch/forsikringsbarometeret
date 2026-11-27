@@ -530,6 +530,8 @@ def main():
     enrich(result,feed,comparison,extended,load('report_candidates.json'),previous)
     from market_profitability_history import build_history
     result['profitability_history']=build_history(extended,result['alm_report_sources'],previous.get('profitability_history',{}))
+    from company_comparison_history import build as build_comparisons
+    result['company_comparisons']=build_comparisons(feed,previous.get('company_comparisons',{}))
     from publish_geographic_workbooks import atomic_write
     atomic_write(TARGET,result)
     print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)

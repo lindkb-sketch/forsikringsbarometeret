@@ -23,7 +23,7 @@ jobs:
           node-version: '22'
       - run: |
           python -m pip install -r requirements-reports.txt
-          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py scripts/market_profitability_history.py tests/test_market_overview_segments.py
+          python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py scripts/market_profitability_history.py scripts/company_comparison_history.py tests/test_market_overview_segments.py
           python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
@@ -63,6 +63,8 @@ jobs:
             assert.doesNotMatch(text,/\b\d+\s*(?:av|\/)\s*\d+\s+selskaper|\bhøyest vekst|\bCR varierer fra .* hos/i,key);
           }
           const c=require('./data/market_overview_context.json');
+          console.log('COMPANY_COMPARISON_HISTORICAL',JSON.stringify(c.company_comparisons?.observations?.map(r=>[r.company,r.year,r.quarter,r.period_type,r.metric,r.value])));
+          console.log('EXTENDED_COMPARISON_COVERAGE',JSON.stringify(c.profitability_history?.points?.filter(r=>r.quarter===3).map(r=>[r.company,r.period,r.metrics,r.ytd_metrics])));
           assert.ok(c.insights.every(x=>['official_quarterly_report','official_results_presentation'].includes(x.source_type)&&x.source_document_period===x.period&&/^[0-9a-f]{64}$/.test(x.source_sha256)&&x.source_page>0));
           const decks=Object.entries(c.commentary_documents||{}).filter(([,d])=>d.presentation_status==='verified');
           assert.ok(decks.length>0,'At least one original quarterly results deck must be verified');

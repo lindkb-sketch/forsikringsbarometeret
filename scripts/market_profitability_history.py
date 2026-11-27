@@ -8,7 +8,7 @@ import hashlib, math, re
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 
-SCHEMA=1
+SCHEMA=2
 ALM='Alm. Brand'
 KLP='KLP Skadeforsikring'
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
@@ -18,12 +18,13 @@ def finite(x):
 def period(y,q):return f'Q{q} {y}'
 def source_ok(url,sha):
     return isinstance(url,str) and url.startswith('https://') and bool(re.fullmatch(r'[0-9a-f]{64}',sha or ''))
-def checked_point(company,y,q,metrics,url,sha,page,method,source_period,roe=None):
+def checked_point(company,y,q,metrics,url,sha,page,method,source_period,roe=None,ytd_metrics=None):
     if not source_ok(url,sha) or type(page) is not int or page<=0 or q not in (1,2,3,4):raise ValueError('Invalid historical report provenance')
     if not all(finite(metrics.get(k)) and metrics[k]>=0 for k in RATIOS) or abs(metrics['combined_ratio']-metrics['loss_ratio']-metrics['expense_ratio'])>.25:
         raise ValueError('Invalid historical profitability ratios')
     return dict(company=company,period=period(y,q),year=y,quarter=q,period_type='quarter',scope='company' if company==KLP else 'group',
         cr=metrics['combined_ratio'],loss=metrics['loss_ratio'],cost=metrics['expense_ratio'],
+        metrics={k:v for k,v in metrics.items() if finite(v)},ytd_metrics={k:v for k,v in (ytd_metrics or {}).items() if finite(v)},
         roe=roe if finite(roe) else None,source_url=url,source_sha256=sha,source_page=page,
         source_document_period=source_period,method=method,status='verified')
 
@@ -116,8 +117,36 @@ def alm_points(raw,url,sha,y,q):
             except Exception as mismatch:
                 print('MARKET_ALM_HISTORY_DIAGNOSTIC',period(y,q),'column',idx,'values',[(k,str(v[idx])) for k,v in rows.items()],str(exc),str(mismatch),flush=True)
                 raise ValueError('Alm quarter highlights failed independent segment reconciliation') from mismatch
-        return actual
-    out=[checked_point(ALM,y,q,verified(0),url,sha,i+1,'reported',period(y,q)),checked_point(ALM,y-1,q,verified(1),url,sha,i+1,'reported_comparative',period(y,q))]
+        return {**actual,'insurance_revenue':float(rows['insurance_revenue'][idx]),'insurance_service_result':float(rows['insurance_service_result'][idx])}
+    def cumulative(idx):
+        if idx is None:return {}
+        try:return verified(idx)
+        except ValueError:return {}
+    current,prior=verified(0),verified(1)
+    cytd,pytd=cumulative(yi),cumulative(pi)
+    current['insurance_revenue_growth']=100*(current['insurance_revenue']/prior['insurance_revenue']-1)
+    if cytd.get('insurance_revenue',0)>0 and pytd.get('insurance_revenue',0)>0:cytd['insurance_revenue_growth']=100*(cytd['insurance_revenue']/pytd['insurance_revenue']-1)
+    # ROE is explicitly period-labelled on the adjacent financial ratios
+    # table; do not use a trailing-twelve-month return as isolated-quarter ROE.
+    right=regions.get(i,{}).get('right') or t
+    try:
+        from rolling_alm_brand_reports import numeric_values
+        rcount,ry,rp=alm_isolated_layout(right,t,y,q)
+        roe=re.search(r'Return on equity after tax\s*\n\s*([-\d,.\s]+?)(?:\n|$)',right,re.I)
+        if roe:
+            rv=numeric_values(roe.group(1),rcount)
+            current['return_on_equity']=float(rv[0]);prior['return_on_equity']=float(rv[1])
+            if ry is not None:cytd['return_on_equity']=float(rv[ry])
+            if rp is not None:pytd['return_on_equity']=float(rv[rp])
+    except (ValueError,IndexError):pass
+    # Solvency is a quarter-end snapshot, never taken from a prior full-year column.
+    try:
+        from rolling_alm_brand_reports import verify_report
+        full=verify_report(texts,url,raw,y,q,regions=regions)
+        current['solvency_ratio']=full['metrics']['solvency_ratio'];cytd['solvency_ratio']=current['solvency_ratio']
+    except (ValueError,KeyError,IndexError):pass
+    out=[checked_point(ALM,y,q,current,url,sha,i+1,'reported',period(y,q),current.get('return_on_equity'),cytd),
+         checked_point(ALM,y-1,q,prior,url,sha,i+1,'reported_comparative',period(y,q),prior.get('return_on_equity'),pytd)]
     # A Q3 table's fifth column is explicitly the prior full year. The
     # validated header must contain FY, not merely a fifth number.
     if q==3 and count==5 and re.search(r'\bFY\b',left,re.I):
@@ -132,12 +161,23 @@ def klp_points(raw,url,sha,y,q):
     from rolling_klp_reports import verify_report
     from klp_q2q3_reconcile import AMOUNTS,columns
     texts=pages(raw)
-    result=verify_report(texts,y,q,url,sha)
+    result=verify_report(texts,y,q,url,sha,historical=True)
     page=result['source_documents'][0]['source_pages'][0]
     def amounts(a):return tuple(Decimal(str(a[k]))*sign for k,sign in [('insurance_revenue',1),('gross_claims_cost',-1),('operating_expenses',-1),('reinsurance_result',-1),('insurance_service_result',1)])
-    def at(a):return amounts_ratios(*amounts(a),Decimal('.25'))
-    out=[checked_point(KLP,y,q,result['ratios'],url,sha,page,'calculated_from_quarter_amounts',period(y,q)),
-         checked_point(KLP,y-1,q,at(result['reported_prior_year_quarter_amounts']),url,sha,page,'calculated_comparative',period(y,q))]
+    def at(a):return {**amounts_ratios(*amounts(a),Decimal('.25')),'insurance_revenue':float(a['insurance_revenue']),'insurance_service_result':float(a['insurance_service_result'])}
+    current=at(result['reported_quarter_amounts']);current.update(result['ratios'])
+    prior=at(result['reported_prior_year_quarter_amounts'])
+    current['insurance_revenue_growth']=100*(current['insurance_revenue']/prior['insurance_revenue']-1)
+    management=result.get('reported_management_metrics',{})
+    if finite(management.get('solvency_ratio')):current['solvency_ratio']=management['solvency_ratio']
+    def cumulative(a):
+        try:return at(a)
+        except (KeyError,ValueError):return {}
+    cytd,pytd=cumulative(result['reported_ytd_amounts']),cumulative(result['reported_prior_year_ytd_amounts'])
+    if cytd.get('insurance_revenue',0)>0 and pytd.get('insurance_revenue',0)>0:cytd['insurance_revenue_growth']=100*(cytd['insurance_revenue']/pytd['insurance_revenue']-1)
+    if 'solvency_ratio' in current:cytd['solvency_ratio']=current['solvency_ratio']
+    out=[checked_point(KLP,y,q,current,url,sha,page,'calculated_from_quarter_amounts',period(y,q),ytd_metrics=cytd),
+         checked_point(KLP,y-1,q,prior,url,sha,page,'calculated_comparative',period(y,q),ytd_metrics=pytd)]
     if q==3:
         t=texts[page-1]
         header=re.search(r'(?:NOTE\s+)?MILLIONER KRONER\s+([^\n]+)',t)
@@ -161,7 +201,7 @@ def build_history(extended,registry,previous):
             if item.get('status')!='verified_official_pdf_reconciled' or not source_ok(url,sha) or type(y) is not int or q not in (1,2,3,4):continue
             page=item.get('source_pages',{}).get('combined_ratio') if company==ALM else next(iter(item.get('source_pages',{}).get('quarter',[])),None)
             try:
-                row=checked_point(company,y,q,item['metrics'],url,sha,page,'reported' if company==ALM else 'calculated_from_quarter_amounts',period(y,q),item['metrics'].get('return_on_equity'))
+                row=checked_point(company,y,q,item['metrics'],url,sha,page,'reported' if company==ALM else 'calculated_from_quarter_amounts',period(y,q),item['metrics'].get('return_on_equity'),item.get('ytd_metrics'))
                 records.append(row)
             except (ValueError,KeyError,TypeError):pass
             if item.get('source_type')=='official_quarterly_report':sources[sha]=(company,y,q,url)
@@ -169,6 +209,42 @@ def build_history(extended,registry,previous):
         m=re.fullmatch(r'Q([1-4]) (20\d{2})',label)
         if m and source_ok(src.get('source_url'),src.get('source_sha256')):
             sources[src['source_sha256']]=(ALM,int(m[2]),int(m[1]),src['source_url'])
+    # Discover the previous year's original report independently of a
+    # current-year comparative. It is needed for prior-year growth (y-1
+    # versus y-2), solvency and returns. Reuse verified original PDFs.
+    for company in (ALM,KLP):
+        item=extended.get('insurers',{}).get(company,{})
+        y,q=item.get('year'),item.get('quarter')
+        if not isinstance(y,int) or q not in (1,2,3,4):continue
+        target=(y-1,q)
+        if any((c,sy,sq)==(company,*target) for c,sy,sq,_ in sources.values()):continue
+        saved=[(sha,d) for sha,d in old.items() if d.get('company')==company and d.get('source_document_period')==period(*target)]
+        for sha,d in saved:
+            if source_ok(d.get('source_url'),sha):sources[sha]=(company,*target,d['source_url'])
+        if saved:continue
+        try:
+            if company==ALM:
+                from alm_brand_report_discovery import discover
+                from alm_brand_live_pdf import download_report
+                urls=[r['url'] for r in discover(*target) if r.get('document_type')=='quarterly_report']
+                fetch=download_report
+            else:
+                from rolling_klp_reports import fetch_archive
+                from klp_q2_q3_discovery import discover
+                from import_extended_pdfs import download
+                urls=discover(fetch_archive(),target[0],periods=(target[1],)).get(target[1],[])
+                fetch=lambda url:download(url,KLP)
+            verified={}
+            for url in list(dict.fromkeys(urls))[:5]:
+                try:
+                    raw=fetch(url);sha=hashlib.sha256(raw).hexdigest()
+                    pts=(alm_points if company==ALM else klp_points)(raw,url,sha,*target)
+                    if not any(x.get('period')==period(*target) for x in pts):continue
+                    verified[sha]=dict(company=company,source_url=url,source_document_period=period(*target),points=pts)
+                except Exception as exc:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),str(exc)[:160],flush=True)
+            if len(verified)==1:docs.update(verified)
+            else:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),'unique source not verified',len(verified),flush=True)
+        except Exception as exc:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),str(exc)[:180],flush=True)
     def read(task):
         sha,(company,y,q,url)=task
         saved=old.get(sha)
@@ -198,4 +274,8 @@ def build_history(extended,registry,previous):
     for r in [*records,*[p for d in docs.values() for p in d['points']]]:
         k=(r['company'],r['period'])
         if k not in points or rank[r['method']]>rank[points[k]['method']]:points[k]=r
+        elif points[k]['source_sha256']==r['source_sha256']:
+            old_point=points[k]
+            points[k]={**old_point,'metrics':{**r.get('metrics',{}),**old_point.get('metrics',{})},
+                       'ytd_metrics':{**r.get('ytd_metrics',{}),**old_point.get('ytd_metrics',{})}}
     return dict(schema_version=SCHEMA,documents=docs,points=sorted(points.values(),key=lambda r:(r['company'],r['year'],r['quarter'])))
