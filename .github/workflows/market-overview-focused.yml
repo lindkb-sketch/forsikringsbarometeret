@@ -65,6 +65,25 @@ jobs:
           const c=require('./data/market_overview_context.json');
           console.log('COMPANY_COMPARISON_HISTORICAL',JSON.stringify(c.company_comparisons?.observations?.map(r=>[r.company,r.year,r.quarter,r.period_type,r.metric,r.value])));
           console.log('EXTENDED_COMPARISON_COVERAGE',JSON.stringify(c.profitability_history?.points?.filter(r=>r.quarter===3).map(r=>[r.company,r.period,r.metrics,r.ytd_metrics])));
+          if(a.active_period==='Q3 2026'){
+            const feed=require('./data/verified_financial_feed.json').observations;
+            const extra=c.company_comparisons?.observations||[];
+            const by=(company,year,type)=>[...feed,...extra].find(r=>r.company===company&&r.scope==='group'&&r.year===year&&r.quarter===3&&r.period_type===type&&r.metric==='insurance_revenue'&&['reported','calculated'].includes(r.status)&&r.source_sha256&&r.source_page);
+            const gaps=[];
+            for(const company of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'])for(const type of ['quarter','ytd']){
+              const now=by(company,2025,type),before=by(company,2024,type);
+              if(!(now&&before&&before.value>0&&now.unit===before.unit))gaps.push(company+' '+type);
+            }
+            for(const company of ['KLP Skadeforsikring','Alm. Brand'])for(const type of ['quarter','ytd']){
+              const previous=c.profitability_history?.points?.find(r=>r.company===company&&r.period==='Q3 2025');
+              const older=c.profitability_history?.points?.find(r=>r.company===company&&r.period==='Q3 2024');
+              const m=type==='quarter'?previous?.metrics:previous?.ytd_metrics;
+              const old=type==='quarter'?older?.metrics:older?.ytd_metrics;
+              if(!(Number.isFinite(m?.insurance_revenue_growth)||(m?.insurance_revenue>0&&old?.insurance_revenue>0)))gaps.push(company+' '+type);
+            }
+            console.log('COMPANY_PRIOR_YEAR_GROWTH_GAPS',JSON.stringify(gaps));
+            assert.deepEqual(gaps,[],'Previous-year revenue growth must be source-backed in both reporting modes for all nine insurers');
+          }
           assert.ok(c.insights.every(x=>['official_quarterly_report','official_results_presentation'].includes(x.source_type)&&x.source_document_period===x.period&&/^[0-9a-f]{64}$/.test(x.source_sha256)&&x.source_page>0));
           const decks=Object.entries(c.commentary_documents||{}).filter(([,d])=>d.presentation_status==='verified');
           assert.ok(decks.length>0,'At least one original quarterly results deck must be verified');

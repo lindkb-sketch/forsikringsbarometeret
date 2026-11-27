@@ -482,6 +482,10 @@ async function main(){
       check(c+' '+type+' shared KPI typography',!!result.style&&JSON.stringify(result.style)===standardStyle,JSON.stringify(result.style));
       check(c+' '+type+' consistent same-period trend arrows',result.rows.length>=5&&result.rows.every(r=>r.correct),JSON.stringify(result.rows));
       console.log('COMPANY_COMPARISON_COVERAGE',c,type,JSON.stringify(result.rows.map(r=>[r.metric,r.now,r.prior])));
+      if(marketArchive.active_period==='Q3 2026'){
+        const core=['insurance_revenue_growth','insurance_service_result','combined_ratio','loss_ratio','expense_ratio'];
+        check(c+' '+type+' complete current and previous-year core comparisons',core.every(k=>result.rows.some(r=>r.metric===k&&Number.isFinite(r.now)&&Number.isFinite(r.prior))),JSON.stringify(result.rows));
+      }
     }
     await page.locator('.company-period-actions select').selectOption('Q3');
   }

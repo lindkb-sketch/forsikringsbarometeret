@@ -192,7 +192,7 @@ def klp_points(raw,url,sha,y,q):
 
 def build_history(extended,registry,previous):
     old=previous.get('documents',{}) if previous.get('schema_version')==SCHEMA else {}
-    docs={};records=[];sources={}
+    docs=dict(old);records=[];sources={}
     for company in (ALM,KLP):
         issuer=extended.get('insurers',{}).get(company,{})
         for item in [*issuer.get('periods',[]),issuer]:
