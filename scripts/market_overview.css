@@ -64,11 +64,16 @@
 .mo-trend-duo>.panel{min-width:0;overflow:hidden}
 .mo-line-scroll{overflow-x:auto;margin-top:12px}
 .mo-line-svg{display:block;width:100%;min-width:430px;height:auto;color:#617589}
-.mo-line-svg text{font:11px system-ui,sans-serif;fill:#637989}
+.mo-line-svg text{font:12px system-ui,sans-serif;fill:#526d7d}
+.mo-cr-head{gap:8px;flex-wrap:wrap;align-items:flex-start}
+.mo-cr-head>div{min-width:0}
+.mo-cr-toggle{flex:none;cursor:pointer;border:1px solid #cbdde3;background:#f2f8f9;color:#126f73;padding:8px 11px;border-radius:7px;font:inherit;font-size:12px;font-weight:700;white-space:nowrap}
+.mo-cr-toggle:hover{background:#e3f1f3}.mo-cr-toggle:focus-visible{outline:2px solid #126f73;outline-offset:2px}
+.mo-cr-note{font-size:12px;line-height:1.5;color:#526d7d;margin:8px 0 0}
 .mo-line-point:focus{outline:none;stroke:#142f40;stroke-width:2.5}
-.mo-line-legend{display:flex;flex-wrap:wrap;gap:9px 15px;padding:6px 0 12px;font-size:11px;color:#435c6c}
+.mo-line-legend{display:flex;flex-wrap:wrap;gap:10px 14px;padding:10px 0 12px;font-size:12px;color:#435c6c}
 .mo-line-legend-item{display:flex;gap:6px;align-items:center}
-.mo-line-legend-item i{display:block;width:15px;height:3px;border-radius:2px}
+.mo-line-legend-item svg{display:block;flex:none}
 .mo-history-values{font-size:12px;color:#566d7e;margin-top:9px}
 .mo-history-values summary{cursor:pointer;color:#126f73}
 .mo-history-values .tablewrap{margin-top:10px;overflow-x:auto}

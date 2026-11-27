@@ -245,6 +245,53 @@ test('market profitability uses five contiguous quarters and all nine issuers wi
  const next=profitabilityHistory(f,{},null,{year:2026,quarter:4});
  assert.equal(next.periods[0],'Q4 2025');assert.equal(next.series[0].points.at(-1),null);
 });
+
+test('CR chart uses a focused adaptive range, hides only whole extreme series and preserves every source value',()=>{
+ const {crTrendView,trendChart}=require('../scripts/market_overview.js');
+ const periods=['Q3 2025','Q4 2025','Q1 2026','Q2 2026','Q3 2026'];
+ const fixture={
+  Fremtind:[76.7,77,79.8,77.5,73],
+  Gjensidige:[79.7,88.3,79.2,78.9,73.6],
+  Tryg:[78.6,81.4,84,88.8,76.8],
+  Sampo:[83,84.3,84.4,82.9,82.6],
+  Frende:[85.3,90.8,93.9,81.3,84],
+  Protector:[83.1,85,84.9,81.5,82.7],
+  Storebrand:[89,93,93,87,87],
+  'KLP Skadeforsikring':[85.9,124.019,100.37,99.3,89.09],
+  'Alm. Brand':[82.2,82.49,83.1,101.7,75.3]
+ };
+ const history={periods,series:Object.entries(fixture).map(([company,values])=>({company,points:values.map(cr=>({cr,source_url:'https://example.com/official.pdf'}))}))};
+ const before=JSON.stringify(history),focus=crTrendView(history),full=crTrendView(history,true);
+ assert.deepEqual(focus.excluded.map(e=>e.company),['KLP Skadeforsikring']);
+ assert.equal(focus.visible.length,8);
+ assert.deepEqual(focus.axis,{low:70,high:105,step:5});
+ assert.equal(full.visible.length,9);
+ assert.ok(full.axis.high>=124.019&&full.axis.low<=73);
+ assert.ok(focus.axis.high-focus.axis.low<full.axis.high-full.axis.low);
+ for(const v of [focus,full])assert.ok(v.visible.every(s=>s.points.every(p=>p.cr>=v.axis.low&&p.cr<=v.axis.high)));
+ const html=trendChart(history);
+ assert.match(html,/Utvikling i CR · 8 selskaper/);
+ assert.match(html,/Vis alle 9/);
+ assert.match(html,/KLP Skadeforsikring · Q4 2025/);
+ assert.doesNotMatch(html,/class="mo-line-series" data-company="KLP Skadeforsikring"/);
+ assert.doesNotMatch(html,/class="mo-line-legend-item" data-company="KLP Skadeforsikring"/);
+ assert.match(html,/<tr data-company="KLP Skadeforsikring">/);
+ const fullHtml=trendChart(history,true);
+ assert.match(fullHtml,/Tilpass utsnitt/);
+ assert.match(fullHtml,/class="mo-line-series" data-company="KLP Skadeforsikring"/);
+ assert.match(fullHtml,/data-cr="124.019"/);
+ assert.equal(JSON.stringify(history),before,'Source history must never be modified');
+ const calm={periods,series:history.series.map(s=>({...s,points:periods.map((_,i)=>({cr:80+i*.2}))}))};
+ const calmView=crTrendView(calm);
+ assert.equal(calmView.visible.length,9);assert.equal(calmView.excluded.length,0);
+ assert.ok(calmView.axis.high-calmView.axis.low>=10);
+ assert.ok(calmView.axis.high-calmView.axis.low<=15);
+ const sparse={periods,series:history.series.slice(6)};
+ assert.equal(crTrendView(sparse).excluded.length,0,'Do not hide companies when there are too few comparable peers');
+ const lower={periods,series:history.series.map(s=>({...s,points:s.company==='KLP Skadeforsikring'?s.points.map((p,i)=>({...p,cr:i===1?30:83})):s.points.map(p=>({...p,cr:80+(p.cr%8)}))}))};
+ assert.deepEqual(crTrendView(lower).excluded.map(e=>e.company),['KLP Skadeforsikring']);
+});
+
 test('calendar moves only reported issuers, matches exact next quarter, and hides completed pending list',()=>{
  const {reportQueues}=require('../scripts/market_overview.js');
  const calendar={'Fremtind':{events:[{period:'Q4 2026',date:'2027-02-01'},{period:'Q1 2027',date:'2027-04-29'}]},'Tryg':{events:[{period:'Q4 2026',date:'2027-01-22'}]},'Sampo / If':{events:[{period:'Q1 2027',date:'2027-05-05'}]}};

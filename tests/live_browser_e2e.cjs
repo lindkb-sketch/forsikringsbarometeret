@@ -92,15 +92,31 @@ async function main(){
       labels:[...document.querySelectorAll('#mo-cr-history .mo-line-quarter')].map(x=>x.dataset.period),
       left:[...document.querySelectorAll('#mo-profitability-panel .profit-quarter')].map(x=>x.textContent),
       companies:[...document.querySelectorAll('.mo-line-legend-item')].map(x=>x.dataset.company),
+      allCompanies:[...document.querySelectorAll('#mo-cr-history .mo-history-values tbody tr')].map(x=>x.dataset.company),
+      axis:[...document.querySelectorAll('#mo-cr-history .mo-line-svg')].map(x=>({low:Number(x.dataset.crLow),high:Number(x.dataset.crHigh),step:Number(x.dataset.crStep)}))[0],
+      pointValues:[...document.querySelectorAll('#mo-cr-history .mo-line-point')].map(x=>Number(x.dataset.cr)),
       points:document.querySelectorAll('.mo-line-point').length};
   });
   check('Market supplementary panels in requested order',marketSections.order,JSON.stringify(marketSections));
   check('Both market charts display the same five consecutive periods',marketSections.labels.length===5&&JSON.stringify(marketSections.labels)===JSON.stringify(marketSections.left)&&marketSections.labels.at(-1)===marketArchive.active_period,JSON.stringify(marketSections));
-  check('Market CR line chart covers all nine issuers',marketSections.companies.length===9&&new Set(marketSections.companies).size===9,JSON.stringify(marketSections));
+  check('CR source table preserves all nine issuers',marketSections.allCompanies.length===9&&new Set(marketSections.allCompanies).size===9,JSON.stringify(marketSections));
+  check('Adaptive CR chart contains every visible source point',marketSections.companies.length>0&&marketSections.points>0&&marketSections.axis&&marketSections.pointValues.every(v=>v>=marketSections.axis.low&&v<=marketSections.axis.high),JSON.stringify(marketSections.axis));
+  const chartToggle=page.locator('#mo-cr-history [data-mo-cr-toggle]');
+  if(await chartToggle.count()){
+    const before=marketSections.companies.slice(),focusedSpan=marketSections.axis.high-marketSections.axis.low;
+    await chartToggle.click();
+    const all=await page.evaluate(()=>{const el=document.querySelector('#mo-cr-history .mo-line-svg');return {names:[...document.querySelectorAll('.mo-line-legend-item')].map(x=>x.dataset.company),span:Number(el.dataset.crHigh)-Number(el.dataset.crLow),points:[...document.querySelectorAll('#mo-cr-history .mo-line-point')].map(x=>[x.dataset.company,Number(x.dataset.cr)]),mode:el.dataset.crMode};});
+    check('Show all restores complete CR series without truncation',all.mode==='all'&&all.names.length>before.length&&all.names.every(n=>marketSections.allCompanies.includes(n))&&all.span>focusedSpan,JSON.stringify(all));
+    if(marketArchive.active_period==='Q3 2026'&&all.points.some(([n,v])=>n==='KLP Skadeforsikring'&&v>120)){
+      check('Q3 baseline excludes extreme KLP only and uses tighter five-point CR scale',before.length===8&&!before.includes('KLP Skadeforsikring')&&all.names.length===9&&marketSections.axis.low===70&&marketSections.axis.high===105&&marketSections.axis.step===5,JSON.stringify({before,axis:marketSections.axis}));
+    }
+    await chartToggle.click();
+    check('Adaptive CR chart restored after full view',JSON.stringify(await page.locator('.mo-line-legend-item').evaluateAll(els=>els.map(x=>x.dataset.company)))===JSON.stringify(before));
+  }
   check('Market report calendar partitions all nine issuers',marketSections.pending+marketSections.next===9,JSON.stringify(marketSections));
   if(marketArchive.periods[marketArchive.active_period].views['group/all/quarter'].model.reported===9)check('No pending calendar when all nine have reported',await page.locator('#mo-calendar-pending').count()===0&&marketSections.next===9);
   await page.locator('#mo-profitability-panel select').selectOption('Tryg');
-  check('Market profitability selector works without changing CR chart',await page.locator('#mo-profitability-panel h2').innerText()==='Utvikling i lønnsomhet · Tryg'&&await page.locator('.mo-line-legend-item').count()===9);
+  check('Market profitability selector works without changing CR chart',await page.locator('#mo-profitability-panel h2').innerText()==='Utvikling i lønnsomhet · Tryg'&&JSON.stringify(await page.locator('.mo-line-legend-item').evaluateAll(els=>els.map(x=>x.dataset.company)))===JSON.stringify(marketSections.companies));
   await page.locator('#mo-profitability-panel select').selectOption('Fremtind');
   await page.screenshot({path:'data/browser_market_overview.png',fullPage:true});
   report.screenshots.push('data/browser_market_overview.png');
