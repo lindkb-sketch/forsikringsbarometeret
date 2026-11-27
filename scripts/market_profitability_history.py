@@ -35,6 +35,46 @@ def amounts_ratios(revenue,claims,cost,reinsurance,service,tolerance):
     return dict(combined_ratio=float((claims+cost+reinsurance)/revenue*100),
         loss_ratio=float((claims+reinsurance)/revenue*100),expense_ratio=float(cost/revenue*100))
 
+def alm_isolated_layout(left,full,y,q):
+    from rolling_alm_brand_reports import column_layout
+    # H1, half-year and 6M are explicit cumulative Q1-Q2 labels, not
+    # isolated Q2 labels. Normalise only these exact period headers.
+    def normalize_header(text):
+        text=text.replace('–','-').replace('—','-')
+        text=re.sub(r'\bQ1\s*-\s*Q([1-4])\b',r'Q1-Q\1',text,flags=re.I)
+        if q==2:
+            text=re.sub(r'\b(?:H1|HY1|HY|6M|First half|Half.year)\b','Q1-Q2',text,flags=re.I)
+        return text
+    for text in (left,full):
+        try:return column_layout(normalize_header(text),y,q)
+        except ValueError:pass
+    # For Q2, only the first two isolated-quarter columns are needed.
+    # A distinct current/prior header and a complete, reconciled numeric
+    # table are sufficient even when the publisher renames its H1 heading.
+    if q==2:
+        for text in (left,full):
+            normalized=normalize_header(text)
+            header=re.split(r'(?im)^\s*(?:INCOME\s+)?Insurance revenue\s+(?=-?\d)',normalized,maxsplit=1)[0]
+            lines=header.splitlines()
+            matches=set()
+            for a,b in zip(lines,lines[1:]):
+                year_line=re.search(r'\bDKKm\s+((?:20\d{2}(?:\s+|$))+)',b,re.I)
+                if not year_line:continue
+                years=[int(x) for x in year_line.group(1).split()]
+                labels=re.findall(r'\bQ1-Q[1-4]\b|\bQ[1-4]\b|\bFY\b',a,re.I)
+                if [x.upper() for x in labels[:2]]==['Q2','Q2'] and years[:2]==[y,y-1] and len(labels)==len(years) and len(years) in (2,3,4,5):
+                    matches.add(len(years))
+            for line in lines:
+                h=re.search(rf'(?:^|\bDKKm\s+)Q2\s+{y}\s+Q2\s+{y-1}(?:\s|$)',line.strip(),re.I)
+                if not h:continue
+                years=re.findall(r'\b20\d{2}\b',line[h.start():])
+                if len(years) in (2,3,4,5):matches.add(len(years))
+            if len(matches)==1:
+                return (next(iter(matches)),None,None)
+            if matches:raise ValueError('Ambiguous Alm Q2 isolated-quarter header')
+    print('MARKET_ALM_HISTORY_HEADER',period(y,q),repr(left.splitlines()[:18]),repr(full.splitlines()[:18]),flush=True)
+    raise ValueError('Explicit Alm historical isolated-quarter column header not verified')
+
 def alm_points(raw,url,sha,y,q):
     from rolling_alm_brand_reports import read_report,column_layout,row,LABELS
     from alm_brand_live_pdf import trusted_pdf_link
@@ -45,7 +85,7 @@ def alm_points(raw,url,sha,y,q):
     eligible=[(i,t) for i,t in enumerate(texts) if all(x in t for x in ('Gross expense ratio','Net reinsurance ratio','Insurance service result','INCOME Insurance revenue',f'Q{q} {y}'))]
     if len(eligible)!=1:raise ValueError('Unique Alm group financial highlights missing')
     i,t=eligible[0];left=regions.get(i,{}).get('left') or t
-    count,yi,pi=column_layout(left,y,q)
+    count,yi,pi=alm_isolated_layout(left,t,y,q)
     rows={k:row(left,label,count) for k,label in LABELS.items()}
     def amounts(idx):
         return (rows['insurance_revenue'][idx],abs(rows['claims_expenses'][idx]),abs(rows['operating_expenses'][idx]),-rows['reinsurance'][idx],rows['insurance_service_result'][idx])

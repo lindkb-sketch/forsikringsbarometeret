@@ -264,4 +264,13 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace("workers' compensation","workers’ compensation")])[0]['text'],events[0]['text'])
         self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace('Results Q3 2026','Results Q2 2026')]),[])
 
+    def test_alm_history_accepts_explicit_half_year_header_only(self):
+        from market_profitability_history import alm_isolated_layout
+        text='Q2 Q2 H1 H1 FY\nDKKm 2026 2025 2026 2025 2025\nINCOME Insurance revenue 3000 2900 5900 5700 11700'
+        self.assertEqual(alm_isolated_layout(text,text,2026,2),(5,2,3))
+        inline='DKKm Q2 2026 Q2 2025 Half year 2026 Half year 2025\nINCOME Insurance revenue 3000 2900 5900 5700'
+        self.assertEqual(alm_isolated_layout(inline,inline,2026,2),(4,None,None))
+        with self.assertRaises(ValueError):
+            alm_isolated_layout(text.replace('Q2 Q2','Q1 Q1'),text.replace('Q2 Q2','Q1 Q1'),2026,2)
+
 if __name__=='__main__':unittest.main()
