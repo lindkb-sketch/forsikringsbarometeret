@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'index.html'
+      - 'scripts/quarterly_runtime.js'
       - 'scripts/future_quarter_e2e_drill.py'
       - 'scripts/quarterly_import_contract.py'
       - 'scripts/verify_expected_published_quarters.py'
