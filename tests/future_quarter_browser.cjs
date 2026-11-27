@@ -80,7 +80,8 @@ for(const mode of ['quarter','ytd']){
    if(detail.expected.resultPrev)
     assert(detail.cards[1].previous.includes(detail.expected.resultPrev),company+' '+mode+' wrong prior result');
   }else{
-   assert(detail.cards.every(c=>c.value==='Ikke publisert'),company+' '+mode+' leaked unreleased report');
+   assert(detail.cards.every(c=>c.value==='—'&&c.previous==='(—)'),
+     company+' '+mode+' leaked unreleased report or prior figures: '+JSON.stringify(detail.cards));
   }
  }
 }
