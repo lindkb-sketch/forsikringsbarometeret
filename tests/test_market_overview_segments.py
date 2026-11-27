@@ -172,4 +172,30 @@ class MarketSegmentTests(unittest.TestCase):
         counts='Private\nQ3 2026\nNumber of active policies increased by 5%\nNumber of customers increased by 2%'
         self.assertEqual({r['driver'] for r in document_insights('Tryg',2026,3,doc,[counts])},{'policy_count_growth','customer_growth'})
 
+
+    def test_observed_deck_layouts_contribute_scoped_current_evidence(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://issuer.invalid/deck.pdf')
+        gj=('Quarterly update\nInsurance revenue increased by 3.7 per cent in local currency\n'
+            'Pricing measures continued to support growth\nHigher volumes in Private Norway and Sweden\nLower volumes in Commercial, reflecting')
+        result=document_insights('Gjensidige',2026,3,doc,[gj])
+        self.assertEqual({r['driver'] for r in result},{'price','volume_up','volume_down'})
+        self.assertEqual(next(r['views'] for r in result if r['driver']=='price'),['group/all'])
+        self.assertIn('norway/pm',next(r['views'] for r in result if r['driver']=='volume_up'))
+        self.assertNotIn('norway/bm',next(r['views'] for r in result if r['driver']=='volume_down'))
+        sam=('Palette\nPrivate UK: Capturing growth with disciplined underwriting\n'
+             'LCP growth of 3% quarter-on-quarter and 13% year-on-year')
+        result=document_insights('Sampo',2026,3,doc,[sam])
+        self.assertEqual([(r['driver'],r['reported_change_pct'],r['views']) for r in result],[('uk_lcp_growth',13.0,['group/all'])])
+        self.assertEqual(document_insights('Sampo',2026,3,doc,[sam.replace('quarter-on-quarter','over three years')]),[])
+        alm=('Personal lines\nImproved performance driven by lower claims levels\nCombined ratio\n'
+             'Claims ratio improved by 5 percentage points year-on-year\n'
+             'Underlying claims ratio improved by 0.8 percentage points\n'
+             'Premium growth of 4.7%, driven by premium adjustments and growth with')
+        result=document_insights('Alm. Brand',2026,3,doc,[alm])
+        self.assertEqual({r['driver'] for r in result},{'price','underlying_loss_improved'})
+        self.assertTrue(all(r['views']==['group/pm','group/all'] and r['period_type']=='quarter' for r in result))
+        self.assertEqual(document_insights('Alm. Brand',2026,3,doc,[alm.replace('year-on-year','expected next year')]),[])
+        self.assertEqual(document_insights('Gjensidige',2026,3,doc,[gj.replace('Quarterly update','Quarterly update Q2 2026')]),[])
+
 if __name__=='__main__':unittest.main()

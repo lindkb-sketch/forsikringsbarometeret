@@ -13,7 +13,7 @@ from audit_nine_issuer_documents import (INDEXES,KNOWN_PRESENTATIONS,REPORT_ONLY
     PRESENTATION,EXCLUDE,archive_links,issuer_detail_links,period_label,report_sources,
     trusted,fetch,verify_document,normalize,ISSUER_RELEASE_PAGES)
 
-SCHEMA=1
+SCHEMA=2
 GROUP_ONLY={'Sampo','Tryg','Gjensidige','Alm. Brand','Protector','Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 NORWAY_TOTAL={'Fremtind','Frende','KLP Skadeforsikring','Storebrand'}
 SPLIT={'Tryg','Gjensidige','Fremtind','Alm. Brand'}
@@ -108,6 +108,50 @@ def page_scope(company,raw,y,q,kind):
     elif company=='Protector':views.append('norway/bm')
     return views,mode
 
+def issuer_deck_insights(company,raw,y,q):
+    """Observed results-deck layouts with explicit evidence in current slides.
+
+    The caller has already checked the complete deck's issuer, report period
+    and fingerprint. Exact slide titles and local bullet fragments establish
+    scope; unrelated appendix charts, targets and forecasts are not used.
+    """
+    lines=[normalize(l) for l in raw.splitlines() if l.strip()]
+    head=' '.join(lines[:5])
+    body=' '.join(lines)
+    out=[]
+    def add(theme,driver,views,pattern,value_pattern=None):
+        hit=re.search(pattern,body,re.I)
+        if not hit:return
+        if value_pattern:
+            value=re.search(value_pattern,hit.group(0),re.I)
+            if not value:return
+            out.append((theme,driver,views,hit.group(0),float(value[1].replace(',','.'))))
+        else:out.append((theme,driver,views,hit.group(0),None))
+    # Prevent a clearly different quarter in the slide's main title from
+    # borrowing the verified cover's identity. Comparative table labels below
+    # the heading remain allowed.
+    title=' '.join(lines[:2])
+    dates=re.findall(r'\bQ([1-4])\s*[/ -]?\s*(20\d{2})\b',title,re.I)
+    if dates and (str(q),str(y)) not in dates:return []
+    if re.search(r'\b(?:outlook|guidance|forecast|consensus|targets?|appendix)\b',title,re.I):return []
+    if company=='Gjensidige' and re.search(r'^Quarterly update\b.{0,90}\bInsurance revenue increased\b',head,re.I):
+        add('growth_driver','price',['group/all'],r'\bPricing measures continued to support growth\b')
+        add('growth_driver','volume_up',['group/all','group/pm','norway/all','norway/pm'],r'\bHigher volumes in Private Norway and Sweden\b')
+        add('growth_driver','volume_down',['group/all','group/bm'],r'\bLower volumes in Commercial\b')
+    elif company=='Sampo' and re.search(r'^(?:Palette\s+)?Private UK:\s*Capturing growth with disciplined underwriting\b',head,re.I):
+        # Year-on-year AND quarter-on-quarter explicitly identify an actual
+        # quarterly LCP movement. Keep LCP as the issuer's own definition;
+        # do not equate it with customer count or IFRS revenue growth.
+        add('growth_driver','uk_lcp_growth',['group/all'],r'\bLCP growth of \d+(?:[.,]\d+)?%\s+quarter-on-quarter and \d+(?:[.,]\d+)?%\s+year-on-year\b',r'and (\d+(?:[.,]\d+)?)%\s+year-on-year')
+    elif company=='Alm. Brand' and re.search(r'^Personal lines\s+Improved performance driven by lower claims levels\b',head,re.I):
+        if not re.search(r'\bClaims ratio improved by [\d.,]+ percentage points? year-on-year\b',body,re.I):return []
+        add('growth_driver','price',['group/pm','group/all'],r'\bPremium growth of [\d.,]+%, driven by premium adjustments\b')
+        add('profit_driver','underlying_loss_improved',['group/pm','group/all'],r'\bUnderlying claims ratio improved by [\d.,]+ percentage points?\b')
+    elif company=='Alm. Brand' and re.search(r'^Commercial lines\s+Improved claims ratio especially driven by lower major claims and run-off gains\b',head,re.I):
+        add('profit_driver','underlying_loss_improved',['group/bm','group/all'],r'\bUnderlying claims ratio improved by [\d.,]+ percentage points?\b')
+        add('profit_driver','runoff_gains',['group/bm','group/all'],r'\bImproved claims ratio especially driven by lower major claims and run-off gains\b')
+    return out
+
 def document_insights(company,y,q,doc,texts):
     """Consume only verified, byte-hashed original documents. Each accepted
     assertion stores the matching original phrase, exact page and period."""
@@ -121,6 +165,12 @@ def document_insights(company,y,q,doc,texts):
         for pt in ('quarter','ytd') if q==1 else (mode,):
             out.append(dict(company=company,period=period,source_document_period=period,source_type=source_type,source_url=url,source_sha256=sha,source_page=page,period_type=pt,views=views,theme=theme,driver=driver,evidence=evidence,text=text or driver,supplemental_document=True))
     for page,raw in enumerate(texts,1):
+        if kind=='results_presentation':
+            for theme,driver,views,evidence,value in issuer_deck_insights(company,raw,y,q):
+                start=len(out)
+                add(page,views,'quarter',theme,driver,evidence)
+                if value is not None:
+                    for entry in out[start:]:entry['reported_change_pct']=value
         found=page_scope(company,raw,y,q,kind)
         if not found:continue
         views,mode=found

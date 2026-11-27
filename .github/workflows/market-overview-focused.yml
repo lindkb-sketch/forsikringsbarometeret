@@ -61,7 +61,11 @@ jobs:
           const deckInsights=c.insights.filter(x=>x.source_type==='official_results_presentation');
           console.log('MARKET_COMMENTARY_DECKS',decks.map(([company,d])=>[company,d.documents.filter(x=>x.document_type==='results_presentation').length,d.insights.length]));
           console.log('MARKET_COMMENTARY_DECK_INSIGHTS',deckInsights.map(x=>[x.company,x.theme,x.driver,x.source_page,x.period_type]));
-          assert.ok(deckInsights.some(x=>['growth_driver','profit_driver','material_event','regulation'].includes(x.theme)),'Verified deck must actually contribute commentary evidence');
+          for(const company of ['Gjensidige','Tryg','Sampo','Alm. Brand']){
+            assert.ok(deckInsights.some(x=>x.company===company&&['growth_driver','profit_driver','material_event','regulation'].includes(x.theme)),company+' results deck must actually contribute commentary evidence');
+          }
+          assert.ok(deckInsights.some(x=>x.theme==='growth_driver'),'Results presentations must contribute growth drivers');
+          assert.ok(deckInsights.some(x=>x.theme==='profit_driver'),'Results presentations must contribute CR drivers');
           const drivers=c.insights.filter(x=>x.theme==='growth_driver');
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='quarter'&&x.views.includes('norway/pm')));
           assert.ok(drivers.some(x=>x.driver==='price'&&x.company==='Fremtind'&&x.period_type==='ytd'));

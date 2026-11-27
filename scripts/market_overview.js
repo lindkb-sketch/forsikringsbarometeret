@@ -246,6 +246,7 @@
     customer_inflow:'kundetilgang gjennom distribusjonssamarbeid',
     customer_growth:'vekst i kundebestanden',
     policy_count_growth:'vekst i antall forsikringer',
+    uk_lcp_growth:'vekst i rapportert britisk LCP-bestand',
     volume_pm_products:'volumvekst innen eiendom, person og reise',
     portfolio_growth:'porteføljevekst i utvalgte segmenter',
     retention_up:'bedret kundelojalitet',
@@ -299,6 +300,9 @@
     const limitations=['volume_down','risk_selection','competition'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
     if(positiveDrivers.length)growth.push('Rapporterte vekstdrivere omfatter '+joinNatural(positiveDrivers)+'.');
     if(drivers.has('retention_up'))growth.push('Bedret kundelojalitet er også rapportert i deler av porteføljen.');
+    const ukLcp=driverRows.filter(x=>x.driver==='uk_lcp_growth'&&num(x.reported_change_pct)&&x.reported_change_pct>0);
+    const lcpValues=[...new Set(ukLcp.map(x=>x.reported_change_pct))];
+    if(lcpValues.length===1)growth.push('I britisk privatmarked rapporteres '+pct(lcpValues[0])+' årsvekst i LCP-bestanden (selskapets rapporterte bestandsmål).');
     if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
     if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].some(k=>drivers.has(k)))
       growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');
@@ -320,7 +324,7 @@
     }
     const profitEvidence=scoped.filter(x=>x.theme==='profit_driver'&&/^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length);
     const factors=new Set(profitEvidence.map(x=>x.driver));
-    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent'],['weather_lower','lavere værskadebelastning']].filter(([k])=>factors.has(k)).map(([,v])=>v);
+    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent'],['weather_lower','lavere værskadebelastning'],['runoff_gains','avviklingsgevinster']].filter(([k])=>factors.has(k)).map(([,v])=>v);
     if(explanations.length)cr.push('Rapporterte lønnsomhetsdrivere omfatter '+joinNatural(explanations)+'.');
     const lowerClaims=scoped.some(x=>x.theme==='large_claims'&&/lavere storskad/i.test(x.text));
     const higherClaims=scoped.some(x=>x.theme==='large_claims'&&/høyere storskad/i.test(x.text));
