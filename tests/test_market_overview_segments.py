@@ -280,4 +280,20 @@ class MarketSegmentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             alm_isolated_layout(text.replace('Q3 Q3','Q2 Q2'),text.replace('Q3 Q3','Q2 Q2'),2025,3)
 
+    def test_independent_original_historical_revenue(self):
+        from market_profitability_history import historical_revenue,apply_historical_growth
+        klp='KLP Skadeforsikring AS\nResultatregnskap\nKLP Skadeforsikring AS\n3. kvartal 3. kvartal 01.01.2025 01.01.2024 01.01.2024\nNOTE MILLIONER KRONER 2025 2024 -30.09.2025 -30.09.2024 -31.12.2024\n3 Forsikringsinntekter 783,7 687,9 2316,1 2052,8 2758,4'
+        alm='Financial highlights and key ratios\nAlm. Brand Group\nQ3 Q3 9M 9M FY\nDKKm 2025 2024 2025 2024 2024\nINCOME Insurance revenue 3,006 2,796 8,814 8,238 11,083'
+        a=historical_revenue('Alm. Brand',2025,3,'https://attachment.news.eu.nasdaq.com/a952a2752b5b371fe77e815f5af75ada6',SHA,[(3,[alm])])
+        k=historical_revenue('KLP Skadeforsikring',2025,3,'https://www.klp.no/report.pdf',SHA,[(6,[klp])])
+        self.assertAlmostEqual(a['quarter']['growth'],(3006/2796-1)*100)
+        self.assertAlmostEqual(k['ytd']['growth'],(2316.1/2052.8-1)*100)
+        with self.assertRaises(ValueError):
+            historical_revenue('KLP Skadeforsikring',2025,3,'https://www.klp.no/report.pdf',SHA,[(6,[klp.replace('01.01.2024','01.01.2023')])])
+        point=dict(company='Alm. Brand',period='Q3 2025',metrics={'insurance_revenue':3006},ytd_metrics={'insurance_revenue':8814})
+        self.assertTrue(apply_historical_growth(point,a))
+        self.assertEqual(point['growth_evidence']['source_page'],3)
+        point['metrics']['insurance_revenue']=3200
+        self.assertFalse(apply_historical_growth(point,a))
+
 if __name__=='__main__':unittest.main()

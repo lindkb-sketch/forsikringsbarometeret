@@ -80,6 +80,12 @@ jobs:
               const m=type==='quarter'?previous?.metrics:previous?.ytd_metrics;
               const old=type==='quarter'?older?.metrics:older?.ytd_metrics;
               if(!(Number.isFinite(m?.insurance_revenue_growth)||(m?.insurance_revenue>0&&old?.insurance_revenue>0)))gaps.push(company+' '+type);
+              const ev=previous?.growth_evidence;
+              if(ev){
+                const v=ev[type];
+                assert.ok(ev.period==='Q3 2025'&&ev.prior_period==='Q3 2024'&&ev.source_page>0&&/^[0-9a-f]{64}$/.test(ev.source_sha256)&&v.current>0&&v.prior>0);
+                assert.ok(Math.abs(m.insurance_revenue_growth-100*(v.current/v.prior-1))<1e-9);
+              }
             }
             console.log('COMPANY_PRIOR_YEAR_GROWTH_GAPS',JSON.stringify(gaps));
             assert.deepEqual(gaps,[],'Previous-year revenue growth must be source-backed in both reporting modes for all nine insurers');

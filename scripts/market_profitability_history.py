@@ -8,7 +8,7 @@ import hashlib, math, re
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 
-SCHEMA=3
+SCHEMA=4
 ALM='Alm. Brand'
 KLP='KLP Skadeforsikring'
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
@@ -208,6 +208,95 @@ def klp_points(raw,url,sha,y,q):
             out.append(checked_point(KLP,y-1,4,m,url,sha,page,'calculated_fy_minus_ytd',period(y,q)))
     return out
 
+def historical_revenue(company,y,q,url,sha,pages):
+    """Read explicit quarter and cumulative revenue columns independently.
+
+    Older published layouts need not pass the newer full ratio-table
+    parser. A revenue observation is not evidence of any other KPI.
+    The returned comparison is additionally checked against the
+    independently admitted next-year comparative before publication.
+    """
+    if not source_ok(url,sha):raise ValueError('Missing comparison provenance')
+    candidates=[]
+    if company==ALM:
+        from alm_brand_live_pdf import trusted_pdf_link
+        from rolling_alm_brand_reports import row
+        if not trusted_pdf_link(url):raise ValueError('Untrusted historical Alm report')
+        for page,variants in pages:
+            for t in variants:
+                if not re.search(r'Alm\.?\s+Brand\s+Group',t,re.I) or not re.search(r'Financial highlights and key ratios',t,re.I):continue
+                try:
+                    count,yi,pi=alm_isolated_layout(t,t,y,q)
+                    if yi is None or pi is None:continue
+                    rev=row(t,'Insurance revenue',count)
+                    vals=tuple(float(rev[i]) for i in (0,1,yi,pi))
+                    candidates.append((page,vals))
+                except (ValueError,IndexError):continue
+    elif company==KLP:
+        from import_extended_pdfs import approved
+        from klp_q2q3_reconcile import columns
+        if not approved(url,KLP):raise ValueError('Untrusted historical KLP report')
+        end={1:'31.03.',2:'30.06.',3:'30.09.',4:'31.12.'}[q]
+        for page,variants in pages:
+            for t in variants:
+                if not re.search(r'KLP\s+Skadeforsikring\s+AS',t,re.I) or not re.search(r'(?m)^\s*Resultatregnskap(?:\s+KLP Skadeforsikring AS)?\s*$',t,re.I):continue
+                before=re.split(r'(?m)^\s*(?:\d+\s+)?Forsikringsinntekter\s+',t,maxsplit=1)[0]
+                h=' '.join(before.split()).replace('–','-').replace('−','-')
+                # The 2025 report prints both quarter labels above the
+                # year row and the three exact cumulative date ranges.
+                split=rf'{q}\.\s*kvartal\s+{q}\.\s*kvartal\s+01\.01\.{y}\s+01\.01\.{y-1}\s+01\.01\.{y-1}\s+(?:NOTE\s+)?MILLIONER KRONER\s+{y}\s+{y-1}\s+-{re.escape(end)}{y}\s+-{re.escape(end)}{y-1}\s+-31\.12\.{y-1}\b'
+                normal=rf'(?:NOTE\s+)?MILLIONER KRONER\s+{q}\.\s*kvartal\s+{y}\s+{q}\.\s*kvartal\s+{y-1}\s+{re.escape(end)}{y}\s+{re.escape(end)}{y-1}\s+31\.12\.{y-1}\b'
+                if not (re.search(split,h,re.I) or re.search(normal,h,re.I)):continue
+                try:
+                    rev=columns(t,'Forsikringsinntekter',expected=5)
+                    candidates.append((page,tuple(float(rev[i]) for i in (0,1,2,3))))
+                except ValueError:continue
+    else:raise ValueError('Unsupported historical company')
+    distinct={v for _,v in candidates}
+    if len(distinct)!=1:raise ValueError('Historical revenue columns missing or ambiguous: '+repr([(p,v) for p,v in candidates]))
+    page,values=candidates[0]
+    if not all(finite(v) and v>0 for v in values):raise ValueError('Nonpositive historical revenue')
+    a,b,c,d=values
+    if c<a or d<b:raise ValueError('Cumulative revenue below quarter')
+    return dict(company=company,period=period(y,q),prior_period=period(y-1,q),
+        source_url=url,source_sha256=sha,source_page=page,status='verified',
+        quarter=dict(current=a,prior=b,growth=100*(a/b-1)),
+        ytd=dict(current=c,prior=d,growth=100*(c/d-1)))
+
+def read_historical_revenue(raw,company,y,q,url,sha):
+    import io,pdfplumber
+    if not raw.startswith(b'%PDF-') or hashlib.sha256(raw).hexdigest()!=sha:raise ValueError('Unverified comparison PDF')
+    with pdfplumber.open(io.BytesIO(raw)) as pdf:
+        cover=' '.join((p.extract_text() or '') for p in pdf.pages[:2])
+        if company==ALM:
+            if not re.search(r'Alm\.?\s+Brand',cover,re.I) or not re.search(rf'\bQ\s*{q}\b',cover,re.I) or str(y) not in cover:raise ValueError('Wrong Alm report period')
+        elif not re.search(r'KLP\s+Skadeforsikring',cover,re.I) or not re.search(rf'{q}\.\s*kvartal(?:sregnskap)?\s+{y}',cover,re.I):raise ValueError('Wrong KLP report period')
+        pages=[]
+        for i,p in enumerate(pdf.pages[:25],1):
+            t=p.extract_text(layout=False) or ''
+            if company==ALM and 'Insurance revenue' in t and re.search(r'Financial highlights and key ratios',t,re.I):
+                variants=[t]
+                for x in (.47,.48,.49,.50,.51,.52):
+                    cropped=p.crop((0,0,p.width*x,p.height)).extract_text(layout=False) or ''
+                    # The title may extend across the crop boundary. The
+                    # full page establishes the group/table identity.
+                    variants.append('Financial highlights and key ratios\nAlm. Brand Group\n'+cropped if re.search(r'Alm\.?\s+Brand\s+Group',t,re.I) else cropped)
+                pages.append((i,variants))
+            elif company==KLP and 'Forsikringsinntekter' in t and 'Resultatregnskap' in t:pages.append((i,[t]))
+        return historical_revenue(company,y,q,url,sha,pages)
+
+def apply_historical_growth(point,evidence):
+    if not point or point.get('company')!=evidence.get('company') or point.get('period')!=evidence.get('period'):return False
+    tolerance=.11 if point['company']==KLP else 1.01
+    for name,field in [('quarter','metrics'),('ytd','ytd_metrics')]:
+        observed=point.get(field,{}).get('insurance_revenue')
+        e=evidence.get(name,{})
+        if not finite(observed) or abs(observed-e.get('current',-1))>tolerance:return False
+    for name,field in [('quarter','metrics'),('ytd','ytd_metrics')]:
+        point[field]['insurance_revenue_growth']=evidence[name]['growth']
+    point['growth_evidence']=evidence
+    return True
+
 def build_history(extended,registry,previous):
     old=previous.get('documents',{}) if previous.get('schema_version')==SCHEMA else {}
     docs=dict(old);records=[];sources={}
@@ -263,9 +352,16 @@ def build_history(extended,registry,previous):
             for url in list(dict.fromkeys(urls))[:5]:
                 try:
                     raw=fetch(url);sha=hashlib.sha256(raw).hexdigest()
-                    pts=(alm_points if company==ALM else klp_points)(raw,url,sha,*target)
-                    if not any(x.get('period')==period(*target) for x in pts):continue
-                    verified[sha]=dict(company=company,source_url=url,source_document_period=period(*target),points=pts)
+                    # Preserve independently verified revenue even if an
+                    # unrelated old cost/ratio row has a changed layout.
+                    pts=[];growth=None
+                    try:
+                        pts=(alm_points if company==ALM else klp_points)(raw,url,sha,*target)
+                    except Exception as exc:print('::warning::MARKET_HISTORICAL_FULL_TABLE',company,period(*target),str(exc)[:180],flush=True)
+                    try:growth=read_historical_revenue(raw,company,*target,url,sha)
+                    except Exception as exc:print('::warning::MARKET_HISTORICAL_REVENUE',company,period(*target),str(exc)[:220],flush=True)
+                    if not growth and not any(x.get('period')==period(*target) for x in pts):continue
+                    verified[sha]=dict(company=company,source_url=url,source_document_period=period(*target),points=pts,growth_comparison=growth)
                 except Exception as exc:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),str(exc)[:160],flush=True)
             if len(verified)==1:docs.update(verified)
             else:print('::warning::MARKET_COMPARATIVE_PDF',company,period(*target),'unique source not verified',len(verified),flush=True)
@@ -273,7 +369,7 @@ def build_history(extended,registry,previous):
     def read(task):
         sha,(company,y,q,url)=task
         saved=old.get(sha)
-        if saved and saved.get('company')==company and saved.get('source_url')==url and saved.get('source_document_period')==period(y,q) and saved.get('points'):
+        if saved and saved.get('company')==company and saved.get('source_url')==url and saved.get('source_document_period')==period(y,q) and (saved.get('points') or saved.get('growth_comparison')):
             return sha,saved
         try:
             if company==ALM:
@@ -303,4 +399,11 @@ def build_history(extended,registry,previous):
             old_point=points[k]
             points[k]={**old_point,'metrics':{**r.get('metrics',{}),**old_point.get('metrics',{})},
                        'ytd_metrics':{**r.get('ytd_metrics',{}),**old_point.get('ytd_metrics',{})}}
+    for entry in docs.values():
+        ev=entry.get('growth_comparison')
+        if not ev:continue
+        point=points.get((ev['company'],ev['period']))
+        if apply_historical_growth(point,ev):
+            print('MARKET_PRIOR_YEAR_GROWTH_VERIFIED',ev['company'],ev['period'],ev['quarter']['growth'],ev['ytd']['growth'],ev['source_url'],ev['source_sha256'],ev['source_page'],flush=True)
+        else:print('::warning::MARKET_PRIOR_YEAR_GROWTH_CONFLICT',ev['company'],ev['period'],flush=True)
     return dict(schema_version=SCHEMA,documents=docs,points=sorted(points.values(),key=lambda r:(r['company'],r['year'],r['quarter'])))
