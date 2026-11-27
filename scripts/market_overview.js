@@ -333,7 +333,10 @@
       if(structural)appendWithin(cr,[structural],111,1);
       else if(ls[0]&&ls[0]!==adverse)appendWithin(cr,[ls[0]],111,1);
       if(cs[0])appendWithin(cr,[cs[0]],111,1);
-      if(temporary&&temporary!==ls[0]&&cr.length<5)appendWithin(cr,[temporary],116,1);
+      // The word budget, not the number of sentences, controls whether a
+      // distinct temporary driver fits. This matters especially when the
+      // adverse, structural and cost drivers all need to be explained.
+      if(temporary&&!cr.includes(temporary.text))appendWithin(cr,[temporary],113,1);
       if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),110,1);
       if(!cs.length&&component){
         const stable=component.includes('kostnadsprosenten er omtrent uendret');

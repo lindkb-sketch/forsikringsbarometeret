@@ -225,5 +225,6 @@ test('causal editorial selection retains contrasting drivers and avoids repeatin
  const c=comments(m,{},'group','all',ctx),s=JSON.stringify(c);
  assert.doesNotMatch(s,/GJENTATT/);
  assert.match(c[1].paragraphs[0],/Dansk avsetning.*Lavere skadefrekvens.*Kostnadskontrollen.*Lavere værskader/);
+ assert.ok(c[1].paragraphs[0].split(/\s+/).length<=125);
  assert.match(c[2].paragraphs[0],/176 mill.*inntektsføring/);
 });
