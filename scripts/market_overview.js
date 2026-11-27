@@ -269,12 +269,102 @@
   function explanatoryText(scoped,theme){
     const items=scoped.filter(x=>x.theme===theme&&typeof x.topic==='string'&&num(x.priority)&&typeof x.evidence==='string'&&x.evidence.trim()&&x.text.trim());
     const sorted=[...items].sort((a,b)=>b.priority-a.priority||a.company.localeCompare(b.company,'nb')||a.source_page-b.source_page);
-    return [...new Map(sorted.reverse().map(x=>[x.topic,x])).values()].reverse().sort((a,b)=>b.priority-a.priority);
+    return [...new Map(sorted.reverse().map(x=>[x.company+'|'+x.topic,x])).values()].reverse().sort((a,b)=>b.priority-a.priority);
+  }
+  // A company's report is evidence about that company, not the whole market.
+  // Keep the source issuer attached to every specific explanatory sentence.
+  function attributedInsight(item){
+    const text=String(item.text||'').trim();
+    if(!text||!item.company)return text;
+    const name=pretty(item.company);
+    const escaped=item.company.replace(/[.*+?^{()|[\]\\]/g,'\\$&');
+    if(new RegExp('(?:^|[^\\p{L}\\p{N}])'+escaped+'(?=$|[^\\p{L}\\p{N}])','iu').test(text))return text;
+    return name+': '+text;
+  }
+  const TREND_LABELS={
+    price:'premie- og prisjusteringer',
+    volume:'vekst i forsikringsporteføljene',
+    distribution:'kundetilgang gjennom distribusjonssamarbeid',
+    customers:'vekst i kundebestanden',
+    policies:'vekst i antall forsikringer',
+    retail:'vekst i privatkundesegmentet',
+    retention:'bedret kundelojalitet',
+    volume_down:'lavere volum i deler av porteføljene',
+    selection:'selektiv risikoutvelgelse',
+    competition:'konkurransepress',
+    frequency:'lavere skadefrekvens',
+    underlying:'bedre underliggende skadeprosent',
+    weather:'lavere værskadebelastning',
+    runoff:'avviklingsgevinster',
+    large_lower:'lavere storskadebelastning',
+    large_higher:'høyere storskadebelastning',
+    cost_control:'stram kostnadskontroll'
+  };
+  const GROWTH_TREND_KEYS={
+    price:['price'],volume_up:['volume'],volume_pm_products:['volume'],portfolio_growth:['volume'],
+    customer_inflow:['distribution'],customer_growth:['customers'],policy_count_growth:['policies'],
+    retail_growth:['retail'],retention_up:['retention'],volume_down:['volume_down'],
+    risk_selection:['selection'],competition:['competition']
+  };
+  const PROFIT_TREND_KEYS={
+    lower_claim_frequency:['frequency'],underlying_loss_improved:['underlying'],
+    weather_lower:['weather'],runoff_gains:['runoff']
+  };
+  const EXPLANATION_TREND_KEYS={
+    premium_adjustment:['price'],pm_product_volumes:['price','volume'],pm_price_volume:['price','volume'],
+    pm_inflation_moderation:['price','volume'],group_ytd_price_volume:['price','volume'],
+    bank_distribution:['distribution'],bm_selectivity:['selection'],bm_soft_market:['selection'],
+    bm_churn_renewals:['volume_down'],retail_growth:['retail'],
+    motor_property_frequency:['frequency'],motor_frequency:['frequency'],commercial_frequency:['frequency'],
+    mid_sized_claims:['frequency'],motor_pricing:['underlying'],commercial_pricing_selection:['underlying'],
+    weather_major_claims:['weather','large_lower','underlying'],pm_weather_runoff:['weather'],
+    pm_weather_ytd:['weather','runoff'],private_weather_ytd:['weather'],commercial_ytd_weather:['weather'],
+    group_weather:['weather'],private_runoff_ytd:['runoff'],runoff_property:['runoff','large_lower'],
+    revenue_scale_efficiency:['cost_control'],private_cost_context:['cost_control'],cost_control:['cost_control']
+  };
+  function insightTrendKeys(x){
+    if(x.theme==='growth_driver')return GROWTH_TREND_KEYS[x.driver]||[];
+    if(x.theme==='profit_driver')return PROFIT_TREND_KEYS[x.driver]||[];
+    if(x.theme==='large_claims'){
+      if(/lavere storskad/i.test(x.text))return ['large_lower'];
+      if(/høyere storskad/i.test(x.text))return ['large_higher'];
+    }
+    if(/^(growth|loss|cost)_explanation$/.test(x.theme||''))return EXPLANATION_TREND_KEYS[x.topic]||[];
+    return [];
+  }
+  function trendEvidence(scoped){
+    const support=new Map();
+    for(const x of scoped){
+      // Report + presentation + several pages from the same issuer still
+      // count as just ONE issuer. Do not generalise a single observation.
+      if(x.theme!=='large_claims'&&!(typeof x.evidence==='string'&&x.evidence.trim()))continue;
+      for(const k of insightTrendKeys(x)){
+        if(!support.has(k))support.set(k,new Set());
+        support.get(k).add(x.company);
+      }
+    }
+    return support;
+  }
+  function commonTrendSentence(support,keys,lead){
+    const labels=keys.filter(k=>(support.get(k)?.size||0)>=2).map(k=>TREND_LABELS[k]);
+    return labels.length?lead+joinNatural(labels)+'.':'';
+  }
+  function namedDriverSentences(rows,labels,support){
+    const byCompany=new Map();
+    for(const x of rows){
+      const label=labels[x.driver];
+      if(!label)continue;
+      const keys=insightTrendKeys(x);
+      if(keys.length&&keys.every(k=>(support.get(k)?.size||0)>=2))continue;
+      if(!byCompany.has(x.company))byCompany.set(x.company,new Set());
+      byCompany.get(x.company).add(label);
+    }
+    return [...byCompany].map(([company,items])=>pretty(company)+' rapporterer '+joinNatural([...items])+'.');
   }
   function appendWithin(target,items,maxWords,maxItems=3){
     let added=0;
     for(const item of items){
-      const t=typeof item==='string'?item:item.text;
+      const t=typeof item==='string'?item:attributedInsight(item);
       if(!t||target.includes(t)||added>=maxItems)continue;
       if(wordCount(target.join(' '))+wordCount(t)>maxWords&&added>0)continue;
       if(wordCount(target.join(' '))+wordCount(t)>maxWords+12)continue;
@@ -282,19 +372,26 @@
     }
     return added;
   }
-  function richerComments(scoped,market,growth,cr,special){
+  function richerComments(scoped,market,growth,cr,special,support){
     const gs=explanatoryText(scoped,'growth_explanation'),ls=explanatoryText(scoped,'loss_explanation'),cs=explanatoryText(scoped,'cost_explanation'),es=explanatoryText(scoped,'event_explanation');
     if(gs.length){
       const original=growth.slice(),opening=original[0];
       growth.splice(0,growth.length,opening);
+      // Preserve the market-wide numerical direction and corroborated
+      // common drivers BEFORE choosing individual-company examples.
+      appendWithin(growth,original.filter(x=>/fra forrige kvartal|HIÅ-tempoet|^Flere selskaper/.test(x)),95,3);
       const positive=gs.filter(x=>!['restraint','currency'].includes(x.category));
       const restraint=gs.filter(x=>x.category==='restraint');
       const priceVolume=positive.find(x=>['pm_product_volumes','pm_price_volume'].includes(x.topic));
       const first=market==='bm'?(restraint[0]||positive[0]):(priceVolume||positive[0]||restraint[0]);
       const used=new Set();
       const offer=x=>{
-        if(!x||used.has(x.topic))return;
-        if(appendWithin(growth,[x],95,1))used.add(x.topic);
+        if(!x||used.has(x.company+'|'+x.topic))return;
+        // A generic repeated price/volume statement adds no information
+        // after the common trend. Keep named, substantive exceptions.
+        const keys=insightTrendKeys(x);
+        if(['premium_adjustment','pm_price_volume','group_ytd_price_volume'].includes(x.topic)&&keys.length&&keys.every(k=>(support.get(k)?.size||0)>=2))return;
+        if(appendWithin(growth,[x],95,1))used.add(x.company+'|'+x.topic);
       };
       offer(first);
       if(market==='all')offer(restraint[0]);
@@ -311,19 +408,18 @@
       if(market!=='pm')offer(gs.find(x=>x.category==='currency'));
       if(market==='pm')offer(gs.find(x=>x.topic==='pm_inflation_moderation'&&!used.has(x.topic)));
       if(growth.length===1)appendWithin(growth,gs,95,2);
-      const trend=original.find(x=>/fra forrige kvartal|HIÅ-tempoet/.test(x));
-      if(trend&&/\b(?:[1-9]\d*),\d+ prosentpoeng/.test(trend))appendWithin(growth,[trend],98,1);
       if(growth.length===1)appendWithin(growth,original.slice(1),95,2);
     }
     if(ls.length||cs.length){
       const original=cr.slice(),opening=original[0];
-      const component=original.find(x=>x.startsWith('Skadeprosenten'));
+      const component=original.find(x=>x.includes('Skadeprosenten')&&x.includes('kostnadsprosenten'));
       cr.splice(0,cr.length,opening);
       if(component){
         const split=component.includes('Basert på tilgjengelig sammenlignbar splitt.');
         const text=component.replace(/ Målt som medianendringer på samme utvalg\.| Basert på tilgjengelig sammenlignbar splitt\./,'');
-        cr.push(split?'Der sammenlignbar splitt er rapportert, '+text.charAt(0).toLowerCase()+text.slice(1):text);
+        cr.push(split?'For tilgjengelig sammenlignbar splitt: '+text:text);
       }
+      appendWithin(cr,original.filter(x=>/^Flere selskaper/.test(x)),111,2);
       const adverse=ls.find(x=>x.category==='adverse');
       const structural=ls.find(x=>['frequency','pricing'].includes(x.category));
       const temporary=ls.find(x=>['weather','temporary'].includes(x.category));
@@ -336,8 +432,8 @@
       // The word budget, not the number of sentences, controls whether a
       // distinct temporary driver fits. This matters especially when the
       // adverse, structural and cost drivers all need to be explained.
-      if(temporary&&!cr.includes(temporary.text))appendWithin(cr,[temporary],113,1);
-      if(!ls.length)appendWithin(cr,original.filter(x=>/lønnsomhetsdrivere|storskadebelastning/.test(x)),110,1);
+      if(temporary&&!cr.includes(attributedInsight(temporary)))appendWithin(cr,[temporary],113,1);
+      if(!ls.length)appendWithin(cr,original.filter(x=>/rapporterer|storskadebelastning/.test(x)),110,1);
       if(!cs.length&&component){
         const stable=component.includes('kostnadsprosenten er omtrent uendret');
         appendWithin(cr,[stable?'Kostnadsandelen er stabil i tilgjengelig splitt; rapportene gir ikke grunnlag for å tilskrive CR-endringen kostnadsbesparelser.':'Kvartalsrapporteringen gir foreløpig ikke en entydig forklaring på kostnadsutviklingen i dette utvalget.'],116,1);
@@ -352,7 +448,7 @@
       const eventOrder=[...es].sort((a,b)=>rank(b)-rank(a));
       const family=x=>/^(named_fire|pm_fire|bm_large_loss)$/.test(x.topic)?'large_loss':/workers_comp/.test(x.topic)?'ruling':x.topic;
       for(const e of eventOrder){
-        if(chosen.some(x=>family(x)===family(e)))continue;
+        if(chosen.some(x=>x.company===e.company&&family(x)===family(e)))continue;
         chosen.push(e);
       }
       appendWithin(special,chosen,99,3);
@@ -365,7 +461,7 @@
     const rows=m.eligible,period=title(m.period),mode=m.mode||'quarter';
     // Market commentary only uses period-specific reports and results decks.
     // Editorial/news remains available on the existing summary page, not here.
-    const scoped=scopedInsights(m,scope,market,context);
+    const scoped=scopedInsights(m,scope,market,context),support=trendEvidence(scoped);
     const driverRows=scoped.filter(x=>x.theme==='growth_driver'&&Object.hasOwn(DRIVER_LABELS,x.driver)&&
       /^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length>0);
     const drivers=new Set(driverRows.map(x=>x.driver));
@@ -375,7 +471,7 @@
       const positive=comparable.filter(r=>r.growth>.05).length;
       const negative=comparable.filter(r=>r.growth<-.05).length;
       const breadth=comparable.length>=3?(positive/comparable.length>=.8?'Veksten er bredt fundert. ':negative/comparable.length>=.8?'Inntektsnedgangen er bredt fundert. ':'Vekstbildet er sammensatt. '):'';
-      const measure=comparable.length>1?'Medianveksten blant aktørene er ':'Rapportert inntektsvekst er ';
+      const measure=comparable.length>1?'Medianveksten blant aktørene er ':pretty(comparable[0].company)+' rapporterer inntektsvekst på ';
       growth.push(breadth+measure+growthText(med)+' mot samme periode i fjor.');
       // Adjacent archived quarter, same issuers and revenue definitions.
       const prior=priorView?.model;
@@ -396,54 +492,60 @@
           growth.push('Veksttakten i siste kvartal ligger '+pp(dif)+' '+(dif>0?'over':'under')+' HIÅ-tempoet målt på samme aktører (median).');
       }
     }else growth.push('Inntektsvekst er foreløpig ikke tilgjengelig.');
-    const positiveDrivers=['price',drivers.has('volume_pm_products')?'volume_pm_products':'volume_up','customer_inflow','customer_growth','policy_count_growth','portfolio_growth','retail_growth'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
-    const limitations=['volume_down','risk_selection','competition'].filter(k=>drivers.has(k)).map(k=>DRIVER_LABELS[k]);
-    if(positiveDrivers.length)growth.push('Rapporterte vekstdrivere omfatter '+joinNatural(positiveDrivers)+'.');
-    if(drivers.has('retention_up'))growth.push('Bedret kundelojalitet er også rapportert i deler av porteføljen.');
-    const ukLcp=driverRows.filter(x=>x.driver==='uk_lcp_growth'&&num(x.reported_change_pct)&&x.reported_change_pct>0);
-    const lcpValues=[...new Set(ukLcp.map(x=>x.reported_change_pct))];
-    if(lcpValues.length===1)growth.push('I britisk privatmarked rapporteres '+pct(lcpValues[0])+' årsvekst i LCP-bestanden (selskapets rapporterte bestandsmål).');
-    const commercialGwp=[...new Set(driverRows.filter(x=>x.driver==='gwp_lcy_higher'&&num(x.reported_change_pct)).map(x=>x.reported_change_pct))];
-    if(commercialGwp.length===1)growth.push('I en kommersielt orientert portefølje er bruttopremieveksten '+pct(commercialGwp[0])+' i lokal valuta, høyere enn i rapporteringsvaluta. Dette er ikke vekst i antall forsikringer.');
-    if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
-    if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','policy_count_growth','portfolio_growth'].some(k=>drivers.has(k)))
-      growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');
-    if(!drivers.size&&comparable.length)growth.push('En sammenlignbar pris- og volumsplitt er foreløpig ikke dokumentert i kvartalsrapportene og presentasjonene for dette utvalget.');
+    const commonGrowth=commonTrendSentence(support,['price','volume','distribution','customers','policies','retail','retention'],'Flere selskaper rapporterer ');
+    const commonLimits=commonTrendSentence(support,['volume_down','selection','competition'],'Flere selskaper rapporterer også ');
+    appendWithin(growth,[commonGrowth,commonLimits],95,2);
+    const ordinary=Object.fromEntries(Object.entries(DRIVER_LABELS).filter(([k])=>!['uk_lcp_growth','gwp_lcy_higher'].includes(k)));
+    appendWithin(growth,namedDriverSentences(driverRows,ordinary,support),95,3);
+    const namedMetric=(driver,make)=>{
+      const by=new Map();
+      for(const x of driverRows.filter(r=>r.driver===driver&&num(r.reported_change_pct))){
+        if(!by.has(x.company))by.set(x.company,new Set());
+        by.get(x.company).add(x.reported_change_pct);
+      }
+      return [...by].filter(([,v])=>v.size===1).map(([company,v])=>make(pretty(company),[...v][0]));
+    };
+    appendWithin(growth,namedMetric('uk_lcp_growth',(name,v)=>name+': I britisk privatmarked rapporteres '+pct(v)+' årsvekst i LCP-bestanden (selskapets rapporterte bestandsmål).'),95,1);
+    appendWithin(growth,namedMetric('gwp_lcy_higher',(name,v)=>name+': Bruttopremieveksten er '+pct(v)+' i lokal valuta, høyere enn i rapporteringsvaluta. Dette er ikke vekst i antall forsikringer.'),95,1);
+    if(!drivers.size&&comparable.length&&!commonGrowth&&!commonLimits&&!scoped.some(x=>x.theme==='growth_explanation'))growth.push('En sammenlignbar pris- og volumsplitt er foreløpig ikke dokumentert i kvartalsrapportene og presentasjonene for dette utvalget.');
     const crRows=rows.filter(r=>num(r.deltas?.combined_ratio));
     const dcr=median(crRows.map(r=>r.deltas.combined_ratio));
     if(num(dcr)){
-      cr.push('Lønnsomheten '+(dcr<-.05?'er styrket':dcr>.05?'er svekket':'er omtrent uendret')+' mot samme periode i fjor'+
+      cr.push((crRows.length===1?'Hos '+pretty(crRows[0].company)+' er lønnsomheten ': 'Lønnsomheten ')+(crRows.length===1?(dcr<-.05?'styrket':dcr>.05?'svekket':'omtrent uendret'):(dcr<-.05?'er styrket':dcr>.05?'er svekket':'er omtrent uendret'))+' mot samme periode i fjor'+
         (Math.abs(dcr)>.05?', med '+pp(dcr)+' '+(dcr<0?'lavere':'høyere')+' CR målt som '+(crRows.length>1?'medianendring':'rapportert endring'):'')+'.');
       const paired=crRows.filter(r=>num(r.deltas.loss_ratio)&&num(r.deltas.expense_ratio));
       const dl=median(paired.map(r=>r.deltas.loss_ratio)),dc=median(paired.map(r=>r.deltas.expense_ratio));
       if(num(dl)&&num(dc)){
         const change=(label,x)=>label+' er '+(x<-.05?pp(x)+' lavere':x>.05?pp(x)+' høyere':'omtrent uendret');
-        cr.push(change('Skadeprosenten',dl)+', mens '+change('kostnadsprosenten',dc)+'. '+(paired.length>1?'Målt som medianendringer på samme utvalg.':'Basert på tilgjengelig sammenlignbar splitt.'));
+        cr.push((paired.length===1?pretty(paired[0].company)+': ':'')+change('Skadeprosenten',dl)+', mens '+change('kostnadsprosenten',dc)+'. '+(paired.length>1?'Målt som medianendringer på samme utvalg.':'Basert på tilgjengelig sammenlignbar splitt.'));
       }
     }else{
-      const level=median(rows.map(r=>r.cr));
-      cr.push(num(level)?'CR ligger på '+pct(level)+' '+(rows.length>1?'målt som median':'i tilgjengelig rapportering')+'. Sammenlignbare endringstall mangler.':'CR er foreløpig ikke tilgjengelig.');
+      const levels=rows.filter(r=>num(r.cr)),level=median(levels.map(r=>r.cr));
+      cr.push(num(level)?(levels.length===1?pretty(levels[0].company)+': CR ligger på ':'CR ligger på ')+pct(level)+(levels.length>1?' målt som median':'')+'. Sammenlignbare endringstall mangler.':'CR er foreløpig ikke tilgjengelig.');
     }
     const profitEvidence=scoped.filter(x=>x.theme==='profit_driver'&&/^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length);
-    const factors=new Set(profitEvidence.map(x=>x.driver));
-    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent'],['weather_lower','lavere værskadebelastning'],['runoff_gains','avviklingsgevinster']].filter(([k])=>factors.has(k)).map(([,v])=>v);
-    if(explanations.length)cr.push('Rapporterte lønnsomhetsdrivere omfatter '+joinNatural(explanations)+'.');
-    const lowerClaims=scoped.some(x=>x.theme==='large_claims'&&/lavere storskad/i.test(x.text));
-    const higherClaims=scoped.some(x=>x.theme==='large_claims'&&/høyere storskad/i.test(x.text));
-    if(lowerClaims||higherClaims)
-      cr.push(lowerClaims&&higherClaims?'Storskadeutviklingen varierer mellom aktørene.':lowerClaims?'Lavere storskadebelastning er rapportert i deler av markedet.':'Høyere storskadebelastning er rapportert i deler av markedet.');
-    // Keep source-specific material events, but never enumerate firms or repeat
-    // routine reported amounts merely because a source happens to be available.
+    const profitLabels={lower_claim_frequency:'lavere skadefrekvens',underlying_loss_improved:'bedre underliggende skadeprosent',weather_lower:'lavere værskadebelastning',runoff_gains:'avviklingsgevinster'};
+    const commonProfit=commonTrendSentence(support,['frequency','underlying','weather','runoff','large_lower','cost_control'],'Flere selskaper rapporterer ');
+    appendWithin(cr,[commonProfit],111,1);
+    appendWithin(cr,namedDriverSentences(profitEvidence,profitLabels,support),111,2);
+    const lowerNames=new Set(scoped.filter(x=>x.theme==='large_claims'&&/lavere storskad/i.test(x.text)).map(x=>x.company));
+    const higherNames=new Set(scoped.filter(x=>x.theme==='large_claims'&&/høyere storskad/i.test(x.text)).map(x=>x.company));
+    const lowerClaims=lowerNames.size>0,higherClaims=higherNames.size>0;
+    const largeTrend=lowerClaims&&higherClaims&&new Set([...lowerNames,...higherNames]).size>=2?'Storskadeutviklingen varierer mellom aktørene.':'';
+    const largeSpecific=[...lowerNames].filter(n=>lowerNames.size===1).map(n=>pretty(n)+' rapporterer lavere storskadebelastning.').concat([...higherNames].filter(n=>higherNames.size===1).map(n=>pretty(n)+' rapporterer høyere storskadebelastning.'));
+    appendWithin(cr,[largeTrend,...largeSpecific],111,2);
+    // Specific material events must always identify the original issuer.
     const events=[...scoped.filter(x=>/^(regulation|material_event)$/.test(x.theme||'')),...scoped.filter(x=>/^(weather|strategy|operations|investment|inflation|competition|large_claims)$/.test(x.theme||'')&&!/lavere storskad|høyere storskad|oppgir netto storskader på/i.test(x.text))];
     for(const e of events){
-      if(special.includes(e.text))continue;
-      if(e.theme==='large_claims'&&special.some(x=>/Krokstadelva/i.test(x))&&/Krokstadelva/i.test(e.text))continue;
-      special.push(e.text);
+      const text=attributedInsight(e);
+      if(special.includes(text))continue;
+      if(e.theme==='large_claims'&&special.some(x=>/Krokstadelva/i.test(x))&&/Krokstadelva/i.test(text))continue;
+      special.push(text);
       if(special.length>=2)break;
     }
-    if(!special.length&&(lowerClaims||higherClaims))special.push('Kvartalsrapporteringen viser '+(lowerClaims&&higherClaims?'ulik storskadeutvikling mellom aktørene':lowerClaims?'lavere storskadebelastning i deler av markedet':'høyere storskadebelastning i deler av markedet')+'.');
+    if(!special.length&&(lowerClaims||higherClaims))appendWithin(special,[largeTrend,...largeSpecific,commonTrendSentence(support,['large_lower','large_higher'],'Flere selskaper rapporterer ')],99,2);
     if(!special.length)special.push('Ingen vesentlig særhendelse er dokumentert for valgt marked og periode.');
-    richerComments(scoped,market,growth,cr,special);
+    richerComments(scoped,market,growth,cr,special,support);
     return [{label:'Inntektsvekst',paragraphs:growth.map(safe)},{label:'CR – skade- og kostnadsprosent',paragraphs:cr.map(safe)},{label:'Enkelthendelser og særtrekk',paragraphs:special.map(safe)}];
   }
   const viewKey=(scope,market,mode)=>[scope,market,mode].join('/');

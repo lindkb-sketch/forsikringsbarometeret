@@ -140,7 +140,7 @@ test('scoped commentary is period, company, geography and business-line specific
  assert.ok(c.includes('Relevant PM hendelse'));assert.ok(!c.includes('BAD'));
 });
 
-test('trend commentary uses fixed headings, medians, matched periods and no company counts or leaderboard names',()=>{
+test('trend commentary uses fixed headings, medians, matched periods and names isolated issuer drivers',()=>{
  const make=(mode,values)=>({period:{year:2026,quarter:3},mode,eligible:values.map(([company,growth,delta])=>({company,growth,cr:80,revenueBasis:'Forsikringsinntekter',deltas:{combined_ratio:delta,loss_ratio:delta,expense_ratio:0}}))});
  const q=make('quarter',[['Fremtind',8,-3],['Gjensidige',10,-4],['Tryg',12,-5]]);
  const y=make('ytd',[['Fremtind',6,-2],['Gjensidige',7,-2],['Tryg',8,-2],['Sampo',99,-2]]);
@@ -150,8 +150,9 @@ test('trend commentary uses fixed headings, medians, matched periods and no comp
  assert.deepEqual(c.map(x=>x.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
  assert.match(t,/Medianveksten blant aktørene er \+10,0/);
  assert.match(t,/3,0 prosentpoeng over HIÅ/);
- assert.match(t,/premie- og prisjusteringer og økt forsikringsvolum/);
- assert.doesNotMatch(t,/kundetilgang|lavere volum|Fremtind|Gjensidige|Tryg|\d+ av \d+|\d+\/\d+|høyest vekst/);
+ assert.match(t,/Fremtind rapporterer premie- og prisjusteringer/);
+ assert.match(t,/Gjensidige rapporterer økt forsikringsvolum/);
+ assert.doesNotMatch(t,/kundetilgang|lavere volum|Tryg|\d+ av \d+|\d+\/\d+|høyest vekst/);
  assert.match(t,/4,0 prosentpoeng lavere CR/);
  const bad={insights:[{...evidence('Fremtind','price',['group/all']),source_sha256:'bad'}]};
  assert.doesNotMatch(JSON.stringify(comments(q,{},'group','all',bad)),/premie- og prisjusteringer/);
@@ -202,7 +203,7 @@ test('causal commentary prioritises why, covers the expense ratio and selects ma
  assert.equal(c[0].paragraphs.length,1);
  assert.match(c[0].paragraphs[0],/Prisøkninger.*volum.*risikoutvelgelse/);
  assert.match(c[1].paragraphs[0],/skadefrekvens.*omklassifisering/);
- assert.match(c[2].paragraphs[0],/176 mill/);
+ assert.match(c[2].paragraphs[0],/Fremtind: Brannen.*176 mill/);
  assert.doesNotMatch(JSON.stringify(c),/FORBIDDEN|175 mill|Rapporterte vekstdrivere omfatter/);
 });
 
@@ -338,4 +339,37 @@ test('uniform financial arrows are based on the same-year comparison, never miss
  assert.deepEqual(financialTrend(85,80,true),{direction:'up',icon:'▲',tone:'bad'});
  assert.deepEqual(financialTrend(4.2,3),{direction:'up',icon:'▲',tone:'good'});
  assert.equal(financialTrend(7,7).tone,'flat');
+});
+
+
+test('commentary names each exceptional issuer and puts shared trends first',()=>{
+ const m={period:{year:2026,quarter:3},mode:'quarter',eligible:['Tryg','Fremtind','Gjensidige','Protector'].map(company=>({company,growth:8,cr:80,deltas:{combined_ratio:-2,loss_ratio:-2,expense_ratio:0}}))};
+ const base={period:'Q3 2026',source_document_period:'Q3 2026',period_type:'quarter',views:['group/all'],source_type:'official_quarterly_report',source_sha256:'a'.repeat(64),source_page:8,source_url:'https://issuer.invalid/doc.pdf',evidence:'verified original report fragment'};
+ const driver=(company,driver)=>({...base,company,theme:'growth_driver',driver,text:driver});
+ const explain=(company,theme,topic,text,priority=100,category='')=>({...base,company,theme,topic,driver:topic,text,priority,category});
+ const ctx={insights:[
+  driver('Fremtind','price'),driver('Gjensidige','price'),
+  {...driver('Gjensidige','price'),source_page:9,source_type:'official_results_presentation'},
+  driver('Protector','volume_up'),
+  explain('Gjensidige','growth_explanation','premium_adjustment','Premiejusteringer er en sentral driver i den rapporterte porteføljen.',80,'price'),
+  explain('Tryg','event_explanation','motor_distribution','Nye bilforsikringspartnerskap med Mercedes-Benz i Sverige og XPENG i Norge.',110),
+  explain('Fremtind','event_explanation','named_fire','Brannen i Krokstadelva ga storskader på 176 mill. kroner.',105),
+  {...explain('Tryg','loss_explanation','workers_comp_adjusted','Dansk yrkesskadeavsetning påvirker CR.',105,'adverse')},
+  {...explain('Gjensidige','event_explanation','stale','FORBIDDEN',120),source_document_period:'Q2 2026'}
+ ]};
+ const c=comments(m,{},'group','all',ctx),g=c[0].paragraphs.join(' '),cr=c[1].paragraphs.join(' '),events=c[2].paragraphs.join(' ');
+ assert.match(g,/Medianveksten.*Flere selskaper rapporterer premie- og prisjusteringer/);
+ assert.doesNotMatch(g,/Gjensidige: Premiejusteringer/);
+ assert.match(events,/Tryg: Nye bilforsikringspartnerskap med Mercedes-Benz/);
+ assert.match(events,/Fremtind: Brannen i Krokstadelva/);
+ assert.match(cr,/Tryg: Dansk yrkesskadeavsetning/);
+ assert.doesNotMatch(JSON.stringify(c),/FORBIDDEN/);
+ const one={insights:[driver('Tryg','price'),{...driver('Tryg','price'),source_page:12,source_type:'official_results_presentation'}]};
+ const singleton=comments(m,{},'group','all',one)[0].paragraphs.join(' ');
+ assert.match(singleton,/Tryg rapporterer premie- og prisjusteringer/);
+ assert.doesNotMatch(singleton,/Flere selskaper rapporterer/);
+ const fallback={insights:[{...base,company:'Tryg',theme:'material_event',text:'Samarbeid med Mercedes-Benz.'}]};
+ assert.match(comments(m,{},'group','all',fallback)[2].paragraphs.join(' '),/Tryg: Samarbeid med Mercedes-Benz/);
+ const later={...m,period:{year:2026,quarter:4}};
+ assert.doesNotMatch(JSON.stringify(comments(later,{},'group','all',ctx)),/Mercedes-Benz|Krokstadelva|yrkesskadeavsetning|premie- og prisjusteringer/);
 });
