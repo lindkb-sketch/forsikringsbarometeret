@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "published_manual_snapshot",
+  "period": "Q2 2026",
+  "prior_period": "Q2 2025",
+  "source": "Finans Norge – premiestatistikk",
+  "source_note": "Migrert fra nettstedets tidligere publiserte, manuelt innlagte Finans Norge Tab5-verdier. Original Excel-fil er ikke tilgjengelig i repoet; behold rapporteringsperioden og krev ny Tab5-fil ved oppdatering.",
+  "shares": {
+    "Gjensidige": "26,1 %",
+    "Sampo": "20,4 %",
+    "Fremtind": "18,2 %",
+    "Tryg": "12,1 %",
+    "Storebrand": "6,2 %",
+    "Frende": "3,9 %",
+    "Protector": "2,0 %"
+  },
+  "segments": {
+    "Fremtind": {
+      "pm": "23,4 %",
+      "bm": "8,8 %"
+    },
+    "Gjensidige": {
+      "pm": "23,5 %",
+      "bm": "30,7 %"
+    },
+    "Tryg": {
+      "pm": "13,4 %",
+      "bm": "9,6 %"
+    },
+    "Sampo": {
+      "pm": "18,2 %",
+      "bm": "24,4 %"
+    },
+    "Frende": {
+      "pm": "4,8 %",
+      "bm": "2,3 %"
+    },
+    "Protector": {
+      "pm": null,
+      "bm": "5,6 %"
+    },
+    "Storebrand": {
+      "pm": "8,2 %",
+      "bm": "2,4 %"
+    }
+  },
+  "previous": {
+    "Fremtind": {
+      "total": "18,6 %",
+      "pm": "24,3 %",
+      "bm": "9,0 %"
+    },
+    "Gjensidige": {
+      "total": "26,3 %",
+      "pm": "23,4 %",
+      "bm": "31,1 %"
+    },
+    "Tryg": {
+      "total": "12,5 %",
+      "pm": "13,9 %",
+      "bm": "10,3 %"
+    },
+    "Sampo": {
+      "total": "20,6 %",
+      "pm": "18,3 %",
+      "bm": "24,3 %"
+    },
+    "Frende": {
+      "total": "3,7 %",
+      "pm": "4,6 %",
+      "bm": "2,0 %"
+    },
+    "Protector": {
+      "total": "1,9 %",
+      "bm": "5,2 %"
+    },
+    "Storebrand": {
+      "total": "5,7 %",
+      "pm": "7,6 %",
+      "bm": "2,2 %"
+    }
+  }
+}
