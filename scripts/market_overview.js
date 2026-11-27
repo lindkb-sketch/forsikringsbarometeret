@@ -557,12 +557,24 @@
     const table='<details class="mo-history-values"><summary>Se kvartalstall og kilder</summary><div class="tablewrap"><table><thead><tr><th>Selskap</th>'+periods.map(p=>'<th>'+safe(p)+'</th>').join('')+'</tr></thead><tbody>'+series.map(s=>'<tr><th>'+safe(pretty(s.company))+'</th>'+s.points.map(p=>'<td>'+(p?(source(p.source_url)?'<a href="'+safe(p.source_url)+'" target="_blank" rel="noopener noreferrer" title="'+safe(p.method||'Verifisert rapport')+'">'+pct(p.cr)+'</a>':pct(p.cr)):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></details>';
     return '<div class="section-head"><div><h2>Utvikling i CR · alle selskaper</h2><p class="hint">Konsern / rapportert total · isolerte kvartaler</p></div></div><div class="mo-line-scroll">'+svg+'</div><div class="mo-line-legend">'+legend+'</div>'+table;
   }
+  function profitabilityOptions(name,p,history=null){
+    history=history||profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
+    const s=history.series.find(s=>s.company===name),selected={},returns={};
+    s?.points.forEach((r,i)=>{if(!r)return;const label=history.periods[i];if(num(r.loss)&&num(r.cost))selected[label]=[r.loss,r.cost,r.cr];if(num(r.roe))returns[label]={value:r.roe,label:r.roeBasis==='HIÅ'?'Rapportert annualisert HIÅ':'Rapportert annualisert avkastning'};});
+    return {quarters:history.periods,selected,returns};
+  }
+  function companySegmentRows(name,p,periodType='quarter'){
+    if(!p||!COMPANIES.includes(name))return [];
+    const rows=allRows(window.FBQuarterly?.verified,segments,comparison,context).filter(r=>r.period_type===periodType);
+    return ['pm','bm'].map(m=>{
+      const snap=archive?.periods?.[title(p)]?.views?.[viewKey('group',m,periodType)];
+      const row=snap?snap.model.eligible.find(r=>r.company===name):rowFor(rows,name,p,'group',m);
+      return {market:m,row:row||null};
+    });
+  }
   function trendPanels(p){
     const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
-    const s=history.series.find(s=>s.company===profitCompany);
-    const selected={},returns={};
-    s?.points.forEach((r,i)=>{if(!r)return;const label=history.periods[i];if(num(r.loss)&&num(r.cost))selected[label]=[r.loss,r.cost,r.cr];if(num(r.roe))returns[label]={value:r.roe,label:r.roeBasis==='HIÅ'?'Rapportert annualisert HIÅ':'Rapportert annualisert avkastning'};});
-    const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{quarters:history.periods,selected,returns,onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
+    const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{...profitabilityOptions(profitCompany,p,history),onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
     return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history)+'</section></div>';
   }
   let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',pending=null,failed=false;
@@ -631,7 +643,7 @@
       (latest?'<div class="mo-comment-grid">'+view.comments.map(c=>'<article><h3>'+safe(c.label)+'</h3>'+c.paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</article>').join('')+'</div>':'<p class="mo-empty">Kommentarer genereres når verifiserte kvartalstall er tilgjengelige.</p>')+'</section>'+ (m.period?trendPanels(m.period):'')+media+nextCal;
   }
   function render(){
-    if(typeof current!=='undefined'&&current==='home'&&typeof show==='function')show('home',true);
+    if(typeof current!=='undefined'&&typeof show==='function'&&(current==='home'||COMPANIES.includes(current)))show(current,true);
   }
   function select(kind,value){
     if(kind==='scope'&&['group','norway'].includes(value))scope=value;
@@ -674,5 +686,5 @@
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,reportQueues,trendChart};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,reportQueues,trendChart};
 });

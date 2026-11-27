@@ -1493,6 +1493,7 @@ monSetQuarter=function(q){
 const MON_EXEC_ORIG_PROFITABILITY=profitabilityChart;
 // Preserve explicit issuer selection in embedded company profitability charts.
 profitabilityChart=function(companyName=profitabilityCompany,options=null){
+ if(!options&&['KLP Skadeforsikring','Alm. Brand'].includes(companyName)&&window.FBQuarterly?.period)options=window.FBMarketOverview?.profitabilityOptions(companyName,window.FBQuarterly.period)||null;
  return MON_EXEC_ORIG_PROFITABILITY(companyName,options);
 };
 // Only hide a pending company when a complete new-quarter report record is present.

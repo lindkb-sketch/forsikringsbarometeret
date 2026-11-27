@@ -77,3 +77,5 @@
 #mo-calendar-next{margin-top:24px}
 @media(max-width:900px){.mo-trend-duo{grid-template-columns:1fr!important}}
 @media(max-width:600px){.mo-line-svg{min-width:430px}.mo-report-calendar .mon-cal-grid{grid-template-columns:1fr}}
+
+.company-period-actions{display:flex;align-items:center;gap:8px;font-size:12px;color:#587082}.company-period-actions select{padding:7px 10px;border:1px solid #dbe5eb;border-radius:7px;background:#fff;color:#173447;font:inherit}

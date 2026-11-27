@@ -155,6 +155,10 @@ async function main(){
   for(const name of ['KLP Skadeforsikring','Alm. Brand']){
     await page.locator('[id="nav-'+name+'"]').click();
     check(name+' company page renders', (await page.locator('#app').innerText()).includes(name));
+    check(name+' uses standard company KPIs and profitability chart',await page.locator('.dynamic-kpis').count()===1&&await page.locator('.company-profitability .profit-quarter').count()===5);
+    await page.locator('.company-period-actions select').selectOption('H3');
+    check(name+' HIÅ selection stays on company tab',await page.locator('[id="nav-'+name+'"].active').count()===1&&await page.locator('.dynamic-kpis [data-financial-period="ytd"]').count()>0);
+    await page.locator('.company-period-actions select').selectOption('Q3');
     check(name+' primary-source link exists', await page.locator('#app a[href^="https://"]').count()>0);
     await page.locator('#nav-summary').click();
   }
@@ -466,6 +470,12 @@ async function main(){
   for(const issuer of ['Fremtind','Gjensidige','Protector']){
     await page.locator('[id="nav-'+issuer+'"]').click();
     check(issuer+' own navigation tab active',await page.locator('[id="nav-'+issuer+'"].active').count()===1);
+    if(issuer==='Fremtind'){
+      await page.locator('.company-period-actions select').selectOption('H3');
+      check('Fremtind HIÅ selector retains own page',await page.locator('#nav-Fremtind.active').count()===1&&await page.locator('.dynamic-kpis [data-financial-period="ytd"]').count()>0);
+      await page.locator('.company-period-actions select').selectOption('Q3');
+      if(marketArchive.active_period==='Q3 2026')check('Fremtind PM/BM verified segment CR',await page.locator('tr[data-financial-source="verified-fremtind-apm"]').count()===2&&(await page.locator('tr[data-financial-source="verified-fremtind-apm"]').allTextContents()).join(' ').includes('71,6'));
+    }
     const panel=page.locator('.company-profitability');
     const placement=await page.evaluate(()=>{
       const graph=document.querySelector('.company-profitability');
