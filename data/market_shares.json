@@ -4,7 +4,7 @@
   "period": "Q2 2026",
   "prior_period": "Q2 2025",
   "source": "Finans Norge – premiestatistikk",
-  "source_note": "Migrert fra nettstedets tidligere publiserte, manuelt innlagte Finans Norge Tab5-verdier. Original Excel-fil er ikke tilgjengelig i repoet; behold rapporteringsperioden og krev ny Tab5-fil ved oppdatering.",
+  "source_note": "Migrert fra nettstedets tidligere publiserte, manuelt innlagte Finans Norge Tab5-verdier. Original Excel-fil er ikke tilgjengelig i repoet; behold rapporteringsperioden. Eieren oppdaterer manuelt eller importerer en ny Tab5-fil.",
   "shares": {
     "Gjensidige": "26,1 %",
     "Sampo": "20,4 %",

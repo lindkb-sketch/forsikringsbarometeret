@@ -26,4 +26,9 @@ class EndToEndTests(unittest.TestCase):
   row=self.row();row["status"]="provisional"
   self.assertEqual(build({"observations":[row]})["observations"],[])
  def test_page_uses_verified_feed(self):
-  self.assertIn("fetch('data/verified_financial_feed.json'",(ROOT/"index.html").read_text())
+  html=(ROOT/"index.html").read_text(encoding="utf-8")
+  self.assertRegex(html,r'<script\b[^>]*\bsrc="scripts/quarterly_runtime\.js"[^>]*>')
+  runtime=(ROOT/"scripts/quarterly_runtime.js").read_text(encoding="utf-8")
+  self.assertIn("fetch('data/verified_financial_feed.json?",runtime)
+  self.assertIn("verified=incoming",runtime)
+  self.assertIn("window.FBQuarterly={refresh",runtime)

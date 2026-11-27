@@ -3,6 +3,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'index.html'
+      - 'data/market_shares.json'
+      - 'tests/test_no_hardcoded_financials.py'
+      - 'tests/test_end_to_end.py'
       - 'scripts/*market*'
       - 'tests/*market*'
       - '.github/workflows/market-overview-focused.yml'
@@ -29,6 +33,16 @@ jobs:
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
           node --check scripts/market_overview.js
           node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
+      - name: Verify owner market-share entry and finance feed wiring
+        run: |
+          python -m unittest discover -s tests -p 'test_no_hardcoded_financials.py' -v
+          python -m unittest discover -s tests -p 'test_end_to_end.py' -v
+          npm install --no-save playwright
+          python -m http.server 8766 --bind 127.0.0.1 >/tmp/market-admin-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          sleep 2
+          BAROMETER_URL=http://127.0.0.1:8766/ node tests/market_share_admin_browser.cjs
       - name: Reconcile official live market-segment PDFs
         run: |
           python scripts/build_market_overview_segments.py
