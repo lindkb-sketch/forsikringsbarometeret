@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const {build,validate}=require('../scripts/build_market_overview_archive.cjs');
 const {archivedView}=require('../scripts/market_overview.js');
 const rows=(year,q,rev,cr)=>Object.entries({insurance_revenue:rev,combined_ratio:cr,loss_ratio:cr-15,expense_ratio:15}).flatMap(([metric,value])=>['quarter','ytd'].map(period_type=>({company:'Fremtind',year,quarter:q,scope:'group',metric,value,unit:metric==='insurance_revenue'?'MNOK':'percent',period_type,status:'reported',source_type:'official_quarterly_report',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:3})));
-const input=(observations,period,text)=>({feed:{observations},comparison:{companies:[]},fx:{periods:{}},segments:{observations:[]},context:{observations:[],insights:[]},editorial:{period,brief:[{period,theme:'large_claims',companies:['Fremtind'],text,source_url:'https://issuer.invalid/report.pdf'}]}});
+const input=(observations,period,text)=>({feed:{observations},comparison:{companies:[]},fx:{periods:{}},segments:{observations:[]},context:{observations:[],insights:[{company:'Fremtind',period,source_document_period:period,period_type:'quarter',views:['group/all'],theme:'material_event',text,source_type:'official_quarterly_report',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:3}]},editorial:{}});
 test('Q3 freezes across Q4 and Q1 including comparisons, source links and commentary',()=>{
  const a=build(input(rows(2026,3,6000,73),'Q3 2026','Q3 hendelse'));
  const q3=JSON.stringify(a.periods['Q3 2026'].views);

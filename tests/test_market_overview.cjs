@@ -37,8 +37,10 @@ test('missing CR components and mismatched totals excluded; missing growth never
 test('source commentary scoped to current quarter and eligible issuers',()=>{
  const m=model(feed,comp,fx);
  const editorial={period:'Q3 2026',brief:[{period:'Q3 2026',theme:'large_claims',companies:['Fremtind'],text:'Dokumentert hendelse',source_url:'https://issuer.invalid'},{period:'Q3 2026',theme:'weather',companies:['Unknown'],text:'BAD',source_url:'https://issuer.invalid'}]};
- const c=JSON.stringify(comments(m,editorial,'group','all'));assert.ok(c.includes('Dokumentert hendelse'));assert.ok(!c.includes('BAD'));
- assert.ok(!JSON.stringify(comments(model(feed,comp,fx,'norway','all'),editorial,'norway','all')).includes('Dokumentert hendelse'));
+ const c=JSON.stringify(comments(m,editorial,'group','all'));assert.ok(!c.includes('Dokumentert hendelse'));assert.ok(!c.includes('BAD'));
+ const context={insights:[{company:'Fremtind',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'quarter',views:['group/all'],theme:'material_event',text:'Dokumentert rapporthendelse',source_type:'official_quarterly_report',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:9}]};
+ assert.match(JSON.stringify(comments(m,editorial,'group','all',context)),/Dokumentert rapporthendelse/);
+ assert.doesNotMatch(JSON.stringify(comments(model(feed,comp,fx,'norway','all'),editorial,'norway','all',context)),/Dokumentert rapporthendelse/);
 });
 
 test('owner examples: Protector BM, Tryg split group only, Gjensidige all six',()=>{
@@ -130,9 +132,9 @@ test('YTD uses period-matched values and FX, never an isolated quarter',()=>{
 test('scoped commentary is period, company, geography and business-line specific',()=>{
  const m=model(feed,comp,fx,'norway','pm');
  const context={insights:[
-  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['norway/pm'],theme:'large_claims',text:'Relevant PM hendelse',source_url:'https://issuer.invalid/a'},
-  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['group/bm'],theme:'large_claims',text:'BAD BM',source_url:'https://issuer.invalid/a'},
-  {company:'Gjensidige',period:'Q3 2026',period_type:'ytd',views:['norway/pm'],theme:'weather',text:'BAD HIÅ',source_url:'https://issuer.invalid/a'}
+  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['norway/pm'],theme:'large_claims',text:'Relevant PM hendelse',source_type:'official_quarterly_report',source_document_period:'Q3 2026',source_sha256:'a'.repeat(64),source_page:9,source_url:'https://issuer.invalid/a'},
+  {company:'Gjensidige',period:'Q3 2026',period_type:'quarter',views:['group/bm'],theme:'large_claims',text:'BAD BM',source_type:'official_quarterly_report',source_document_period:'Q3 2026',source_sha256:'a'.repeat(64),source_page:9,source_url:'https://issuer.invalid/a'},
+  {company:'Gjensidige',period:'Q3 2026',period_type:'ytd',views:['norway/pm'],theme:'weather',text:'BAD HIÅ',source_type:'official_quarterly_report',source_document_period:'Q3 2026',source_sha256:'a'.repeat(64),source_page:9,source_url:'https://issuer.invalid/a'}
  ]};
  const c=JSON.stringify(comments(m,{},'norway','pm',context));
  assert.ok(c.includes('Relevant PM hendelse'));assert.ok(!c.includes('BAD'));
@@ -142,7 +144,7 @@ test('trend commentary uses fixed headings, medians, matched periods and no comp
  const make=(mode,values)=>({period:{year:2026,quarter:3},mode,eligible:values.map(([company,growth,delta])=>({company,growth,cr:80,revenueBasis:'Forsikringsinntekter',deltas:{combined_ratio:delta,loss_ratio:delta,expense_ratio:0}}))});
  const q=make('quarter',[['Fremtind',8,-3],['Gjensidige',10,-4],['Tryg',12,-5]]);
  const y=make('ytd',[['Fremtind',6,-2],['Gjensidige',7,-2],['Tryg',8,-2],['Sampo',99,-2]]);
- const evidence=(company,driver,views,period_type='quarter')=>({company,driver,views,period_type,theme:'growth_driver',period:'Q3 2026',text:driver,evidence:'reported phrase',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:8});
+ const evidence=(company,driver,views,period_type='quarter')=>({company,driver,views,period_type,theme:'growth_driver',period:'Q3 2026',source_document_period:'Q3 2026',source_type:'official_results_presentation',text:driver,evidence:'reported phrase',source_url:'https://issuer.invalid/report.pdf',source_sha256:'a'.repeat(64),source_page:8});
  const ctx={insights:[evidence('Fremtind','price',['group/all']),evidence('Gjensidige','volume_up',['group/all']),evidence('Gjensidige','customer_inflow',['norway/pm']),evidence('Tryg','volume_down',['group/all'],'ytd')]};
  const c=comments(q,{},'group','all',ctx,y),t=JSON.stringify(c);
  assert.deepEqual(c.map(x=>x.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
@@ -162,4 +164,23 @@ test('quarter trend uses adjacent archived matched data rather than a changed is
  const text=JSON.stringify(comments(curr,{},'group','all',{},null,{model:prev}));
  assert.match(text,/økt med 3,0 prosentpoeng fra forrige kvartal/);
  assert.doesNotMatch(JSON.stringify(comments(curr,{},'group','all',{},null,{model:mk(2026,3,'quarter',[['Fremtind',4],['Tryg',6]])})),/fra forrige kvartal/);
+});
+
+test('only verified quarter reports and result presentations enter all three market comments',()=>{
+ const m=model(feed,comp,fx);
+ const base={company:'Fremtind',period:'Q3 2026',source_document_period:'Q3 2026',period_type:'quarter',views:['group/all'],source_url:'https://issuer.invalid/doc.pdf',source_sha256:'a'.repeat(64),source_page:8,evidence:'verified phrase'};
+ const ctx={insights:[
+  {...base,source_type:'official_results_presentation',theme:'growth_driver',driver:'price',text:'price'},
+  {...base,source_type:'official_results_presentation',theme:'profit_driver',driver:'underlying_loss_improved',text:'underlying'},
+  {...base,source_type:'official_quarterly_report',theme:'material_event',text:'Dokumentert hendelse i rapport'},
+  {...base,source_type:'official_press_release',theme:'material_event',text:'FORBIDDEN NEWS'},
+  {...base,source_type:'market_statistics',theme:'growth_driver',driver:'customer_growth',text:'FORBIDDEN MARKET DATA'},
+  {...base,source_type:'official_results_presentation',source_document_period:'Q2 2026',theme:'material_event',text:'FORBIDDEN PREVIOUS'},
+  {...base,source_type:'official_results_presentation',source_sha256:'invalid',theme:'material_event',text:'FORBIDDEN HASH'}
+ ]};
+ const view=JSON.stringify(comments(m,{period:'Q3 2026',brief:[{period:'Q3 2026',companies:['Fremtind'],theme:'regulation',text:'FORBIDDEN EDITORIAL',source_url:'https://issuer.invalid/news'}]},'group','all',ctx));
+ assert.match(view,/premie- og prisjusteringer/);
+ assert.match(view,/bedre underliggende skadeprosent/);
+ assert.match(view,/Dokumentert hendelse i rapport/);
+ assert.doesNotMatch(view,/FORBIDDEN|vekst i kundebestanden/);
 });

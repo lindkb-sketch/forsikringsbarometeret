@@ -254,18 +254,15 @@
   const joinNatural=xs=>xs.length<2?(xs[0]||''):xs.slice(0,-1).join(', ')+' og '+xs.at(-1);
   function scopedInsights(m,scope,market,context){
     const names=new Set(m.eligible.map(r=>r.company)),period=title(m.period),mode=m.mode||'quarter';
-    return (context?.insights||[]).filter(x=>x.period===period&&x.period_type===mode&&names.has(x.company)&&source(x.source_url)&&
+    return (context?.insights||[]).filter(x=>x.period===period&&x.source_document_period===period&&x.period_type===mode&&names.has(x.company)&&source(x.source_url)&&
+      ['official_quarterly_report','official_results_presentation'].includes(x.source_type)&&
+      /^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&
       Array.isArray(x.views)&&x.views.includes(scope+'/'+market)&&typeof x.text==='string');
   }
   function comments(m,editorial,scope,market,context=null,otherMode=null,priorView=null){
     const rows=m.eligible,period=title(m.period),mode=m.mode||'quarter';
-    const names=new Set(rows.map(r=>r.company));
-    const general=scope==='group'&&market==='all';
-    const block=editorial?.periods?.[period]||(editorial?.period===period?editorial:null);
-    const items=(block?.brief||[]).filter(x=>x.period===period&&typeof x.text==='string'&&source(x.source_url)&&
-      Array.isArray(x.companies)&&x.companies.length&&x.companies.every(c=>names.has(c)));
-    const equivalent=c=>scope==='norway'&&market==='all'&&NORWAY_EQUIVALENT.includes(c);
-    const permitted=items.filter(x=>mode==='quarter'&&(general||x.companies.every(equivalent)));
+    // Market commentary only uses period-specific reports and results decks.
+    // Editorial/news remains available on the existing summary page, not here.
     const scoped=scopedInsights(m,scope,market,context);
     const driverRows=scoped.filter(x=>x.theme==='growth_driver'&&Object.hasOwn(DRIVER_LABELS,x.driver)&&
       /^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length>0);
@@ -304,11 +301,7 @@
     if(limitations.length)growth.push('Samtidig beskriver rapporteringen '+joinNatural(limitations)+'.');
     if(drivers.has('price')&&['volume_up','volume_pm_products','volume_down','customer_inflow','customer_growth','portfolio_growth'].some(k=>drivers.has(k)))
       growth.push('Pris- og volumbidragene er ikke fullt tallfestet på tvers av aktørene.');
-    if(!drivers.size){
-      const qualitative=permitted.filter(x=>/^(growth|revenue_direction|revenue_decline)$/.test(x.theme||''));
-      if(qualitative.length)growth.push('Selskapsrapporteringen gir ytterligere forklaringer på inntektsutviklingen; se kildene i metodeoversikten.');
-      else if(comparable.length)growth.push('En sammenlignbar pris- og volumsplitt er foreløpig ikke dokumentert for dette utvalget.');
-    }
+    if(!drivers.size&&comparable.length)growth.push('En sammenlignbar pris- og volumsplitt er foreløpig ikke dokumentert i kvartalsrapportene og presentasjonene for dette utvalget.');
     const crRows=rows.filter(r=>num(r.deltas?.combined_ratio));
     const dcr=median(crRows.map(r=>r.deltas.combined_ratio));
     if(num(dcr)){
@@ -326,7 +319,7 @@
     }
     const profitEvidence=scoped.filter(x=>x.theme==='profit_driver'&&/^[0-9a-f]{64}$/.test(x.source_sha256||'')&&Number.isInteger(x.source_page)&&x.source_page>0&&typeof x.evidence==='string'&&x.evidence.length);
     const factors=new Set(profitEvidence.map(x=>x.driver));
-    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent']].filter(([k])=>factors.has(k)).map(([,v])=>v);
+    const explanations=[['lower_claim_frequency','lavere skadefrekvens'],['underlying_loss_improved','bedre underliggende skadeprosent'],['weather_lower','lavere værskadebelastning']].filter(([k])=>factors.has(k)).map(([,v])=>v);
     if(explanations.length)cr.push('Rapporterte lønnsomhetsdrivere omfatter '+joinNatural(explanations)+'.');
     const lowerClaims=scoped.some(x=>x.theme==='large_claims'&&/lavere storskad/i.test(x.text));
     const higherClaims=scoped.some(x=>x.theme==='large_claims'&&/høyere storskad/i.test(x.text));
@@ -334,14 +327,14 @@
       cr.push(lowerClaims&&higherClaims?'Storskadeutviklingen varierer mellom aktørene.':lowerClaims?'Lavere storskadebelastning er rapportert i deler av markedet.':'Høyere storskadebelastning er rapportert i deler av markedet.');
     // Keep source-specific material events, but never enumerate firms or repeat
     // routine reported amounts merely because a source happens to be available.
-    const events=[...scoped.filter(x=>/^(regulation|material_event)$/.test(x.theme||'')),...permitted.filter(x=>/^(regulation|large_claims|weather|strategy|operations|investment|inflation|competition)$/.test(x.theme||'')),...scoped.filter(x=>/^(weather|strategy|operations|investment|inflation|competition|large_claims)$/.test(x.theme||'')&&!/lavere storskad|høyere storskad|oppgir netto storskader på/i.test(x.text))];
+    const events=[...scoped.filter(x=>/^(regulation|material_event)$/.test(x.theme||'')),...scoped.filter(x=>/^(weather|strategy|operations|investment|inflation|competition|large_claims)$/.test(x.theme||'')&&!/lavere storskad|høyere storskad|oppgir netto storskader på/i.test(x.text))];
     for(const e of events){
       if(special.includes(e.text))continue;
       if(e.theme==='large_claims'&&special.some(x=>/Krokstadelva/i.test(x))&&/Krokstadelva/i.test(e.text))continue;
       special.push(e.text);
       if(special.length>=2)break;
     }
-    if(!special.length&&(lowerClaims||higherClaims))special.push('Storskader kan gi betydelige kvartalsutslag; rapporterte endringer bør vurderes mot den underliggende skadeutviklingen.');
+    if(!special.length&&(lowerClaims||higherClaims))special.push('Kvartalsrapporteringen viser '+(lowerClaims&&higherClaims?'ulik storskadeutvikling mellom aktørene':lowerClaims?'lavere storskadebelastning i deler av markedet':'høyere storskadebelastning i deler av markedet')+'.');
     if(!special.length)special.push('Ingen vesentlig særhendelse er dokumentert for valgt marked og periode.');
     return [{label:'Inntektsvekst',paragraphs:growth.map(safe)},{label:'CR – skade- og kostnadsprosent',paragraphs:cr.map(safe)},{label:'Enkelthendelser og særtrekk',paragraphs:special.map(safe)}];
   }
@@ -349,11 +342,8 @@
   function makeView(feed,comparison,fx,segments,context,editorial,scope,market,mode,priorView=null){
     const m=model(feed,comparison,fx,scope,market,segments,mode,context);
     const otherMode=m.period?.quarter>1?model(feed,comparison,fx,scope,market,segments,mode==='ytd'?'quarter':'ytd',context):null;
-    const period=title(m.period),names=new Set(m.eligible.map(r=>r.company));
-    const es=editorial?.periods?.[period]||(editorial?.period===period?editorial:null);
-    const notes=(context?.insights||[]).filter(x=>x.period===period&&x.period_type===mode&&x.views?.includes(scope+'/'+market)&&names.has(x.company));
-    const brief=(es?.brief||[]).filter(x=>x.period===period&&Array.isArray(x.companies)&&x.companies.length&&x.companies.every(c=>names.has(c))&&mode==='quarter'&&(scope==='group'&&market==='all'||scope==='norway'&&market==='all'&&x.companies.every(c=>NORWAY_EQUIVALENT.includes(c))));
-    const links=[...(priorView?.sources||[]),...(otherMode?.eligible||[]).flatMap(r=>(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))),...m.eligible.flatMap(r=>[{name:pretty(r.company),url:r.source},...(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))]),...notes.map(x=>({name:pretty(x.company),url:x.source_url,sha256:x.source_sha256,page:x.source_page})),...brief.flatMap(x=>[x.source_url,...(x.source_urls||[])].map(url=>({name:x.companies.map(pretty).join(', '),url})))];
+    const notes=scopedInsights(m,scope,market,context);
+    const links=[...(priorView?.sources||[]).filter(d=>/^[0-9a-f]{64}$/.test(d.sha256||'')&&Number.isInteger(d.page)&&d.page>0),...(otherMode?.eligible||[]).flatMap(r=>(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))),...m.eligible.flatMap(r=>[{name:pretty(r.company),url:r.source},...(r.sources||[]).map(d=>({...d,name:pretty(r.company)}))]),...notes.map(x=>({name:pretty(x.company),url:x.source_url,sha256:x.source_sha256,page:x.source_page,source_type:x.source_type}))];
     return {model:m,comments:comments(m,editorial,scope,market,context,otherMode,priorView),sources:[...new Map(links.filter(x=>source(x.url)).map(x=>[[x.url,x.sha256||'',x.page||''].join('|'),x])).values()]};
   }
   function archivedView(archive,requested,scope,market,mode){

@@ -13,7 +13,7 @@ from fremtind_apm_market import parse_income,parse_cr,BASIS
 
 ROOT=Path(__file__).resolve().parents[1]
 TARGET=ROOT/'data/market_overview_context.json'
-VERSION=5
+VERSION=6
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
 NUM=r'[-−]?\d[\d,]*(?:\.\d+)?'
 KEYS=('company','year','quarter','period_type','scope','segment','metric')
@@ -304,7 +304,8 @@ def alm_ytd(a,pages,report_sources=None):
     return result
 
 def insight(a,page,views,theme,text,mode='quarter'):
-    return dict(company=a['company'],period=f"Q{a['quarter']} {a['year']}",period_type=mode,views=views,theme=theme,text=text,**source(a,page))
+    period=f"Q{a['quarter']} {a['year']}"
+    return dict(company=a['company'],period=period,source_document_period=period,source_type='official_quarterly_report',period_type=mode,views=views,theme=theme,text=text,**source(a,page))
 
 def growth_drivers(a,pages):
     """Positive evidence only, tied to verified original-report pages and scope.
@@ -428,6 +429,14 @@ def narratives(a,pages):
     elif c=='Fremtind':
         for page,t in pages:
             text=norm(t)
+            # An actual report, not a press release, is the source of the
+            # named event. Only emit it when the report states the impact.
+            fire=re.search(r'Brannen i Krokstadelva utgjorde ([\d ]+) millioner kroner av',text,re.I)
+            if fire and 'Resultatutvikling i kvartalet' in text:
+                amount=int(fire[1].replace(' ',''))
+                if amount>=100:
+                    msg=f'Brannen i Krokstadelva ga rapporterte storskader på {amount} mill. kroner i kvartalet.'
+                    out.extend([insight(a,page,['group/all','norway/all'],'material_event',msg),insight(a,page,['group/all','norway/all'],'material_event','I siste kvartal: '+msg,'ytd')])
             if not re.search(r'Segment Privatmarkedet og Bedriftsmarkedet|Segmentresultater',text,re.I):continue
             for market,label in [('pm','Privatmarkedet'),('bm','Bedriftsmarkedet')]:
                 hit=re.search(r'\b'+label+r'\s+utgjorde\s+([\d ]+)\s+millioner kroner i kvartalet',text,re.I)
@@ -469,13 +478,13 @@ def fetch(a):
     return download(a)
 def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     previous=previous or {};out={'schema_version':VERSION,'observations':[],'insights':[],'status':{}}
-    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,VERSION) else {}
+    out['alm_report_sources']=dict(previous.get('alm_report_sources',{})) if previous.get('schema_version') in (4,5,VERSION) else {}
     for a in [*anchors(feed,comparison),*extra_anchors(feed)]:
         c,y,q=a['company'],a['year'],a['quarter'];period=f'Q{q} {y}'
         old=previous.get('status',{}).get(c,{})
         if previous.get('schema_version')==VERSION and old.get('period')==period and old.get('source_sha256')==a['source_sha256'] and old.get('source_url')==a['source_url'] and old.get('status')=='verified':
             out['observations'].extend(r for r in previous.get('observations',[]) if r.get('company')==c)
-            out['insights'].extend(r for r in previous.get('insights',[]) if r.get('company')==c and r.get('period')==period)
+            out['insights'].extend(r for r in previous.get('insights',[]) if r.get('company')==c and r.get('period')==period and r.get('source_type')=='official_quarterly_report' and r.get('supplemental_document') is not True)
             out['status'][c]=old;continue
         state={'period':period,'source_url':a['source_url'],'source_sha256':a['source_sha256'],'status':'not_verified'}
         try:
@@ -499,7 +508,11 @@ def build(feed,comparison,previous=None,fetcher=fetch,reader=read_pages):
     return out
 def main():
     load=lambda n:json.loads((ROOT/'data'/n).read_text(encoding='utf-8'))
-    result=build(load('verified_financial_feed.json'),load('nine_insurer_comparison.json'),load(TARGET.name) if TARGET.exists() else {})
+    feed=load('verified_financial_feed.json');comparison=load('nine_insurer_comparison.json')
+    previous=load(TARGET.name) if TARGET.exists() else {}
+    result=build(feed,comparison,previous)
+    from market_commentary_documents import enrich
+    enrich(result,feed,comparison,load('extended_insurer_financials.json'),load('report_candidates.json'),previous)
     from publish_geographic_workbooks import atomic_write
     atomic_write(TARGET,result)
     print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)

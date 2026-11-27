@@ -150,4 +150,20 @@ class MarketSegmentTests(unittest.TestCase):
         self.assertNotIn('portfolio_growth',{r['driver'] for r in growth_drivers(a,[(9,raw.replace('growth in selected segments','claims in selected segments'))])})
         self.assertEqual(growth_drivers(a,[(9,raw.replace('Results Q3 2026','Results Q2 2026'))]),[])
 
+    def test_commentary_original_deck_scope_period_and_source_gate(self):
+        from market_commentary_documents import document_insights
+        doc=dict(document_type='results_presentation',format='pdf',status='verified_document',issuer_verified=True,period_verified=True,source_sha256=SHA,url='https://tryg.com/deck.pdf')
+        text=('Private\nQ3 2026\nRevenue growth driven by price increases and higher volumes\n'
+              'The underlying claims ratio improved\nLower weather claims\n'
+              'Expected growth driven by volume growth\n')
+        result=document_insights('Tryg',2026,3,doc,[text])
+        self.assertEqual({r['driver'] for r in result},{'price','volume_up','underlying_loss_improved','weather_lower'})
+        self.assertTrue(all(r['source_type']=='official_results_presentation' and r['source_document_period']=='Q3 2026' and r['source_page']==1 and r['period_type']=='quarter' and r['views']==['group/pm','group/all'] for r in result))
+        for bad in [dict(doc,status='unverified'),dict(doc,document_type='press_release'),dict(doc,period_verified=False),dict(doc,source_sha256='bad')]:
+            self.assertEqual(document_insights('Tryg',2026,3,bad,[text]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q2 2026')]),[])
+        self.assertEqual(document_insights('Storebrand',2026,3,doc,[text.replace('Private','Group')]),[])
+        self.assertEqual(document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q3 2026 Q1-Q3 2026')]),[])
+        self.assertTrue(all(r['period_type']=='ytd' for r in document_insights('Tryg',2026,3,doc,[text.replace('Q3 2026','Q1-Q3 2026')])))
+
 if __name__=='__main__':unittest.main()
