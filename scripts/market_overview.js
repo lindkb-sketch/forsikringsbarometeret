@@ -320,10 +320,13 @@
     if(es.length){
       special.splice(0,special.length);
       const chosen=[];
+      // Prefer the total impact rather than one segment's fire amount in
+      // the total view; keep the explicit segment impact in PM/BM.
+      const eventOrder=market==='all'?[...es].sort((a,b)=>(b.priority+(b.topic==='named_fire'?12:0)-(b.topic==='bm_large_loss'||b.topic==='pm_fire'?12:0))-(a.priority+(a.topic==='named_fire'?12:0)-(a.topic==='bm_large_loss'||a.topic==='pm_fire'?12:0))):es;
       // Do not repeat a fire's total and segment contribution in the same
       // card, or a vague ruling sentence alongside its specific amount.
       const family=x=>/^(named_fire|pm_fire)$/.test(x.topic)?'fire':/workers_comp/.test(x.topic)?'ruling':x.topic;
-      for(const e of es){
+      for(const e of eventOrder){
         if(chosen.some(x=>family(x)===family(e)))continue;
         chosen.push(e);
       }

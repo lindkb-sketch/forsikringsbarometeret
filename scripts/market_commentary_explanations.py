@@ -26,6 +26,7 @@ def explain(company,y,q,doc,texts):
             matches=[has(p) for p in patterns]
             if not all(matches):return
             msg=message(matches) if callable(message) else message
+            if not msg:return
             for pt in ('quarter','ytd') if q==1 else (mode,):
                 out.append(dict(company=company,period=period,source_document_period=period,period_type=pt,views=views,
                     theme=theme,driver=topic,topic=topic,category=kind,priority=priority,text=msg,
@@ -123,6 +124,9 @@ def explain(company,y,q,doc,texts):
                 add('cost_explanation','revenue_scale_efficiency',group('pm'),mode,99,
                     [r'The cost ratio improved by [\d.,]+ percentage points',r'primarily reflecting revenue growth',r'(?:strict cost discipline|cost efficiency)'],
                     'I privatsegmentet bedrer veksten kostnadsdekningen, mens effektivisering og stram kostnadsstyring holder igjen kostnadsveksten.')
+                add('cost_explanation','private_cost_context',norway('pm'),mode,78,
+                    [r'The cost ratio improved by [\d.,]+ percentage points',r'primarily reflecting revenue growth',r'(?:strict cost discipline|cost efficiency)'],
+                    'I den samlede privatsegmentrapporten forklares kostnadsbedringen med bedre kostnadsdekning fra inntektsvekst og kostnadsdisiplin; bidragene er ikke separat tallfestet for Norge.')
             else:
                 add('growth_explanation','bm_selectivity',both('bm'),mode,105,
                     [r'price increases for all products',r'prioriti[sz]ation of profitability over growth|profitability over growth and the termination of',r'agreements with fire mutuals'],
@@ -147,7 +151,7 @@ def explain(company,y,q,doc,texts):
                         'Porteføljevekst og prisgrep for å møte skadeinflasjon støtter privatinntektene, men effekten av prisgrepene avtar når inflasjonspresset dempes.','price')
                     add('loss_explanation','pm_weather_runoff',views,'quarter',93,
                         [r'Weather claims of ([\d.,]+)% \(([\d.,]+)%\)',r'benign',r'Run-off'],
-                        lambda m:'Gunstige værforhold bidro også til lavere skader; i en nordisk privatportefølje falt værskadeandelen fra '+fmt(m,0,2)+' til '+fmt(m)+' % av inntektene.','weather')
+                        lambda m:'Gunstige værforhold bidro også til lavere skader; i en nordisk privatportefølje falt værskadeandelen fra '+fmt(m,0,2)+' til '+fmt(m)+' % av inntektene.' if float(m[0][1].replace(',','.'))<float(m[0][2].replace(',','.')) else '','weather')
                     add('loss_explanation','pm_weather_ytd',views,'ytd',92,
                         [r'favourable weather claims experience of ([\d.,]+)%',r'higher run-off level'],
                         'Lavere værskader og høyere avviklingsgevinster har støttet den nordiske privatlønnsomheten hittil i år.','weather')
@@ -163,15 +167,15 @@ def explain(company,y,q,doc,texts):
                         [r'expense ratio rose briefly',r'reduce distribution costs',r'efficient sales channels'],
                         'Kostnadsprosenten steg noe i en nordisk bedriftsportefølje; mer effektive salgskanaler og lavere distribusjonskostnader er tiltak for å bedre denne fremover.')
                     add('event_explanation','workers_comp_provision',views,'ytd',113,
-                        [rf'Figures for Q1-Q{q} {y} are impacted by the Supreme Court ruling on Danish workers.{0,5} compensation insurance',r'one-off provision of DKK ([\d.,]+)bn pre-tax'],
+                        [rf'Figures for Q1-Q{q} {y} are impacted by the Supreme Court ruling on Danish workers.{{0,5}} compensation insurance',r'one-off provision of DKK ([\d.,]+)bn pre-tax'],
                         lambda m:'Dansk høyesterettsdom om yrkesskadeforsikring har medført en engangsavsetning på '+fmt(m,1)+' mrd. DKK før skatt. Denne belaster HIÅ-resultatet i bedriftsmarkedet og må skilles fra løpende skadedrift.')
             if has(rf'Interim report Q1-Q{q} {y}') and has(r'Weather claims for the quarter amounted to'):
                 add('loss_explanation','group_weather',group('all'),'quarter',94,
                     [r'DKK ([\d,]+)m \(DKK ([\d,]+)m\), below both',r'benign weather patterns'],
-                    lambda m:'Gunstige værforhold reduserte værskadene i en nordisk portefølje fra '+amount(m[0][2])+' til '+amount(m[0][1])+' mill. DKK, og bidro til lavere skadeprosent.','weather')
+                    lambda m:'Gunstige værforhold reduserte værskadene i en nordisk portefølje fra '+amount(m[0][2])+' til '+amount(m[0][1])+' mill. DKK, og bidro til lavere skadeprosent.' if float(m[0][1].replace(',',''))<float(m[0][2].replace(',','')) else '','weather')
                 add('cost_explanation','cost_control',group('all'),'quarter',83,
                     [r'The expense ratio was reported at [\d.,]+%',r'tight cost controls'],
-                    'Stram kostnadskontroll holder kostnadsprosenten stabil; skadeprosenten er den viktigste forklaringen på lønnsomhetsforbedringen i denne porteføljen.')
+                    'Rapporteringen fremhever stram kostnadskontroll som et konkurransefortrinn; kostnadsandelen må vurderes separat fra endringen i skadeprosenten.')
                 add('growth_explanation','group_ytd_price_volume',group('all'),'ytd',95,
                     [r'Insurance revenue growth of [\d.,]+% \([\d.,]+%\)',r'portfolio growth in selected segments',r'profitability initiatives to mitigate inflation'],
                     'Hittil i år har porteføljevekst og prisgrep for å motvirke inflasjon understøttet premieinntektene, særlig i nordisk privatforsikring.','volume')
@@ -204,8 +208,8 @@ def explain(company,y,q,doc,texts):
                     [r'fewer property-related losses',r'higher run-off gains',r'reserve releases in workers.{0,8} compensation'],
                     'Færre eiendomsrelaterte storskader og frigjøring av reserver innen yrkesskade og eiendom forklarer mye av CR-bedringen i en dansk bedriftsportefølje.','temporary')
                 add('cost_explanation','lower_revenue_denominator',group('bm'),'quarter',91,
-                    [r'Insurance operating expenses totalled DKK ([\d,]+) million',r'ratio increased slightly to',r'Insurance revenue amounted to DKK'],
-                    'Kostnadsprosenten kan øke selv med lavere driftskostnader, når inntektsgrunnlaget samtidig faller i bedriftsporteføljen.')
+                    [r'Insurance operating expenses totalled DKK ([\d,]+) million',r'against DKK ([\d,]+) million in Q[1-4] '+str(y-1),r'ratio increased slightly to',r'a decrease of\s*-?[\d.,]+% year-on-year'],
+                    lambda m:'Kostnadsprosenten steg i en dansk bedriftsportefølje selv om driftskostnadene falt fra '+amount(m[1][1])+' til '+amount(m[0][1])+' mill. DKK, fordi inntektsgrunnlaget ble mindre.' if float(m[0][1].replace(',',''))<float(m[1][1].replace(',','')) else '')
                 add('event_explanation','workers_comp_current',group('bm'),'quarter',110,
                     [r'workers.{0,8} compensation ruling',r'negative impact of around ([\d.,]+) percentage points on the',r'underlying claims ratio in the quarter for Commercial Lines'],
                     lambda m:'Dansk yrkesskadedom belaster fortsatt underliggende skadeprosent i en bedriftsportefølje med rundt '+fmt(m,1)+' prosentpoeng i kvartalet, etter at den store engangseffekten ble innregnet tidligere i år.')

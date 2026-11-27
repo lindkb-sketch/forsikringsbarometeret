@@ -261,6 +261,7 @@ class MarketSegmentTests(unittest.TestCase):
         events=explain('Tryg',2026,3,doc,[tryg])
         self.assertEqual([(r['topic'],r['period_type'],r['views']) for r in events],[('workers_comp_provision','ytd',['group/bm','group/all'])])
         self.assertIn('1,2 mrd. DKK',events[0]['text'])
+        self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace("workers' compensation","workers’ compensation")])[0]['text'],events[0]['text'])
         self.assertEqual(explain('Tryg',2026,3,doc,[tryg.replace('Results Q3 2026','Results Q2 2026')]),[])
 
 if __name__=='__main__':unittest.main()
