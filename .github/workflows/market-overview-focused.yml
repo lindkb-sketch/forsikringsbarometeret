@@ -32,6 +32,7 @@ jobs:
           python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py scripts/market_profitability_history.py scripts/company_comparison_history.py tests/test_market_overview_segments.py
           python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
+          python -m unittest discover -s tests -p 'test_company_segment_details.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
           node --check scripts/market_overview.js
           node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
