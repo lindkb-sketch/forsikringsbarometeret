@@ -137,5 +137,17 @@ class MarketSegmentTests(unittest.TestCase):
         out=growth_drivers(a,[(9,'Key figures - Private\nResults Q3 2026\nGrowth was positively impacted by portfolio growth in selected segments. Retention rates improved slightly.')])
         self.assertEqual({r['driver'] for r in out},{'portfolio_growth','retention_up'})
         self.assertTrue(all(r['period_type']=='quarter' and 'norway/pm' not in r['views'] for r in out))
+        # Reproduce the original Q3 report's interleaved columns/ratio row.
+        raw=('Key figures - Private\nResults Q3 2026 Claims\n'
+             'growth was positively impacted by portfolio to note that minor fluctuations within a quarter\n'
+             'Run-off, net of reinsurance (%) -3.1 -2.2 -2.8 -2.1 -2.1\n'
+             'growth in selected segments and further are considered normal. The current expense\n'
+             'geographies, retention rates improved slightly development of 0.6% (0.2%). The expense ratio')
+        result=growth_drivers(a,[(9,raw)])
+        self.assertEqual({r['driver'] for r in result},{'portfolio_growth','retention_up'})
+        self.assertTrue(all(r['views']==['group/pm','group/all'] and r['period_type']=='quarter' for r in result))
+        self.assertIn('Run-off',next(r['evidence'] for r in result if r['driver']=='portfolio_growth'))
+        self.assertNotIn('portfolio_growth',{r['driver'] for r in growth_drivers(a,[(9,raw.replace('growth in selected segments','claims in selected segments'))])})
+        self.assertEqual(growth_drivers(a,[(9,raw.replace('Results Q3 2026','Results Q2 2026'))]),[])
 
 if __name__=='__main__':unittest.main()

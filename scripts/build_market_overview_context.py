@@ -366,7 +366,21 @@ def growth_drivers(a,pages):
             # adjacent Q1-Qn claims table. Never call a Nordic number Norway.
             if not re.search(rf'\bResults Q{q} {a["year"]}\b',text,re.I):continue
             views=['group/pm','group/all']
-            for driver,pattern in [('portfolio_growth',r'portfolio.{0,80}growth in selected segments'),('retention_up',r'retention rates improved slightly'),('underlying_loss_improved',rf'underlying claims ratio improved.{0,100}in Q{q} {a["year"]}')]:
+            # PDF text extraction interleaves the review with a neighbouring
+            # expense column and ratio table. Require both exact narrative
+            # fragments close together, not a generic mention of a portfolio.
+            evidence=match(text,r'growth was positively impacted by portfolio growth in selected segments')
+            if not evidence:
+                lines=[norm(l) for l in raw.splitlines()]
+                for i,line in enumerate(lines):
+                    if not re.search(r'\bgrowth was positively impacted by portfolio\b',line,re.I):continue
+                    for j in range(i+1,min(i+4,len(lines))):
+                        if re.match(r'^growth in selected segments\b',lines[j],re.I):
+                            evidence=' | '.join(lines[i:j+1])
+                            break
+                    if evidence:break
+            if evidence:add(page,views,'quarter','portfolio_growth',evidence)
+            for driver,pattern in [('retention_up',r'retention rates improved slightly'),('underlying_loss_improved',rf'underlying claims ratio improved.{0,100}in Q{q} {a["year"]}')]:
                 evidence=match(text,pattern)
                 if evidence:add(page,views,'quarter',driver,evidence)
         elif company=='Gjensidige':
