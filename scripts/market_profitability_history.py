@@ -8,7 +8,7 @@ import hashlib, math, re
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 
-SCHEMA=2
+SCHEMA=3
 ALM='Alm. Brand'
 KLP='KLP Skadeforsikring'
 RATIOS=('combined_ratio','loss_ratio','expense_ratio')
@@ -45,6 +45,8 @@ def alm_isolated_layout(left,full,y,q):
         text=re.sub(r'\bQ1\s*-\s*Q([1-4])\b',r'Q1-Q\1',text,flags=re.I)
         if q==2:
             text=re.sub(r'\b(?:H1|HY1|HY|6M|First half|Half.year)\b','Q1-Q2',text,flags=re.I)
+        if q==3:
+            text=re.sub(r'\b9M\b','Q1-Q3',text,flags=re.I)
         return text
     for text in (left,full):
         try:return column_layout(normalize_header(text),y,q)
@@ -83,11 +85,19 @@ def alm_points(raw,url,sha,y,q):
     texts,regions=read_report(raw)
     cover=' '.join(texts[:2])
     if not re.search(r'Alm[.\s]+Brand',cover,re.I) or not re.search(rf'\bQ\s*{q}\b',cover,re.I) or str(y) not in cover:raise ValueError('Wrong Alm report cover')
-    eligible=[(i,t) for i,t in enumerate(texts) if all(x in t for x in ('Gross expense ratio','Net reinsurance ratio','Insurance service result','INCOME Insurance revenue',f'Q{q} {y}'))]
+    eligible=[(i,t) for i,t in enumerate(texts) if all(x in t for x in ('Gross expense ratio','Net reinsurance ratio','Insurance service result','Insurance revenue',f'Q{q} {y}')) and re.search(r'Financial highlights and key ratios',t,re.I)]
     if len(eligible)!=1:raise ValueError('Unique Alm group financial highlights missing')
     i,t=eligible[0];left=regions.get(i,{}).get('left') or t
     count,yi,pi=alm_isolated_layout(left,t,y,q)
-    rows={k:row(left,label,count) for k,label in LABELS.items()}
+    def read_ratio(k,label):
+        try:return row(left,label,count)
+        except ValueError:
+            if k=='loss_ratio':return row(left,'Claims experience',count)
+            raise
+    rows={k:read_ratio(k,label) for k,label in LABELS.items()}
+    for idx in (0,1):
+        if abs(rows['gross_claims_ratio'][idx]+rows['reinsurance_ratio'][idx]-rows['loss_ratio'][idx])>Decimal('.15'):
+            raise ValueError('Alm net claims ratio does not reconcile')
     def amounts(idx):
         return (rows['insurance_revenue'][idx],abs(rows['claims_expenses'][idx]),abs(rows['operating_expenses'][idx]),-rows['reinsurance'][idx],rows['insurance_service_result'][idx])
     def verified(idx):
@@ -144,7 +154,15 @@ def alm_points(raw,url,sha,y,q):
         from rolling_alm_brand_reports import verify_report
         full=verify_report(texts,url,raw,y,q,regions=regions)
         current['solvency_ratio']=full['metrics']['solvency_ratio'];cytd['solvency_ratio']=current['solvency_ratio']
-    except (ValueError,KeyError,IndexError):pass
+    except (ValueError,KeyError,IndexError):
+        month={1:'March',2:'June',3:'September',4:'December'}[q]
+        day={1:31,2:30,3:30,4:31}[q]
+        for page,text in enumerate(texts,1):
+            compact=' '.join(text.split())
+            hit=re.search(rf'At {day} {month} {y}, Alm\. Brand Group thus had an SCR ratio of (\d{{2,3}})%',compact,re.I)
+            if hit and 100<=int(hit[1])<=400:
+                current['solvency_ratio']=float(hit[1]);cytd['solvency_ratio']=current['solvency_ratio']
+                break
     out=[checked_point(ALM,y,q,current,url,sha,i+1,'reported',period(y,q),current.get('return_on_equity'),cytd),
          checked_point(ALM,y-1,q,prior,url,sha,i+1,'reported_comparative',period(y,q),prior.get('return_on_equity'),pytd)]
     # A Q3 table's fifth column is explicitly the prior full year. The
@@ -226,13 +244,20 @@ def build_history(extended,registry,previous):
             if company==ALM:
                 from alm_brand_report_discovery import discover
                 from alm_brand_live_pdf import download_report
-                urls=[r['url'] for r in discover(*target) if r.get('document_type')=='quarterly_report']
+                bootstrap={(2025,3):'https://attachment.news.eu.nasdaq.com/a952a2752b5b371fe77e815f5af75ada6'}
+                try:urls=[r['url'] for r in discover(*target) if r.get('document_type')=='quarterly_report']
+                except Exception:
+                    if target not in bootstrap:raise
+                    urls=[]
+                if target in bootstrap:urls=[bootstrap[target],*urls]
                 fetch=download_report
             else:
                 from rolling_klp_reports import fetch_archive
                 from klp_q2_q3_discovery import discover
                 from import_extended_pdfs import download
                 urls=discover(fetch_archive(),target[0],periods=(target[1],)).get(target[1],[])
+                if target==(2025,3):
+                    urls=['https://www.klp.no/om-klp/finans-og-ir/rapporter-og-presentasjoner/_/attachment/inline/5ba3161b-43de-432d-8d64-725933aeb985%3A6ca5329017a74d7c16342beb87cd5fc1a6da74cb/Q3_2025-KLPSkadeforsikring.pdf',*urls]
                 fetch=lambda url:download(url,KLP)
             verified={}
             for url in list(dict.fromkeys(urls))[:5]:

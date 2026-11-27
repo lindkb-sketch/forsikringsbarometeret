@@ -43,6 +43,19 @@ def verify_report(texts,year,quarter,url,digest,*,historical=False):
     for i,t in enumerate(texts):
         if re.search(r'^Resultatregnskap$',t,re.M):
             header=re.search(r'(?:NOTE\s+)?MILLIONER KRONER\s+([^\n]+)',t)
+            if historical:
+                # Older originals print the start dates of cumulative
+                # columns, sometimes on a separate physical line.
+                before=re.split(r'(?m)^\s*(?:\d+\s+)?Forsikringsinntekter\s+',t,maxsplit=1)[0]
+                compact=' '.join(before.split())
+                compact=re.sub(r'01\.01\.(?:20\d{2})?\s*[-–]\s*','',compact)
+                h=re.search(r'(?:NOTE\s+)?MILLIONER KRONER\s+('+re.escape(current+' '+prior)+r'\s+[\d.\s]+)',compact)
+                if h:header=h
+                elif quarter==3:
+                    split=rf'(?:NOTE\s+)?MILLIONER KRONER\s+3\.\s*kvartal\s+3\.\s*kvartal\s+30\.09\.?\s+30\.09\.?\s+31\.12\.?\s+{year}\s+{year-1}\s+{year}\s+{year-1}\s+{year-1}\b'
+                    if re.search(split,compact,re.I):
+                        result_candidates.append((i,t,5,2,3))
+                        continue
             if header and header.group(1).startswith(current+' '+prior):
                 # Read only explicitly ordered current/prior quarter + current/prior HIÅ.
                 h=header.group(1)
@@ -54,11 +67,13 @@ def verify_report(texts,year,quarter,url,digest,*,historical=False):
                               f'{date_label} {previous_date}':4}
                     if rest in suffixes:
                         result_candidates.append((i,t,suffixes[rest],2,3))
-        if re.search(r'Note\s+\d+\s+Nøkkeltall\s*[-–]\s*akkumulert',t,re.I) and 'Totalskadeprosent' in t:
+        if re.search(r'Note\s+\d+\s*[-–]?\s*Nøkkeltall\s*[-–]\s*akkumulert',t,re.I) and 'Totalskadeprosent' in t:
             h=re.search(r'MILLIONER KRONER\s+([^\n]+)',t)
             if h and h.group(1).startswith(current+' '):
                 note_candidates.append((i,t))
     if len(result_candidates)!=1 or len(note_candidates)!=1:
+        if historical:
+            print('KLP_HISTORICAL_HEADER_DIAGNOSTIC',year,quarter,[(i+1,' '.join(t.split())[:650]) for i,t in enumerate(texts) if re.search(r'^Resultatregnskap$',t,re.M) or ('Totalskadeprosent' in t and 'akkumulert' in t)],flush=True)
         raise ValueError('Unique issuer quarter/HIÅ result and cumulative KPI note not found')
     rp,result,count,yidx,pidx=result_candidates[0]
     np,note=note_candidates[0]

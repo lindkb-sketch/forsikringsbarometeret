@@ -273,4 +273,11 @@ class MarketSegmentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             alm_isolated_layout(text.replace('Q2 Q2','Q1 Q1'),text.replace('Q2 Q2','Q1 Q1'),2026,2)
 
+    def test_alm_2025_nine_month_header(self):
+        from market_profitability_history import alm_isolated_layout
+        text='Q3 Q3 9M 9M FY\nDKKm 2025 2024 2025 2024 2024\nINCOME Insurance revenue 3006 2796 8814 8238 11083'
+        self.assertEqual(alm_isolated_layout(text,text,2025,3),(5,2,3))
+        with self.assertRaises(ValueError):
+            alm_isolated_layout(text.replace('Q3 Q3','Q2 Q2'),text.replace('Q3 Q3','Q2 Q2'),2025,3)
+
 if __name__=='__main__':unittest.main()

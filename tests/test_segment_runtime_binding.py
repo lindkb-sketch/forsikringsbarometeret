@@ -17,7 +17,7 @@ class SegmentBindingTest(unittest.TestCase):
             self.assertIn(token, JS)
         self.assertIn("segmentData[company]=specs.map", JS)
         self.assertIn("if(!segmentData[name]||segmentSpecs[name])continue;", JS)
-        self.assertIn("r.period_type==='quarter'&&r.metric===metric", JS)
+        self.assertIn("r.period_type===(ytdMode()?'ytd':'quarter')&&r.metric===metric", JS)
         self.assertIn("r.year===yr&&r.quarter===quarter", JS)
 
     def test_published_q2_source_rows_for_supported_cards(self):

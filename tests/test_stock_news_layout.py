@@ -52,7 +52,7 @@ for(const c of listed){
  assert.ok(!sandbox.stockMarketSection(c).includes('company-exchange-notices'));
  assert.ok(sandbox.stockMarketSection(c).includes('stock-stats-'+c));
 }
-for(const c of ['Fremtind','Frende'])assert.equal(sandbox.stockMarketSection(c),'');
+for(const c of ['Fremtind','Frende','KLP Skadeforsikring']){sandbox.window.FBNewsWeb.notices[c]=[{source:'NewsWeb',title:'Debt notice',url:'https://newsweb.oslobors.no/message/123',published_at:'2026-11-04T10:00:00Z'}];assert.equal(sandbox.stockMarketSection(c),'');assert.equal(sandbox.companyExchangeNotices(c),'');}
 const n={source:'NewsWeb',title:'Retained news',url:'https://newsweb.oslobors.no/message/124',published_at:'2026-11-04T10:00:00Z'};
 sandbox.window.FBNewsWeb.notices.Tryg=[n];
 sandbox.stocks.prices.Tryg.availability='stale';
@@ -74,7 +74,8 @@ console.log('STOCK_NEWS_RENDERER_PASS');
         self.assertIn('id="stock-news-layout"', HTML)
         self.assertIn('@media(max-width:1100px)', HTML)
         self.assertIn('@media(max-width:650px)', HTML)
-        self.assertIn("${stockMarketConfig[c]?'':companyExchangeNotices(c)}", HTML)
+        self.assertNotIn("${stockMarketConfig[c]?'':companyExchangeNotices(c)}", HTML)
+        self.assertIn("if(!Object.hasOwn(stockMarketConfig,c))return '';", HTML)
         self.assertIn('grid-template-columns:minmax(0,1fr) minmax(260px,29%)', HTML)
 
 
