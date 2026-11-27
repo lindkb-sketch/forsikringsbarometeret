@@ -46,6 +46,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8766/ node tests/market_share_admin_browser.cjs
+          BAROMETER_URL=http://127.0.0.1:8766/ node tests/mobile_browser_e2e.cjs
       - name: Reconcile official live market-segment PDFs
         run: |
           python scripts/build_market_overview_segments.py
@@ -148,3 +149,11 @@ jobs:
           assert.doesNotMatch(v['group/all/quarter'].comments[0].paragraphs.join(' '),/Premiejusteringer er en sentral driver i den rapporterte porteføljen/);
           console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
           JS
+
+      - name: Save mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-browser-audit
+          path: data/browser_mobile_*.png
+          if-no-files-found: warn

@@ -1442,6 +1442,14 @@ home=function(){let html=MON_EXEC_ORIG_HOME();if(MON_QUARTER==='Q3')html+=monCal
   if(current==='summary'&&cal&&selector)selector.insertAdjacentElement('afterend',cal);
   // Provide horizontal table scrolling only where necessary; never squeeze numeric columns.
   for(const table of app.querySelectorAll('table')){
+   // Keep semantic table headers; attach their labels to the responsive
+   // company/summary card presentation without duplicating data values.
+   if(table.closest('.company-segments,#results-comparison')){
+    const labels=[...(table.tHead?.rows[table.tHead.rows.length-1]?.cells||[])].map(th=>th.textContent.trim());
+    for(const body of table.tBodies)for(const tr of body.rows)for(const [i,cell] of [...tr.cells].entries()){
+     if(i&&labels[i])cell.dataset.mobileLabel=labels[i];
+    }
+   }
    if(table.parentElement.classList.contains('exec-table-scroll'))continue;
    const wrap=document.createElement('div');wrap.className='exec-table-scroll';wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Resultattabell – bla sidelengs ved behov');wrap.tabIndex=0;
    table.parentNode.insertBefore(wrap,table);wrap.appendChild(table);

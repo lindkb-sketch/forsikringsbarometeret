@@ -67,3 +67,8 @@ The five-quarter CR trend uses all verified data as its source. Its default char
 ### Company-detail supplements
 
 Independent original report observations in `market_overview_context.json/company_segment_details` supply same-scope segment revenue, results and explicit return columns. They supplement company pages only; the top-five ranking continues to use its original market data. The company chart is locked to its issuer. Source-backed current-quarter commentary is regenerated from the active issuer report and never inherits prior-quarter prose. Existing reviewed editorial commentary remains preferred. KLP market shares are owner-managed using the same editor as other Norwegian insurers; blanks are never inferred. Alm. Brand is admitted to the existing private broker portal and approved public summary feed, without moving private reports.
+
+
+### Phone layout and regression
+
+At widths up to 600 px the ranked market chart uses one compact horizontal stacked bar per issuer, in exactly the same order and with the same values as desktop. All five quarters in the CR chart use a compact viewport, not a clipped or horizontal-scroll SVG. Company and summary tables become labeled two-column metric cards at phone widths without changing the underlying semantic table or source values. Mobile Chrome runs for widths 320, 390 and 430 px cover all nine issuer pages, both reporting modes, the market chart, summary, methodology, and the manual share editor before and after publication. Screenshots are retained in workflow artifacts. Desktop layout remains unchanged.

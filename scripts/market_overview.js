@@ -575,12 +575,12 @@
     const visible=showAll?available:available.filter(s=>!excluded.some(e=>e.company===s.company));
     return {visible,excluded,available,axis:crAxis(crValues(visible)),showAll:Boolean(showAll)};
   }
-  function trendChart(history,showAll=false){
+  function trendChart(history,showAll=false,compact=false){
     const {periods,series}=history;
     if(periods.length!==5)return '<p class="mo-empty">Avventer verifisert kvartal.</p>';
     const view=crTrendView(history,showAll);
     if(!view.axis)return '<p class="mo-empty">Historiske CR-tall er foreløpig ikke tilgjengelige.</p>';
-    const {low,high,step}=view.axis,w=620,h=330,left=55,right=34,top=18,bottom=38;
+    const {low,high,step}=view.axis,w=compact?320:620,h=compact?300:330,left=compact?43:55,right=compact?29:34,top=18,bottom=38;
     const x=i=>left+i*(w-left-right)/4,y=v=>top+(high-v)/(high-low)*(h-top-bottom);
     const ticks=[];for(let i=low;i<=high;i+=step)ticks.push(i);
     const title='Utvikling i CR · '+(view.visible.length===series.length?'alle selskaper':view.visible.length+' selskaper');
@@ -738,7 +738,7 @@
   function trendPanels(p){
     const history=profitabilityHistory(window.FBQuarterly?.verified,context,archive,p);
     const left=typeof profitabilityChart==='function'?profitabilityChart(profitCompany,{...profitabilityOptions(profitCompany,p,history),onChange:'FBMarketOverview.selectProfitability(this.value)'}):'<p>Henter lønnsomhetsgraf …</p>';
-    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history,crShowAll)+'</section></div>';
+    return '<div class="profitability-duo mo-trend-duo" id="mo-trend-charts"><section class="panel" id="mo-profitability-panel">'+left+'</section><section class="panel" id="mo-cr-history">'+trendChart(history,crShowAll,typeof window!=='undefined'&&window.matchMedia('(max-width:600px)').matches)+'</section></div>';
   }
   let comparison=null,fx=null,segments=null,context=null,archive=null,calendar=null,scope='group',market='all',mode='quarter',reportPeriod='latest',profitCompany='Fremtind',crShowAll=false,pending=null,failed=false;
   function currentView(){
@@ -765,12 +765,13 @@
       const stack=split?r.loss+r.cost:r.cr;
       const accessible=pretty(r.company)+': CR '+pct(r.cr)+', skadeprosent '+pct(r.loss)+', kostnadsprosent '+pct(r.cost)+', vekst '+growthText(r.growth);
       return '<div class="mo-company" data-company="'+safe(r.company)+'" data-cr="'+r.cr+'" data-income-nok="'+r.revenueNok+'">'+
-        '<div class="mo-bar-area" role="img" aria-label="'+safe(accessible)+'">'+
-        '<div class="mo-stack" style="height:'+stack/cap*100+'%">'+
+        '<div class="mo-bar-area" role="img" aria-label="'+safe(accessible)+'"><div class="mo-bar-track">'+
+        '<div class="mo-stack" style="height:'+stack/cap*100+'%;--mo-stack-width:'+stack/cap*100+'%">'+
         '<span class="mo-cr">'+pct(r.cr)+'</span>'+
-        (split?'<div class="mo-cost" style="height:'+(stack?r.cost/stack*100:0)+'%"><span>'+format(r.cost)+'</span></div>'+
-        '<div class="mo-loss" style="height:'+(stack?r.loss/stack*100:0)+'%"><span>'+format(r.loss)+'</span></div>':
-        '<div class="mo-cr-only" style="height:100%" title="Fremtind rapportert samlet CR (APM). Skade-/kostnadssplitt ikke rapportert."><span>CR</span></div>')+'</div></div>'+
+        (split?'<div class="mo-cost" style="height:'+(stack?r.cost/stack*100:0)+'%;--mo-part-width:'+(stack?r.cost/stack*100:0)+'%"><span>'+format(r.cost)+'</span></div>'+
+        '<div class="mo-loss" style="height:'+(stack?r.loss/stack*100:0)+'%;--mo-part-width:'+(stack?r.loss/stack*100:0)+'%"><span>'+format(r.loss)+'</span></div>':
+        '<div class="mo-cr-only" style="height:100%;--mo-part-width:100%" title="Fremtind rapportert samlet CR (APM). Skade-/kostnadssplitt ikke rapportert."><span>CR</span></div>')+'</div></div><strong class="mo-mobile-cr">'+pct(r.cr)+'</strong></div>'+
+        '<div class="mo-mobile-split">'+(split?'<span>Skade '+pct(r.loss)+'</span><span>Kostnad '+pct(r.cost)+'</span>':'<span>Rapportert CR uten splitt</span>')+'</div>'+
         '<div class="mo-name"><button type="button" onclick="show(\''+safe(r.company)+'\')">'+safe(pretty(r.company))+'</button>'+
         (i<3?'<span class="mo-medal mo-medal-'+(i+1)+'" data-cr-rank="'+(i+1)+'" role="img" aria-label="'+(i+1)+'. plass – lavest CR" title="'+(i+1)+'. plass – lavest CR">'+['🥇','🥈','🥉'][i]+'</span>':'<span class="mo-medal-placeholder" aria-hidden="true"></span>')+
         '</div>'+
@@ -839,7 +840,7 @@
     })();
     return pending;
   }
-  function start(){refresh();setInterval(refresh,300000);}
+  function start(){refresh();setInterval(refresh,300000);if(typeof window!=='undefined')window.matchMedia('(max-width:600px)').addEventListener('change',()=>render());}
   function methodology(){
     const view=currentView(),m=view.model,sourceLinks=view.sources;
     return '<div class="panel" id="market-overview-methodology"><h2>Markedsoversikt – rangering, avgrensninger og kilder</h2>'+

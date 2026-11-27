@@ -147,6 +147,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
+          BAROMETER_URL=http://127.0.0.1:8765/ node tests/mobile_browser_e2e.cjs
       - name: Report validation and publication diagnostics
         if: always()
         run: |
@@ -294,7 +295,9 @@ jobs:
           npm install --no-save playwright
           google-chrome --version
       - name: Verify rendered homepage, Q3, HIÅ, arrows, news, quotes and brief
-        run: node tests/live_browser_e2e.cjs
+        run: |
+          node tests/live_browser_e2e.cjs
+          node tests/mobile_browser_e2e.cjs
       - name: Record nine-company scheduled advance and public parity evidence
         run: python scripts/nine_import_receipt.py
       - name: Save nine-company import evidence
@@ -312,6 +315,7 @@ jobs:
           path: |
             data/browser_home_q3.png
             data/browser_home_ytd.png
+            data/browser_mobile_*.png
             data/browser_e2e_report.json
           if-no-files-found: warn
 
