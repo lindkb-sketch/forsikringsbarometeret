@@ -51,6 +51,9 @@ jobs:
           const history=require('./scripts/market_overview.js').profitabilityHistory(require('./data/verified_financial_feed.json'),require('./data/market_overview_context.json'),a,v['group/all/quarter'].model.period);
           assert.equal(history.periods.length,5);
           assert.equal(history.series.length,9);
+          const sam=require('./scripts/market_overview.js').sampoNordicSegments(require('./data/verified_financial_feed.json'),v['group/all/quarter'].model.period,'ytd');
+          console.log('SAMPO_NORDIC_SEGMENTS',JSON.stringify(sam.map(r=>[r.segment,r.method,r.metrics])));
+          if(a.active_period==='Q3 2026')assert.ok(sam.length===2&&sam.every(r=>r.metrics&&r.sources.length),'Both Sampo Nordic segments must have source-backed HIÅ figures');
           console.log('MARKET_HISTORY_COVERAGE',JSON.stringify(history.series.map(s=>[s.company,s.points.map(p=>p?.cr??null)])));
           if(a.active_period==='Q3 2026')assert.ok(history.series.every(s=>s.points.every(Boolean)),'Q3 baseline must include five verified quarterly CR values for all nine insurers');
           assert.equal(Object.keys(v).length,12);

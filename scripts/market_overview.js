@@ -563,6 +563,43 @@
     s?.points.forEach((r,i)=>{if(!r)return;const label=history.periods[i];if(num(r.loss)&&num(r.cost))selected[label]=[r.loss,r.cost,r.cr];if(num(r.roe))returns[label]={value:r.roe,label:r.roeBasis==='HIÅ'?'Rapportert annualisert HIÅ':'Rapportert annualisert avkastning'};});
     return {quarters:history.periods,selected,returns};
   }
+  // Company-detail segments are independent of the market ranking's
+  // Norway/PM/BM population. Sampo's named Nordic segments must not be
+  // relabelled as Norwegian or treated as the full Group's PM/BM.
+  function sampoNordicSegments(feed,p,mode='quarter'){
+    if(!p||!periodOf(title(p)))return [];
+    const metrics=['insurance_revenue','insurance_service_result',...CORE];
+    const rows=(feed?.observations||[]).filter(r=>valid(r)&&r.company==='Sampo'&&r.scope==='reported_segment'&&['Private Nordic','Nordic Commercial'].includes(r.segment));
+    const sameSourceBasis=r=>/^Sampo interim statement; (Private Nordic|Nordic Commercial) reported financial table/.test(r.source_definition||'');
+    function block(segment,y,q,type){
+      const rr=rows.filter(r=>r.segment===segment&&r.year===y&&r.quarter===q&&r.period_type===type&&sameSourceBasis(r));
+      const by=Object.fromEntries(metrics.map(k=>[k,selectUnique(rr,k)]));
+      if(metrics.some(k=>!by[k]))return null;
+      if(['insurance_revenue','insurance_service_result'].some(k=>by[k].unit!=='EURm')||CORE.some(k=>by[k].unit!=='percent'))return null;
+      const m=Object.fromEntries(metrics.map(k=>[k,by[k].value]));
+      if(m.insurance_revenue<=0||Math.min(m.combined_ratio,m.loss_ratio,m.expense_ratio)<0||Math.abs(m.combined_ratio-m.loss_ratio-m.expense_ratio)>.25)return null;
+      const sourceRows=metrics.map(k=>by[k]);
+      return {metrics:m,sourceRows,method:type==='ytd'?'reported_ytd':'reported_quarter'};
+    }
+    function aggregate(segment,y){
+      const direct=block(segment,y,p.quarter,mode);
+      if(direct||mode!=='ytd')return direct;
+      const parts=Array.from({length:p.quarter},(_,i)=>block(segment,y,i+1,'quarter'));
+      if(parts.some(x=>!x))return null;
+      const total=parts.reduce((a,b)=>a+b.metrics.insurance_revenue,0);
+      const m={insurance_revenue:total,insurance_service_result:parts.reduce((a,b)=>a+b.metrics.insurance_service_result,0)};
+      for(const key of CORE)m[key]=parts.reduce((a,b)=>a+b.metrics[key]*b.metrics.insurance_revenue,0)/total;
+      return {metrics:m,sourceRows:parts.flatMap(b=>b.sourceRows),method:p.quarter===1?'reported_quarter':'calculated_ytd'};
+    }
+    return ['Private Nordic','Nordic Commercial'].map(segment=>{
+      const current=aggregate(segment,p.year),prior=aggregate(segment,p.year-1),older=aggregate(segment,p.year-2);
+      const m=current?.metrics,prev=prior?.metrics;
+      return {segment,metrics:m||null,prior:prev||null,
+        growth:m&&prev?100*(m.insurance_revenue/prev.insurance_revenue-1):null,
+        growthPrev:prev&&older?100*(prev.insurance_revenue/older.metrics.insurance_revenue-1):null,
+        method:current?.method||null,sources:current?.sourceRows||[]};
+    });
+  }
   function companySegmentRows(name,p,periodType='quarter'){
     if(!p||!COMPANIES.includes(name))return [];
     const rows=allRows(window.FBQuarterly?.verified,segments,comparison,context).filter(r=>r.period_type===periodType);
@@ -686,5 +723,5 @@
       (m.period?'<p><strong>Kilder for sist valgte markedsvisning · '+safe(title(m.period))+' · '+safe(mode==='ytd'?'HIÅ':'Kvartal')+'</strong></p><ul>'+sourceLinks.map(r=>'<li><a href="'+safe(r.url)+'" target="_blank" rel="noopener noreferrer">'+safe(r.name)+(r.page?' · side '+safe(r.page):'')+'</a></li>').join('')+'</ul>'+
       '<p>Uten tilstrekkelig grunnlag eller utenfor valgt avgrensning: '+safe(m.missing.map(pretty).join(', ')||'Ingen')+'.</p>':'')+'</div>';
   }
-  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,reportQueues,trendChart};
+  return {model,comments,makeView,archivedView,viewKey,html,methodology,select,selectProfitability,refresh,start,timeline,profitabilityHistory,profitabilityOptions,companySegmentRows,sampoNordicSegments,reportQueues,trendChart};
 });

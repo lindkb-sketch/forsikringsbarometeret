@@ -427,7 +427,7 @@
     const opts=p&&window.FBMarketOverview?.profitabilityOptions(c,p);
     const chart=profitabilityChart(c,opts||{quarters:p?quarterTimeline(p):[],selected:{},returns:{}});
     const segs=c==='Alm. Brand'&&p?window.FBMarketOverview?.companySegmentRows(c,p,type)||[]:[];
-    const segmentTable=segs.length?'<section class="panel"><div class="section-head"><h2>Segmentoversikt · Danmark</h2></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>'+segs.map(({market,row:r})=>'<tr><td>'+(market==='pm'?'Privatmarkedet':'Bedriftsmarkedet')+'</td>'+['growth','cr','loss','cost'].map(k=>'<td>'+companyEsc(value(r?.[k],true))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>':'';
+    const segmentTable=segs.some(s=>s.row)?'<section class="panel company-segments" aria-label="Segmentoversikt for Alm. Brand"><div class="section-head"><h2>Segmentoversikt · Danmark</h2></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>'+segs.map(({market,row:r})=>'<tr><td>'+(market==='pm'?'Privatmarkedet':'Bedriftsmarkedet')+'</td>'+['growth','cr','loss','cost'].map(k=>'<td>'+companyEsc(value(r?.[k],true))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>':'';
     return MON_SELECT()+'<button class="back" onclick="show(\'home\')">← Tilbake til oversikten</button>'+shell(c,'Offisielle kvartalsrapporter og kildeverifiserte resultater','SELSKAPSANALYSE / '+c.toUpperCase()).replace(/Q2 2026 · Kildekontrollerte utdrag/,companyEsc(p?label(p):'Avventer kvartal')+' · Kildekontrollerte utdrag')+
       '<div class="section-head"><div><h2 style="margin:0;font-size:16px">'+companyEsc(c)+' | Resultatoversikt</h2></div>'+companyBasisSelector()+'</div>'+quarterComment(c)+
       '<div class="kpi-seven dynamic-kpis">'+cards+'</div><section class="panel company-profitability" aria-label="Lønnsomhetsutvikling for '+companyEsc(c)+'">'+chart+'</section>'+segmentTable+
@@ -505,6 +505,39 @@
       panel.setAttribute('aria-label','Lønnsomhetsutvikling for '+c);
       panel.innerHTML=profitabilityChart(c);
       cards.insertAdjacentElement('afterend',panel);
+    }
+    if(c==='Sampo'&&selection){
+      const rows=window.FBMarketOverview?.sampoNordicSegments(verified,selection,ytdMode()?'ytd':'quarter')||[];
+      const table=fragment.querySelector('.tablewrap table');
+      if(table&&rows.length===2){
+        for(const [i,r] of rows.entries()){
+          const tr=table.tBodies[0]?.rows[i];if(!tr)continue;
+          tr.dataset.segment=r.segment;
+          tr.dataset.financialPeriod=ytdMode()?'ytd':'quarter';
+          tr.dataset.financialSource=r.method||'missing';
+          const show=(value,percent)=>Number.isFinite(value)?fmt(value,percent)+(percent?'':' MEUR'):'—';
+          const vals=[[r.growth,r.growthPrev,true],...['insurance_service_result','combined_ratio','loss_ratio','expense_ratio'].map(k=>[r.metrics?.[k],r.prior?.[k],k!=='insurance_service_result'])];
+          vals.forEach(([now,prev,percent],j)=>{
+            const cell=tr.cells[j+1];if(!cell)return;
+            cell.innerHTML='<strong>'+companyEsc(show(now,percent))+'</strong><div class="table-prior">('+companyEsc(show(prev,percent))+')</div>'+trendArrow(now,prev,j>=2);
+          });
+          const sources=[...new Map(r.sources.map(x=>[x.source_url,x])).values()];
+          if(sources.length){
+            const small=document.createElement('small');small.className='frende-skade-source';
+            sources.forEach((s,j)=>{
+              const a=document.createElement('a');a.href=s.source_url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=sources.length>1?'Q'+s.quarter+' '+s.year:'Offisiell rapport ↗';
+              if(j)small.append(' · ');small.append(a);
+            });
+            tr.cells[0].append(' ',small);
+          }
+        }
+        const panel=table.closest('.panel');
+        if(panel&&rows.some(r=>r.method==='calculated_ytd')){
+          const hint=document.createElement('p');hint.className='hint';
+          hint.textContent='HIÅ er beregnet fra alle kildeverifiserte isolerte kvartaler. Forsikringsresultat summeres; CR og delprosenter inntektsvektes. Avrunding kan gi avvik fra rapporterte HIÅ-prosenter.';
+          panel.append(hint);
+        }
+      }
     }
     if(c==='Fremtind'&&selection){
       const segs=window.FBMarketOverview?.companySegmentRows(c,selection,ytdMode()?'ytd':'quarter')||[];
@@ -702,6 +735,13 @@
           segment.setAttribute('data-financial-source','verified-protector-norway-pdf');
         }
       }
+    }
+    const chartPanel=fragment.querySelector('.company-profitability');
+    const segmentPanel=fragment.querySelector('.tablewrap')?.closest('.panel');
+    if(chartPanel&&segmentPanel&&segmentPanel!==chartPanel){
+      segmentPanel.classList.add('company-segments');
+      segmentPanel.setAttribute('aria-label','Segmentoversikt for '+c);
+      chartPanel.insertAdjacentElement('afterend',segmentPanel);
     }
     return fragment.innerHTML;
   }

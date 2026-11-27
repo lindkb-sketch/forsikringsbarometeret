@@ -260,3 +260,23 @@ test('calendar moves only reported issuers, matches exact next quarter, and hide
  const all=reportQueues('Q4 2026',after.pending.map(r=>r.company).concat(after.next.map(r=>r.company)),calendar);
  assert.equal(all.pending.length,0);assert.equal(all.next.length,9);
 });
+
+test('Sampo company detail has exact Nordic segment scope, quarter and complete income-weighted HIÅ',()=>{
+ const {sampoNordicSegments}=require('../scripts/market_overview.js');
+ const data=[];
+ for(const y of [2025,2026])for(let q=1;q<=3;q++)for(const [seg,base] of [['Private Nordic',100],['Nordic Commercial',50]]){
+   const revenue=base+(y===2026?10*q:0),cr=80+q,loss=60+q;
+   data.push(...rows('Sampo',revenue,cr,loss,20,'EURm','reported_segment',seg,y,q).concat({...rows('Sampo',revenue,cr,loss,20,'EURm','reported_segment',seg,y,q)[0],metric:'insurance_service_result',value:revenue*.2}).map(x=>({...x,source_definition:'Sampo interim statement; '+seg+' reported financial table'})));
+ }
+ data.push(...rows('Sampo',9999,1,1,0,'EURm','group',null,2026,3));
+ const h=sampoNordicSegments({observations:data},{year:2026,quarter:3},'ytd');
+ assert.deepEqual(h.map(x=>x.segment),['Private Nordic','Nordic Commercial']);
+ assert.equal(h[0].metrics.insurance_revenue,360);
+ assert.equal(h[0].metrics.insurance_service_result,72);
+ assert.ok(Math.abs(h[0].metrics.combined_ratio-(110*81+120*82+130*83)/360)<1e-10);
+ assert.equal(h[0].method,'calculated_ytd');
+ const q=sampoNordicSegments({observations:data},{year:2026,quarter:3});
+ assert.equal(q[0].metrics.insurance_revenue,130);assert.equal(q[1].metrics.combined_ratio,83);
+ const missing=sampoNordicSegments({observations:data.filter(x=>!(x.segment==='Private Nordic'&&x.year===2026&&x.quarter===2))},{year:2026,quarter:3},'ytd');
+ assert.equal(missing[0].metrics,null);assert.ok(missing[1].metrics);
+});

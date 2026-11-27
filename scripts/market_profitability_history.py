@@ -90,9 +90,32 @@ def alm_points(raw,url,sha,y,q):
     def amounts(idx):
         return (rows['insurance_revenue'][idx],abs(rows['claims_expenses'][idx]),abs(rows['operating_expenses'][idx]),-rows['reinsurance'][idx],rows['insurance_service_result'][idx])
     def verified(idx):
-        m=amounts_ratios(*amounts(idx),Decimal('1.5'))
         actual={k:float(rows[k][idx]) for k in RATIOS}
-        if any(abs(m[k]-actual[k])>.20 for k in RATIOS):raise ValueError('Alm historical ratio mismatch')
+        try:
+            m=amounts_ratios(*amounts(idx),Decimal('1.5'))
+            if any(abs(m[k]-actual[k])>.20 for k in RATIOS):raise ValueError('Alm historical ratio mismatch')
+        except ValueError as exc:
+            # Older highlights sometimes include a rounding/presentation
+            # discrepancy. Admit the explicitly reported quarter only when
+            # the independently reconciled original Personal and Commercial
+            # segment tables reproduce the Group ratios and total revenue.
+            if idx not in (0,1):
+                raise
+            try:
+                from build_market_overview_context import verify_alm_market_quarter
+                sr=verify_alm_market_quarter(list(enumerate(texts,1)),y,q,url,sha)
+                parts=[]
+                for segment in ('Private','Commercial'):
+                    v={r['metric']:r['value'] for r in sr if r['year']==y-idx and r['segment']==segment}
+                    if set(v)!={'insurance_revenue',*RATIOS}:raise ValueError('Incomplete Alm segment concordance')
+                    parts.append(v)
+                total=sum(v['insurance_revenue'] for v in parts)
+                if abs(total-float(rows['insurance_revenue'][idx]))>3 or any(abs(sum(v[k]*v['insurance_revenue'] for v in parts)/total-actual[k])>.25 for k in RATIOS):
+                    raise ValueError('Group/segment ratios do not reconcile')
+                print('MARKET_ALM_HISTORY_SEGMENT_CONCORDANCE',period(y-idx,q),actual,flush=True)
+            except Exception as mismatch:
+                print('MARKET_ALM_HISTORY_DIAGNOSTIC',period(y,q),'column',idx,'values',[(k,str(v[idx])) for k,v in rows.items()],str(exc),str(mismatch),flush=True)
+                raise ValueError('Alm quarter highlights failed independent segment reconciliation') from mismatch
         return actual
     out=[checked_point(ALM,y,q,verified(0),url,sha,i+1,'reported',period(y,q)),checked_point(ALM,y-1,q,verified(1),url,sha,i+1,'reported_comparative',period(y,q))]
     # A Q3 table's fifth column is explicitly the prior full year. The

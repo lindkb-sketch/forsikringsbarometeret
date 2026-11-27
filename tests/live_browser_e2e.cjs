@@ -440,6 +440,24 @@ async function main(){
         rendered.includes('Ingen kildeverifisert')||rendered.includes('avventer'),rendered.slice(0,200));
     }
   }
+  // Listing eligibility is based on the configured equity, not on debt
+  // notices or the presence/absence of a stock quote.
+  for(const name of ['Fremtind','Frende','KLP Skadeforsikring']){
+    await page.evaluate(c=>{window.FBNewsWeb.notices[c]=[{source:'NewsWeb',url:'https://newsweb.oslobors.no/message/123456',title:'Test debt notice',published_at:new Date().toISOString()}];show(c,true);},name);
+    check(name+' has no irrelevant stock or exchange section',await page.locator('.stock-section,.company-exchange-notices').count()===0&&await page.locator('.company-media-news').count()===1);
+    await page.evaluate(c=>{delete window.FBNewsWeb.notices[c]},name);
+  }
+  await page.evaluate(()=>show('Sampo',true));
+  await page.locator('.company-period-actions select').selectOption('Q3');
+  const sam=await page.evaluate(()=>{
+    const chart=document.querySelector('.company-profitability'),segments=document.querySelector('.company-segments');
+    return {placement:chart?.nextElementSibling===segments,labels:[...document.querySelectorAll('.company-segments tbody tr')].map(r=>r.dataset.segment),values:[...document.querySelectorAll('.company-segments tbody tr')].map(r=>[...r.cells].slice(1).map(c=>c.innerText))};
+  });
+  check('Sampo Nordic segments directly below profitability chart',sam.placement&&JSON.stringify(sam.labels)===JSON.stringify(['Private Nordic','Nordic Commercial']),JSON.stringify(sam));
+  if(marketArchive.active_period==='Q3 2026')check('Sampo official isolated quarter segment ratios',sam.values[0]?.[2]?.includes('79,5')&&sam.values[1]?.[2]?.includes('82,1'),JSON.stringify(sam));
+  await page.locator('.company-period-actions select').selectOption('H3');
+  check('Sampo HIÅ uses complete source-based Nordic segment figures',await page.locator('.company-segments tr[data-financial-source="calculated_ytd"],.company-segments tr[data-financial-source="reported_ytd"]').count()===2);
+  await page.locator('.company-period-actions select').selectOption('Q3');
   await page.evaluate(()=>show('Gjensidige',true));
   const companyComment=await page.locator('.quarter-comment').first().innerText();
   check('Company commentary has no duplicated quarter prefix',
