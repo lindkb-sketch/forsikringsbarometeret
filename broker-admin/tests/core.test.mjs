@@ -14,7 +14,8 @@ test('only known insurers and canonical quarters can create folders',()=>{
   for(const input of [['Unknown','Q3 2026'],['Gjensidige','Q9 2026'],['Gjensidige','../../../etc/passwd']]){
     assert.throws(()=>assertFolder(...input),TypeError);
   }
-  assert.equal(COMPANIES.length,7);
+  assert.equal(COMPANIES.length,8);
+  assert.deepEqual(assertFolder('Alm. Brand','Q3 2026'),{company:'Alm. Brand',quarter:'Q3 2026'});
 });
 test('quarter folders arise from verified group-quarter observations, not analyst notes',()=>{
   const feed={observations:[
@@ -41,6 +42,10 @@ test('public summaries contain no raw PDF, filenames, keys or analysis',()=>{
   const replaced=mergePublicFeed(result,'Tryg','Q3 2026',{...summary,outlook:'Ingen estimatendringer.'},'2026-11-09T10:01:00Z');
   assert.equal(replaced.entries.length,1);
   assert.equal(replaced.entries[0].outlook,'Ingen estimatendringer.');
+  const alm=mergePublicFeed(replaced,'Alm. Brand','Q3 2026',summary,'2026-11-09T10:02:00Z');
+  assert.equal(alm.entries.length,2);
+  assert.equal(alm.entries.find(x=>x.company==='Alm. Brand').reaction,summary.reaction);
+  assert.equal(publicContainsPrivateData(alm),false);
 });
 test('AI response must be completed structured JSON with source-grounded text',()=>{
   const sample={reaction:'Sammenliknet med forventningene var resultatet noe lavere enn ventet.',drivers:'Større skader.',outlook:'Neste kvartal: ikke omtalt.'};

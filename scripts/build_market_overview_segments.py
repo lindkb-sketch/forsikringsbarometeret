@@ -46,7 +46,10 @@ def values(lines,company,count):
     for metric,label in LABELS[company].items():
         found=[]
         prefix=r'^' if company=='Tryg' else r'(?<!\w)'
-        pattern=prefix+re.escape(label)+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
+        # Older Alm reports call the same net claims measure "Claims experience".
+        # All ratios still have to reconcile with the exact segment amounts.
+        label_pattern=r'(?:Claims ratio|Claims experience)' if company=='Alm. Brand' and metric=='loss_ratio' else re.escape(label)
+        pattern=prefix+label_pattern+r'(?:[¹²³⁴⁵⁶⁷⁸⁹⁰*]+|[a-z]\))?\s+'
         for line in lines:
             line=norm(line)
             m=re.search(pattern,line,re.I)

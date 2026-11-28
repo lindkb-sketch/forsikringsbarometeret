@@ -532,6 +532,8 @@ def main():
     result['profitability_history']=build_history(extended,result['alm_report_sources'],previous.get('profitability_history',{}))
     from company_comparison_history import build as build_comparisons
     result['company_comparisons']=build_comparisons(feed,previous.get('company_comparisons',{}))
+    from company_segment_details import build as build_company_segments
+    result['company_segment_details']=build_company_segments(feed,extended,result['alm_report_sources'],result['profitability_history'],previous.get('company_segment_details',{}))
     from publish_geographic_workbooks import atomic_write
     atomic_write(TARGET,result)
     print('MARKET_CONTEXT',result['status'],'insights',len(result['insights']),flush=True)

@@ -32,6 +32,7 @@ jobs:
           python -m py_compile scripts/build_market_overview_segments.py scripts/fremtind_apm_market.py scripts/build_market_overview_context.py scripts/market_commentary_documents.py scripts/market_commentary_explanations.py scripts/market_profitability_history.py scripts/company_comparison_history.py tests/test_market_overview_segments.py
           python -m unittest discover -s tests -p 'test_fremtind_apm_market.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_segments.py' -v
+          python -m unittest discover -s tests -p 'test_company_segment_details.py' -v
           python -m unittest discover -s tests -p 'test_market_overview_fx.py' -v
           node --check scripts/market_overview.js
           node --test tests/test_market_overview.cjs tests/test_market_overview_archive.cjs
@@ -45,6 +46,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8766/ node tests/market_share_admin_browser.cjs
+          BAROMETER_URL=http://127.0.0.1:8766/ node tests/mobile_browser_e2e.cjs
       - name: Reconcile official live market-segment PDFs
         run: |
           python scripts/build_market_overview_segments.py
@@ -67,11 +69,23 @@ jobs:
           const history=require('./scripts/market_overview.js').profitabilityHistory(require('./data/verified_financial_feed.json'),require('./data/market_overview_context.json'),a,v['group/all/quarter'].model.period);
           assert.equal(history.periods.length,5);
           assert.equal(history.series.length,9);
-          const sam=require('./scripts/market_overview.js').sampoNordicSegments(require('./data/verified_financial_feed.json'),v['group/all/quarter'].model.period,'ytd');
+          const detailContext=require('./data/market_overview_context.json');
+          const detailFeed=require('./data/verified_financial_feed.json');
+          const sam=require('./scripts/market_overview.js').sampoNordicSegments(detailFeed,v['group/all/quarter'].model.period,'ytd',detailContext);
           console.log('SAMPO_NORDIC_SEGMENTS',JSON.stringify(sam.map(r=>[r.segment,r.method,r.metrics])));
           if(a.active_period==='Q3 2026')assert.ok(sam.length===2&&sam.every(r=>r.metrics&&r.sources.length),'Both Sampo Nordic segments must have source-backed HIÅ figures');
           console.log('MARKET_HISTORY_COVERAGE',JSON.stringify(history.series.map(s=>[s.company,s.points.map(p=>p?.cr??null)])));
-          if(a.active_period==='Q3 2026')assert.ok(history.series.every(s=>s.points.every(Boolean)),'Q3 baseline must include five verified quarterly CR values for all nine insurers');
+          if(a.active_period==='Q3 2026'){
+            assert.ok(history.series.every(s=>s.points.every(Boolean)),'Q3 baseline must include five verified quarterly CR values for all nine insurers');
+            const alm=history.series.find(s=>s.company==='Alm. Brand');
+            console.log('ALM_ROE_COVERAGE',JSON.stringify(alm.points.map((x,i)=>[history.periods[i],x?.roe,x?.roe_evidence?.source_url])));
+            assert.ok(alm.points.every(x=>Number.isFinite(x?.roe)),'Alm Brand needs all five source-verified quarterly ROE values');
+            for(const mode of ['quarter','ytd']){
+              const nordic=require('./scripts/market_overview.js').sampoNordicSegments(detailFeed,v['group/all/quarter'].model.period,mode,detailContext);
+              console.log('SAMPO_PRIOR_GROWTH',mode,JSON.stringify(nordic.map(x=>[x.segment,x.growthPrev])));
+              assert.ok(nordic.length===2&&nordic.every(x=>Number.isFinite(x.growthPrev)),'Both Sampo Nordic segments need prior-year growth in '+mode);
+            }
+          }
           assert.equal(Object.keys(v).length,12);
           for(const [key,view] of Object.entries(v)){
             assert.deepEqual(view.comments.map(c=>c.label),['Inntektsvekst','CR – skade- og kostnadsprosent','Enkelthendelser og særtrekk']);
@@ -147,3 +161,11 @@ jobs:
           assert.doesNotMatch(v['group/all/quarter'].comments[0].paragraphs.join(' '),/Premiejusteringer er en sentral driver i den rapporterte porteføljen/);
           console.log('MARKET_TREND_COMMENTS_VERIFIED',Object.keys(v).length,drivers.map(d=>[d.company,d.driver,d.period_type,d.source_page]));
           JS
+
+      - name: Save mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-browser-audit
+          path: data/browser_mobile_*.png
+          if-no-files-found: warn

@@ -58,3 +58,8 @@ Denne endringen peker R2-bindingen mot den eksisterende private bucketen `forsik
 Før produksjonssetting må det implementeres en autorisert **Importer eksisterende rapporter**-handling som lister objekter under en validert `Selskap/YYYY/QN/`-prefiks, kontrollerer PDF-signatur og størrelse, oppretter dedupliserte D1-poster med original R2-nøkkel og kølegger manglende analyser. Ikke slett eller flytt originalene. Behandle én fil per køjobb og oppdater ett samlet utkast først når alle analyser er ferdige. Ikke publiser automatisk. Legg til støtte for den avtalte malen: konsensus vs egne estimater, positive/negative overraskelser, kursmål og endringer, estimatrevisjoner og utsikter.
 
 **Merk:** Den eksisterende implementasjonen bruker Cloudflare Queues, ikke Workflows. Gjenbruk av køen er det minste inngrepet. Eventuell overgang til Workflows bør skje som en separat, testet endring. `OPENAI_API_KEY` og `ADMIN_TEST_TOKEN` på den eksisterende `forsikringsbarometeret-api` overføres ikke automatisk til `forsikringsbarometeret-broker-admin`. Den nye admin-Workeren krever Cloudflare Access, D1, Queue og egne nødvendige Secrets.
+
+
+### Alm. Brand
+
+Alm. Brand er tillatt i portalens selskapsliste, kvartalsmapper, R2-import og godkjennings-/publiserings-API. Legg PDF-ene i `Alm. Brand/YYYY/QN/` (alternativt eksisterende `Alm. Brand/QN/`-struktur), eller last dem opp fra den private portalen. Ingen nye databaser, API-nøkler eller skjemaendringer kreves. En eksisterende Worker må få den oppdaterte koden via `cd broker-admin && npx wrangler deploy` (eller eksisterende Cloudflare Git-deploy). Verifiser `/api/bootstrap` etter innlogging. Bare godkjent sammendrag publiseres; PDF-ene blir i privat R2. En ny kvartalsmappe opprettes ved portalsynk.

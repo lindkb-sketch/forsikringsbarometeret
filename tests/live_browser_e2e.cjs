@@ -466,6 +466,20 @@ async function main(){
         rendered.includes('Ingen kildeverifisert')||rendered.includes('avventer'),rendered.slice(0,200));
     }
   }
+  for(const name of ['KLP Skadeforsikring','Alm. Brand']){
+    await page.evaluate(c=>show(c,true),name);
+    const panel=page.locator('.quarter-comment').first();
+    check(name+' source-based current-quarter narrative',!(await panel.innerText()).includes('Ingen kildeverifisert')&&await panel.locator('a[href^="https://"]').count()>0,(await panel.innerText()).slice(0,400));
+  }
+  for(const name of ['Gjensidige','Tryg']){
+    await page.evaluate(c=>show(c,true),name);
+    for(const type of ['Q3','H3']){
+      await page.locator('.company-period-actions select').selectOption(type);
+      const group=page.locator('.company-group-segments');
+      check(name+' '+type+' group PM/BM alongside Norway',await group.locator('tbody tr').count()===2&&await group.locator('tbody tr .financial-current').count()===10);
+    }
+    await page.locator('.company-period-actions select').selectOption('Q3');
+  }
   // Listing eligibility is based on the configured equity, not on debt
   // notices or the presence/absence of a stock quote.
   for(const name of ['Fremtind','Frende','KLP Skadeforsikring']){
@@ -489,6 +503,7 @@ async function main(){
   let standardStyle=null;
   for(const c of ['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring','Alm. Brand']){
     await page.evaluate(name=>show(name,true),c);
+    check(c+' company profitability chart is locked to the selected company',await page.locator('.company-profitability select').count()===0);
     for(const type of ['Q3','H3']){
       await page.locator('.company-period-actions select').selectOption(type);
       const result=await page.evaluate(()=>{

@@ -816,7 +816,7 @@ function marketCard(c){
  const m=marketSegments[c]||{};
  const total=marketShares[c]||'—';
  const prior=marketPrevious[c]?.total||'—';
- if(!marketUpload.period||!marketShares[c])return '';
+ if(!marketUpload.period||(!marketShares[c]&&c!=='KLP Skadeforsikring'))return '';
  const mini=(label,val)=>`<div class="market-minor-row"><span class="segment-label">${label}</span><strong>${val||'—'}</strong></div>`;
  return `<div class="metric fremtind market-card"><div class="name">Markedsandel · ${marketUpload.period}</div><div class="value">${total}</div><div class="prior">${marketUpload.period.replace(/\d{4}/,String(Number((marketUpload.period.match(/\d{4}/)||[])[0])-1))}: ${prior}</div><div class="delta market-trend">${shareTrend(c,'total',total)}</div><div class="market-minor">${mini('PM',m.pm)}${mini('BM',m.bm)}</div></div>`;
 }
@@ -871,7 +871,7 @@ function profitabilityChart(companyName=profitabilityCompany,options=null){
  const fmt=n=>n.toFixed(1).replace('.',',')+' %';
  const valid=displayedQuarters.filter(q=>returns[q]);
  const returnMetric=companyName==='Tryg'?'ROOF':companyName==='Fremtind'?'Justert EK-avkastning':'ROE';
- return `<div class="profit-head"><h2>Utvikling i lønnsomhet · ${companyName}</h2><select aria-label="Velg selskap for lønnsomhet" onchange="${options?.onChange||'setProfitabilityCompany(this.value)'}">${names.map(n=>`<option value="${n}" ${n===companyName?'selected':''}>${n==='Sampo'?'Sampo (If)':n}</option>`).join('')}</select></div>
+ return `<div class="profit-head"><h2>Utvikling i lønnsomhet · ${companyName}</h2>${options?.fixedCompany?'':`<select aria-label="Velg selskap for lønnsomhet" onchange="${options?.onChange||'setProfitabilityCompany(this.value)'}">${names.map(n=>`<option value="${n}" ${n===companyName?'selected':''}>${n==='Sampo'?'Sampo (If)':n}</option>`).join('')}</select>`}</div>
  <div class="profit-legend"><span><i class="legend-loss"></i> Skadeprosent netto (%)</span><span><i class="legend-cost"></i> Kostnadsprosent (%)</span><span><i class="legend-roe"></i> ${returnMetric} annualisert (%)</span></div>
  <div class="profit-chart-frame"><div class="profit-plot">${displayedQuarters.map(q=>{const d=selected[q];if(!d)return `<div class="profit-column"><div class="profit-space"><span class="profit-missing">—</span></div><div class="profit-quarter">${q}</div><div class="profit-return-point">${returns[q]?'<span class="return-dot"></span><strong>'+fmt(returns[q].value)+'</strong>':'<span class="return-empty">—</span>'}</div></div>`;const [loss,cost,cr]=d;return `<div class="profit-column"><div class="profit-space"><div class="profit-total">CR ${fmt(cr)}</div><div class="profit-stack" title="${q}: skadeprosent netto ${loss} %, kostnadsprosent ${cost} %, rapportert CR ${cr} %"><div class="profit-cost" style="height:${cost}%"><span class="profit-segment-label">${fmt(cost)}</span></div><div class="profit-loss" style="height:${loss}%"><span class="profit-segment-label">${fmt(loss)}</span></div></div></div><div class="profit-quarter">${q}</div><div class="profit-return-point">${returns[q]?'<span class="return-dot"></span><strong>'+fmt(returns[q].value)+'</strong>':'<span class="return-empty">—</span>'}</div></div>`}).join('')}</div></div>
  <div class="profit-foot">${valid.length?`${returnMetric}: ${valid.length} av 5 kvartaler med dokumentert annualisert verdi. `:`${returnMetric}: Ingen dokumenterte annualiserte kvartalsverdier ennå. `}Gjensidige: hiå ved kvartalsslutt (Q4 = helår). Tryg: annualisert kvartalsavkastning. Fremtind: annualisert egenkapitalavkastning justert for Eika-transaksjonen (Q4 = helår). Avrunding kan gi mindre avvik mot CR.</div>`;
@@ -1103,8 +1103,8 @@ async function readWorkbook(buffer){
  return result;
 }
 
-const adminNames=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand'];
-const adminAliases={Fremtind:['fremtind'],Gjensidige:['gjensidige'],Tryg:['tryg'],Sampo:['if skadeforsikring','if skade','if forsikring'],Frende:['frende forsikring','frende'],Protector:['protector'],Storebrand:['storebrand']};
+const adminNames=['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','KLP Skadeforsikring'];
+const adminAliases={Fremtind:['fremtind'],Gjensidige:['gjensidige'],Tryg:['tryg'],Sampo:['if skadeforsikring','if skade','if forsikring'],Frende:['frende forsikring','frende'],Protector:['protector'],Storebrand:['storebrand'],'KLP Skadeforsikring':['klp skadeforsikring','klp skadeforsikring as','klp']};
 let adminPeriod='',adminWorkbook=null,marketPreview=false,marketInitialLoad=null;
 function marketPeriodOptions(selected=''){
  const select=document.getElementById('admin-market-period');
@@ -1193,7 +1193,7 @@ document.getElementById('inline-excel').addEventListener('change',async e=>{try{
  for(const input of document.querySelectorAll('#admin-values input'))input.value='';
  for(const [n,k,val,prev] of imported){adminInput(n,k,'current').value=val;adminInput(n,k,'prior').value=prev}
  adminWorkbook={filename:file.name,sha256:Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('')};
- document.getElementById('admin-status').textContent='Tab5 lest: '+count+' av 21 markedsandeler funnet. Manglende felt blir tomme. Kontroller periode og verdier før publisering.';
+ document.getElementById('admin-status').textContent='Tab5 lest: '+count+' av '+(adminNames.length*3)+' markedsandeler funnet. Manglende felt blir tomme. Kontroller periode og verdier før publisering.';
 }catch(err){document.getElementById('admin-status').textContent='Kunne ikke lese Excel: '+err.message}});
 
 document.getElementById('admin-values').addEventListener('input',()=>{adminWorkbook=null;});
@@ -1442,6 +1442,14 @@ home=function(){let html=MON_EXEC_ORIG_HOME();if(MON_QUARTER==='Q3')html+=monCal
   if(current==='summary'&&cal&&selector)selector.insertAdjacentElement('afterend',cal);
   // Provide horizontal table scrolling only where necessary; never squeeze numeric columns.
   for(const table of app.querySelectorAll('table')){
+   // Keep semantic table headers; attach their labels to the responsive
+   // company/summary card presentation without duplicating data values.
+   if(table.closest('.company-segments,#results-comparison')){
+    const labels=[...(table.tHead?.rows[table.tHead.rows.length-1]?.cells||[])].map(th=>th.textContent.trim());
+    for(const body of table.tBodies)for(const tr of body.rows)for(const [i,cell] of [...tr.cells].entries()){
+     if(i&&labels[i])cell.dataset.mobileLabel=labels[i];
+    }
+   }
    if(table.parentElement.classList.contains('exec-table-scroll'))continue;
    const wrap=document.createElement('div');wrap.className='exec-table-scroll';wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Resultattabell – bla sidelengs ved behov');wrap.tabIndex=0;
    table.parentNode.insertBefore(wrap,table);wrap.appendChild(table);
@@ -1962,7 +1970,11 @@ const app=document.getElementById('app');if(app){new MutationObserver(enhance).o
       '" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport'+
       (notes.length?', side '+esc(notes[0].source_page):'')+' ↗</a></p>';
    }else{
-    body='<p>Ingen kildeverifisert kvartalsoppsummering tilgjengelig for valgt periode.</p>';
+    const generated=window.FBMarketOverview?.companyQuarterNarrative(c,period);
+    if(generated?.paragraphs?.length){
+      body=generated.paragraphs.map(p=>'<p>'+esc(p)+'</p>').join('')+
+        '<p>'+generated.sources.map(s=>'<a href="'+safeUrl(s.url)+'" target="_blank" rel="noopener noreferrer">Offisiell kvartalsrapport'+(s.page?', side '+esc(s.page):'')+' ↗</a>').join(' · ')+'</p>';
+    }else body='<p>Ingen kildeverifisert kvartalsoppsummering tilgjengelig for valgt periode.</p>';
    }
   }else{
    const facts=(block?.brief||[]).filter(x=>x.text && x.basis!=='issuer_pdf_verbatim' && !/ omtaler i kvartalsrapporten:/.test(x.text) && (x.type==='qualitative_quarter_theme' || x.company)).slice(0,4);

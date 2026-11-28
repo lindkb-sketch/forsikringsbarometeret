@@ -235,6 +235,7 @@ jobs:
           sleep 2
           BAROMETER_URL=http://127.0.0.1:8765/ node tests/live_browser_e2e.cjs
           BAROMETER_URL=http://127.0.0.1:8765/ node tests/seven_company_detail_browser.cjs
+          BAROMETER_URL=http://127.0.0.1:8765/ node tests/mobile_browser_e2e.cjs
       - name: Upload local browser diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -244,6 +245,7 @@ jobs:
             data/browser_e2e_report.json
             data/browser_home_q3.png
             data/browser_home_ytd.png
+            data/browser_mobile_*.png
           if-no-files-found: warn
       - name: Check currently published GitHub Pages for seven insurers (diagnostic; PR is not deployed)
         continue-on-error: true

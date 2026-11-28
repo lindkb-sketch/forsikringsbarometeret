@@ -1,5 +1,5 @@
 /** Pure business rules shared by the private broker Worker and tests. */
-export const COMPANIES=Object.freeze(['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand']);
+export const COMPANIES=Object.freeze(['Fremtind','Gjensidige','Tryg','Sampo','Frende','Protector','Storebrand','Alm. Brand']);
 export const QUARTER=/^Q[1-4] 20\d{2}$/;
 export const MAX_PDF_BYTES=10*1024*1024;
 export const MAX_REPORTS_PER_FOLDER=20;

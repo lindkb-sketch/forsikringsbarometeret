@@ -38,7 +38,27 @@ class BrokerCommentaryTests(unittest.TestCase):
         self.assertIn('id="broker-commentary-panel" hidden',company_page)
         self.assertLess(company_page.index('id="broker-commentary-panel"'),company_page.index('companyMediaNews(c)'))
         self.assertIn("NAMES.includes(current)",JS)
-        self.assertIn("typeof period!=='undefined'?period",JS)
+        self.assertIn('window.FBActivePeriod',JS)
+        self.assertIn("e.company===c&&e.quarter===q",JS)
+
+    def test_public_broker_period_is_exact_year_and_quarter(self):
+        start=JS.index('const currentQuarter=()=>{')
+        end=JS.index('function valid(raw)',start)
+        script=JS[start:end]+"""
+const assert=require('node:assert/strict');
+const QUARTER=/^Q[1-4] 20\\d{2}$/;
+const quarters=['Q3 2025','Q3 2026'];
+const window={FBActivePeriod:{year:2025,quarter:3}};
+assert.equal(currentQuarter(),'Q3 2025');
+window.FBActivePeriod={year:2026,quarter:3};
+assert.equal(currentQuarter(),'Q3 2026');
+window.FBActivePeriod={year:2026,quarter:4};
+assert.equal(currentQuarter(),'Q4 2026');
+window.FBActivePeriod=null;
+assert.equal(currentQuarter(),'');
+"""
+        p=subprocess.run(['node','-e',script],capture_output=True,text=True,timeout=12)
+        self.assertEqual(p.returncode,0,p.stderr)
 
     def test_quarter_folders_created_automatically_from_verified_data(self):
         self.assertIn('data/verified_financial_feed.json',JS)

@@ -472,6 +472,10 @@
     }
     return cards.join('');
   }
+  function renderGroupSegmentPanel(company,segments,type){
+    if(!segments.some(s=>s.row))return '';
+    return '<section class="panel company-segments company-group-segments" aria-label="Konsernsegmenter for '+companyEsc(company)+'"><div class="section-head"><div><h2>Konsern · segmentoversikt</h2><p class="hint">Rapportert privat- og bedriftsmarked · '+(type==='ytd'?'HIÅ':'Kvartal')+'</p></div><span class="pill">KONSERN</span></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Forsikringsteknisk resultat</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>'+segments.filter(s=>s.row).map(({market,row:r,prior,result,priorResult,resultUnit})=>'<tr data-segment="'+(market==='pm'?'Private':'Commercial')+'" data-financial-period="'+type+'"><td>'+(market==='pm'?'PM · konsern':'BM · konsern')+(r.source?'<small class="frende-skade-source"><a href="'+companyEsc(r.source)+'" target="_blank" rel="noopener noreferrer">Offisiell rapport ↗</a></small>':'')+'</td><td>'+comparisonMarkup(r.growth,prior?.growth,true,'',false,true)+'</td><td>'+comparisonMarkup(result,priorResult,false,resultUnit,false,true)+'</td>'+['cr','loss','cost'].map(k=>'<td>'+comparisonMarkup(r[k],prior?.[k],true,'',true,true)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>';
+  }
   function extendedCompany(c){
     const p=selection,type=ytdMode()?'ytd':'quarter',row=extendedRecord(c,p);
     const at=period=>period?{...(window.FBMarketOverview?.companyHistoricalMetrics(c,period,type)||{}),...extendedMetrics(c,period,type)}:{};
@@ -484,13 +488,14 @@
       ['return_on_equity','ROE (annualisert)',true],['solvency_ratio','Solvensgrad',true]];
     const cards=fields.filter(([k])=>k!=='return_on_equity'||Number.isFinite(m[k])).map(([k,caption,pct])=>
       companyFinancialCard(k,caption,m[k],prior[k],pct,unit,type,'verified-original-report',['combined_ratio','loss_ratio','expense_ratio'].includes(k))).join('');
+    const marketShare=c==='KLP Skadeforsikring'?marketCard(c):'';
     const opts=p&&window.FBMarketOverview?.profitabilityOptions(c,p);
-    const chart=profitabilityChart(c,opts||{quarters:p?quarterTimeline(p):[],selected:{},returns:{}});
+    const chart=profitabilityChart(c,{...(opts||{quarters:p?quarterTimeline(p):[],selected:{},returns:{}}),fixedCompany:true});
     const segs=c==='Alm. Brand'&&p?window.FBMarketOverview?.companySegmentRows(c,p,type)||[]:[];
     const segmentTable=segs.some(s=>s.row)?'<section class="panel company-segments" aria-label="Segmentoversikt for Alm. Brand"><div class="section-head"><h2>Segmentoversikt · Danmark</h2></div><div class="tablewrap"><table><thead><tr><th>Virksomhet</th><th>Inntektsvekst</th><th>Forsikringsteknisk resultat</th><th>Combined ratio</th><th>Skadeprosent</th><th>Kostnadsprosent</th></tr></thead><tbody>'+segs.filter(s=>s.row).map(({market,row:r,prior,result,priorResult,resultUnit})=>'<tr><td>'+(market==='pm'?'Privatmarkedet':'Bedriftsmarkedet')+(r.source?'<small class="frende-skade-source"><a href="'+companyEsc(r.source)+'" target="_blank" rel="noopener noreferrer">Offisiell rapport ↗</a></small>':'')+'</td><td>'+comparisonMarkup(r.growth,prior?.growth,true,'',false,true)+'</td><td>'+comparisonMarkup(result,priorResult,false,resultUnit,false,true)+'</td>'+['cr','loss','cost'].map(k=>'<td>'+comparisonMarkup(r[k],prior?.[k],true,'',true,true)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></section>':'';
     return MON_SELECT()+'<button class="back" onclick="show(\'home\')">← Tilbake til oversikten</button>'+shell(c,'Offisielle kvartalsrapporter og kildeverifiserte resultater','SELSKAPSANALYSE / '+c.toUpperCase()).replace(/Q2 2026 · Kildekontrollerte utdrag/,companyEsc(p?label(p):'Avventer kvartal')+' · Kildekontrollerte utdrag')+
       '<div class="section-head"><div><h2 style="margin:0;font-size:16px">'+companyEsc(c)+' | Resultatoversikt</h2></div>'+companyBasisSelector()+'</div>'+quarterComment(c)+
-      '<div class="kpi-seven dynamic-kpis">'+cards+'</div><section class="panel company-profitability" aria-label="Lønnsomhetsutvikling for '+companyEsc(c)+'">'+chart+'</section>'+segmentTable+
+      '<div class="kpi-seven dynamic-kpis">'+cards+marketShare+'</div><section class="panel company-profitability" aria-label="Lønnsomhetsutvikling for '+companyEsc(c)+'">'+chart+'</section>'+segmentTable+
       (row?'<p class="notice">Kildeverifiserte tall: <a href="'+companyEsc(row.source_url)+'" target="_blank" rel="noopener noreferrer">Åpne offisiell kvartalsrapport ↗</a></p>':'<p class="notice">Kildeverifiserte rapporttall for denne perioden er ennå ikke tilgjengelige.</p>')+
       '<section class="panel broker-summary-panel" id="broker-commentary-panel" hidden></section>'+stockMarketSection(c)+companyMediaNews(c);
   }
@@ -526,7 +531,7 @@
       const panel=document.createElement('section');
       panel.className='panel company-profitability';
       panel.setAttribute('aria-label','Lønnsomhetsutvikling for '+c);
-      panel.innerHTML=profitabilityChart(c);
+      panel.innerHTML=profitabilityChart(c,{fixedCompany:true});
       cards.insertAdjacentElement('afterend',panel);
     }
     if(c==='Sampo'&&selection){
@@ -574,6 +579,19 @@
         write(3,row.cr,prior?.cr,true,'',true);write(4,row.loss,prior?.loss,true,'',true);write(5,row.cost,prior?.cost,true,'',true);
         const link=document.createElement('a');link.href=row.source;link.target='_blank';link.rel='noopener noreferrer';link.className='frende-skade-source';link.textContent='Offisiell rapport ↗';tr.cells[0].append(' ',link);
         tr.setAttribute('data-financial-source','verified-fremtind-apm');
+      }
+    }
+    if((c==='Gjensidige'||c==='Tryg')&&selection){
+      // Keep the geographic table, but bind it to independently verified
+      // same-scope current/prior values, including cumulative observations.
+      const scopeRows=window.FBMarketOverview?.companySegmentRows(c,selection,ytdMode()?'ytd':'quarter','norway',c==='Gjensidige'?['all','pm','bm']:['all'])||[];
+      for(const [i,s] of scopeRows.entries()){
+        if(!s.row)continue;
+        const tr=fragment.querySelectorAll('.tablewrap tbody tr')[i];if(!tr)continue;
+        const {row,prior,result,priorResult,resultUnit}=s;
+        if(Number.isFinite(row.growth))tr.cells[1].innerHTML=comparisonMarkup(row.growth,prior?.growth,true,'',false,true);
+        if(Number.isFinite(result))tr.cells[2].innerHTML=comparisonMarkup(result,priorResult,false,resultUnit,false,true);
+        for(const [j,k] of ['cr','loss','cost'].entries())if(Number.isFinite(row[k]))tr.cells[j+3].innerHTML=comparisonMarkup(row[k],prior?.[k],true,'',true,true);
       }
     }
     if(c==='Frende'){
@@ -774,6 +792,12 @@
       segmentPanel.classList.add('company-segments');
       segmentPanel.setAttribute('aria-label','Segmentoversikt for '+c);
       chartPanel.insertAdjacentElement('afterend',segmentPanel);
+      if((c==='Gjensidige'||c==='Tryg')&&selection){
+        const type=ytdMode()?'ytd':'quarter';
+        const group=window.FBMarketOverview?.companySegmentRows(c,selection,type)||[];
+        const html=renderGroupSegmentPanel(c,group,type);
+        if(html)segmentPanel.insertAdjacentHTML('afterend',html);
+      }
     }
     return fragment.innerHTML;
   }
