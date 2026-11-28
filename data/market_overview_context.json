@@ -9082,7 +9082,7 @@
         {
           "url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/6",
           "document_type": "quarterly_report",
-          "source_sha256": "ddb9c5443f45490cc13c4a081f47991a1ac69d76565e5313ebe7e1b265beaf58",
+          "source_sha256": "f122881faaacbffef3df61b0422c83ad2c0d7b0416dbcbef7266de86f3b8d0b9",
           "status": "verified_document",
           "source_pages_examined": 1,
           "format": "html",
@@ -9092,7 +9092,7 @@
         {
           "url": "https://frende.wrep.it/q3-2026-frende-holding-as/sec/7",
           "document_type": "quarterly_report",
-          "source_sha256": "be186e07e879641b443626bdb9eb280a25973fef4e5bf9a50d684b09033fad03",
+          "source_sha256": "765476487fa3ea3bc77d34350bd5578ab186abe17d7cb58090a50a08a9694e19",
           "status": "verified_document",
           "source_pages_examined": 1,
           "format": "html",
