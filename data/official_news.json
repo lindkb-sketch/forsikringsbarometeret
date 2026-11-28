@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "8414c92602ca517c5f69",
+      "headline": "28 prosent har ikke testet røykvarsleren det siste året | Tryg Forsikring",
+      "publisher": "NTB Kommunikasjon",
+      "published_at": "2026-11-28T06:15:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxORDhhc3NNRlR0SlZQVWR2TXlIS1E2STJ6VkZlMmVBcFJwWGpRMnd4eUtjMWE4elhiazBBVGgzUlJOeXpJR2hDek1DVWVSQTN5TzdFYVY0RDVKWW1fSnBQeWMxckNlSXlxLTVBdWxsVzZfT01tOWFqai1RVHVJQUVGaFFiaHgySXE4UlRfQW5fNndfeEREanczdHJnUnpBYlp0ZHNlNXhXbnctVEdCZ2NnNnQtZl9lM1NseWdQY3RPZ1U4alM1d01KMEVTTUltNjlOV0E?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "b51029a4928689db688b",
       "headline": "Norse-frykt: Dette dekker ikke reiseforsikringen | Frende Forsikring",
       "publisher": "NTB Kommunikasjon",
@@ -37,7 +46,7 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     }
   ],
-  "last_checked_at": "2026-11-28T12:05:39.117760+00:00",
-  "latest_headline_at": "2026-11-27T06:12:00+00:00",
+  "last_checked_at": "2026-11-28T12:35:14.537617+00:00",
+  "latest_headline_at": "2026-11-28T06:15:00+00:00",
   "source_policy": "Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports"
 }
