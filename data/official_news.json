@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "b51029a4928689db688b",
+      "headline": "Norse-frykt: Dette dekker ikke reiseforsikringen | Frende Forsikring",
+      "publisher": "NTB Kommunikasjon",
+      "published_at": "2026-11-27T06:12:00+00:00",
+      "source_url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOWjRTR1AtUFNFclYwNGJHQ1I3aFFuMnlxSUxXUHAyWmVuUnFNclhSNEVtUHRRLWR0M19oSkhvQ2JxTHVwRWs1VUJobWNvRUplalZqckhtUVh6SE82RkJ3V3hIYmRtd1ZpYWFiWFJjSDVjNGRwSTNXTVAyWUw0RU1VRTk1OTNvbEpEZ0p1RWplUTA1SFpMRDhIcWZBdU5WTEV4bkdkcEdPOGJ6dS1KeENDaFBiRF9DSWsxRFkyM0liTkgtQmM3Nmc?oc=5",
+      "approved": true,
+      "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
+    },
+    {
       "id": "6837748959871456d55a",
       "headline": "Storebrand: Fått medhold i skattesak i Oslo tingrett",
       "publisher": "Finansavisen",
@@ -28,7 +37,7 @@
       "provenance": "Google News RSS, attributed publisher headline only; full article not verified"
     }
   ],
-  "last_checked_at": "2026-11-28T10:35:43.014766+00:00",
-  "latest_headline_at": "2026-11-17T08:13:39+00:00",
+  "last_checked_at": "2026-11-28T11:05:47.884545+00:00",
+  "latest_headline_at": "2026-11-27T06:12:00+00:00",
   "source_policy": "Independent publisher-attributed media headlines, deduplicated across publishers; not quarterly reports"
 }
