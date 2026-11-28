@@ -1,7 +1,7 @@
 import sys, unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from company_segment_details import observation, add_aggregates, amount_row, gj_rows, result_matches, preferred, sampo_rows
+from company_segment_details import observation, add_aggregates, amount_row, gj_rows, result_matches, preferred, sampo_rows, alm_roe_layout, alm_roe_rows
 
 SHA='a'*64
 def anchor(c,y=2026,q=3):
@@ -24,6 +24,29 @@ class CompanySegmentDetailsTests(unittest.TestCase):
         self.assertEqual(next(r['value'] for r in rows if r['year']==2024 and r['period_type']=='quarter'),900)
         self.assertEqual(next(r['value'] for r in rows if r['year']==2024 and r['period_type']=='ytd'),2600)
         self.assertEqual(sampo_rows(a,pages,[{**known[0],'value':999}]),[])
+    def test_sampo_overview_shared_header_before_both_segments(self):
+        a=anchor('Sampo',2025,3)
+        known=[observation(a,2025,s,'insurance_revenue',v,7) for s,v in [('Private Nordic',1014),('Nordic Commercial',554)]]
+        pages=[(7,'Financial overview Unit 7–9/2025 7–9/2024 1–9/2025 1–9/2024 2024\nSampo Group\nInsurance revenue, net EURm 2303 2137 6755 6214 8386\nPrivate Nordic\nInsurance revenue, net EURm 1014 925 2968 2730 3667\nPrivate UK\nInsurance revenue, net EURm 518 440 1487 1208 1659\nNordic Commercial\nInsurance revenue, net EURm 554 537 1640 1583 2128\nNordic Industrial\nInsurance revenue, net EURm 141 165 439 490 657')]
+        rows=sampo_rows(a,pages,known)
+        self.assertEqual(len(rows),8)
+        self.assertEqual(next(r['value'] for r in rows if r['year']==2024 and r['segment']=='Nordic Commercial' and r['period_type']=='ytd'),1583)
+        self.assertEqual(sampo_rows(a,[(8,pages[0][1])],known),[])
+    def test_alm_roe_right_hand_crop_and_fy_are_distinct(self):
+        from unittest.mock import patch
+        self.assertEqual(alm_roe_layout('FY Q1 Q1 FY\n25 DKKm 2026 2025 2025',2026,1),(3,0,1))
+        self.assertEqual(alm_roe_layout('Q4 Q4 FY FY\nDKKm 2025 2024 2025 2024',2025,4),(4,2,3))
+        with self.assertRaises(ValueError):alm_roe_layout('FY FY\nDKKm 2025 2024',2025,4)
+        for y,q,head,values,expected in [
+            (2026,1,'FY Q1 Q1 FY\n25 DKKm 2026 2025 2025','9.6 14.5 14.4',9.6),
+            (2025,4,'Q4 Q4 FY FY\nDKKm 2025 2024 2025 2024','14.8 11.4 14.4 9.6',14.8)]:
+            a={**anchor('Gjensidige',y,q),'company':'Alm. Brand'}
+            right=head+'\nReturn on equity after tax (% p.a. ) **) '+values
+            full='Financial highlights and key ratios\nInsurance revenue\nTechnical provisions\n'+right
+            with patch('rolling_alm_brand_reports.read_report',return_value=(['Alm. Brand Group Interim report Q'+str(q)+' '+str(y),'',full],{2:{'right':right}})):
+                rows=alm_roe_rows(a,b'%PDF-fixture')
+            self.assertEqual(next(r['value'] for r in rows if r['year']==y and r['period_type']=='quarter'),expected)
+            self.assertEqual(len(rows),4)
     def test_complete_same_scope_additive_ytd_only(self):
         rows=[observation(anchor('Sampo',2025,q),2025,'Private Nordic','insurance_revenue',100*q,q) for q in (1,2,3)]
         got=add_aggregates(rows)

@@ -20,7 +20,7 @@ const currentQuarter=()=>{
  const p=window.FBActivePeriod;
  if(p&&Number.isInteger(p.year)&&Number.isInteger(p.quarter))return 'Q'+p.quarter+' '+p.year;
  if(QUARTER.test(p?.label||''))return p.label;
- return quarters.at(-1)||'';
+ return '';
 };
 function valid(raw){
  return {schema_version:1,entries:(Array.isArray(raw?.entries)?raw.entries:[]).filter(e=>

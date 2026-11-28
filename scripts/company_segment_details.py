@@ -108,8 +108,8 @@ def tryg_rows(a,pages):
     return out
 
 def sampo_rows(a,pages,known):
-    """Find exact period headers in the named Nordic segment revenue table.
-    Match the verified current-quarter revenue before admitting comparatives.
+    """Read the shared financial overview header before the named segment.
+    The current quarter must match the independently verified source page.
     """
     from sampo_group_kpis import PERIOD,DASHES
     from import_group_ytd import parse_values
@@ -118,58 +118,88 @@ def sampo_rows(a,pages,known):
         expected=[r for r in known if r.get('company')=='Sampo' and r.get('year')==y and r.get('quarter')==q and r.get('period_type')=='quarter' and r.get('segment')==seg and r.get('metric')=='insurance_revenue' and r.get('source_sha256')==a['source_sha256']]
         if len(expected)!=1:continue
         candidates=[]
+        current=(3*q-2,3*q,y);prior=(3*q-2,3*q,y-1)
         for page,t in pages:
-            if not re.search(r'(?m)^'+re.escape(seg)+r'\s*$',t):continue
-            block=t.split('\n'+seg+'\n',1)[-1] if '\n'+seg+'\n' in t else t
-            end=re.search(r'(?m)^(?:Private UK|Private Nordic|Nordic Commercial|Nordic Industrial|Premium development|Underwriting performance)\s*$',block[1:])
-            if end:block=block[:end.start()+1]
-            lines=block.splitlines()
-            for i,line in enumerate(lines):
-                hit=re.fullmatch(r'\s*Insurance revenue,\s*net(?:\s*\([^)]*\))?\s+EURm\s+(.+?)\s*',line,re.I)
+            if page!=expected[0].get('source_page'):continue
+            lines=t.splitlines()
+            starts=[i for i,l in enumerate(lines) if re.fullmatch(re.escape(seg),l.strip(),re.I)]
+            if len(starts)!=1:continue
+            start=starts[0]
+            end=next((i for i in range(start+1,len(lines)) if re.fullmatch(r'Private UK|Private Nordic|Nordic Commercial|Nordic Industrial|Premium development|Underwriting performance',lines[i].strip(),re.I)),len(lines))
+            for i in range(start+1,end):
+                hit=re.fullmatch(r'\s*Insurance revenue,\s*net(?:\s*\([^)]*\))?\s+EURm\s+(.+?)\s*',lines[i],re.I)
                 if not hit:continue
-                for label in lines[max(0,i-15):i]:
+                for label in lines[:i]:
                     tokens=[tuple(map(int,m.group(1,2,3))) if m.group(1) else int(m.group(4)) for m in PERIOD.finditer(label.translate(str.maketrans(DASHES,'-'*len(DASHES))))]
-                    current=(3*q-2,3*q,y);prior=(3*q-2,3*q,y-1)
                     if tokens.count(current)!=1 or tokens.count(prior)!=1:continue
                     vals=parse_values(hit[1],len(tokens))
                     if not vals or abs(vals[tokens.index(current)]-expected[0]['value'])>.11:continue
                     batch=[]
                     for yr in (y,y-1):
                         token=(3*q-2,3*q,yr)
+                        if vals[tokens.index(token)]<=0:break
                         batch.append(observation(a,yr,seg,'insurance_revenue',vals[tokens.index(token)],page))
                         cum=yr if q==4 else (1,3*q,yr)
-                        if tokens.count(cum)==1:
+                        if tokens.count(cum)==1 and vals[tokens.index(cum)]>0:
                             batch.append(observation(a,yr,seg,'insurance_revenue',vals[tokens.index(cum)],page,'ytd'))
-                    candidates.append(batch)
+                    if all(any(r['year']==yr and r['period_type']=='quarter' for r in batch) for yr in (y,y-1)):candidates.append(batch)
         unique={tuple((key(r),r['value']) for r in b):b for b in candidates}
         if len(unique)==1:out.extend(next(iter(unique.values())))
+        else:print('::warning::COMPANY_SAMPO_COMPARATIVE',period(y,q),seg,'verified overview page',expected[0].get('source_page'),'candidate tables',len(unique),flush=True)
     return out
+
+def alm_roe_layout(text,y,q):
+    """The right-hand crop may contain part of the left-hand FY header.
+    Use only period labels adjacent to the rightmost DKKm year header;
+    require explicit Q4/FY distinction and correct comparative years.
+    """
+    text=text.replace('–','-').replace('—','-')
+    text=re.sub(r'\bQ1\s*-\s*Q([1-4])\b',r'Q1-Q\1',text,flags=re.I)
+    if q==2:text=re.sub(r'\b(?:H1|HY1|HY|6M)\b','Q1-Q2',text,flags=re.I)
+    if q==3:text=re.sub(r'\b9M\b','Q1-Q3',text,flags=re.I)
+    hits=set()
+    lines=text.splitlines()
+    for top,years in zip(lines,lines[1:]):
+        matches=list(re.finditer(r'\bDKKm\s+((?:20\d{2}(?:\s+|$))+)',years,re.I))
+        if not matches:continue
+        ys=[int(v) for v in matches[-1].group(1).split()]
+        labels=[v.upper() for v in re.findall(r'\bQ1-Q[1-4]\b|\bQ[1-4]\b|\bFY\b',top,re.I)]
+        if len(labels)<len(ys):continue
+        labels=labels[-len(ys):]
+        if labels[:2]!=[f'Q{q}',f'Q{q}'] or ys[:2]!=[y,y-1]:continue
+        if q==1 and (len(ys)==2 or len(ys)==3 and labels[2]=='FY' and ys[2]==y-1):
+            hits.add((len(ys),0,1))
+        elif q>1 and len(ys) in (4,5) and ys[2:4]==[y,y-1]:
+            cumulative=['FY','FY'] if q==4 else [f'Q1-Q{q}']*2
+            if labels[2:4]==cumulative and (len(ys)==4 or labels[4]=='FY' and ys[4]==y-1):
+                hits.add((len(ys),2,3))
+    if len(hits)==1:return next(iter(hits))
+    if len(hits)>1:raise ValueError('Ambiguous ROE column headers')
+    from rolling_alm_brand_reports import column_layout
+    return column_layout(text,y,q)
 
 def alm_roe_rows(a,raw):
     from rolling_alm_brand_reports import read_report,numeric_values
-    from market_profitability_history import alm_isolated_layout
     y,q=a['year'],a['quarter'];texts,regions=read_report(raw)
     cover=' '.join(texts[:2])
-    if not re.search(r'Alm[.\s]+Brand',cover,re.I) or str(y) not in cover or not (re.search(rf'\bQ\s*{q}\b',cover,re.I) or q==4 and re.search(r'Annual report|Financial statements',cover,re.I)):
+    if not re.search(r'Alm[.\s]+Brand',cover,re.I) or str(y) not in cover or not re.search(rf'\bQ\s*{q}\b',cover,re.I):
         raise ValueError('Wrong Alm ROE report')
     found=[]
     for i,t in enumerate(texts):
-        if 'Return on equity after tax' not in t or not re.search(r'Financial highlights and key ratios',t,re.I):continue
+        if 'Return on equity after tax' not in t or not re.search(r'Financial highlights and key ratios',t,re.I) or 'Technical provisions' not in t or 'Insurance revenue' not in t:continue
         right=regions.get(i,{}).get('right') or t
-        try:count,yi,pi=alm_isolated_layout(right,t,y,q)
-        except ValueError:continue
         for txt in (right,t):
-            # The reported row is sometimes inline and sometimes on the
-            # following line. Require exactly the independently labelled
-            # number of columns; do not extract an annual proxy as Q4.
-            hits=re.findall(r'Return on equity after tax(?:\s*,?\s*%)?[ \t]*(?:\n[ \t]*)?([-−\d,.% \t]+)(?:\n|$)',txt,re.I)
-            for hit in hits:
+            try:count,yi,pi=alm_roe_layout(txt,y,q)
+            except ValueError:continue
+            # Both inline (% p.a.) **) rows and older wrapped rows.
+            pattern=r'Return on equity after tax(?:[ \t]*\(\s*%\s*p\.\s*a\.\s*\))?[ \t]*(?:\*+\))?[ \t]*(?:\n[ \t]*)?([-−\d,.% \t]+)(?=\n|$)'
+            for hit in re.findall(pattern,txt,re.I):
                 try:vals=numeric_values(hit.replace('−','-').replace('%',''),count)
                 except ValueError:continue
                 if not all(finite(float(v)) and abs(float(v))<1000 for v in vals):continue
-                batch=[observation(a,yr,None,'return_on_equity',float(vals[j]),i+1,'quarter','group','Reported return on equity after tax; explicitly labelled quarter') for yr,j in ((y,0),(y-1,1))]
+                batch=[observation(a,yr,None,'return_on_equity',float(vals[j]),i+1,'quarter','group','Reported annualised return on equity after tax; explicitly labelled quarter') for yr,j in ((y,0),(y-1,1))]
                 for yr,j in ((y,yi),(y-1,pi)):
-                    if j is not None:batch.append(observation(a,yr,None,'return_on_equity',float(vals[j]),i+1,'ytd','group','Reported return on equity after tax; explicitly labelled cumulative period'))
+                    if j is not None:batch.append(observation(a,yr,None,'return_on_equity',float(vals[j]),i+1,'ytd','group','Reported annualised return on equity after tax; explicitly labelled cumulative period'))
                 found.append(batch)
     unique={tuple((key(r),r['value']) for r in b):b for b in found}
     return next(iter(unique.values())) if len(unique)==1 else []
@@ -251,6 +281,11 @@ def build(feed,extended,registry,history,previous):
         y,q=alm['year'],alm['quarter']
         sources={**registry,**{d['source_document_period']:d for d in history.get('documents',{}).values() if d.get('company')==ALM}}
         sources[period(y,q)]=alm
+        # Historical report URL from the issuer's official exchange filing
+        # (29 January 2026). This is a locator, not a stored financial value.
+        # Subsequent reports continue to use normal issuer discovery.
+        if not sources.get('Q4 2025'):
+            sources['Q4 2025']={'source_url':'https://attachment.news.eu.nasdaq.com/a16543ea4df576c1160f6463fcbcc0837'}
         desired={(yr,i) for yr in (y,y-1) for i in range(1,q+1)}
         # The five-quarter chart also needs the preceding full-year report.
         desired.add((y-1,4))

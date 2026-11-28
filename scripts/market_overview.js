@@ -747,11 +747,11 @@
   // Company-detail segments are independent of the market ranking's
   // Norway/PM/BM population. Sampo's named Nordic segments must not be
   // relabelled as Norwegian or treated as the full Group's PM/BM.
-  function sampoNordicSegments(feed,p,mode='quarter'){
+  function sampoNordicSegments(feed,p,mode='quarter',contextValue=context){
     if(!p||!periodOf(title(p)))return [];
     const metrics=['insurance_revenue','insurance_service_result',...CORE];
     const index=new Map((feed?.observations||[]).filter(valid).map(r=>[key(r),r]));
-    for(const r of supplementaryCompanyRows())if(!index.has(key(r)))index.set(key(r),r);
+    for(const r of supplementaryCompanyRows(contextValue))if(!index.has(key(r)))index.set(key(r),r);
     const rows=[...index.values()].filter(r=>r.company==='Sampo'&&r.scope==='reported_segment'&&['Private Nordic','Nordic Commercial'].includes(r.segment));
     const sameSourceBasis=r=>/^Sampo interim statement; (Private Nordic|Nordic Commercial) reported financial table/.test(r.source_definition||'');
     function block(segment,y,q,type){
